@@ -54,6 +54,17 @@ namespace ArnoldVinkCode
             catch { return null; }
         }
 
+        //Check if a task is still running
+        public static bool TaskRunningCheck(CancellationTokenSource TaskToken)
+        {
+            try
+            {
+                return TaskToken != null && !TaskToken.IsCancellationRequested;
+            }
+            catch { }
+            return false;
+        }
+
         //Example: AVActions.TaskStop(Task, Token);
         async public static Task TaskStop(Task TaskStop, CancellationTokenSource TaskToken)
         {
