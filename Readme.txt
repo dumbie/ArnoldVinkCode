@@ -1,0 +1,1 @@
+Shared code used in my projects.
