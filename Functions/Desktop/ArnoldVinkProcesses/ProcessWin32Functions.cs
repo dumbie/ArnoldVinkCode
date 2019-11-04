@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace ArnoldVinkCode
 {
-    public partial class ArnoldVinkProcesses
+    public partial class ProcessWin32Functions
     {
         //Launch a win32 application manually
         public static void ProcessLauncherWin32(string PathExe, string PathLaunch, string Argument, bool RunAsAdmin, bool CreateNoWindow)

@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace ArnoldVinkCode
 {
-    public partial class ArnoldVinkProcesses
+    public partial class ProcessNtQueryInformation
     {
         public static string GetProcessParameterString(int ProcessId, USER_PROCESS_PARAMETERS RequestedProcessParameter)
         {

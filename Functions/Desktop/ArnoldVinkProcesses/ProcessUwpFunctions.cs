@@ -8,12 +8,14 @@ using System.Security.Principal;
 using System.Text;
 using Windows.ApplicationModel;
 using Windows.Management.Deployment;
-using static LibraryShared.AppImport;
-using static LibraryShared.Classes;
+using static ArnoldVinkCode.AVInteropCom;
+using static ArnoldVinkCode.AVInteropDll;
+using static ArnoldVinkCode.ProcessClasses;
+using static ArnoldVinkCode.ProcessFunctions;
 
 namespace ArnoldVinkCode
 {
-    public partial class ArnoldVinkProcesses
+    public partial class ProcessUwpFunctions
     {
         //Launch an uwp application manually
         public static void ProcessLauncherUwp(string PathExe, string Argument)

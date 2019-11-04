@@ -6,12 +6,15 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Automation;
-using static LibraryShared.AppImport;
-using static LibraryShared.Classes;
+using static ArnoldVinkCode.AVInteropCom;
+using static ArnoldVinkCode.AVInteropDll;
+using static ArnoldVinkCode.ProcessClasses;
+using static ArnoldVinkCode.ProcessNtQueryInformation;
+using static ArnoldVinkCode.ProcessUwpFunctions;
 
 namespace ArnoldVinkCode
 {
-    public partial class ArnoldVinkProcesses
+    public partial class ProcessFunctions
     {
         //Focus on an application window handle
         public static async Task<bool> FocusWindowHandle(string TitleTarget, IntPtr TargetWindowHandle, int ShowCommand, bool SetWindowState, bool SwitchWindow, bool ToTopWindow, bool SetForeground, bool TempTopMost)
