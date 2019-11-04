@@ -127,17 +127,18 @@ namespace ArnoldVinkCode
                         if (bytesReceivedLength > 0)
                         {
                             //Debug.WriteLine("Received bytes (S): " + bytesReceivedLength);
-                            await EventBytesReceived(receivedBytes);
+                            await EventBytesReceived(tcpClient, receivedBytes);
                         }
                         else
                         {
-                            Debug.WriteLine("No bytes received (S)");
-                            break;
+                            Debug.WriteLine("No more bytes received (S)");
+                            await Task.Delay(100);
+                            //break
                         }
                     }
-                    catch
+                    catch (Exception ex)
                     {
-                        Debug.WriteLine("Failed reading bytes (S)");
+                        Debug.WriteLine("Failed reading bytes (S) " + ex.Message);
                         break;
                     }
                 }

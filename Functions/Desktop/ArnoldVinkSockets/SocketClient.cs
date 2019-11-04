@@ -150,7 +150,7 @@ namespace ArnoldVinkCode
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed sending bytes: " + ex.Message);
+                Debug.WriteLine("Failed sending bytes (C): " + ex.Message);
                 SocketClientDisconnect(tcpClient);
                 return false;
             }
