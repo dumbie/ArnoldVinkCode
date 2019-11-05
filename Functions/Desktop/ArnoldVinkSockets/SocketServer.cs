@@ -10,51 +10,12 @@ namespace ArnoldVinkCode
 {
     public partial class ArnoldVinkSocketServer
     {
-        //Switch the server on or off
-        public async Task SocketServerSwitch(bool ForceOff, bool Restart)
-        {
-            try
-            {
-                if (!vTcpListenerBusy)
-                {
-                    vTcpListenerBusy = true;
-                    if (Restart)
-                    {
-                        Debug.WriteLine("Restarting the socket server.");
-                        await SocketServerDisable();
-                        SocketServerEnable();
-                        vTcpListenerBusy = false;
-                        return;
-                    }
-
-                    if (ForceOff || vIsServerRunning())
-                    {
-                        Debug.WriteLine("Disabling the socket server.");
-                        await SocketServerDisable();
-                        vTcpListenerBusy = false;
-                        return;
-                    }
-                    else
-                    {
-                        Debug.WriteLine("Enabling the socket server.");
-                        SocketServerEnable();
-                        vTcpListenerBusy = false;
-                        return;
-                    }
-                }
-            }
-            catch
-            {
-                Debug.WriteLine("Failed switching the socket server on or off.");
-                vTcpListenerBusy = false;
-            }
-        }
-
         //Enable the socket server
         public void SocketServerEnable()
         {
             try
             {
+                Debug.WriteLine("Enabling the socket server.");
                 vTaskToken_SocketServer = new CancellationTokenSource();
                 vTask_SocketServer = AVActions.TaskStart(ListenerLoop, vTaskToken_SocketServer);
             }
@@ -69,6 +30,7 @@ namespace ArnoldVinkCode
         {
             try
             {
+                Debug.WriteLine("Disabling the socket server.");
                 await AVActions.TaskStop(vTask_SocketServer, vTaskToken_SocketServer);
             }
             catch (Exception ex)
@@ -77,11 +39,27 @@ namespace ArnoldVinkCode
             }
         }
 
-        //Stop the tcp listener
-        public void ListenerStop(TcpListener tcpListener)
+        //Disable the socket server
+        public async Task SocketServerRestart()
         {
             try
             {
+                Debug.WriteLine("Restarting the socket server.");
+                await SocketServerDisable();
+                SocketServerEnable();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to restart the socket server: " + ex.Message);
+            }
+        }
+
+        //Stop the tcp listener
+        private void TcpListenerStop(TcpListener tcpListener)
+        {
+            try
+            {
+                Debug.WriteLine("Stopping the tcp listener.");
                 tcpListener.Server.Close();
                 tcpListener.Stop();
                 tcpListener = null;
@@ -93,8 +71,8 @@ namespace ArnoldVinkCode
             }
         }
 
-        //Disconnect tcp listener client
-        public void ListenerClientDisconnect(TcpClient tcpClient)
+        //Disconnect tcp client
+        private void TcpClientDisconnect(TcpClient tcpClient)
         {
             try
             {
@@ -112,7 +90,7 @@ namespace ArnoldVinkCode
         }
 
         //Handle tcp listener client
-        async Task ListenerClientHandle(TcpClient tcpClient)
+        private async Task ListenerClientHandle(TcpClient tcpClient)
         {
             try
             {
@@ -143,14 +121,14 @@ namespace ArnoldVinkCode
                 }
 
                 //Disconnect client from listener
-                ListenerClientDisconnect(tcpClient);
+                TcpClientDisconnect(tcpClient);
                 Debug.WriteLine("Finished tcp client session.");
             }
             catch { }
         }
 
         //Receive incoming tcp clients
-        public async void ListenerLoop()
+        private async void ListenerLoop()
         {
             try
             {
@@ -183,7 +161,7 @@ namespace ArnoldVinkCode
                 }
 
                 //Stop the tcp listener
-                ListenerStop(tcpListener);
+                TcpListenerStop(tcpListener);
             }
             catch (Exception ex)
             {
@@ -196,7 +174,7 @@ namespace ArnoldVinkCode
                 else
                 {
                     Debug.WriteLine("The tcp listener has crashed: " + ex.Message);
-                    await SocketServerSwitch(false, true);
+                    await SocketServerRestart();
                 }
             }
         }

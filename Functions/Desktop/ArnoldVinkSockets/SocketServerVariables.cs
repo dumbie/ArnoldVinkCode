@@ -16,7 +16,6 @@ namespace ArnoldVinkCode
         public DelegateBytesReceived EventBytesReceived = null;
 
         //Variables
-        private bool vTcpListenerBusy = false;
         public string vTcpListenerIp = "127.0.0.1";
         public int vTcpListenerPort = 1000;
         public int vTcpListenerTimeout = 1000;
