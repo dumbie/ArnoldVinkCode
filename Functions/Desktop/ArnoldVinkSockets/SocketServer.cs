@@ -132,8 +132,7 @@ namespace ArnoldVinkCode
                         else
                         {
                             Debug.WriteLine("No more bytes received (S)");
-                            await Task.Delay(100);
-                            //break
+                            break;
                         }
                     }
                     catch (Exception ex)
