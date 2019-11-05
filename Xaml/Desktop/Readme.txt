@@ -1,0 +1,1 @@
+MainColors and ControlTemplates, need to be added above MainStyles.

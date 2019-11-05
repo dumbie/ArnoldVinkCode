@@ -21,7 +21,7 @@
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type Thumb}">
                             <Border Width="10" HorizontalAlignment="Right" Background="Transparent">
-                                <Rectangle x:Name="Slider" Fill="#00C7FF" Opacity="0.50" Width="3" HorizontalAlignment="Right"/>
+                                <Rectangle x:Name="Slider" Fill="{DynamicResource ApplicationAccentLightBrush}" Opacity="0.50" Width="3" HorizontalAlignment="Right"/>
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
@@ -66,7 +66,7 @@
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type Thumb}">
                             <Border Height="10" VerticalAlignment="Bottom" Background="Transparent">
-                                <Rectangle x:Name="Slider" Fill="#00C7FF" Opacity="0.50" Height="3" VerticalAlignment="Bottom"/>
+                                <Rectangle x:Name="Slider" Fill="{DynamicResource ApplicationAccentLightBrush}" Opacity="0.50" Height="3" VerticalAlignment="Bottom"/>
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">

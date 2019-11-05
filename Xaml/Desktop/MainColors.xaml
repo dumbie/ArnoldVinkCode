@@ -1,0 +1,12 @@
+﻿<ResourceDictionary
+    x:Class="ArnoldVinkCode.Styles.MainColors"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!-- Accent Color -->
+    <Color x:Key="ApplicationAccentLightColor">#00C7FF</Color>
+    <Color x:Key="ApplicationAccentDarkColor">#00A9FF</Color>
+    <SolidColorBrush x:Key="ApplicationAccentLightBrush">#00C7FF</SolidColorBrush>
+    <SolidColorBrush x:Key="ApplicationAccentDarkBrush">#00A9FF</SolidColorBrush>
+</ResourceDictionary>

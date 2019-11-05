@@ -4,12 +4,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
-    <!-- Accent Color -->
-    <Color x:Key="ApplicationAccentLight">#00C7FF</Color>
-    <Color x:Key="ApplicationAccentDark">#00A9FF</Color>
-    <SolidColorBrush x:Key="ApplicationAccentLightBrush">#00C7FF</SolidColorBrush>
-    <SolidColorBrush x:Key="ApplicationAccentDarkBrush">#00A9FF</SolidColorBrush>
-
     <!-- Text Sizes -->
     <sys:Double x:Key="TextSizeTiny">10</sys:Double>
     <sys:Double x:Key="TextSizeInterface">16</sys:Double>
@@ -108,11 +102,11 @@
 
     <Style x:Key="TextBlockAccent" BasedOn="{StaticResource EmptyTextBlock}" TargetType="TextBlock">
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
-        <Setter Property="Foreground" Value="#00C7FF"/>
+        <Setter Property="Foreground" Value="{DynamicResource ApplicationAccentLightBrush}"/>
     </Style>
     <Style x:Key="TextBlockAccentLight" BasedOn="{StaticResource EmptyTextBlock}" TargetType="TextBlock">
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
-        <Setter Property="Foreground" Value="#00C7FF"/>
+        <Setter Property="Foreground" Value="{DynamicResource ApplicationAccentLightBrush}"/>
         <Setter Property="FontWeight" Value="Light"/>
     </Style>
 
@@ -201,7 +195,7 @@
     <!--Rectangle Styles-->
     <Style x:Key="RectangleHorizontalAccent" TargetType="Rectangle">
         <Setter Property="Height" Value="2"/>
-        <Setter Property="Fill" Value="#00C7FF"/>
+        <Setter Property="Fill" Value="{DynamicResource ApplicationAccentLightBrush}"/>
         <Setter Property="SnapsToDevicePixels" Value="True"/>
     </Style>
 
@@ -211,7 +205,7 @@
         <Setter Property="Margin" Value="0,3,0,3"/>
         <Setter Property="Background" Value="#CDCDCD"/>
         <Setter Property="BorderBrush" Value="#CDCDCD"/>
-        <Setter Property="Foreground" Value="#00C7FF"/>
+        <Setter Property="Foreground" Value="{DynamicResource ApplicationAccentLightBrush}"/>
         <Setter Property="SnapsToDevicePixels" Value="True"/>
     </Style>
 
@@ -219,9 +213,9 @@
     <Style x:Key="ButtonAccentWhite" TargetType="Button">
         <Setter Property="FontSize" Value="{DynamicResource TextSizeSmall}"/>
         <Setter Property="Foreground" Value="#F1F1F1"/>
-        <Setter Property="Background" Value="#00C7FF"/>
+        <Setter Property="Background" Value="{DynamicResource ApplicationAccentLightBrush}"/>
         <Setter Property="BorderThickness" Value="2"/>
-        <Setter Property="BorderBrush" Value="#00C7FF"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ApplicationAccentLightBrush}"/>
         <Setter Property="Padding" Value="10,5,10,5"/>
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="Template" Value="{StaticResource ButtonTemplateWhite}"/>
@@ -230,9 +224,9 @@
     <Style x:Key="ButtonAccentBlack" TargetType="Button">
         <Setter Property="FontSize" Value="{DynamicResource TextSizeSmall}"/>
         <Setter Property="Foreground" Value="#F1F1F1"/>
-        <Setter Property="Background" Value="#00C7FF"/>
+        <Setter Property="Background" Value="{DynamicResource ApplicationAccentLightBrush}"/>
         <Setter Property="BorderThickness" Value="2"/>
-        <Setter Property="BorderBrush" Value="#00C7FF"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ApplicationAccentLightBrush}"/>
         <Setter Property="Padding" Value="10,5,10,5"/>
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="Template" Value="{StaticResource ButtonTemplateBlack}"/>
@@ -270,9 +264,9 @@
         <Setter Property="Padding" Value="0"/>
         <Setter Property="Margin" Value="4,0,0,0"/>
         <Setter Property="Foreground" Value="#F1F1F1"/>
-        <Setter Property="Background" Value="#00C7FF"/>
+        <Setter Property="Background" Value="{DynamicResource ApplicationAccentLightBrush}"/>
         <Setter Property="BorderThickness" Value="2"/>
-        <Setter Property="BorderBrush" Value="#00C7FF"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ApplicationAccentLightBrush}"/>
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="Template" Value="{StaticResource ButtonTemplateWhite}"/>
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidWhite}"/>
@@ -280,7 +274,7 @@
 
     <!--Slider Styles-->
     <Style x:Key="SliderBlack" TargetType="Slider">
-        <Setter Property="Foreground" Value="#00C7FF"/>
+        <Setter Property="Foreground" Value="{DynamicResource ApplicationAccentLightBrush}"/>
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="IsMoveToPointEnabled" Value="True"/>
         <Setter Property="IsSnapToTickEnabled" Value="True"/>
@@ -288,7 +282,7 @@
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidWhite}"/>
     </Style>
     <Style x:Key="SliderWhite" TargetType="Slider">
-        <Setter Property="Foreground" Value="#00C7FF"/>
+        <Setter Property="Foreground" Value="{DynamicResource ApplicationAccentLightBrush}"/>
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="IsMoveToPointEnabled" Value="True"/>
         <Setter Property="IsSnapToTickEnabled" Value="True"/>
