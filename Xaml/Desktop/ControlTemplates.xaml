@@ -11,7 +11,7 @@
     </ControlTemplate>
 
     <ControlTemplate x:Key="ListBoxHorizontalTemplate" TargetType="ListBox">
-        <ScrollViewer Style="{DynamicResource ScrollViewerHorizontal}" PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
+        <ScrollViewer Style="{DynamicResource ScrollViewerHorizontal}">
             <VirtualizingStackPanel IsItemsHost="True" Orientation="Horizontal"/>
         </ScrollViewer>
     </ControlTemplate>
