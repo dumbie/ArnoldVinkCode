@@ -28,7 +28,11 @@ namespace ArnoldVinkCode
                     return Task.Run(ActionRun, TaskToken.Token);
                 }
             }
-            catch { return null; }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to start task: " + ex.Message);
+                return null;
+            }
         }
 
         //async Task<string> TaskAction() { return ""; }
@@ -51,7 +55,11 @@ namespace ArnoldVinkCode
                     return Task.Run(ActionRun, TaskToken.Token);
                 }
             }
-            catch { return null; }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to start return task: " + ex.Message);
+                return null;
+            }
         }
 
         //Check if a task is still running
@@ -66,25 +74,31 @@ namespace ArnoldVinkCode
         }
 
         //Example: AVActions.TaskStop(Task, Token);
-        async public static Task TaskStop(Task TaskStop, CancellationTokenSource TaskToken)
+        public async static Task TaskStop(Task TaskStop, CancellationTokenSource TaskToken)
         {
             try
             {
                 //Cancel the task token
                 TaskToken.Cancel();
 
-                //Wait for previous task
+                //Wait for task loop
                 while (!TaskStop.IsCompleted)
                 {
-                    Debug.WriteLine("Waiting for task to complete.");
+                    Debug.WriteLine("Waiting for task loop to complete.");
                     await Task.Delay(500);
                 }
+
+                //Wait for task stop
+                await Task.Delay(500);
 
                 //Dispose the used task
                 TaskStop.Dispose();
                 TaskToken.Dispose();
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to stop task: " + ex.Message);
+            }
         }
 
         //async void DispatchAction() { void(); }
