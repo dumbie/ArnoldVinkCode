@@ -89,7 +89,7 @@ namespace ArnoldVinkCode
                 }
 
                 //Wait for task stop
-                await Task.Delay(500);
+                await Task.Delay(1000);
 
                 //Dispose the used task
                 TaskStop.Dispose();
