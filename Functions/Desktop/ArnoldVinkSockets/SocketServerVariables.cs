@@ -15,6 +15,9 @@ namespace ArnoldVinkCode
         public delegate Task DelegateBytesReceived(TcpClient tcpClient, byte[] bytesReceived);
         public DelegateBytesReceived EventBytesReceived = null;
 
+        //Tcp listener
+        private TcpListener vTcpListener = null;
+
         //Variables
         public string vTcpListenerIp = "127.0.0.1";
         public int vTcpListenerPort = 1000;

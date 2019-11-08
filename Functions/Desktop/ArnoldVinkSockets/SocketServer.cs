@@ -10,6 +10,18 @@ namespace ArnoldVinkCode
 {
     public partial class ArnoldVinkSocketServer
     {
+        //Create and enable tcp listener
+        public ArnoldVinkSocketServer(string serverIp, int serverPort)
+        {
+            try
+            {
+                vTcpListenerIp = serverIp;
+                vTcpListenerPort = serverPort;
+                SocketServerEnable();
+            }
+            catch { }
+        }
+
         //Enable the tcp listener
         public void SocketServerEnable()
         {
@@ -31,6 +43,11 @@ namespace ArnoldVinkCode
             try
             {
                 Debug.WriteLine("Disabling the tcp listener.");
+
+                //Stop the tcp listener
+                TcpListenerStop(vTcpListener);
+
+                //Stop the listener loop
                 await AVActions.TaskStop(vTask_SocketServer, vTaskToken_SocketServer);
             }
             catch (Exception ex)
@@ -162,50 +179,68 @@ namespace ArnoldVinkCode
             try
             {
                 //Start tcp listener
-                TcpListener tcpListener = new TcpListener(IPAddress.Any, vTcpListenerPort);
-                tcpListener.Server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);
-                tcpListener.Server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-                tcpListener.Server.LingerState = new LingerOption(true, 0);
-                tcpListener.Start();
+                vTcpListener = new TcpListener(IPAddress.Any, vTcpListenerPort);
+                vTcpListener.Server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);
+                vTcpListener.Server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+                vTcpListener.Server.LingerState = new LingerOption(true, 0);
+                vTcpListener.Start();
 
-                Debug.WriteLine("The tcp listener is running on: " + tcpListener.LocalEndpoint);
+                Debug.WriteLine("The tcp listener is running on: " + vTcpListener.LocalEndpoint);
 
                 //Tcp listener loop
                 while (vIsServerRunning())
                 {
-                    TcpClient tcpClient = await tcpListener.AcceptTcpClientAsync();
-                    if (tcpClient != null && tcpClient.Connected)
+                    try
                     {
-                        Debug.WriteLine("New tcp client connected (S)");
-                        async void TaskAction()
+                        TcpClient tcpClient = await vTcpListener.AcceptTcpClientAsync();
+                        if (tcpClient != null && tcpClient.Connected)
                         {
-                            try
+                            Debug.WriteLine("New tcp client connected (S)");
+                            async void TaskAction()
                             {
-                                await ListenerClientHandle(tcpClient);
+                                try
+                                {
+                                    await ListenerClientHandle(tcpClient);
+                                }
+                                catch { }
                             }
-                            catch { }
+                            await AVActions.TaskStart(TaskAction, null);
                         }
-                        await AVActions.TaskStart(TaskAction, null);
                     }
+                    catch { }
                 }
-
-                //Stop the tcp listener
-                TcpListenerStop(tcpListener);
             }
             catch (Exception ex)
             {
-                if (ex.HResult == -2147467259)
+                await ListenerLoop_Exception(ex);
+            }
+        }
+
+        //Receive incoming tcp clients exception
+        async Task ListenerLoop_Exception(Exception ex)
+        {
+            try
+            {
+                //Check the exception type
+                if (ex.GetType() == typeof(SocketException))
                 {
-                    MessageBox.Show("Failed to launch the socket server, please make sure the used server port is not already in use.", "Socket Server");
-                    Debug.WriteLine("The tcp listener port is in use: " + ex.Message);
-                    await SocketServerDisable();
-                }
-                else
-                {
-                    Debug.WriteLine("The tcp listener has crashed: " + ex.Message);
-                    await SocketServerRestart();
+                    SocketException socketException = (SocketException)ex;
+                    if (socketException.SocketErrorCode == SocketError.AddressAlreadyInUse)
+                    {
+                        //Disable the tcp listener
+                        MessageBox.Show("Failed to launch the socket server, please make sure that the used server port is not already in use.", "Socket Server");
+                        Debug.WriteLine("The tcp listener port is in use: " + ex.Message);
+                        await SocketServerDisable();
+                    }
+                    else
+                    {
+                        //Restart the tcp listener
+                        Debug.WriteLine("The tcp listener has crashed: " + ex.Message);
+                        await SocketServerRestart();
+                    }
                 }
             }
+            catch { }
         }
     }
 }
