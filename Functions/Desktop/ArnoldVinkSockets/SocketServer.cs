@@ -94,7 +94,11 @@ namespace ArnoldVinkCode
         {
             try
             {
-                Task<int> readTask = stream.ReadAsync(buffer, offset, count);
+                Task<int> readTask = Task.Run(async delegate
+                {
+                    return await stream.ReadAsync(buffer, offset, count);
+                });
+
                 Task delayTask = Task.Delay(vTcpListenerTimeout);
                 Task timeoutTask = await Task.WhenAny(readTask, delayTask);
                 if (timeoutTask == readTask)
