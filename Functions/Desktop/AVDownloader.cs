@@ -43,7 +43,7 @@ namespace ArnoldVinkCode
         }
 
         //Download byte async with timeout
-        internal async static Task<byte[]> DownloadByteAsync(int TimeOut, string UserAgent, string[][] Header, Uri DownloadUrl)
+        public async static Task<byte[]> DownloadByteAsync(int TimeOut, string UserAgent, string[][] Header, Uri DownloadUrl)
         {
             try
             {
@@ -76,7 +76,7 @@ namespace ArnoldVinkCode
         }
 
         //Download input stream async with timeout
-        internal async static Task<Stream> DownloadStreamAsync(int TimeOut, string UserAgent, string[][] Header, Uri DownloadUrl)
+        public async static Task<Stream> DownloadStreamAsync(int TimeOut, string UserAgent, string[][] Header, Uri DownloadUrl)
         {
             try
             {
@@ -109,7 +109,7 @@ namespace ArnoldVinkCode
         }
 
         //Send head request with timeout
-        internal async static Task<HttpResponseMessage> SendHeadRequestAsync(int TimeOut, string UserAgent, string[][] Header, Uri RequestUrl)
+        public async static Task<HttpResponseMessage> SendHeadRequestAsync(int TimeOut, string UserAgent, string[][] Header, Uri RequestUrl)
         {
             try
             {
