@@ -16,24 +16,21 @@ namespace ArnoldVinkCode
                 //Check existing tcp client
                 if (vTcpClients.Any())
                 {
+                    //Clean disconnected tcp clients
+                    //Debug.WriteLine("Removing disconnected tcp clients.");
+                    vTcpClients.RemoveAll(x => x == null || !x.Connected);
+
+                    //Look for target tcp client
                     foreach (TcpClient tcpClientSearch in vTcpClients)
                     {
                         try
                         {
-                            if (tcpClientSearch != null && tcpClientSearch.Connected)
+                            IPEndPoint endPoint = (IPEndPoint)tcpClientSearch.Client.RemoteEndPoint;
+                            string endTargetIp = endPoint.Address.ToString();
+                            if (endTargetIp == targetIp && endPoint.Port == targetPort)
                             {
-                                IPEndPoint endPoint = (IPEndPoint)tcpClientSearch.Client.RemoteEndPoint;
-                                string endTargetIp = endPoint.Address.ToString();
-                                if (endTargetIp == targetIp && endPoint.Port == targetPort)
-                                {
-                                    //Debug.WriteLine("Reusing tcpclient: " + endTargetIp + ":" + endPoint.Port);
-                                    return tcpClientSearch;
-                                }
-                            }
-                            else
-                            {
-                                Debug.WriteLine("Removing disconnected tcp client.");
-                                vTcpClients.Remove(tcpClientSearch);
+                                //Debug.WriteLine("Reusing tcp client: " + endTargetIp + ":" + endPoint.Port);
+                                return tcpClientSearch;
                             }
                         }
                         catch { }

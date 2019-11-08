@@ -5,7 +5,10 @@ namespace ArnoldVinkCode
 {
     public partial class ArnoldVinkSocketClient
     {
-        //Connection
+        //Connections
         public List<TcpClient> vTcpClients = new List<TcpClient>();
+
+        //Variables
+        public int vTcpClientTimeout = 1000;
     }
 }
