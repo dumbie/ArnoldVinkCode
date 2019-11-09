@@ -65,6 +65,11 @@ namespace ArnoldVinkCode
 
                 if (SetForeground)
                 {
+                    uint threadIdTarget = GetWindowThreadProcessId(TargetWindowHandle, out int processIdTarget);
+
+                    AllowSetForegroundWindow(processIdTarget);
+                    await Task.Delay(10);
+
                     SetForegroundWindow(TargetWindowHandle);
                     await Task.Delay(10);
                 }

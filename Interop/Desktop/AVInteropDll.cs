@@ -281,6 +281,8 @@ namespace ArnoldVinkCode
             WM_MOUSEHWHEEL = 0x20E,
             WM_KEYDOWN = 0x100,
             WM_KEYUP = 0x101,
+            WM_SYSKEYDOWN = 0x104,
+            WM_SYSKEYUP = 0x105,
             WM_SYSCOMMAND = 0x112,
             WM_DROPFILES = 0x233,
             WM_COPYDATA = 0x004A,
@@ -295,11 +297,13 @@ namespace ArnoldVinkCode
 
         //Send message or key
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        public static extern IntPtr SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
+        public static extern IntPtr SendMessage(IntPtr hWnd, int Msg, int wParam, uint lParam);
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         public static extern IntPtr SendMessage(IntPtr hWnd, int Msg, int wParam, ref COPYDATASTRUCT lParam);
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        public static extern bool PostMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
+        public static extern bool PostMessage(IntPtr hWnd, int Msg, int wParam, uint lParam);
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        public static extern bool PostMessage(IntPtr hWnd, int Msg, int wParam, ref COPYDATASTRUCT lParam);
 
         [StructLayout(LayoutKind.Sequential)]
         public struct COPYDATASTRUCT
