@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace ArnoldVinkCode
@@ -15,7 +17,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                int error = SetDisplayConfig(0, null, 0, null, (uint)SDC.SDC_APPLY | (uint)SDC.SDC_TOPOLOGY_INTERNAL);
+                int error = SetDisplayConfig(0, null, 0, null, (uint)SetDisplayConfig_Flags.SDC_APPLY | (uint)SetDisplayConfig_Flags.SDC_TOPOLOGY_INTERNAL);
                 if (error != 0)
                 {
                     Debug.WriteLine("Failed SetDisplayConfig: " + error);
@@ -35,7 +37,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                int error = SetDisplayConfig(0, null, 0, null, (uint)SDC.SDC_APPLY | (uint)SDC.SDC_TOPOLOGY_EXTERNAL);
+                int error = SetDisplayConfig(0, null, 0, null, (uint)SetDisplayConfig_Flags.SDC_APPLY | (uint)SetDisplayConfig_Flags.SDC_TOPOLOGY_EXTERNAL);
                 if (error != 0)
                 {
                     Debug.WriteLine("Failed SetDisplayConfig: " + error);
@@ -55,7 +57,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                int error = SetDisplayConfig(0, null, 0, null, (uint)SDC.SDC_APPLY | (uint)SDC.SDC_TOPOLOGY_CLONE);
+                int error = SetDisplayConfig(0, null, 0, null, (uint)SetDisplayConfig_Flags.SDC_APPLY | (uint)SetDisplayConfig_Flags.SDC_TOPOLOGY_CLONE);
                 if (error != 0)
                 {
                     Debug.WriteLine("Failed SetDisplayConfig: " + error);
@@ -75,7 +77,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                int error = SetDisplayConfig(0, null, 0, null, (uint)SDC.SDC_APPLY | (uint)SDC.SDC_TOPOLOGY_EXTEND);
+                int error = SetDisplayConfig(0, null, 0, null, (uint)SetDisplayConfig_Flags.SDC_APPLY | (uint)SetDisplayConfig_Flags.SDC_TOPOLOGY_EXTEND);
                 if (error != 0)
                 {
                     Debug.WriteLine("Failed SetDisplayConfig: " + error);
@@ -105,95 +107,171 @@ namespace ArnoldVinkCode
                 if (error != 0)
                 {
                     Debug.WriteLine("Failed MonitorFriendlyName: " + error);
-                    return string.Empty;
+                    return "Unknown";
                 }
 
-                return deviceName.monitorFriendlyDeviceName;
+                string friendlyName = deviceName.monitorFriendlyDeviceName;
+                if (!string.IsNullOrWhiteSpace(friendlyName))
+                {
+                    return deviceName.monitorFriendlyDeviceName;
+                }
+                else
+                {
+                    return "Unknown";
+                }
             }
             catch
             {
                 Debug.WriteLine("Failed reading the friendly monitor name.");
-                return string.Empty;
+                return "Unknown";
             }
         }
 
-        ////Fix: code does not work when monitor is in extend or clone mode.
-        //public static List<DisplayMonitorSummary> ListDisplayMonitors()
-        //{
-        //    try
-        //    {
-        //        List<DisplayMonitorSummary> monitorListSummary = new List<DisplayMonitorSummary>();
+        //List all the connected display monitors
+        public static List<DisplayMonitorSummary> ListDisplayMonitors()
+        {
+            try
+            {
+                uint displayPathCount = 0;
+                uint displayModeCount = 0;
+                int error = GetDisplayConfigBufferSizes(QUERY_DEVICE_CONFIG_FLAGS.QDC_ALL_PATHS, out displayPathCount, out displayModeCount);
+                if (error != 0)
+                {
+                    Debug.WriteLine("Failed GetDisplayConfigBufferSizes: " + error);
+                    return null;
+                }
 
-        //        uint displayPathCount = 0;
-        //        uint displayModeCount = 0;
-        //        int error = GetDisplayConfigBufferSizes(QUERY_DEVICE_CONFIG_FLAGS.QDC_ALL_PATHS, out displayPathCount, out displayModeCount);
-        //        if (error != 0)
-        //        {
-        //            Debug.WriteLine("Failed GetDisplayConfigBufferSizes: " + error);
-        //            return null;
-        //        }
+                DISPLAYCONFIG_PATH_INFO[] displayPaths = new DISPLAYCONFIG_PATH_INFO[displayPathCount];
+                DISPLAYCONFIG_MODE_INFO[] displayModes = new DISPLAYCONFIG_MODE_INFO[displayModeCount];
+                error = QueryDisplayConfig(QUERY_DEVICE_CONFIG_FLAGS.QDC_ALL_PATHS, ref displayPathCount, displayPaths, ref displayModeCount, displayModes, DISPLAYCONFIG_TOPOLOGY_ID.DISPLAYCONFIG_TOPOLOGY_NONE);
+                if (error != 0)
+                {
+                    Debug.WriteLine("Failed QueryDisplayConfig: " + error);
+                    return null;
+                }
 
-        //        DISPLAYCONFIG_PATH_INFO[] DisplayPaths = new DISPLAYCONFIG_PATH_INFO[displayPathCount];
-        //        DISPLAYCONFIG_MODE_INFO[] DisplayModes = new DISPLAYCONFIG_MODE_INFO[displayModeCount];
-        //        error = QueryDisplayConfig(QUERY_DEVICE_CONFIG_FLAGS.QDC_ALL_PATHS, ref displayPathCount, DisplayPaths, ref displayModeCount, DisplayModes, IntPtr.Zero);
-        //        if (error != 0)
-        //        {
-        //            Debug.WriteLine("Failed QueryDisplayConfig: " + error);
-        //            return null;
-        //        }
+                List<DisplayMonitorSummary> monitorListSummary = new List<DisplayMonitorSummary>();
 
-        //        int pathInfoIndex = 0;
-        //        foreach (DISPLAYCONFIG_PATH_INFO pathInfo in DisplayPaths)
-        //        {
-        //            try
-        //            {
-        //                if (pathInfo.targetInfo.targetAvailable)
-        //                {
-        //                    if (pathInfo.sourceInfo.modeInfoIdx < displayModeCount || pathInfo.sourceInfo.modeInfoIdx == 0)
-        //                    {
-        //                        if (pathInfo.targetInfo.modeInfoIdx > displayModeCount || pathInfo.targetInfo.modeInfoIdx == 0)
-        //                        {
-        //                            uint monitorId = pathInfo.targetInfo.id;
-        //                            string monitorName = MonitorFriendlyName(pathInfo.targetInfo.adapterId, monitorId);
-        //                            monitorName = monitorName + " (" + monitorId + ")";
+                uint prevMonitorId = 0;
+                int pathInfoIndex = 0;
+                int validationId = 100000;
+                foreach (DISPLAYCONFIG_PATH_INFO pathInfo in displayPaths)
+                {
+                    try
+                    {
+                        if (pathInfo.targetInfo.targetAvailable)
+                        {
+                            uint monitorId = pathInfo.targetInfo.id;
+                            if (!monitorListSummary.Any(x => x.Id == monitorId))
+                            {
+                                //Check if the monitor id is valid
+                                if (monitorId > validationId)
+                                {
+                                    monitorId = prevMonitorId + 1;
+                                }
 
-        //                            if (pathInfo.targetInfo.id == 4354)
-        //                            {
-        //                                DisplayPaths[pathInfoIndex].flags = (uint)DISPLAYCONFIG_PATH.DISPLAYCONFIG_PATH_ACTIVE;
-        //                            }
-        //                            else
-        //                            {
-        //                                DisplayPaths[pathInfoIndex].flags = (uint)DISPLAYCONFIG_PATH.DISPLAYCONFIG_PATH_DISABLE;
-        //                            }
+                                //Update the previous monitor id
+                                prevMonitorId = monitorId;
 
-        //                            //Add monitor to summary list
-        //                            monitorListSummary.Add(new DisplayMonitorSummary() { Id = monitorId, Name = monitorName });
-        //                        }
-        //                    }
-        //                }
-        //            }
-        //            catch { }
-        //            pathInfoIndex++;
-        //        }
+                                //Get the monitor friendly name
+                                string monitorName = MonitorFriendlyName(pathInfo.targetInfo.adapterId, monitorId);
 
-        //        //Set display information
-        //        error = SetDisplayConfig(displayPathCount, DisplayPaths, displayModeCount, DisplayModes, (uint)SDC.SDC_APPLY | (uint)SDC.SDC_USE_SUPPLIED_DISPLAY_CONFIG | (uint)SDC.SDC_SAVE_TO_DATABASE | (uint)SDC.SDC_ALLOW_CHANGES);
-        //        if (error != 0)
-        //        {
-        //            Debug.WriteLine("Failed SetDisplayConfig: " + error);
-        //            return null;
-        //        }
-        //        else
-        //        {
-        //            Debug.WriteLine("Adjusted SetDisplayConfig: " + error);
-        //            return null;
-        //        }
-        //    }
-        //    catch
-        //    {
-        //        Debug.WriteLine("Failed loading the displays list.");
-        //        return null;
-        //    }
-        //}
+                                //Check the monitor friendly name
+                                if (monitorName != "Unknown")
+                                {
+                                    monitorName = monitorName + " (" + monitorId + ")";
+
+                                    //Add monitor to summary list
+                                    monitorListSummary.Add(new DisplayMonitorSummary() { Id = monitorId, Name = monitorName });
+                                }
+                            }
+                        }
+                    }
+                    catch { }
+                    pathInfoIndex++;
+                }
+
+                return monitorListSummary;
+            }
+            catch
+            {
+                Debug.WriteLine("Failed loading the displays list.");
+                return null;
+            }
+        }
+
+        //Switch the primary monitor and disable the others
+        public static bool SwitchPrimaryMonitor(uint switchMonitorId)
+        {
+            try
+            {
+                Debug.WriteLine("Switching to display monitor: " + switchMonitorId);
+                EnableMonitorFirst();
+
+                uint displayPathCount = 0;
+                uint displayModeCount = 0;
+                int error = GetDisplayConfigBufferSizes(QUERY_DEVICE_CONFIG_FLAGS.QDC_ALL_PATHS, out displayPathCount, out displayModeCount);
+                if (error != 0)
+                {
+                    Debug.WriteLine("Failed GetDisplayConfigBufferSizes: " + error);
+                    return false;
+                }
+
+                DISPLAYCONFIG_PATH_INFO[] displayPaths = new DISPLAYCONFIG_PATH_INFO[displayPathCount];
+                DISPLAYCONFIG_MODE_INFO[] displayModes = new DISPLAYCONFIG_MODE_INFO[displayModeCount];
+                error = QueryDisplayConfig(QUERY_DEVICE_CONFIG_FLAGS.QDC_ALL_PATHS, ref displayPathCount, displayPaths, ref displayModeCount, displayModes, DISPLAYCONFIG_TOPOLOGY_ID.DISPLAYCONFIG_TOPOLOGY_NONE);
+                if (error != 0)
+                {
+                    Debug.WriteLine("Failed QueryDisplayConfig: " + error);
+                    return false;
+                }
+
+                int pathInfoIndex = 0;
+                int validationId = 100000;
+                foreach (DISPLAYCONFIG_PATH_INFO pathInfo in displayPaths)
+                {
+                    try
+                    {
+                        if (pathInfo.targetInfo.targetAvailable)
+                        {
+                            if (pathInfo.sourceInfo.modeInfoIdx < validationId || pathInfo.sourceInfo.modeInfoIdx == 0)
+                            {
+                                if (pathInfo.targetInfo.modeInfoIdx > validationId || pathInfo.targetInfo.modeInfoIdx == 0)
+                                {
+                                    if (pathInfo.targetInfo.id == switchMonitorId)
+                                    {
+                                        displayPaths[pathInfoIndex].flags = (uint)DISPLAYCONFIG_PATH_FLAGS.DISPLAYCONFIG_PATH_ACTIVE;
+                                    }
+                                    else
+                                    {
+                                        displayPaths[pathInfoIndex].flags = (uint)DISPLAYCONFIG_PATH_FLAGS.DISPLAYCONFIG_PATH_DISABLE;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    catch { }
+                    pathInfoIndex++;
+                }
+
+                //Set display information
+                error = SetDisplayConfig(displayPathCount, displayPaths, displayModeCount, displayModes, (uint)SetDisplayConfig_Flags.SDC_APPLY | (uint)SetDisplayConfig_Flags.SDC_USE_SUPPLIED_DISPLAY_CONFIG | (uint)SetDisplayConfig_Flags.SDC_SAVE_TO_DATABASE | (uint)SetDisplayConfig_Flags.SDC_ALLOW_CHANGES);
+                if (error != 0)
+                {
+                    Debug.WriteLine("Failed SetDisplayConfig: " + error);
+                    return false;
+                }
+                else
+                {
+                    Debug.WriteLine("Adjusted SetDisplayConfig: " + error);
+                    return true;
+                }
+            }
+            catch
+            {
+                Debug.WriteLine("Failed switching the primary monitor.");
+                return false;
+            }
+        }
     }
 }

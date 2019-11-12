@@ -1,11 +1,10 @@
-﻿using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
 namespace ArnoldVinkCode
 {
     public partial class AVSwitchDisplayMonitor
     {
-        private enum SDC : uint
+        private enum SetDisplayConfig_Flags : uint
         {
             SDC_TOPOLOGY_INTERNAL = 0x00000001,
             SDC_TOPOLOGY_CLONE = 0x00000002,
@@ -25,11 +24,28 @@ namespace ArnoldVinkCode
             SDC_VIRTUAL_MODE_AWARE = 0x00008000
         }
 
-        private enum DISPLAYCONFIG_PATH : uint
+        private enum DISPLAYCONFIG_TOPOLOGY_ID : uint
+        {
+            DISPLAYCONFIG_TOPOLOGY_NONE = 0x00000000,
+            DISPLAYCONFIG_TOPOLOGY_INTERNAL = 0x00000001,
+            DISPLAYCONFIG_TOPOLOGY_CLONE = 0x00000002,
+            DISPLAYCONFIG_TOPOLOGY_EXTEND = 0x00000004,
+            DISPLAYCONFIG_TOPOLOGY_EXTERNAL = 0x00000008,
+            DISPLAYCONFIG_TOPOLOGY_FORCE_UINT32 = 0xFFFFFFFF
+        }
+
+        private enum DISPLAYCONFIG_PATH_FLAGS : uint
         {
             DISPLAYCONFIG_PATH_DISABLE = 0x00000000,
             DISPLAYCONFIG_PATH_ACTIVE = 0x00000001,
-            DISPLAYCONFIG_PATH_MODE_IDX_INVALID = 0xFFFFFFFF
+            DISPLAYCONFIG_PATH_PREFERRED_UNSCALED = 0x00000004,
+            DISPLAYCONFIG_PATH_SUPPORT_VIRTUAL_MODE = 0x00000008,
+            DISPLAYCONFIG_PATH_VALID_FLAGS = 0x0000000D,
+            DISPLAYCONFIG_PATH_MODE_IDX_INVALID = 0xFFFFFFFF,
+            DISPLAYCONFIG_PATH_TARGET_MODE_IDX_INVALID = 0xFFFF,
+            DISPLAYCONFIG_PATH_DESKTOP_IMAGE_IDX_INVALID = 0xFFFF,
+            DISPLAYCONFIG_PATH_SOURCE_MODE_IDX_INVALID = 0xFFFF,
+            DISPLAYCONFIG_PATH_CLONE_GROUP_INVALID = 0xFFFF
         }
 
         private enum QUERY_DEVICE_CONFIG_FLAGS : uint
@@ -45,6 +61,7 @@ namespace ArnoldVinkCode
         {
             DISPLAYCONFIG_MODE_INFO_TYPE_SOURCE = 1,
             DISPLAYCONFIG_MODE_INFO_TYPE_TARGET = 2,
+            DISPLAYCONFIG_MODE_INFO_TYPE_DESKTOP_IMAGE = 3,
             DISPLAYCONFIG_MODE_INFO_TYPE_FORCE_UINT32 = 0xFFFFFFFF
         }
 
@@ -66,6 +83,7 @@ namespace ArnoldVinkCode
             DISPLAYCONFIG_OUTPUT_TECHNOLOGY_UDI_EMBEDDED = 13,
             DISPLAYCONFIG_OUTPUT_TECHNOLOGY_SDTVDONGLE = 14,
             DISPLAYCONFIG_OUTPUT_TECHNOLOGY_MIRACAST = 15,
+            DISPLAYCONFIG_OUTPUT_TECHNOLOGY_INDIRECT_WIRED = 16,
             DISPLAYCONFIG_OUTPUT_TECHNOLOGY_INTERNAL = 0x80000000,
             DISPLAYCONFIG_OUTPUT_TECHNOLOGY_FORCE_UINT32 = 0xFFFFFFFF
         }
@@ -107,7 +125,7 @@ namespace ArnoldVinkCode
             DISPLAYCONFIG_PIXELFORMAT_24BPP = 3,
             DISPLAYCONFIG_PIXELFORMAT_32BPP = 4,
             DISPLAYCONFIG_PIXELFORMAT_NONGDI = 5,
-            DISPLAYCONFIG_PIXELFORMAT_FORCE_UINT32 = 0xffffffff
+            DISPLAYCONFIG_PIXELFORMAT_FORCE_UINT32 = 0xFFFFFFFF
         }
 
         private enum DISPLAYCONFIG_DEVICE_INFO_TYPE : uint
@@ -118,6 +136,10 @@ namespace ArnoldVinkCode
             DISPLAYCONFIG_DEVICE_INFO_GET_ADAPTER_NAME = 4,
             DISPLAYCONFIG_DEVICE_INFO_SET_TARGET_PERSISTENCE = 5,
             DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_BASE_TYPE = 6,
+            DISPLAYCONFIG_DEVICE_INFO_GET_SUPPORT_VIRTUAL_RESOLUTION = 7,
+            DISPLAYCONFIG_DEVICE_INFO_SET_SUPPORT_VIRTUAL_RESOLUTION = 8,
+            DISPLAYCONFIG_DEVICE_INFO_GET_ADVANCED_COLOR_INFO = 9,
+            DISPLAYCONFIG_DEVICE_INFO_SET_ADVANCED_COLOR_STATE = 10,
             DISPLAYCONFIG_DEVICE_INFO_FORCE_UINT32 = 0xFFFFFFFF
         }
 
@@ -257,15 +279,15 @@ namespace ArnoldVinkCode
         }
 
         [DllImport("user32.dll")]
-        private static extern int DisplayConfigGetDeviceInfo(ref DISPLAYCONFIG_TARGET_DEVICE_NAME deviceName);
+        private static extern int DisplayConfigGetDeviceInfo(ref DISPLAYCONFIG_TARGET_DEVICE_NAME requestPacket);
 
         [DllImport("user32.dll")]
-        private static extern int GetDisplayConfigBufferSizes(QUERY_DEVICE_CONFIG_FLAGS Flags, out uint NumPathArrayElements, out uint NumModeInfoArrayElements);
+        private static extern int GetDisplayConfigBufferSizes(QUERY_DEVICE_CONFIG_FLAGS flags, out uint numPathArrayElements, out uint numModeInfoArrayElements);
 
         [DllImport("user32.dll")]
-        private static extern int QueryDisplayConfig(QUERY_DEVICE_CONFIG_FLAGS Flags, ref uint NumPathArrayElements, [Out] DISPLAYCONFIG_PATH_INFO[] PathInfoArray, ref uint NumModeInfoArrayElements, [Out] DISPLAYCONFIG_MODE_INFO[] ModeInfoArray, IntPtr CurrentTopologyId);
+        private static extern int QueryDisplayConfig(QUERY_DEVICE_CONFIG_FLAGS flags, ref uint numPathArrayElements, [Out] DISPLAYCONFIG_PATH_INFO[] pathArray, ref uint numModeInfoArrayElements, [Out] DISPLAYCONFIG_MODE_INFO[] modeInfoArray, DISPLAYCONFIG_TOPOLOGY_ID currentTopologyId);
 
         [DllImport("User32.dll")]
-        private static extern int SetDisplayConfig(uint numPathArray, [In] DISPLAYCONFIG_PATH_INFO[] pathArray, uint numModeArray, [In] DISPLAYCONFIG_MODE_INFO[] modeArray, uint flags);
+        private static extern int SetDisplayConfig(uint numPathArrayElements, [In] DISPLAYCONFIG_PATH_INFO[] pathArray, uint numModeInfoArrayElements, [In] DISPLAYCONFIG_MODE_INFO[] modeInfoArray, uint flags);
     }
 }
