@@ -2,7 +2,7 @@
 
 namespace ArnoldVinkCode
 {
-    public partial class ArnoldVinkSocketClass
+    public partial class ArnoldVinkSockets
     {
         //Socket send container class
         [Serializable]

@@ -8,10 +8,10 @@ using System.Windows;
 
 namespace ArnoldVinkCode
 {
-    public partial class ArnoldVinkSocketServer
+    public partial class ArnoldVinkSockets
     {
         //Create and enable tcp listener
-        public ArnoldVinkSocketServer(string serverIp, int serverPort)
+        public ArnoldVinkSockets(string serverIp, int serverPort)
         {
             try
             {
@@ -27,13 +27,13 @@ namespace ArnoldVinkCode
         {
             try
             {
-                Debug.WriteLine("Enabling the tcp listener.");
+                Debug.WriteLine("Enabling the tcp listener (S)");
                 vTaskToken_SocketServer = new CancellationTokenSource();
                 vTask_SocketServer = AVActions.TaskStart(ListenerLoop, vTaskToken_SocketServer);
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to enable the tcp listener: " + ex.Message);
+                Debug.WriteLine("Failed to enable the tcp listener (S): " + ex.Message);
             }
         }
 
@@ -42,7 +42,10 @@ namespace ArnoldVinkCode
         {
             try
             {
-                Debug.WriteLine("Disabling the tcp listener.");
+                Debug.WriteLine("Disabling the tcp listener (S)");
+
+                //Disconnect all the clients
+                TcpClientDisconnectAll();
 
                 //Stop the tcp listener
                 TcpListenerStop(vTcpListener);
@@ -52,7 +55,7 @@ namespace ArnoldVinkCode
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to disable the tcp listener: " + ex.Message);
+                Debug.WriteLine("Failed to disable the tcp listener (S): " + ex.Message);
             }
         }
 
@@ -61,13 +64,13 @@ namespace ArnoldVinkCode
         {
             try
             {
-                Debug.WriteLine("Restarting the tcp listener.");
+                Debug.WriteLine("Restarting the tcp listener (S)");
                 await SocketServerDisable();
                 SocketServerEnable();
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to restart the tcp listener: " + ex.Message);
+                Debug.WriteLine("Failed to restart the tcp listener (S): " + ex.Message);
             }
         }
 
@@ -76,78 +79,39 @@ namespace ArnoldVinkCode
         {
             try
             {
-                Debug.WriteLine("Stopping the tcp listener.");
+                Debug.WriteLine("Stopping the tcp listener (S)");
                 tcpListener.Server.Close();
                 tcpListener.Stop();
                 tcpListener = null;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed stopping tcp listener: " + ex.Message);
+                Debug.WriteLine("Failed stopping tcp listener (S): " + ex.Message);
                 tcpListener = null;
             }
         }
 
-        //Tcp client disconnect
-        private void TcpClientDisconnect(TcpClient tcpClient)
-        {
-            try
-            {
-                Debug.WriteLine("Disconnecting the tcp client.");
-                tcpClient.GetStream().Close();
-                tcpClient.Client.Close();
-                tcpClient.Close();
-                tcpClient = null;
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("Failed disconnecting tcp client: " + ex.Message);
-                tcpClient = null;
-            }
-        }
-
-        //Read network stream with timeout
-        private async Task<int> NetworkStreamReadAsyncTimeout(NetworkStream stream, byte[] buffer, int offset, int count)
-        {
-            try
-            {
-                Task<int> readTask = Task.Run(async delegate
-                {
-                    return await stream.ReadAsync(buffer, offset, count);
-                });
-
-                Task delayTask = Task.Delay(vTcpListenerTimeout);
-                Task timeoutTask = await Task.WhenAny(readTask, delayTask);
-                if (timeoutTask == readTask)
-                {
-                    return await readTask;
-                }
-            }
-            catch { }
-            return 0;
-        }
-
         //Handle incoming tcp client
-        private async Task ListenerClientHandle(TcpClient tcpClient)
+        private async Task<bool> ListenerClientHandle(TcpClient tcpClient)
         {
             try
             {
                 //Read client stream from listener
-                while (tcpClient != null)
+                while (tcpClient != null && tcpClient.Connected)
                 {
                     try
                     {
-                        //Check if the network stream can be read
+                        //Check if the network stream can read and write
                         NetworkStream networkStream = tcpClient.GetStream();
-                        if (networkStream == null || !networkStream.CanRead)
+                        if (networkStream == null || !networkStream.CanRead || !networkStream.CanWrite)
                         {
-                            Debug.WriteLine("Stream cannot be read (S)");
+                            Debug.WriteLine("Network stream cannot read or write (S)");
                             break;
                         }
 
                         //Receive the data from the network stream
                         byte[] receivedBytes = new byte[tcpClient.ReceiveBufferSize];
-                        int bytesReceivedLength = await NetworkStreamReadAsyncTimeout(networkStream, receivedBytes, 0, receivedBytes.Length);
+                        int bytesReceivedLength = await NetworkStreamReadAsyncTimeout(networkStream, receivedBytes, 0, receivedBytes.Length, vTcpListenerTimeout);
                         if (bytesReceivedLength > 0)
                         {
                             //Debug.WriteLine("Received bytes (S): " + bytesReceivedLength);
@@ -166,11 +130,14 @@ namespace ArnoldVinkCode
                     }
                 }
 
-                //Disconnect client from listener
-                TcpClientDisconnect(tcpClient);
-                Debug.WriteLine("Finished tcp client session.");
+                Debug.WriteLine("Finished tcp client session (S)");
+                return true;
             }
-            catch { }
+            catch
+            {
+                Debug.WriteLine("Failed tcp client session (S)");
+                return true;
+            }
         }
 
         //Receive incoming tcp clients
@@ -185,7 +152,7 @@ namespace ArnoldVinkCode
                 vTcpListener.Server.LingerState = new LingerOption(true, 0);
                 vTcpListener.Start();
 
-                Debug.WriteLine("The tcp listener is running on: " + vTcpListener.LocalEndpoint);
+                Debug.WriteLine("The tcp listener is running on (S): " + vTcpListener.LocalEndpoint);
 
                 //Tcp listener loop
                 while (vIsServerRunning())
@@ -195,7 +162,7 @@ namespace ArnoldVinkCode
                         TcpClient tcpClient = await vTcpListener.AcceptTcpClientAsync();
                         if (tcpClient != null && tcpClient.Connected)
                         {
-                            Debug.WriteLine("New tcp client connected (S)");
+                            Debug.WriteLine("New tcp client connected from (S): " + tcpClient.Client.RemoteEndPoint);
                             async void TaskAction()
                             {
                                 try
@@ -229,18 +196,39 @@ namespace ArnoldVinkCode
                     {
                         //Disable the tcp listener
                         MessageBox.Show("Failed to launch the socket server, please make sure that the used server port is not already in use.", "Socket Server");
-                        Debug.WriteLine("The tcp listener port is in use: " + ex.Message);
+                        Debug.WriteLine("The tcp listener port is in use (S): " + ex.Message);
                         await SocketServerDisable();
                     }
                     else
                     {
                         //Restart the tcp listener
-                        Debug.WriteLine("The tcp listener has crashed: " + ex.Message);
+                        Debug.WriteLine("The tcp listener has crashed (S): " + ex.Message);
                         await SocketServerRestart();
                     }
                 }
             }
             catch { }
+        }
+
+        //Read network stream with timeout
+        private async Task<int> NetworkStreamReadAsyncTimeout(NetworkStream stream, byte[] buffer, int offset, int count, int timeOut)
+        {
+            try
+            {
+                Task<int> timeTask = Task.Run(async delegate
+                {
+                    return await stream.ReadAsync(buffer, offset, count);
+                });
+
+                Task delayTask = Task.Delay(timeOut);
+                Task timeoutTask = await Task.WhenAny(timeTask, delayTask);
+                if (timeoutTask == timeTask)
+                {
+                    return timeTask.Result;
+                }
+            }
+            catch { }
+            return 0;
         }
     }
 }

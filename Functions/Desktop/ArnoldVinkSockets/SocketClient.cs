@@ -3,13 +3,14 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 
 namespace ArnoldVinkCode
 {
-    public partial class ArnoldVinkSocketClient
+    public partial class ArnoldVinkSockets
     {
-        //Tcp client check
-        public TcpClient SocketClientCheck(string targetIp, int targetPort, int timeOut)
+        //Tcp client check, create and connect
+        public async Task<TcpClient> TcpClientCheckCreateConnect(string targetIp, int targetPort, int timeOut)
         {
             try
             {
@@ -17,20 +18,19 @@ namespace ArnoldVinkCode
                 if (vTcpClients.Any())
                 {
                     //Clean disconnected tcp clients
-                    //Debug.WriteLine("Removing disconnected tcp clients.");
+                    //Debug.WriteLine("Cleaning disconnected tcp clients (C)");
                     vTcpClients.RemoveAll(x => x == null || !x.Connected);
 
                     //Look for target tcp client
-                    foreach (TcpClient tcpClientSearch in vTcpClients)
+                    foreach (TcpClient tcpClient in vTcpClients)
                     {
                         try
                         {
-                            IPEndPoint endPoint = (IPEndPoint)tcpClientSearch.Client.RemoteEndPoint;
-                            string endTargetIp = endPoint.Address.ToString();
-                            if (endTargetIp == targetIp && endPoint.Port == targetPort)
+                            IPEndPoint endPoint = (IPEndPoint)tcpClient.Client.RemoteEndPoint;
+                            if (endPoint.Address.ToString() == targetIp && endPoint.Port == targetPort)
                             {
-                                //Debug.WriteLine("Reusing tcp client: " + endTargetIp + ":" + endPoint.Port);
-                                return tcpClientSearch;
+                                //Debug.WriteLine("Reusing tcp client (C): " + endPoint.Address + ":" + endPoint.Port);
+                                return tcpClient;
                             }
                         }
                         catch { }
@@ -38,74 +38,72 @@ namespace ArnoldVinkCode
                 }
 
                 //Create new tcp client
-                return SocketClientCreateConnect(null, targetIp, targetPort, timeOut, true);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("Failed to check tcp client: " + ex.Message);
-                return null;
-            }
-        }
-
-        //Tcp client create or connect
-        public TcpClient SocketClientCreateConnect(TcpClient tcpClient, string targetIp, int targetPort, int timeOut, bool newClient)
-        {
-            try
-            {
-                if (newClient)
+                if (!vCreatingClient)
                 {
-                    Debug.WriteLine("Creating tcp client: " + targetIp + ":" + targetPort);
-                    tcpClient = new TcpClient();
-                }
+                    vCreatingClient = true;
 
-                if (!tcpClient.ConnectAsync(targetIp, targetPort).Wait(timeOut))
-                {
-                    Debug.WriteLine("Failed to connect to the tcp listener: " + targetIp + ":" + targetPort);
-                    SocketClientDisconnect(tcpClient);
-                    return null;
+                    Debug.WriteLine("Creating new tcp client (C): " + targetIp + ":" + targetPort);
+                    TcpClient tcpClient = new TcpClient();
+                    tcpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);
+                    tcpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+                    tcpClient.Client.LingerState = new LingerOption(true, 0);
+
+                    //Connect the tcp client
+                    bool connectAsync = await TcpClientConnectAsyncTimeout(tcpClient, targetIp, targetPort, timeOut);
+                    if (!connectAsync)
+                    {
+                        Debug.WriteLine("Failed connecting to the tcp listener (C): " + targetIp + ":" + targetPort);
+                        vCreatingClient = false;
+                        return null;
+                    }
+                    else
+                    {
+                        Debug.WriteLine("Connected to the tcp listener (C): " + targetIp + ":" + targetPort);
+                        vTcpClients.Insert(0, tcpClient);
+                        vCreatingClient = false;
+                        return tcpClient;
+                    }
                 }
                 else
                 {
-                    Debug.WriteLine("Connected to the tcp listener: " + targetIp + ":" + targetPort);
-                    if (newClient) { vTcpClients.Insert(0, tcpClient); }
-                    return tcpClient;
+                    Debug.WriteLine("Busy creating new tcp client (C)");
+                    return null;
                 }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed connecting tcp client: " + ex.Message);
-                SocketClientDisconnect(tcpClient);
+                Debug.WriteLine("Failed to check create and connect tcp client (C): " + ex.Message);
                 return null;
             }
         }
 
         //Tcp client disconnect
-        public void SocketClientDisconnectAll()
+        public void TcpClientDisconnectAll()
         {
             try
             {
-                foreach (TcpClient tcpClientSearch in vTcpClients)
+                foreach (TcpClient tcpClient in vTcpClients)
                 {
                     try
                     {
-                        SocketClientDisconnect(tcpClientSearch);
-                        vTcpClients.Remove(tcpClientSearch);
+                        TcpClientDisconnect(tcpClient);
+                        vTcpClients.Remove(tcpClient);
                     }
                     catch { }
                 }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed disconnecting all tcp clients: " + ex.Message);
+                Debug.WriteLine("Failed disconnecting all tcp clients (C): " + ex.Message);
             }
         }
 
         //Tcp client disconnect
-        public void SocketClientDisconnect(TcpClient tcpClient)
+        public void TcpClientDisconnect(TcpClient tcpClient)
         {
             try
             {
-                Debug.WriteLine("Disconnecting the tcp client.");
+                Debug.WriteLine("Disconnecting and disposing tcp client (C)");
                 tcpClient.GetStream().Close();
                 tcpClient.Client.Close();
                 tcpClient.Close();
@@ -113,44 +111,102 @@ namespace ArnoldVinkCode
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed disconnecting tcp client: " + ex.Message);
+                Debug.WriteLine("Failed disconnecting tcp client (C): " + ex.Message);
                 tcpClient = null;
             }
         }
 
         //Send sockets bytes
-        public bool SocketClientSendBytes(TcpClient tcpClient, byte[] targetBytes, int timeOut, bool disconnectClient)
+        public async Task<bool> TcpClientSendBytes(TcpClient tcpClient, byte[] targetBytes, int timeOut, bool disconnectClient)
         {
             try
             {
-                ////Get the tcp client information
+                //Check if the tcp client is connected
+                if (tcpClient == null || !tcpClient.Connected)
+                {
+                    Debug.WriteLine("The sending tcp client is not connected (C)");
+                    return false;
+                }
+
+                //Get the tcp client information
                 //IPEndPoint endPoint = (IPEndPoint)tcpClient.Client.RemoteEndPoint;
-                //string endTargetIp = endPoint.Address.ToString();
 
                 //Get the stream and write the bytes
-                //Debug.WriteLine("Sending bytes (C): " + endTargetIp + ":" + endPoint.Port + " / " + targetBytes.Length);
-                if (!tcpClient.GetStream().WriteAsync(targetBytes, 0, targetBytes.Length).Wait(timeOut))
+                //Debug.WriteLine("Sending bytes (C): " + endPoint.Address.ToString() + ":" + endPoint.Port + " / " + targetBytes.Length);
+
+                //Check if the network stream can read and write
+                NetworkStream networkStream = tcpClient.GetStream();
+                if (networkStream == null || !networkStream.CanRead || !networkStream.CanWrite)
                 {
-                    //Debug.WriteLine("Failed to write to the tcp listener (C): " + endTargetIp + ":" + endPoint.Port);
-                    SocketClientDisconnect(tcpClient);
+                    Debug.WriteLine("Network stream cannot read or write (C)");
+                    return false;
+                }
+
+                bool writeAsync = await NetworkStreamWriteAsyncTimeout(networkStream, targetBytes, 0, targetBytes.Length, timeOut);
+                if (!writeAsync)
+                {
+                    //Debug.WriteLine("Failed to write to the tcp listener (C): " + endPoint.Address.ToString() + ":" + endPoint.Port + " " + targetBytes.Length + "b");
+                    TcpClientDisconnect(tcpClient);
                     return false;
                 }
 
                 //Disconnect tcp client after writing
                 if (disconnectClient)
                 {
-                    SocketClientDisconnect(tcpClient);
-                    return true;
+                    TcpClientDisconnect(tcpClient);
                 }
 
+                //Debug.WriteLine("Sended bytes to the tcp listener (C): " + endTargetIp + ":" + endPoint.Port + " " + targetBytes.Length + "b");
                 return true;
             }
             catch (Exception ex)
             {
                 Debug.WriteLine("Failed sending bytes (C): " + ex.Message);
-                SocketClientDisconnect(tcpClient);
+                TcpClientDisconnect(tcpClient);
                 return false;
             }
+        }
+
+        //Tcp client connect with timeout
+        private async Task<bool> TcpClientConnectAsyncTimeout(TcpClient tcpClient, string targetIp, int targetPort, int timeOut)
+        {
+            try
+            {
+                Task timeTask = Task.Run(async delegate
+                {
+                    await tcpClient.ConnectAsync(targetIp, targetPort);
+                });
+
+                Task delayTask = Task.Delay(timeOut);
+                Task timeoutTask = await Task.WhenAny(timeTask, delayTask);
+                if (timeoutTask == timeTask)
+                {
+                    return true;
+                }
+            }
+            catch { }
+            return false;
+        }
+
+        //Write network stream with timeout
+        private async Task<bool> NetworkStreamWriteAsyncTimeout(NetworkStream stream, byte[] buffer, int offset, int count, int timeOut)
+        {
+            try
+            {
+                Task timeTask = Task.Run(async delegate
+                {
+                    await stream.WriteAsync(buffer, offset, count);
+                });
+
+                Task delayTask = Task.Delay(timeOut);
+                Task timeoutTask = await Task.WhenAny(timeTask, delayTask);
+                if (timeoutTask == timeTask)
+                {
+                    return true;
+                }
+            }
+            catch { }
+            return false;
         }
     }
 }
