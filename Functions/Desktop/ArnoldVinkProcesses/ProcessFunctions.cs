@@ -508,5 +508,26 @@ namespace ArnoldVinkCode
             catch { }
             return false;
         }
+
+        //Check if a procress is running as administrator
+        public static bool IsProcessRunningAsAdmin(Process TargetProcess)
+        {
+            try
+            {
+                IntPtr tokenHandle = IntPtr.Zero;
+                try
+                {
+                    OpenProcessToken(TargetProcess.Handle, DesiredAccessFlags.TOKEN_ADJUST_DEFAULT, out tokenHandle);
+                    CloseHandle(tokenHandle);
+                    return false;
+                }
+                catch
+                {
+                    CloseHandle(tokenHandle);
+                    return true;
+                }
+            }
+            catch { return false; }
+        }
     }
 }
