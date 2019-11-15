@@ -22,6 +22,7 @@ namespace ArnoldVinkCode
         public class ProcessFocus
         {
             public string Title = "Unknown";
+            public string ClassName = "Unknown";
             public IntPtr WindowHandle = IntPtr.Zero;
             public Process Process = null;
         }

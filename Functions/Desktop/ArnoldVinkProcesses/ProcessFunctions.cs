@@ -11,16 +11,41 @@ using static ArnoldVinkCode.AVInteropDll;
 using static ArnoldVinkCode.ProcessClasses;
 using static ArnoldVinkCode.ProcessNtQueryInformation;
 using static ArnoldVinkCode.ProcessUwpFunctions;
+using static LibraryShared.Classes;
+using static LibraryShared.OutputKeyboard;
 
 namespace ArnoldVinkCode
 {
     public partial class ProcessFunctions
     {
+        //Check if start menu, cortana or search is open
+        public static bool WindowsStartMenuOpenCheck()
+        {
+            try
+            {
+                ProcessFocus currentProcess = GetFocusedProcess();
+                if (currentProcess.Process.ProcessName == "SearchUI")
+                {
+                    return true;
+                }
+            }
+            catch { }
+            return false;
+        }
+
         //Focus on an application window handle
         public static async Task<bool> FocusWindowHandle(string TitleTarget, IntPtr TargetWindowHandle, int ShowCommand, bool SetWindowState, bool SwitchWindow, bool ToTopWindow, bool SetForeground, bool TempTopMost)
         {
             try
             {
+                //Close open start menu, cortana or search
+                if (WindowsStartMenuOpenCheck())
+                {
+                    Debug.WriteLine("The start menu is currently open, pressing escape to close it.");
+                    KeyPressSingle((byte)KeysVirtual.Escape, false);
+                    await Task.Delay(10);
+                }
+
                 //Detect the previous window state
                 if (ShowCommand == 0 && SetWindowState)
                 {
@@ -65,9 +90,9 @@ namespace ArnoldVinkCode
 
                 if (SetForeground)
                 {
-                    uint threadIdTarget = GetWindowThreadProcessId(TargetWindowHandle, out int processIdTarget);
+                    GetWindowThreadProcessId(TargetWindowHandle, out int ProcessIdTarget);
 
-                    AllowSetForegroundWindow(processIdTarget);
+                    AllowSetForegroundWindow(ProcessIdTarget);
                     await Task.Delay(10);
 
                     SetForegroundWindow(TargetWindowHandle);
@@ -213,6 +238,7 @@ namespace ArnoldVinkCode
                 AutomationElement FocusedSource = AutomationElement.FocusedElement;
                 ProcessFocus processFocus = new ProcessFocus();
                 processFocus.Process = GetProcessById(FocusedSource.Current.ProcessId);
+                processFocus.ClassName = FocusedSource.Current.ClassName;
 
                 //Get window handle
                 if (processFocus.Process.MainWindowHandle != IntPtr.Zero)
