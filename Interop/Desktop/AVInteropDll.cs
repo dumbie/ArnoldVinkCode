@@ -15,6 +15,8 @@ namespace ArnoldVinkCode
         [DllImport("kernel32.dll")]
         public static extern bool Wow64DisableWow64FsRedirection(IntPtr ptr);
         [DllImport("user32.dll")]
+        public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
+        [DllImport("user32.dll")]
         public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
@@ -407,6 +409,26 @@ namespace ArnoldVinkCode
             Restore = 9,
             ShowDefault = 10,
             ForceMinimize = 11
+        }
+
+        //SystemParametersInfo
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SystemParametersInfo(SPI uiAction, uint uiParam, uint pvParam, SPIF fWinIni);
+
+        public enum SPI : int
+        {
+            SPI_GETFOREGROUNDLOCKTIMEOUT = 0x2000,
+            SPI_SETFOREGROUNDLOCKTIMEOUT = 0x2001,
+            SPI_GETFOREGROUNDFLASHCOUNT = 0x2004,
+            SPI_SETFOREGROUNDFLASHCOUNT = 0x2005
+        }
+
+        public enum SPIF : int
+        {
+            None = 0x00,
+            SPIF_UPDATEINIFILE = 0x01,
+            SPIF_SENDCHANGE = 0x02
         }
     }
 }

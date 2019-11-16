@@ -34,7 +34,7 @@ namespace ArnoldVinkCode
         }
 
         //Focus on an application window handle
-        public static async Task<bool> FocusWindowHandle(string TitleTarget, IntPtr TargetWindowHandle, int ShowCommand, bool SetWindowState, bool SwitchWindow, bool ToTopWindow, bool SetForeground, bool TempTopMost)
+        public static async Task<bool> FocusWindowHandle(string TitleTarget, IntPtr windowHandleTarget, int ShowCommand, bool SetWindowState, bool SwitchWindow, bool ToTopWindow, bool SetForeground, bool TempTopMost)
         {
             try
             {
@@ -46,11 +46,30 @@ namespace ArnoldVinkCode
                     await Task.Delay(10);
                 }
 
+                //Temporarily disable foreground lockout time
+                SystemParametersInfo(SPI.SPI_SETFOREGROUNDLOCKTIMEOUT, 0, 0, SPIF.SPIF_SENDCHANGE | SPIF.SPIF_UPDATEINIFILE);
+                await Task.Delay(10);
+
+                //Attach thread to application
+                uint threadIdCurrent = GetCurrentThreadId();
+                uint threadIdTarget = GetWindowThreadProcessId(windowHandleTarget, out int processIdTarget);
+
+                uint threadIdForeground = 0;
+                ProcessFocus processForeground = GetFocusedProcess();
+                if (processForeground != null)
+                {
+                    threadIdForeground = GetWindowThreadProcessId(processForeground.WindowHandle, out int processIdForeground);
+                }
+
+                if (threadIdTarget != 0) { AttachThreadInput(threadIdTarget, threadIdCurrent, true); }
+                if (threadIdForeground != 0) { AttachThreadInput(threadIdForeground, threadIdCurrent, true); }
+                await Task.Delay(10);
+
                 //Detect the previous window state
                 if (ShowCommand == 0 && SetWindowState)
                 {
                     WindowPlacement ProcessWindowState = new WindowPlacement();
-                    GetWindowPlacement(TargetWindowHandle, ref ProcessWindowState);
+                    GetWindowPlacement(windowHandleTarget, ref ProcessWindowState);
                     Debug.WriteLine("Detected the previous window state: " + ProcessWindowState.Flags);
                     if (ProcessWindowState.Flags == (int)WindowFlags.RestoreToMaximized)
                     {
@@ -65,37 +84,38 @@ namespace ArnoldVinkCode
                 //Enable the process window as top most
                 if (TempTopMost)
                 {
-                    SetWindowPos(TargetWindowHandle, (IntPtr)WindowPosition.TopMost, 0, 0, 0, 0, (int)WindowSWP.NOMOVE | (int)WindowSWP.NOSIZE);
+                    SetWindowPos(windowHandleTarget, (IntPtr)WindowPosition.TopMost, 0, 0, 0, 0, (int)WindowSWP.NOMOVE | (int)WindowSWP.NOSIZE);
                     await Task.Delay(10);
                 }
 
                 //Start focusing on the application
                 if (SetWindowState)
                 {
-                    ShowWindow(TargetWindowHandle, ShowCommand);
+                    ShowWindowAsync(windowHandleTarget, ShowCommand);
+                    await Task.Delay(10);
+
+                    ShowWindow(windowHandleTarget, ShowCommand);
                     await Task.Delay(10);
                 }
 
                 if (SwitchWindow)
                 {
-                    SwitchToThisWindow(TargetWindowHandle, true);
+                    SwitchToThisWindow(windowHandleTarget, true);
                     await Task.Delay(10);
                 }
 
                 if (ToTopWindow)
                 {
-                    BringWindowToTop(TargetWindowHandle);
+                    BringWindowToTop(windowHandleTarget);
                     await Task.Delay(10);
                 }
 
                 if (SetForeground)
                 {
-                    GetWindowThreadProcessId(TargetWindowHandle, out int ProcessIdTarget);
-
-                    AllowSetForegroundWindow(ProcessIdTarget);
+                    AllowSetForegroundWindow(processIdTarget);
                     await Task.Delay(10);
 
-                    SetForegroundWindow(TargetWindowHandle);
+                    SetForegroundWindow(windowHandleTarget);
                     await Task.Delay(10);
                 }
 
@@ -103,10 +123,20 @@ namespace ArnoldVinkCode
                 if (TempTopMost)
                 {
                     Debug.WriteLine("Disabling top most from process: " + TitleTarget);
-                    SetWindowPos(TargetWindowHandle, (IntPtr)WindowPosition.NoTopMost, 0, 0, 0, 0, (int)WindowSWP.NOMOVE | (int)WindowSWP.NOSIZE);
+                    SetWindowPos(windowHandleTarget, (IntPtr)WindowPosition.NoTopMost, 0, 0, 0, 0, (int)WindowSWP.NOMOVE | (int)WindowSWP.NOSIZE);
+                    await Task.Delay(10);
                 }
 
-                Debug.WriteLine("Changed process window: " + TitleTarget + " WindowHandle: " + TargetWindowHandle + " ShowCmd: " + ShowCommand);
+                //Release thread from application
+                if (threadIdTarget != 0) { AttachThreadInput(threadIdTarget, threadIdCurrent, false); }
+                if (threadIdForeground != 0) { AttachThreadInput(threadIdForeground, threadIdCurrent, false); }
+                await Task.Delay(10);
+
+                //Restore the original lockout time
+                SystemParametersInfo(SPI.SPI_SETFOREGROUNDLOCKTIMEOUT, 0, 200000, SPIF.SPIF_SENDCHANGE | SPIF.SPIF_UPDATEINIFILE);
+                await Task.Delay(10);
+
+                Debug.WriteLine("Changed process window: " + TitleTarget + " WindowHandle: " + windowHandleTarget + " ShowCmd: " + ShowCommand);
                 return true;
             }
             catch

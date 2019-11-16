@@ -6,7 +6,7 @@ namespace ArnoldVinkCode.Styles
     //Import:
     //xmlns:styles="clr-namespace:ArnoldVinkCode.Styles"
     //Usage:
-    //<Textbox styles:TextboxPlaceholder.Placeholder="Hello"/>
+    //<Textbox Text="Hello" styles:TextboxPlaceholder.Placeholder="Hello"/>
     public static class TextboxPlaceholder
     {
         public static readonly DependencyProperty PlaceholderProperty = DependencyProperty.RegisterAttached("Placeholder", typeof(string), typeof(TextboxPlaceholder), new PropertyMetadata(default(string), PlaceholderChanged));
