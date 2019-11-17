@@ -33,8 +33,19 @@ namespace ArnoldVinkCode
             return false;
         }
 
-        //Focus on an application window handle
-        public static async Task<bool> FocusWindowHandle(string TitleTarget, IntPtr windowHandleTarget, int ShowCommand, bool SetWindowState, bool SwitchWindow, bool ToTopWindow, bool SetForeground, bool TempTopMost)
+        //Check if a Windows system menu is open
+        public static bool WindowsSystemMenuOpenCheck(IntPtr windowHandleTarget)
+        {
+            try
+            {
+                //Improve: code workaround to close an open system menu.
+            }
+            catch { }
+            return false;
+        }
+
+        //Focus on a process window
+        public static async Task<bool> FocusProcessWindow(string titleTarget, int processIdTarget, IntPtr windowHandleTarget, int windowStateCommand, bool setWindowState, bool setTempTopMost)
         {
             try
             {
@@ -42,101 +53,81 @@ namespace ArnoldVinkCode
                 if (WindowsStartMenuOpenCheck())
                 {
                     Debug.WriteLine("The start menu is currently open, pressing escape to close it.");
-                    KeyPressSingle((byte)KeysVirtual.Escape, false);
-                    await Task.Delay(10);
+                    KeyPressSingleDown((byte)KeysVirtual.Escape, false);
+                    await Task.Delay(100);
                 }
 
-                //Temporarily disable foreground lockout time
-                SystemParametersInfo(SPI.SPI_SETFOREGROUNDLOCKTIMEOUT, 0, 0, SPIF.SPIF_SENDCHANGE | SPIF.SPIF_UPDATEINIFILE);
-                await Task.Delay(10);
-
-                //Attach thread to application
-                uint threadIdCurrent = GetCurrentThreadId();
-                uint threadIdTarget = GetWindowThreadProcessId(windowHandleTarget, out int processIdTarget);
-
-                uint threadIdForeground = 0;
-                ProcessFocus processForeground = GetFocusedProcess();
-                if (processForeground != null)
+                //Check if Windows system menu is open
+                if (WindowsSystemMenuOpenCheck(windowHandleTarget))
                 {
-                    threadIdForeground = GetWindowThreadProcessId(processForeground.WindowHandle, out int processIdForeground);
+                    Debug.WriteLine("The system menu is currently open, pressing escape to close it.");
+                    KeyPressSingleDown((byte)KeysVirtual.Escape, false);
+                    await Task.Delay(100);
                 }
-
-                if (threadIdTarget != 0) { AttachThreadInput(threadIdTarget, threadIdCurrent, true); }
-                if (threadIdForeground != 0) { AttachThreadInput(threadIdForeground, threadIdCurrent, true); }
-                await Task.Delay(10);
 
                 //Detect the previous window state
-                if (ShowCommand == 0 && SetWindowState)
+                if (windowStateCommand == 0 && setWindowState)
                 {
-                    WindowPlacement ProcessWindowState = new WindowPlacement();
-                    GetWindowPlacement(windowHandleTarget, ref ProcessWindowState);
-                    Debug.WriteLine("Detected the previous window state: " + ProcessWindowState.Flags);
-                    if (ProcessWindowState.Flags == (int)WindowFlags.RestoreToMaximized)
+                    WindowPlacement processWindowState = new WindowPlacement();
+                    GetWindowPlacement(windowHandleTarget, ref processWindowState);
+                    Debug.WriteLine("Detected the previous window state: " + processWindowState.Flags);
+                    if (processWindowState.Flags == (int)WindowFlags.RestoreToMaximized)
                     {
-                        ShowCommand = (int)WindowShowCommand.ShowMaximized;
+                        windowStateCommand = (int)WindowShowCommand.ShowMaximized;
                     }
                     else
                     {
-                        ShowCommand = (int)WindowShowCommand.Restore;
+                        windowStateCommand = (int)WindowShowCommand.Restore;
                     }
                 }
 
-                //Enable the process window as top most
-                if (TempTopMost)
+                //Change the window state command
+                if (setWindowState)
+                {
+                    ShowWindowAsync(windowHandleTarget, windowStateCommand);
+                    await Task.Delay(100);
+
+                    ShowWindow(windowHandleTarget, windowStateCommand);
+                    await Task.Delay(100);
+                }
+
+                //Set the process window as top most
+                if (setTempTopMost)
                 {
                     SetWindowPos(windowHandleTarget, (IntPtr)WindowPosition.TopMost, 0, 0, 0, 0, (int)WindowSWP.NOMOVE | (int)WindowSWP.NOSIZE);
-                    await Task.Delay(10);
+                    await Task.Delay(100);
                 }
 
-                //Start focusing on the application
-                if (SetWindowState)
+                //Retry to show the window
+                for (int i = 0; i < 2; i++)
                 {
-                    ShowWindowAsync(windowHandleTarget, ShowCommand);
-                    await Task.Delay(10);
-
-                    ShowWindow(windowHandleTarget, ShowCommand);
-                    await Task.Delay(10);
-                }
-
-                if (SwitchWindow)
-                {
-                    SwitchToThisWindow(windowHandleTarget, true);
-                    await Task.Delay(10);
-                }
-
-                if (ToTopWindow)
-                {
-                    BringWindowToTop(windowHandleTarget);
-                    await Task.Delay(10);
-                }
-
-                if (SetForeground)
-                {
+                    //Allow changing window
                     AllowSetForegroundWindow(processIdTarget);
-                    await Task.Delay(10);
+                    await Task.Delay(100);
 
-                    SetForegroundWindow(windowHandleTarget);
-                    await Task.Delay(10);
+                    //Bring window to top
+                    BringWindowToTop(windowHandleTarget);
+                    await Task.Delay(100);
+
+                    //Switch to the window
+                    SwitchToThisWindow(windowHandleTarget, true);
+                    await Task.Delay(100);
+
+                    //Focus on the window
+                    AutomationElement automationElement = AutomationElement.FromHandle(windowHandleTarget);
+                    automationElement.SetFocus();
+                    await Task.Delay(100);
                 }
 
                 //Disable the process window as top most
-                if (TempTopMost)
+                if (setTempTopMost)
                 {
-                    Debug.WriteLine("Disabling top most from process: " + TitleTarget);
+                    Debug.WriteLine("Disabling top most from process: " + titleTarget);
                     SetWindowPos(windowHandleTarget, (IntPtr)WindowPosition.NoTopMost, 0, 0, 0, 0, (int)WindowSWP.NOMOVE | (int)WindowSWP.NOSIZE);
-                    await Task.Delay(10);
+                    await Task.Delay(100);
                 }
 
-                //Release thread from application
-                if (threadIdTarget != 0) { AttachThreadInput(threadIdTarget, threadIdCurrent, false); }
-                if (threadIdForeground != 0) { AttachThreadInput(threadIdForeground, threadIdCurrent, false); }
-                await Task.Delay(10);
-
-                //Restore the original lockout time
-                SystemParametersInfo(SPI.SPI_SETFOREGROUNDLOCKTIMEOUT, 0, 200000, SPIF.SPIF_SENDCHANGE | SPIF.SPIF_UPDATEINIFILE);
-                await Task.Delay(10);
-
-                Debug.WriteLine("Changed process window: " + TitleTarget + " WindowHandle: " + windowHandleTarget + " ShowCmd: " + ShowCommand);
+                Debug.WriteLine("Changed process window: " + titleTarget + " WindowHandle: " + windowHandleTarget + " ShowCmd: " + windowStateCommand);
                 return true;
             }
             catch

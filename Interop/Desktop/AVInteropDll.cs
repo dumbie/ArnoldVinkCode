@@ -45,6 +45,8 @@ namespace ArnoldVinkCode
         [DllImport("user32.dll")]
         public static extern bool BringWindowToTop(IntPtr hWnd);
         [DllImport("user32.dll")]
+        public static extern IntPtr SetActiveWindow(IntPtr hWnd);
+        [DllImport("user32.dll")]
         public static extern uint GetDoubleClickTime();
         [DllImport("user32.dll")]
         public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out int lpdwProcessId);
