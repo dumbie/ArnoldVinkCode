@@ -185,8 +185,14 @@ namespace ArnoldVinkCode
         {
             try
             {
-                if (WindowTitle) { return Process.GetProcesses().Any(x => x.MainWindowTitle.ToLower().Contains(ProcessName.ToLower())); }
-                else { return Process.GetProcessesByName(ProcessName).Any(); }
+                if (WindowTitle)
+                {
+                    return Process.GetProcesses().Any(x => x.MainWindowTitle.ToLower().Contains(ProcessName.ToLower()));
+                }
+                else
+                {
+                    return Process.GetProcessesByName(ProcessName).Any();
+                }
             }
             catch { return false; }
         }
@@ -199,7 +205,7 @@ namespace ArnoldVinkCode
             {
                 ProcessTitle = TargetProcess.MainWindowTitle;
                 if (string.IsNullOrWhiteSpace(ProcessTitle)) { ProcessTitle = GetWindowTitleFromWindowHandle(TargetProcess.MainWindowHandle); }
-                if (string.IsNullOrWhiteSpace(ProcessTitle)) { ProcessTitle = TargetProcess.ProcessName; }
+                if (string.IsNullOrWhiteSpace(ProcessTitle) || ProcessTitle == "Unknown") { ProcessTitle = TargetProcess.ProcessName; }
                 if (!string.IsNullOrWhiteSpace(ProcessTitle))
                 {
                     ProcessTitle = AVFunctions.StringRemoveStart(ProcessTitle, " ");
@@ -212,18 +218,6 @@ namespace ArnoldVinkCode
             }
             catch { }
             return ProcessTitle;
-        }
-
-        //Get the class name from window handle
-        public static string GetClassNameFromWindowHandle(IntPtr TargetWindowHandle)
-        {
-            try
-            {
-                StringBuilder ClassNameBuilder = new StringBuilder(256);
-                GetClassName(TargetWindowHandle, ClassNameBuilder, ClassNameBuilder.Capacity);
-                return ClassNameBuilder.ToString();
-            }
-            catch { return string.Empty; }
         }
 
         //Get the window title from window handle
@@ -249,6 +243,18 @@ namespace ArnoldVinkCode
             }
             catch { }
             return ProcessTitle;
+        }
+
+        //Get the class name from window handle
+        public static string GetClassNameFromWindowHandle(IntPtr TargetWindowHandle)
+        {
+            try
+            {
+                StringBuilder ClassNameBuilder = new StringBuilder(256);
+                GetClassName(TargetWindowHandle, ClassNameBuilder, ClassNameBuilder.Capacity);
+                return ClassNameBuilder.ToString();
+            }
+            catch { return string.Empty; }
         }
 
         //Get the currently focused process
