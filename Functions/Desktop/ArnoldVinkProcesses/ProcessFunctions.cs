@@ -181,7 +181,7 @@ namespace ArnoldVinkCode
         }
 
         //Check if a specific process is running by name
-        public static bool CheckRunningProcessByName(string ProcessName, bool WindowTitle)
+        public static bool CheckRunningProcessByNameOrTitle(string ProcessName, bool WindowTitle)
         {
             try
             {
@@ -314,7 +314,7 @@ namespace ArnoldVinkCode
         }
 
         //Get a single specific process by name or title
-        public static Process GetProcessByName(string ProcessName, bool WindowTitle)
+        public static Process GetProcessByNameOrTitle(string ProcessName, bool WindowTitle)
         {
             try
             {
@@ -338,7 +338,7 @@ namespace ArnoldVinkCode
         }
 
         //Get multiple specific processes by name or title
-        public static Process[] GetProcessesByName(string ProcessName, bool WindowTitle, bool ExactName)
+        public static Process[] GetProcessesByNameOrTitle(string ProcessName, bool WindowTitle, bool ExactName)
         {
             try
             {
@@ -356,7 +356,7 @@ namespace ArnoldVinkCode
         }
 
         //Close processes by name or window title
-        public static bool CloseProcessesByName(string ProcessName, bool WindowTitle)
+        public static bool CloseProcessesByNameOrTitle(string ProcessName, bool WindowTitle)
         {
             try
             {

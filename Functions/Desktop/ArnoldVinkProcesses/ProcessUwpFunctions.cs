@@ -68,7 +68,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                Process AllProcess = GetProcessByName("ApplicationFrameHost", false);
+                Process AllProcess = GetProcessByNameOrTitle("ApplicationFrameHost", false);
                 if (AllProcess != null)
                 {
                     foreach (ProcessThread ThreadProcess in AllProcess.Threads)
@@ -105,7 +105,7 @@ namespace ArnoldVinkCode
             List<ProcessUwp> UwpAppList = new List<ProcessUwp>();
             try
             {
-                Process AllProcess = GetProcessByName("ApplicationFrameHost", false);
+                Process AllProcess = GetProcessByNameOrTitle("ApplicationFrameHost", false);
                 if (AllProcess != null)
                 {
                     foreach (ProcessThread ThreadProcess in AllProcess.Threads)
