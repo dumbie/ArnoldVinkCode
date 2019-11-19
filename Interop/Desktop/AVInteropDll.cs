@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Windows;
 using System.Windows.Shapes;
@@ -10,8 +11,6 @@ namespace ArnoldVinkCode
     public partial class AVInteropDll
     {
         //Application DllImports
-        [DllImport("shlwapi.dll", CharSet = CharSet.Unicode)]
-        public static extern int SHLoadIndirectString(string pszSource, StringBuilder pszOutBuf, int cchOutBuf, IntPtr ppvReserved);
         [DllImport("kernel32.dll")]
         public static extern bool Wow64DisableWow64FsRedirection(IntPtr ptr);
         [DllImport("user32.dll")]
@@ -36,8 +35,6 @@ namespace ArnoldVinkCode
         public static extern int GetWindowText(IntPtr handle, [MarshalAs(UnmanagedType.LPWStr)] StringBuilder caption, int count);
         [DllImport("user32.dll")]
         public static extern int GetWindowTextLength(IntPtr handle);
-        [DllImport("kernel32.dll")]
-        public static extern int GetApplicationUserModelId(IntPtr hProcess, ref int AppModelIDLength, [MarshalAs(UnmanagedType.LPWStr)] StringBuilder sbAppUserModelID);
         [DllImport("kernel32.dll")]
         public static extern uint GetCurrentThreadId();
         [DllImport("user32.dll")]
@@ -69,6 +66,28 @@ namespace ArnoldVinkCode
         public delegate void WinEventDelegate(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime);
         public const uint WINEVENT_OUTOFCONTEXT = 0;
         public const uint WINEVENT_SYSTEM_FOREGROUND = 3;
+
+        //SHLW Api
+        [DllImport("shlwapi.dll", CharSet = CharSet.Unicode)]
+        public static extern int SHLoadIndirectString(string pszSource, StringBuilder pszOutBuf, int cchOutBuf, IntPtr ppvReserved);
+        [DllImport("shlwapi.dll", CharSet = CharSet.Unicode)]
+        public static extern int SHCreateStreamOnFileEx(string pszFile, STGM_MODES grfMode, int dwAttributes, bool fCreate, IntPtr pstmTemplate, out IStream ppstm);
+
+        public enum STGM_MODES : int
+        {
+            STGM_READ = 0x00000000,
+            STGM_WRITE = 0x00000001,
+            STGM_READWRITE = 0x00000002,
+            STGM_READWRITE_Bits = 0x00000003,
+            STGM_SHARE_DENY_NONE = 0x00000040,
+            STGM_SHARE_DENY_READ = 0x00000030,
+            STGM_SHARE_DENY_WRITE = 0x00000020,
+            STGM_SHARE_EXCLUSIVE = 0x00000010
+        }
+
+        //UWP interop
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
+        public static extern int GetApplicationUserModelId(IntPtr hProcess, ref int appUserModelIdLength, [MarshalAs(UnmanagedType.LPWStr)] StringBuilder sbAppUserModelID);
 
         //Open and close process
         [DllImport("Advapi32.dll")]

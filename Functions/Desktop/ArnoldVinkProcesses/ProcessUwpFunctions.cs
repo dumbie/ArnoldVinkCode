@@ -1,17 +1,20 @@
-﻿using Microsoft.Win32;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
 using System.Security.Principal;
 using System.Text;
+using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.Management.Deployment;
 using static ArnoldVinkCode.AVInteropCom;
 using static ArnoldVinkCode.AVInteropDll;
 using static ArnoldVinkCode.ProcessClasses;
 using static ArnoldVinkCode.ProcessFunctions;
+using static LibraryShared.Classes;
 
 namespace ArnoldVinkCode
 {
@@ -45,6 +48,67 @@ namespace ArnoldVinkCode
             }
         }
 
+        //Get an uwp application process id by window handle
+        public static async Task<int> GetUwpProcessIdByWindowHandle(string ProcessName, string PathExe, IntPtr ProcessWindowHandle)
+        {
+            try
+            {
+                //Show the uwp process
+                GetWindowThreadProcessId(ProcessWindowHandle, out int ProcessIdTarget);
+                await FocusProcessWindow(ProcessName, ProcessIdTarget, ProcessWindowHandle, 0, false, false);
+                await Task.Delay(500);
+
+                //Get the process id
+                ProcessUwp UwpRunningNew = UwpGetProcessFromAppUserModelId(PathExe).Where(x => x.WindowHandle == ProcessWindowHandle).FirstOrDefault();
+                if (UwpRunningNew != null)
+                {
+                    Debug.WriteLine("Uwp workaround process id: " + UwpRunningNew.ProcessId + " vs " + ProcessIdTarget);
+                    return UwpRunningNew.ProcessId;
+                }
+            }
+            catch { }
+            return -1;
+        }
+
+        //Close an uwp application by window handle
+        public static async Task<bool> CloseProcessUwpByWindowHandle(string ProcessName, int ProcessId, IntPtr ProcessWindowHandle)
+        {
+            try
+            {
+                if (ProcessWindowHandle != IntPtr.Zero)
+                {
+                    //Show the process
+                    await FocusProcessWindow(ProcessName, ProcessId, ProcessWindowHandle, 0, false, false);
+                    await Task.Delay(500);
+
+                    //Close the process or app
+                    return CloseProcessByWindowHandle(ProcessWindowHandle);
+                }
+                else if (ProcessId > 0)
+                {
+                    //Close the process or app
+                    return CloseProcessById(ProcessId);
+                }
+            }
+            catch { }
+            return false;
+        }
+
+        //Restart a uwp process or app
+        public static async Task RestartProcessUwp(string ProcessName, string PathExe, string Argument, int ProcessId, IntPtr ProcessWindowHandle)
+        {
+            try
+            {
+                //Close the process or app
+                await CloseProcessUwpByWindowHandle(ProcessName, ProcessId, ProcessWindowHandle);
+                await Task.Delay(1000);
+
+                //Relaunch the process or app
+                ProcessLauncherUwp(PathExe, Argument);
+            }
+            catch { }
+        }
+
         //Check if a window is an uwp application
         public static bool CheckProcessIsUwp(IntPtr TargetWindowHandle)
         {
@@ -64,7 +128,7 @@ namespace ArnoldVinkCode
         }
 
         //Get an uwp application window from CoreWindowHandle
-        public static IntPtr GetUwpWindowFromCoreWindowHandle(IntPtr TargetCoreWindowHandle)
+        public static IntPtr UwpGetWindowFromCoreWindowHandle(IntPtr TargetCoreWindowHandle)
         {
             try
             {
@@ -100,7 +164,7 @@ namespace ArnoldVinkCode
         }
 
         //Get an uwp application process from AppUserModelId
-        public static List<ProcessUwp> GetUwpProcessFromAppUserModelId(string TargetAppUserModelId)
+        public static List<ProcessUwp> UwpGetProcessFromAppUserModelId(string TargetAppUserModelId)
         {
             List<ProcessUwp> UwpAppList = new List<ProcessUwp>();
             try
@@ -169,122 +233,155 @@ namespace ArnoldVinkCode
             return UwpAppList;
         }
 
-        //Get details from an uwp package
-        public static void GetUwpAppDetailsFromPackage(Package AppPackage, ref string AppName, ref string AppImagePath, ref string AppIdentifier)
+        //Get uwp application package from AppUserModelId
+        public static Package UwpGetAppPackageFromAppUserModelId(string appUserModelId)
         {
             try
             {
-                //Get registery group information
-                using (RegistryKey RegisteryKeyCurrentUser = RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32))
-                {
-                    //Get provided package details
-                    string AppFamilyName = AppPackage.Id.FamilyName;
-                    string AppFullname = AppPackage.Id.FullName;
+                //Extract the family name from AppUserModelId
+                string appFamilyName = appUserModelId.Split('!')[0];
 
-                    //Get the application details
-                    string RegisteryLocationDetails = @"Software\Classes\Extensions\ContractId\Windows.Launch\PackageId\" + AppFullname + @"\ActivatableClassId\";
-                    using (RegistryKey RegisteryKeyDetails = RegisteryKeyCurrentUser.OpenSubKey(RegisteryLocationDetails))
-                    {
-                        if (RegisteryKeyDetails != null)
-                        {
-                            foreach (string RegisterySub in RegisteryKeyDetails.GetSubKeyNames())
-                            {
-                                try
-                                {
-                                    //Set the application identifier
-                                    AppIdentifier = AppFamilyName + "!" + RegisterySub;
-
-                                    //Get the application display name and image
-                                    using (RegistryKey RegisterySubKeyDetails = RegisteryKeyCurrentUser.OpenSubKey(RegisteryLocationDetails + RegisterySub))
-                                    {
-                                        if (RegisterySubKeyDetails != null)
-                                        {
-                                            try
-                                            {
-                                                AppName = RegisterySubKeyDetails.GetValue("DisplayName").ToString();
-                                                if (AppName.StartsWith("@{")) { AppName = ConvertIndirectString(AppName); }
-                                            }
-                                            catch { }
-                                            try
-                                            {
-                                                AppImagePath = RegisterySubKeyDetails.GetValue("Icon").ToString();
-                                                if (AppImagePath.StartsWith("@{")) { AppImagePath = ConvertIndirectString(AppImagePath); }
-                                            }
-                                            catch { }
-                                            return;
-                                        }
-                                    }
-                                }
-                                catch { }
-                            }
-                        }
-                    }
-
-                    //Get the application splash
-                    string RegisteryLocationSplash = @"Software\Classes\Local Settings\Software\Microsoft\Windows\CurrentVersion\AppModel\SystemAppData\" + AppFamilyName + @"\SplashScreen\";
-                    using (RegistryKey RegisteryKeySplash = RegisteryKeyCurrentUser.OpenSubKey(RegisteryLocationSplash))
-                    {
-                        if (RegisteryKeySplash != null)
-                        {
-                            foreach (string RegisterySub in RegisteryKeySplash.GetSubKeyNames())
-                            {
-                                try
-                                {
-                                    //Set the application identifier
-                                    AppIdentifier = RegisterySub;
-
-                                    //Get the application display name and image
-                                    using (RegistryKey RegisterySubKeySplash = RegisteryKeyCurrentUser.OpenSubKey(RegisteryLocationSplash + RegisterySub))
-                                    {
-                                        if (RegisterySubKeySplash != null)
-                                        {
-                                            try
-                                            {
-                                                AppName = RegisterySubKeySplash.GetValue("AppName").ToString();
-                                                if (AppName.StartsWith("@{")) { AppName = ConvertIndirectString(AppName); }
-                                            }
-                                            catch { }
-                                            try
-                                            {
-                                                AppImagePath = RegisterySubKeySplash.GetValue("Image").ToString();
-                                                if (AppImagePath.StartsWith("@{")) { AppImagePath = ConvertIndirectString(AppImagePath); }
-                                            }
-                                            catch { }
-                                            return;
-                                        }
-                                    }
-                                }
-                                catch { }
-                            }
-                        }
-                    }
-                }
+                //Get the application path from application package
+                PackageManager deployPackageManager = new PackageManager();
+                string currentUserIdentity = WindowsIdentity.GetCurrent().User.Value;
+                return deployPackageManager.FindPackagesForUser(currentUserIdentity, appFamilyName).FirstOrDefault();
             }
             catch { }
+            return null;
         }
 
-        //Get uwp application image
-        public static string GetUwpAppImagePath(string AppUserModelId)
+        //Get uwp application details from package
+        public static AppxDetails UwpGetAppxDetailsFromAppPackage(Package appPackage)
+        {
+            IStream inputStream = null;
+            IAppxFactory appxFactory = (IAppxFactory)new AppxFactory();
+            AppxDetails appxDetails = new AppxDetails();
+            try
+            {
+                //Get detailed information from app package
+                string appFamilyName = appPackage.Id.FamilyName;
+                appxDetails.FullPackageName = appPackage.Id.FullName;
+                appxDetails.InstallPath = appPackage.InstalledLocation.Path;
+                string manifestPath = appxDetails.InstallPath + "\\AppXManifest.xml";
+                Debug.WriteLine("Reading uwp app manifest file: " + manifestPath);
+
+                //Open the uwp application manifest file
+                SHCreateStreamOnFileEx(manifestPath, STGM_MODES.STGM_SHARE_DENY_NONE, 0, false, IntPtr.Zero, out inputStream);
+                if (inputStream != null)
+                {
+                    IAppxManifestReader appxManifestReader = appxFactory.CreateManifestReader(inputStream);
+                    IAppxManifestApplication appxManifestApplication = appxManifestReader.GetApplications().GetCurrent();
+
+                    appxManifestApplication.GetStringValue("Executable", out appxDetails.Executable);
+                    appxManifestApplication.GetStringValue("Square30x30Logo", out appxDetails.Square30x30Logo);
+                    appxManifestApplication.GetStringValue("Square70x70Logo", out appxDetails.Square70x70Logo);
+                    appxManifestApplication.GetStringValue("Square150x150Logo", out appxDetails.Square150x150Logo);
+                    appxManifestApplication.GetStringValue("Square310x310Logo", out appxDetails.Square310x310Logo);
+                    appxManifestApplication.GetStringValue("Wide310x310Logo", out appxDetails.Wide310x310Logo);
+
+                    //Get and set the family name identifier
+                    appxManifestApplication.GetStringValue("Id", out string appIdentifier);
+                    appxDetails.FamilyNameId = appFamilyName + "!" + appIdentifier;
+
+                    //Get and set the application display name
+                    appxManifestApplication.GetStringValue("DisplayName", out string displayName);
+                    appxDetails.DisplayName = UwpGetMsResourceString(appxDetails.FullPackageName, displayName);
+
+                    //Check the largest available square logo
+                    if (!string.IsNullOrWhiteSpace(appxDetails.Square310x310Logo))
+                    {
+                        appxDetails.SquareLargestLogoPath = appxDetails.InstallPath + "\\" + appxDetails.Square310x310Logo;
+                    }
+                    else if (!string.IsNullOrWhiteSpace(appxDetails.Square150x150Logo))
+                    {
+                        appxDetails.SquareLargestLogoPath = appxDetails.InstallPath + "\\" + appxDetails.Square150x150Logo;
+                    }
+                    else if (!string.IsNullOrWhiteSpace(appxDetails.Square70x70Logo))
+                    {
+                        appxDetails.SquareLargestLogoPath = appxDetails.InstallPath + "\\" + appxDetails.Square70x70Logo;
+                    }
+                    else if (!string.IsNullOrWhiteSpace(appxDetails.Square30x30Logo))
+                    {
+                        appxDetails.SquareLargestLogoPath = appxDetails.InstallPath + "\\" + appxDetails.Square30x30Logo;
+                    }
+                    appxDetails.SquareLargestLogoPath = UwpGetImageSizePath(appxDetails.SquareLargestLogoPath);
+
+                    //Check the largest available wide logo
+                    if (!string.IsNullOrWhiteSpace(appxDetails.Wide310x310Logo))
+                    {
+                        appxDetails.WideLargestLogoPath = appxDetails.InstallPath + "\\" + appxDetails.Wide310x310Logo;
+                    }
+                    appxDetails.WideLargestLogoPath = UwpGetImageSizePath(appxDetails.WideLargestLogoPath);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed reading details from uwp manifest: " + ex.Message);
+            }
+
+            Marshal.ReleaseComObject(inputStream);
+            Marshal.ReleaseComObject(appxFactory);
+            return appxDetails;
+        }
+
+        //Get msi uwp resources string from package
+        public static string UwpGetMsResourceString(string packageFullName, string resourceString)
         {
             try
             {
-                //Get search information
-                string[] UserModelSplit = AppUserModelId.Split('!');
-                string AppFamily = UserModelSplit[0];
-                string AppIdentifier = UserModelSplit[1];
-                string AppName = string.Empty;
-                string AppImagePath = string.Empty;
+                string resourceScheme = "ms-resource:";
 
-                //Get all the installed UWP apps
-                PackageManager DeployPackageManager = new PackageManager();
-                string CurrentUserIdentity = WindowsIdentity.GetCurrent().User.Value;
-                IEnumerable<Package> AppPackages = DeployPackageManager.FindPackagesForUser(CurrentUserIdentity);
-                Package AppPackage = AppPackages.Where(x => x.Id.FamilyName == AppFamily).FirstOrDefault();
-                if (AppPackage != null)
+                if (!resourceString.StartsWith(resourceScheme))
                 {
-                    //Get detailed application information
-                    GetUwpAppDetailsFromPackage(AppPackage, ref AppName, ref AppImagePath, ref AppIdentifier);
-                    return AppImagePath;
+                    return resourceString;
+                }
+
+                string resourcePart = resourceString.Substring(resourceScheme.Length);
+                if (resourcePart.StartsWith("/"))
+                {
+                    resourceString = resourceScheme + "//" + resourcePart;
+                }
+                else
+                {
+                    resourceString = resourceScheme + "///resources/" + resourcePart;
+                }
+
+                string indirectString = "@{" + packageFullName + "?" + resourceString + "}";
+                return ConvertIndirectString(indirectString);
+            }
+            catch { }
+            return string.Empty;
+        }
+
+        //Check the available application image sizes
+        public static string UwpGetImageSizePath(string imagePath)
+        {
+            try
+            {
+                string fileExtension = Path.GetExtension(imagePath);
+                string fileDirectory = Path.GetDirectoryName(imagePath);
+                string fileName = Path.GetFileNameWithoutExtension(imagePath);
+                string searchContrastBlack = "contrast-black";
+                string searchContrastWhite = "contrast-white";
+
+                string[] imageFilesAllSizes = Directory.GetFiles(fileDirectory, fileName + "*" + fileExtension, SearchOption.AllDirectories);
+                string[] imageFilesContrastNone = imageFilesAllSizes.Where(x => !x.Contains(searchContrastBlack) && !x.Contains(searchContrastWhite)).ToArray();
+                string[] imageFilesContrastBlack = imageFilesAllSizes.Where(x => x.Contains(searchContrastBlack)).ToArray();
+                if (imageFilesContrastNone.Count() > 0)
+                {
+                    return imageFilesContrastNone.LastOrDefault();
+                }
+                else if (imageFilesContrastBlack.Count() > 0)
+                {
+                    return imageFilesContrastBlack.LastOrDefault();
+                }
+                else if (imageFilesAllSizes.Count() > 0)
+                {
+                    return imageFilesAllSizes.LastOrDefault();
+                }
+                else
+                {
+                    return imagePath;
                 }
             }
             catch { }
@@ -292,13 +389,13 @@ namespace ArnoldVinkCode
         }
 
         //Convert Indirect UWP application information to string
-        public static string ConvertIndirectString(string IndirectString)
+        public static string ConvertIndirectString(string indirectString)
         {
             try
             {
-                StringBuilder IndirectStringBuild = new StringBuilder(1024);
-                SHLoadIndirectString(IndirectString, IndirectStringBuild, IndirectStringBuild.Capacity, IntPtr.Zero);
-                return IndirectStringBuild.ToString();
+                StringBuilder indirectStringBuild = new StringBuilder(1024);
+                SHLoadIndirectString(indirectString, indirectStringBuild, indirectStringBuild.Capacity, IntPtr.Zero);
+                return indirectStringBuild.ToString();
             }
             catch { }
             return string.Empty;

@@ -276,7 +276,7 @@ namespace ArnoldVinkCode
                 {
                     if (FocusedSource.Current.ClassName == "ApplicationFrameWindow" || FocusedSource.Current.ClassName == "Windows.UI.Core.CoreWindow")
                     {
-                        processFocus.WindowHandle = GetUwpWindowFromCoreWindowHandle(new IntPtr(FocusedSource.Current.NativeWindowHandle));
+                        processFocus.WindowHandle = UwpGetWindowFromCoreWindowHandle(new IntPtr(FocusedSource.Current.NativeWindowHandle));
                     }
                     else
                     {

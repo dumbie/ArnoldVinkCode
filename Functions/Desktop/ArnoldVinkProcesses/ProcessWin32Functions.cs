@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
+using static ArnoldVinkCode.ProcessFunctions;
 
 namespace ArnoldVinkCode
 {
@@ -133,11 +134,25 @@ namespace ArnoldVinkCode
             }
         }
 
-        private static void LaunchProcess_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        //Restart a win32 process or app
+        public static async Task RestartProcessWin32(int ProcessId, string PathExe, string PathLaunch, string Argument)
         {
             try
             {
-                Debug.WriteLine(e.Data);
+                //Close the process or app
+                if (ProcessId > 0)
+                {
+                    CloseProcessById(ProcessId);
+                    await Task.Delay(1000);
+                }
+                else
+                {
+                    CloseProcessesByNameOrTitle(Path.GetFileNameWithoutExtension(PathExe), false);
+                    await Task.Delay(1000);
+                }
+
+                //Launch the Win32 application
+                ProcessLauncherWin32(PathExe, PathLaunch, Argument, true, false);
             }
             catch { }
         }
