@@ -282,8 +282,9 @@ namespace ArnoldVinkCode
 
                     //Get and set the application display name
                     appxManifestApplication.GetStringValue("DisplayName", out string displayName);
-                    appxDetails.DisplayName = UwpGetMsResourceString(appxDetails.FullPackageName, displayName);
+                    appxDetails.DisplayName = UwpGetMsResourceString(appIdentifier, appxDetails.FullPackageName, displayName);
 
+                    //Get all the available application logo images
                     appxManifestApplication.GetStringValue("Square30x30Logo", out appxDetails.Square30x30Logo);
                     appxManifestApplication.GetStringValue("Square70x70Logo", out appxDetails.Square70x70Logo);
                     appxManifestApplication.GetStringValue("Square150x150Logo", out appxDetails.Square150x150Logo);
@@ -328,32 +329,35 @@ namespace ArnoldVinkCode
         }
 
         //Get msi uwp resources string from package
-        public static string UwpGetMsResourceString(string packageFullName, string resourceString)
+        public static string UwpGetMsResourceString(string appIdentifier, string packageFullName, string resourceString)
         {
+            string convertedString = string.Empty;
+            string resourceScheme = "ms-resource:";
             try
             {
-                string resourceScheme = "ms-resource:";
-
                 if (!resourceString.StartsWith(resourceScheme))
                 {
                     return resourceString;
                 }
 
-                string resourcePart = resourceString.Substring(resourceScheme.Length);
-                if (resourcePart.StartsWith("/"))
-                {
-                    resourceString = resourceScheme + "//" + resourcePart;
-                }
-                else
-                {
-                    resourceString = resourceScheme + "///resources/" + resourcePart;
-                }
+                convertedString = ConvertIndirectString("@{" + packageFullName + "?" + resourceString + "}");
+                if (!string.IsNullOrWhiteSpace(convertedString)) { return convertedString; }
 
-                string indirectString = "@{" + packageFullName + "?" + resourceString + "}";
-                return ConvertIndirectString(indirectString);
+                string resourceTarget = resourceString.Substring(resourceScheme.Length);
+
+                string resourceString1 = resourceScheme + "///" + resourceTarget;
+                convertedString = ConvertIndirectString("@{" + packageFullName + "?" + resourceString1 + "}");
+                if (!string.IsNullOrWhiteSpace(convertedString)) { return convertedString; }
+
+                string resourceString2 = resourceScheme + "///Resources/" + resourceTarget;
+                convertedString = ConvertIndirectString("@{" + packageFullName + "?" + resourceString2 + "}");
+                if (!string.IsNullOrWhiteSpace(convertedString)) { return convertedString; }
+
+                string resourceString3 = resourceScheme + "///" + appIdentifier + "/" + resourceTarget;
+                convertedString = ConvertIndirectString("@{" + packageFullName + "?" + resourceString3 + "}");
             }
             catch { }
-            return string.Empty;
+            return convertedString;
         }
 
         //Check the available application image sizes
