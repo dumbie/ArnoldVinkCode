@@ -263,7 +263,7 @@ namespace ArnoldVinkCode
                 appxDetails.FullPackageName = appPackage.Id.FullName;
                 appxDetails.InstallPath = appPackage.InstalledLocation.Path;
                 string manifestPath = appxDetails.InstallPath + "\\AppXManifest.xml";
-                Debug.WriteLine("Reading uwp app manifest file: " + manifestPath);
+                //Debug.WriteLine("Reading uwp app manifest file: " + manifestPath);
 
                 //Open the uwp application manifest file
                 SHCreateStreamOnFileEx(manifestPath, STGM_MODES.STGM_SHARE_DENY_NONE, 0, false, IntPtr.Zero, out inputStream);
@@ -272,12 +272,9 @@ namespace ArnoldVinkCode
                     IAppxManifestReader appxManifestReader = appxFactory.CreateManifestReader(inputStream);
                     IAppxManifestApplication appxManifestApplication = appxManifestReader.GetApplications().GetCurrent();
 
-                    appxManifestApplication.GetStringValue("Executable", out appxDetails.Executable);
-                    appxManifestApplication.GetStringValue("Square30x30Logo", out appxDetails.Square30x30Logo);
-                    appxManifestApplication.GetStringValue("Square70x70Logo", out appxDetails.Square70x70Logo);
-                    appxManifestApplication.GetStringValue("Square150x150Logo", out appxDetails.Square150x150Logo);
-                    appxManifestApplication.GetStringValue("Square310x310Logo", out appxDetails.Square310x310Logo);
-                    appxManifestApplication.GetStringValue("Wide310x310Logo", out appxDetails.Wide310x310Logo);
+                    //Get and set the application executable name
+                    appxManifestApplication.GetStringValue("Executable", out string executableName);
+                    appxDetails.ExecutableName = Path.GetFileName(executableName);
 
                     //Get and set the family name identifier
                     appxManifestApplication.GetStringValue("Id", out string appIdentifier);
@@ -286,6 +283,12 @@ namespace ArnoldVinkCode
                     //Get and set the application display name
                     appxManifestApplication.GetStringValue("DisplayName", out string displayName);
                     appxDetails.DisplayName = UwpGetMsResourceString(appxDetails.FullPackageName, displayName);
+
+                    appxManifestApplication.GetStringValue("Square30x30Logo", out appxDetails.Square30x30Logo);
+                    appxManifestApplication.GetStringValue("Square70x70Logo", out appxDetails.Square70x70Logo);
+                    appxManifestApplication.GetStringValue("Square150x150Logo", out appxDetails.Square150x150Logo);
+                    appxManifestApplication.GetStringValue("Square310x310Logo", out appxDetails.Square310x310Logo);
+                    appxManifestApplication.GetStringValue("Wide310x310Logo", out appxDetails.Wide310x310Logo);
 
                     //Check the largest available square logo
                     if (!string.IsNullOrWhiteSpace(appxDetails.Square310x310Logo))
