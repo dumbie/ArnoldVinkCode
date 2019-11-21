@@ -5,18 +5,21 @@ namespace ArnoldVinkCode
 {
     public partial class ProcessClasses
     {
-        public class ProcessMultipleCheck
+        public enum ProcessType
         {
-            public string Status = string.Empty;
-            public Process Process = null;
-            public ProcessUwp ProcessUwp = null;
+            Win32,
+            Win32Store,
+            UWP
         }
 
-        public class ProcessUwp
+        public class ProcessMulti
         {
+            public ProcessType Type = ProcessType.Win32;
+            public string Status = string.Empty;
             public string AppUserModelId = string.Empty;
             public IntPtr WindowHandle = IntPtr.Zero;
             public int ProcessId = -1;
+            public ProcessThreadCollection ProcessThreads = null;
         }
 
         public class ProcessFocus
