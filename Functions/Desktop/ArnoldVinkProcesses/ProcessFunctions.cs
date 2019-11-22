@@ -474,29 +474,44 @@ namespace ArnoldVinkCode
             return LaunchArguments;
         }
 
+        //Check if process is in suspended state
+        public static bool CheckProcessSuspended(Process targetProcess)
+        {
+            try
+            {
+                //Debug.WriteLine("Checking suspend state for process: " + targetProcess.ProcessName + "/" + targetProcess.Id);
+                foreach (ProcessThread thread in targetProcess.Threads)
+                {
+                    if (thread.WaitReason == ThreadWaitReason.Suspended)
+                    {
+                        //Debug.WriteLine("Detected a thread that is currently suspended.");
+                        return true;
+                    }
+                }
+            }
+            catch { }
+            return false;
+        }
+
         //Check if process is active
-        public static bool ValidateProcessState(Process TargetProcess, bool CheckSuspended, bool CheckWin32)
+        public static bool ValidateProcessState(Process targetProcess, bool checkSuspended, bool checkWin32)
         {
             try
             {
                 //Check if the application is suspended
-                if (CheckSuspended)
+                if (checkSuspended)
                 {
-                    try
+                    if (CheckProcessSuspended(targetProcess))
                     {
-                        if (TargetProcess.Threads[0].WaitReason == ThreadWaitReason.Suspended)
-                        {
-                            //Debug.WriteLine("Application is suspended and can't be shown or hidden.");
-                            return false;
-                        }
+                        //Debug.WriteLine("Application is suspended and can't be shown or hidden.");
+                        return false;
                     }
-                    catch { }
                 }
 
                 //Check if the application is win32
-                if (CheckWin32)
+                if (checkWin32)
                 {
-                    if (CheckProcessIsUwp(TargetProcess.MainWindowHandle))
+                    if (CheckProcessIsUwp(targetProcess.MainWindowHandle))
                     {
                         //Debug.WriteLine("Application is an uwp application.");
                         return false;
@@ -563,14 +578,14 @@ namespace ArnoldVinkCode
         }
 
         //Check if a procress is running as administrator
-        public static bool IsProcessRunningAsAdmin(Process TargetProcess)
+        public static bool IsProcessRunningAsAdmin(Process targetProcess)
         {
             try
             {
                 IntPtr tokenHandle = IntPtr.Zero;
                 try
                 {
-                    OpenProcessToken(TargetProcess.Handle, DesiredAccessFlags.TOKEN_ADJUST_DEFAULT, out tokenHandle);
+                    OpenProcessToken(targetProcess.Handle, DesiredAccessFlags.TOKEN_ADJUST_DEFAULT, out tokenHandle);
                     CloseHandle(tokenHandle);
                     return false;
                 }

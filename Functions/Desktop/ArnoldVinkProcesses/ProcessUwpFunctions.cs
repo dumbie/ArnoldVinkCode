@@ -322,7 +322,7 @@ namespace ArnoldVinkCode
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed reading details from uwp manifest: " + ex.Message);
+                Debug.WriteLine("Failed reading details from uwp manifest: " + appPackage.Id.FamilyName + "/" + ex.Message);
             }
 
             Marshal.ReleaseComObject(inputStream);
