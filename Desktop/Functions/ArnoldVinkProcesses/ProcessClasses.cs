@@ -14,11 +14,12 @@ namespace ArnoldVinkCode
 
         public class ProcessMulti
         {
-            public ProcessType Type = ProcessType.Win32;
             public string Status = string.Empty;
+            public ProcessType Type = ProcessType.Win32;
             public string AppUserModelId = string.Empty;
             public IntPtr WindowHandle = IntPtr.Zero;
             public int ProcessId = -1;
+            public int ProcessCount = 0;
             public ProcessThreadCollection ProcessThreads = null;
         }
 

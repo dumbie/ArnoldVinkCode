@@ -475,12 +475,12 @@ namespace ArnoldVinkCode
         }
 
         //Check if process is in suspended state
-        public static bool CheckProcessSuspended(Process targetProcess)
+        public static bool CheckProcessSuspended(ProcessThreadCollection threadCollection)
         {
             try
             {
                 //Debug.WriteLine("Checking suspend state for process: " + targetProcess.ProcessName + "/" + targetProcess.Id);
-                ProcessThread processThread = targetProcess.Threads[0];
+                ProcessThread processThread = threadCollection[0];
                 if (processThread.WaitReason == ThreadWaitReason.Suspended)
                 {
                     //Debug.WriteLine("The process main thread is currently suspended.");
@@ -499,7 +499,7 @@ namespace ArnoldVinkCode
                 //Check if the application is suspended
                 if (checkSuspended)
                 {
-                    if (CheckProcessSuspended(targetProcess))
+                    if (CheckProcessSuspended(targetProcess.Threads))
                     {
                         //Debug.WriteLine("Application is suspended and can't be shown or hidden.");
                         return false;

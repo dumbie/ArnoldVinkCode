@@ -58,7 +58,7 @@ namespace ArnoldVinkCode
                 await Task.Delay(500);
 
                 //Get the process id
-                ProcessMulti UwpRunningNew = UwpGetProcessFromAppUserModelId(PathExe).Where(x => x.WindowHandle == ProcessWindowHandle).FirstOrDefault();
+                ProcessMulti UwpRunningNew = UwpGetProcessMultiFromAppUserModelId(PathExe).Where(x => x.WindowHandle == ProcessWindowHandle).FirstOrDefault();
                 if (UwpRunningNew != null)
                 {
                     Debug.WriteLine("Uwp workaround process id: " + UwpRunningNew.ProcessId + " vs " + ProcessIdTarget);
@@ -70,14 +70,14 @@ namespace ArnoldVinkCode
         }
 
         //Close an uwp application by window handle
-        public static async Task<bool> CloseProcessUwpByWindowHandleOrProcessId(string ProcessName, int ProcessId, IntPtr ProcessWindowHandle)
+        public static async Task<bool> CloseProcessUwpByWindowHandleOrProcessId(string appName, int ProcessId, IntPtr ProcessWindowHandle)
         {
             try
             {
                 if (ProcessWindowHandle != IntPtr.Zero)
                 {
                     //Show the process
-                    await FocusProcessWindow(ProcessName, ProcessId, ProcessWindowHandle, 0, false, false);
+                    await FocusProcessWindow(appName, ProcessId, ProcessWindowHandle, 0, false, false);
                     await Task.Delay(500);
 
                     //Close the process or app
@@ -94,12 +94,12 @@ namespace ArnoldVinkCode
         }
 
         //Restart a uwp process or app
-        public static async Task<bool> RestartProcessUwp(string processName, string pathExe, string argument, int processId, IntPtr processWindowHandle)
+        public static async Task<bool> RestartProcessUwp(string appName, string pathExe, string argument, int processId, IntPtr processWindowHandle)
         {
             try
             {
                 //Close the process or app
-                await CloseProcessUwpByWindowHandleOrProcessId(processName, processId, processWindowHandle);
+                await CloseProcessUwpByWindowHandleOrProcessId(appName, processId, processWindowHandle);
                 await Task.Delay(1000);
 
                 //Relaunch the process or app
@@ -165,7 +165,7 @@ namespace ArnoldVinkCode
         }
 
         //Get an uwp application process from AppUserModelId
-        public static List<ProcessMulti> UwpGetProcessFromAppUserModelId(string targetAppUserModelId)
+        public static List<ProcessMulti> UwpGetProcessMultiFromAppUserModelId(string targetAppUserModelId)
         {
             List<ProcessMulti> processList = new List<ProcessMulti>();
             try
