@@ -480,13 +480,11 @@ namespace ArnoldVinkCode
             try
             {
                 //Debug.WriteLine("Checking suspend state for process: " + targetProcess.ProcessName + "/" + targetProcess.Id);
-                foreach (ProcessThread thread in targetProcess.Threads)
+                ProcessThread processThread = targetProcess.Threads[0];
+                if (processThread.WaitReason == ThreadWaitReason.Suspended)
                 {
-                    if (thread.WaitReason == ThreadWaitReason.Suspended)
-                    {
-                        //Debug.WriteLine("Detected a thread that is currently suspended.");
-                        return true;
-                    }
+                    //Debug.WriteLine("The process main thread is currently suspended.");
+                    return true;
                 }
             }
             catch { }

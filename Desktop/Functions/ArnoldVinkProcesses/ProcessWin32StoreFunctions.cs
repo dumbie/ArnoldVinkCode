@@ -25,7 +25,7 @@ namespace ArnoldVinkCode
                 }
 
                 //Launch the Win32Store application
-                ProcessLauncherUwp(pathExe, argument);
+                ProcessLauncherUwpAndWin32Store(pathExe, argument);
             }
             catch { }
         }

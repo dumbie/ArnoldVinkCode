@@ -20,12 +20,12 @@ namespace ArnoldVinkCode
     public partial class ProcessUwpFunctions
     {
         //Launch an uwp application manually
-        public static void ProcessLauncherUwp(string pathExe, string argument)
+        public static void ProcessLauncherUwpAndWin32Store(string pathExe, string argument)
         {
             try
             {
                 //Show launching message
-                Debug.WriteLine("Launching UWP: " + Path.GetFileNameWithoutExtension(pathExe));
+                Debug.WriteLine("Launching UWP or Win32Store: " + pathExe + "/" + argument);
 
                 //Prepare the launching task
                 void TaskAction()
@@ -43,7 +43,7 @@ namespace ArnoldVinkCode
             }
             catch
             {
-                Debug.WriteLine("Failed launching UWP: " + Path.GetFileNameWithoutExtension(pathExe));
+                Debug.WriteLine("Failed launching UWP or Win32Store: " + pathExe + "/" + argument);
             }
         }
 
@@ -103,7 +103,7 @@ namespace ArnoldVinkCode
                 await Task.Delay(1000);
 
                 //Relaunch the process or app
-                ProcessLauncherUwp(pathExe, argument);
+                ProcessLauncherUwpAndWin32Store(pathExe, argument);
                 return true;
             }
             catch { }
