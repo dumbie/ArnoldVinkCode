@@ -597,5 +597,20 @@ namespace ArnoldVinkCode
             }
             catch { return false; }
         }
+
+        //Convert Process to a ProcessMulti
+        public static ProcessMulti ConvertProcessToProcessMulti(ProcessType processType, Process convertProcess)
+        {
+            ProcessMulti convertedProcess = new ProcessMulti();
+            try
+            {
+                convertedProcess.Type = processType;
+                convertedProcess.ProcessId = convertProcess.Id;
+                convertedProcess.ProcessThreads = convertProcess.Threads;
+                convertedProcess.WindowHandle = convertProcess.MainWindowHandle;
+            }
+            catch { }
+            return convertedProcess;
+        }
     }
 }

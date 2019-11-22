@@ -20,12 +20,12 @@ namespace ArnoldVinkCode
     public partial class ProcessUwpFunctions
     {
         //Launch an uwp application manually
-        public static void ProcessLauncherUwp(string PathExe, string Argument)
+        public static void ProcessLauncherUwp(string pathExe, string argument)
         {
             try
             {
                 //Show launching message
-                Debug.WriteLine("Launching UWP: " + Path.GetFileNameWithoutExtension(PathExe));
+                Debug.WriteLine("Launching UWP: " + Path.GetFileNameWithoutExtension(pathExe));
 
                 //Prepare the launching task
                 void TaskAction()
@@ -33,7 +33,7 @@ namespace ArnoldVinkCode
                     try
                     {
                         UWPActivationManager UWPActivationManager = new UWPActivationManager();
-                        UWPActivationManager.ActivateApplication(PathExe, Argument, UWPActivationManagerOptions.None, out int ProcessId);
+                        UWPActivationManager.ActivateApplication(pathExe, argument, UWPActivationManagerOptions.None, out int ProcessId);
                     }
                     catch { }
                 }
@@ -43,7 +43,7 @@ namespace ArnoldVinkCode
             }
             catch
             {
-                Debug.WriteLine("Failed launching UWP: " + Path.GetFileNameWithoutExtension(PathExe));
+                Debug.WriteLine("Failed launching UWP: " + Path.GetFileNameWithoutExtension(pathExe));
             }
         }
 
@@ -70,7 +70,7 @@ namespace ArnoldVinkCode
         }
 
         //Close an uwp application by window handle
-        public static async Task<bool> CloseProcessUwpByWindowHandle(string ProcessName, int ProcessId, IntPtr ProcessWindowHandle)
+        public static async Task<bool> CloseProcessUwpByWindowHandleOrProcessId(string ProcessName, int ProcessId, IntPtr ProcessWindowHandle)
         {
             try
             {
@@ -94,16 +94,16 @@ namespace ArnoldVinkCode
         }
 
         //Restart a uwp process or app
-        public static async Task<bool> RestartProcessUwp(string ProcessName, string PathExe, string Argument, int ProcessId, IntPtr ProcessWindowHandle)
+        public static async Task<bool> RestartProcessUwp(string processName, string pathExe, string argument, int processId, IntPtr processWindowHandle)
         {
             try
             {
                 //Close the process or app
-                await CloseProcessUwpByWindowHandle(ProcessName, ProcessId, ProcessWindowHandle);
+                await CloseProcessUwpByWindowHandleOrProcessId(processName, processId, processWindowHandle);
                 await Task.Delay(1000);
 
                 //Relaunch the process or app
-                ProcessLauncherUwp(PathExe, Argument);
+                ProcessLauncherUwp(pathExe, argument);
                 return true;
             }
             catch { }
