@@ -1,0 +1,13 @@
+/Desktop/obj
+/Desktop/bin
+/Shared/obj
+/Shared/bin
+/UWP/obj
+/UWP/bin
+/Xamarin/obj
+/Xamarin/bin
+/packages
+*.user
+*.aps
+*.pfx
+*.vs

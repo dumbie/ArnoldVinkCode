@@ -14,7 +14,6 @@ using static ArnoldVinkCode.AVInteropCom;
 using static ArnoldVinkCode.AVInteropDll;
 using static ArnoldVinkCode.ProcessClasses;
 using static ArnoldVinkCode.ProcessFunctions;
-using static LibraryShared.Classes;
 
 namespace ArnoldVinkCode
 {

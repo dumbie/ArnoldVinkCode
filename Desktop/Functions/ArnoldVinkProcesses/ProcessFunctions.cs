@@ -6,13 +6,13 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Automation;
+using static ArnoldVinkCode.AVInputOutputClass;
+using static ArnoldVinkCode.AVInputOutputKeyboard;
 using static ArnoldVinkCode.AVInteropCom;
 using static ArnoldVinkCode.AVInteropDll;
 using static ArnoldVinkCode.ProcessClasses;
 using static ArnoldVinkCode.ProcessNtQueryInformation;
 using static ArnoldVinkCode.ProcessUwpFunctions;
-using static LibraryShared.Classes;
-using static LibraryShared.OutputKeyboard;
 
 namespace ArnoldVinkCode
 {

@@ -3,8 +3,8 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using static LibraryShared.Classes;
-using static LibraryShared.OutputKeyboard;
+using static ArnoldVinkCode.AVInputOutputClass;
+using static ArnoldVinkCode.AVInputOutputKeyboard;
 
 namespace ArnoldVinkCode
 {
