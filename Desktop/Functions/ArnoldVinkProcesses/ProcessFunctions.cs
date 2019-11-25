@@ -603,9 +603,13 @@ namespace ArnoldVinkCode
             try
             {
                 convertedProcess.Type = processType;
-                convertedProcess.ProcessId = convertProcess.Id;
-                convertedProcess.ProcessThreads = convertProcess.Threads;
+                convertedProcess.Identifier = convertProcess.Id;
+                convertedProcess.Threads = convertProcess.Threads;
                 convertedProcess.WindowHandle = convertProcess.MainWindowHandle;
+
+                //Get the process launch argument
+                string processExecutablePath = GetExecutablePathFromProcess(convertProcess);
+                convertedProcess.Argument = GetLaunchArgumentsFromProcess(convertProcess, processExecutablePath);
             }
             catch { }
             return convertedProcess;

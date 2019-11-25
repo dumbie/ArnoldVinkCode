@@ -5,30 +5,32 @@ namespace ArnoldVinkCode
 {
     public partial class ProcessClasses
     {
-        public enum ProcessType
+        public enum ProcessType : int
         {
-            Win32,
-            Win32Store,
-            UWP
+            Unknown = -1,
+            Win32 = 0,
+            Win32Store = 1,
+            UWP = 2,
         }
 
         public class ProcessMulti
         {
-            public string Status = string.Empty;
-            public ProcessType Type = ProcessType.Win32;
-            public string AppUserModelId = string.Empty;
-            public IntPtr WindowHandle = IntPtr.Zero;
-            public int ProcessId = -1;
-            public int ProcessCount = 0;
-            public ProcessThreadCollection ProcessThreads = null;
+            public int Identifier { get; set; } = -1;
+            public int Count { get; set; } = 0;
+            public string Argument { get; set; } = string.Empty;
+            public string AppUserModelId { get; set; } = string.Empty;
+            public ProcessThreadCollection Threads { get; set; } = null;
+            public ProcessType Type { get; set; } = ProcessType.Unknown;
+            public IntPtr WindowHandle { get; set; } = IntPtr.Zero;
+            public string Action { get; set; } = string.Empty;
         }
 
         public class ProcessFocus
         {
-            public string Title = "Unknown";
-            public string ClassName = "Unknown";
-            public IntPtr WindowHandle = IntPtr.Zero;
-            public Process Process = null;
+            public string Title { get; set; } = "Unknown";
+            public string ClassName { get; set; } = "Unknown";
+            public IntPtr WindowHandle { get; set; } = IntPtr.Zero;
+            public Process Process { get; set; } = null;
         }
     }
 }

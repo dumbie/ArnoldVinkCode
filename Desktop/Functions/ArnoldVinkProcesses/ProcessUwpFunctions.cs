@@ -58,11 +58,11 @@ namespace ArnoldVinkCode
                 await Task.Delay(500);
 
                 //Get the process id
-                ProcessMulti UwpRunningNew = UwpGetProcessMultiFromAppUserModelId(PathExe).Where(x => x.WindowHandle == ProcessWindowHandle).FirstOrDefault();
-                if (UwpRunningNew != null)
+                ProcessMulti uwpRunningNew = UwpGetProcessMultiFromAppUserModelId(PathExe).Where(x => x.WindowHandle == ProcessWindowHandle).FirstOrDefault();
+                if (uwpRunningNew != null)
                 {
-                    Debug.WriteLine("Uwp workaround process id: " + UwpRunningNew.ProcessId + " vs " + ProcessIdTarget);
-                    return UwpRunningNew.ProcessId;
+                    Debug.WriteLine("Uwp workaround process id: " + uwpRunningNew.Identifier + " vs " + ProcessIdTarget);
+                    return uwpRunningNew.Identifier;
                 }
             }
             catch { }
@@ -220,8 +220,8 @@ namespace ArnoldVinkCode
                                     processMultiNew.Type = ProcessType.UWP;
                                     processMultiNew.AppUserModelId = processExecutablePath;
                                     processMultiNew.WindowHandle = windowHandle;
-                                    processMultiNew.ProcessId = processId;
-                                    processMultiNew.ProcessThreads = allProcess.Threads;
+                                    processMultiNew.Identifier = processId;
+                                    processMultiNew.Threads = allProcess.Threads;
                                     processList.Add(processMultiNew);
                                 }
                             }
