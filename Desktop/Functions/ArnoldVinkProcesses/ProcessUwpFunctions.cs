@@ -211,6 +211,7 @@ namespace ArnoldVinkCode
                                 catch { }
                             }
 
+                            //Check if user started uwp application
                             if (processUserRun)
                             {
                                 string processExecutablePath = GetAppUserModelIdFromWindowHandle(windowHandle);
@@ -218,10 +219,8 @@ namespace ArnoldVinkCode
                                 {
                                     ProcessMulti processMultiNew = new ProcessMulti();
                                     processMultiNew.Type = ProcessType.UWP;
-                                    processMultiNew.AppUserModelId = processExecutablePath;
-                                    processMultiNew.WindowHandle = windowHandle;
                                     processMultiNew.Identifier = processId;
-                                    processMultiNew.Threads = allProcess.Threads;
+                                    processMultiNew.WindowHandle = windowHandle;
                                     processList.Add(processMultiNew);
                                 }
                             }
