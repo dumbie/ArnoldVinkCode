@@ -47,21 +47,45 @@ namespace ArnoldVinkCode
             }
         }
 
+        //Get uwp process by ProcessName and AppUserModelId
+        public static Process GetUwpProcessByProcessNameAndAppUserModelId(string targetProcessName, string targetAppUserModelId)
+        {
+            try
+            {
+                Process[] uwpProcesses = GetProcessesByNameOrTitle(targetProcessName, false, true);
+                foreach (Process uwpProcess in uwpProcesses)
+                {
+                    try
+                    {
+                        string processAppUserModelId = GetAppUserModelIdFromProcess(uwpProcess);
+                        if (processAppUserModelId == targetAppUserModelId)
+                        {
+                            //Debug.WriteLine(targetProcessName + "/Id" + uwpProcess.Id + "/App" + processAppUserModelId + "vs" + targetAppUserModelId);
+                            return uwpProcess;
+                        }
+                    }
+                    catch { }
+                }
+            }
+            catch { }
+            return null;
+        }
+
         //Get an uwp application process id by window handle
-        public static async Task<int> GetUwpProcessIdByWindowHandle(string ProcessName, string PathExe, IntPtr ProcessWindowHandle)
+        public static async Task<int> GetUwpProcessIdByWindowHandle(string processTitle, string processAppUserModelId, IntPtr processWindowHandle)
         {
             try
             {
                 //Show the uwp process
-                GetWindowThreadProcessId(ProcessWindowHandle, out int ProcessIdTarget);
-                await FocusProcessWindow(ProcessName, ProcessIdTarget, ProcessWindowHandle, 0, false, false);
+                GetWindowThreadProcessId(processWindowHandle, out int processIdTarget);
+                await FocusProcessWindow(processTitle, processIdTarget, processWindowHandle, 0, false, false);
                 await Task.Delay(500);
 
                 //Get the process id
-                ProcessMulti uwpRunningNew = UwpGetProcessMultiFromAppUserModelId(PathExe).Where(x => x.WindowHandle == ProcessWindowHandle).FirstOrDefault();
+                ProcessMulti uwpRunningNew = UwpGetProcessMultiFromAppUserModelId(processAppUserModelId).Where(x => x.WindowHandle == processWindowHandle).FirstOrDefault();
                 if (uwpRunningNew != null)
                 {
-                    Debug.WriteLine("Uwp workaround process id: " + uwpRunningNew.Identifier + " vs " + ProcessIdTarget);
+                    Debug.WriteLine("Uwp workaround process id: " + uwpRunningNew.Identifier + " vs " + processIdTarget);
                     return uwpRunningNew.Identifier;
                 }
             }

@@ -88,6 +88,8 @@ namespace ArnoldVinkCode
         //UWP interop
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
         public static extern int GetApplicationUserModelId(IntPtr hProcess, ref int appUserModelIdLength, [MarshalAs(UnmanagedType.LPWStr)] StringBuilder sbAppUserModelID);
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
+        public static extern int GetPackageFullName(IntPtr hProcess, ref int packageFullNameLength, [MarshalAs(UnmanagedType.LPWStr)] StringBuilder sbPackageFullName);
 
         //Open and close process
         [DllImport("Advapi32.dll")]
@@ -120,11 +122,16 @@ namespace ArnoldVinkCode
             TOKEN_ADJUST_DEFAULT = 0x0080
         }
 
+        //Enumerate windows
+        [DllImport("user32.dll")]
+        public static extern bool EnumWindows(EnumWindowsDelegate lpEnumFunc, IntPtr lParam);
+        public delegate bool EnumWindowsDelegate(IntPtr hWnd, IntPtr lParam);
+
         //Get process details
         [DllImport("psapi.dll")]
         public static extern uint GetModuleFileNameEx(IntPtr hProcess, IntPtr hModule, [Out] StringBuilder lpBaseName, [In] [MarshalAs(UnmanagedType.U4)] int nSize);
-        [DllImport("Kernel32.dll")]
-        public static extern bool QueryFullProcessImageName([In]IntPtr hProcess, [In]int dwFlags, [Out]StringBuilder lpExeName, ref uint lpdwSize);
+        [DllImport("kernel32.dll")]
+        public static extern bool QueryFullProcessImageName([In]IntPtr hProcess, [In]int dwFlags, [Out]StringBuilder lpExeName, ref int lpdwSize);
 
         //Get Class Long
         public static IntPtr GetClassLongAuto(IntPtr hWnd, int nIndex)

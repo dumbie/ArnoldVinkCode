@@ -130,9 +130,9 @@ namespace ArnoldVinkCode
                 Debug.WriteLine("Changed process window: " + titleTarget + " WindowHandle: " + windowHandleTarget + " ShowCmd: " + windowStateCommand);
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
-                Debug.WriteLine("Failed showing the application, perhaps it is no longer running?");
+                Debug.WriteLine("Failed showing the application: " + ex.Message);
                 return false;
             }
         }
@@ -417,7 +417,7 @@ namespace ArnoldVinkCode
             {
                 try
                 {
-                    uint stringLength = 1024;
+                    int stringLength = 1024;
                     StringBuilder stringBuilder = new StringBuilder((int)stringLength);
                     bool Succes = QueryFullProcessImageName(TargetProcess.Handle, 0, stringBuilder, ref stringLength);
                     if (Succes) { ExePath = stringBuilder.ToString(); }
@@ -427,15 +427,30 @@ namespace ArnoldVinkCode
             return ExePath;
         }
 
+        //Get the full package name from process
+        public static string GetPackageFullNameFromProcess(Process targetProcess)
+        {
+            string PackageFullName = string.Empty;
+            try
+            {
+                int stringLength = 1024;
+                StringBuilder stringBuilder = new StringBuilder(stringLength);
+                int Succes = AVInteropDll.GetPackageFullName(targetProcess.Handle, ref stringLength, stringBuilder);
+                if (Succes == 0) { PackageFullName = stringBuilder.ToString(); }
+            }
+            catch { }
+            return PackageFullName;
+        }
+
         //Get the AppUserModelId from process
-        public static string GetAppUserModelIdFromProcess(Process TargetProcess)
+        public static string GetAppUserModelIdFromProcess(Process targetProcess)
         {
             string AppUserModelId = string.Empty;
             try
             {
-                int stringLength = 256;
+                int stringLength = 1024;
                 StringBuilder stringBuilder = new StringBuilder(stringLength);
-                int Succes = GetApplicationUserModelId(TargetProcess.Handle, ref stringLength, stringBuilder);
+                int Succes = GetApplicationUserModelId(targetProcess.Handle, ref stringLength, stringBuilder);
                 if (Succes == 0) { AppUserModelId = stringBuilder.ToString(); }
             }
             catch { }
