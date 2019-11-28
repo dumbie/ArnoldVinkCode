@@ -8,7 +8,7 @@ namespace ArnoldVinkCode
     public partial class ProcessWin32StoreFunctions
     {
         //Restart a Win32Store process or app
-        public static async Task RestartProcessWin32Store(int processId, string executableName, string pathExe, string argument)
+        public static async Task RestartProcessWin32Store(string nameExe, string pathExe, int processId, string argument)
         {
             try
             {
@@ -20,7 +20,7 @@ namespace ArnoldVinkCode
                 }
                 else
                 {
-                    CloseProcessesByNameOrTitle(Path.GetFileNameWithoutExtension(executableName), false);
+                    CloseProcessesByNameOrTitle(Path.GetFileNameWithoutExtension(nameExe), false);
                     await Task.Delay(1000);
                 }
 

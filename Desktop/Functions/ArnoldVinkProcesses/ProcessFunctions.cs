@@ -45,7 +45,7 @@ namespace ArnoldVinkCode
         }
 
         //Focus on a process window
-        public static async Task<bool> FocusProcessWindow(string titleTarget, int processIdTarget, IntPtr windowHandleTarget, int windowStateCommand, bool setWindowState, bool setTempTopMost)
+        public static async Task<bool> FocusProcessWindow(string processTitle, int processId, IntPtr processWindowHandle, int windowStateCommand, bool setWindowState, bool setTempTopMost)
         {
             try
             {
@@ -58,7 +58,7 @@ namespace ArnoldVinkCode
                 }
 
                 //Check if Windows system menu is open
-                if (WindowsSystemMenuOpenCheck(windowHandleTarget))
+                if (WindowsSystemMenuOpenCheck(processWindowHandle))
                 {
                     Debug.WriteLine("The system menu is currently open, pressing escape to close it.");
                     KeyPressSingleDown((byte)KeysVirtual.Escape, false);
@@ -69,7 +69,7 @@ namespace ArnoldVinkCode
                 if (windowStateCommand == 0 && setWindowState)
                 {
                     WindowPlacement processWindowState = new WindowPlacement();
-                    GetWindowPlacement(windowHandleTarget, ref processWindowState);
+                    GetWindowPlacement(processWindowHandle, ref processWindowState);
                     Debug.WriteLine("Detected the previous window state: " + processWindowState.Flags);
                     if (processWindowState.Flags == (int)WindowFlags.RestoreToMaximized)
                     {
@@ -84,17 +84,17 @@ namespace ArnoldVinkCode
                 //Change the window state command
                 if (setWindowState)
                 {
-                    ShowWindowAsync(windowHandleTarget, windowStateCommand);
+                    ShowWindowAsync(processWindowHandle, windowStateCommand);
                     await Task.Delay(100);
 
-                    ShowWindow(windowHandleTarget, windowStateCommand);
+                    ShowWindow(processWindowHandle, windowStateCommand);
                     await Task.Delay(100);
                 }
 
                 //Set the process window as top most
                 if (setTempTopMost)
                 {
-                    SetWindowPos(windowHandleTarget, (IntPtr)WindowPosition.TopMost, 0, 0, 0, 0, (int)WindowSWP.NOMOVE | (int)WindowSWP.NOSIZE);
+                    SetWindowPos(processWindowHandle, (IntPtr)WindowPosition.TopMost, 0, 0, 0, 0, (int)WindowSWP.NOMOVE | (int)WindowSWP.NOSIZE);
                     await Task.Delay(100);
                 }
 
@@ -102,19 +102,19 @@ namespace ArnoldVinkCode
                 for (int i = 0; i < 2; i++)
                 {
                     //Allow changing window
-                    AllowSetForegroundWindow(processIdTarget);
+                    AllowSetForegroundWindow(processId);
                     await Task.Delay(100);
 
                     //Bring window to top
-                    BringWindowToTop(windowHandleTarget);
+                    BringWindowToTop(processWindowHandle);
                     await Task.Delay(100);
 
                     //Switch to the window
-                    SwitchToThisWindow(windowHandleTarget, true);
+                    SwitchToThisWindow(processWindowHandle, true);
                     await Task.Delay(100);
 
                     //Focus on the window
-                    AutomationElement automationElement = AutomationElement.FromHandle(windowHandleTarget);
+                    AutomationElement automationElement = AutomationElement.FromHandle(processWindowHandle);
                     automationElement.SetFocus();
                     await Task.Delay(100);
                 }
@@ -122,12 +122,12 @@ namespace ArnoldVinkCode
                 //Disable the process window as top most
                 if (setTempTopMost)
                 {
-                    Debug.WriteLine("Disabling top most from process: " + titleTarget);
-                    SetWindowPos(windowHandleTarget, (IntPtr)WindowPosition.NoTopMost, 0, 0, 0, 0, (int)WindowSWP.NOMOVE | (int)WindowSWP.NOSIZE);
+                    Debug.WriteLine("Disabling top most from process: " + processTitle);
+                    SetWindowPos(processWindowHandle, (IntPtr)WindowPosition.NoTopMost, 0, 0, 0, 0, (int)WindowSWP.NOMOVE | (int)WindowSWP.NOSIZE);
                     await Task.Delay(100);
                 }
 
-                Debug.WriteLine("Changed process window: " + titleTarget + " WindowHandle: " + windowHandleTarget + " ShowCmd: " + windowStateCommand);
+                Debug.WriteLine("Changed process window: " + processTitle + " WindowHandle: " + processWindowHandle + " ShowCmd: " + windowStateCommand);
                 return true;
             }
             catch (Exception ex)

@@ -71,28 +71,6 @@ namespace ArnoldVinkCode
             return null;
         }
 
-        //Get an uwp application process id by window handle
-        public static async Task<int> GetUwpProcessIdByWindowHandle(string processTitle, string processAppUserModelId, IntPtr processWindowHandle)
-        {
-            try
-            {
-                //Show the uwp process
-                GetWindowThreadProcessId(processWindowHandle, out int processIdTarget);
-                await FocusProcessWindow(processTitle, processIdTarget, processWindowHandle, 0, false, false);
-                await Task.Delay(500);
-
-                //Get the process id
-                ProcessMulti uwpRunningNew = UwpGetProcessMultiFromAppUserModelId(processAppUserModelId).Where(x => x.WindowHandle == processWindowHandle).FirstOrDefault();
-                if (uwpRunningNew != null)
-                {
-                    Debug.WriteLine("Uwp workaround process id: " + uwpRunningNew.Identifier + " vs " + processIdTarget);
-                    return uwpRunningNew.Identifier;
-                }
-            }
-            catch { }
-            return -1;
-        }
-
         //Close an uwp application by window handle
         public static async Task<bool> CloseProcessUwpByWindowHandleOrProcessId(string appName, int ProcessId, IntPtr ProcessWindowHandle)
         {
@@ -118,16 +96,16 @@ namespace ArnoldVinkCode
         }
 
         //Restart a uwp process or app
-        public static async Task<bool> RestartProcessUwp(string appName, string pathExe, string argument, int processId, IntPtr processWindowHandle)
+        public static async Task<bool> RestartProcessUwp(string processName, string processPathExe, int processId, IntPtr processWindowHandle, string processArgument)
         {
             try
             {
                 //Close the process or app
-                await CloseProcessUwpByWindowHandleOrProcessId(appName, processId, processWindowHandle);
+                await CloseProcessUwpByWindowHandleOrProcessId(processName, processId, processWindowHandle);
                 await Task.Delay(1000);
 
                 //Relaunch the process or app
-                ProcessLauncherUwpAndWin32Store(pathExe, argument);
+                ProcessLauncherUwpAndWin32Store(processPathExe, processArgument);
                 return true;
             }
             catch { }
@@ -186,75 +164,6 @@ namespace ArnoldVinkCode
             }
             catch { }
             return IntPtr.Zero;
-        }
-
-        //Get an uwp application process from AppUserModelId
-        public static List<ProcessMulti> UwpGetProcessMultiFromAppUserModelId(string targetAppUserModelId)
-        {
-            List<ProcessMulti> processList = new List<ProcessMulti>();
-            try
-            {
-                Process allProcess = GetProcessByNameOrTitle("ApplicationFrameHost", false);
-                if (allProcess != null)
-                {
-                    foreach (ProcessThread threadProcess in allProcess.Threads)
-                    {
-                        try
-                        {
-                            int processId = -1;
-                            IntPtr windowHandle = IntPtr.Zero;
-                            bool processUserRun = false;
-
-                            foreach (IntPtr threadWindowHandle in EnumThreadWindows(threadProcess.Id))
-                            {
-                                try
-                                {
-                                    //Get the current class name
-                                    string classNameString = GetClassNameFromWindowHandle(threadWindowHandle);
-
-                                    //Get information from frame window
-                                    if (classNameString == "ApplicationFrameWindow")
-                                    {
-                                        //Get window handle
-                                        windowHandle = threadWindowHandle;
-
-                                        //Get process id
-                                        IntPtr threadWindowHandleEx = FindWindowEx(threadWindowHandle, IntPtr.Zero, "Windows.UI.Core.CoreWindow", null);
-                                        if (threadWindowHandleEx != IntPtr.Zero)
-                                        {
-                                            GetWindowThreadProcessId(threadWindowHandleEx, out processId);
-                                        }
-                                    }
-
-                                    //Check if user started uwp application
-                                    if (classNameString == "MSCTFIME UI")
-                                    {
-                                        processUserRun = true;
-                                    }
-                                }
-                                catch { }
-                            }
-
-                            //Check if user started uwp application
-                            if (processUserRun)
-                            {
-                                string processExecutablePath = GetAppUserModelIdFromWindowHandle(windowHandle);
-                                if (targetAppUserModelId == processExecutablePath)
-                                {
-                                    ProcessMulti processMultiNew = new ProcessMulti();
-                                    processMultiNew.Type = ProcessType.UWP;
-                                    processMultiNew.Identifier = processId;
-                                    processMultiNew.WindowHandle = windowHandle;
-                                    processList.Add(processMultiNew);
-                                }
-                            }
-                        }
-                        catch { }
-                    }
-                }
-            }
-            catch { }
-            return processList;
         }
 
         //Get uwp application package from AppUserModelId

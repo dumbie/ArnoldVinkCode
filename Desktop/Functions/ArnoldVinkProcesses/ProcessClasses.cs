@@ -16,7 +16,6 @@ namespace ArnoldVinkCode
         public class ProcessMulti
         {
             public int Identifier { get; set; } = -1;
-            public int Count { get; set; } = 0;
             public string Argument { get; set; } = string.Empty;
             public ProcessThreadCollection Threads { get; set; } = null;
             public ProcessType Type { get; set; } = ProcessType.Unknown;
