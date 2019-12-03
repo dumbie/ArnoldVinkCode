@@ -101,22 +101,26 @@ namespace ArnoldVinkCode
                 //Retry to show the window
                 for (int i = 0; i < 2; i++)
                 {
-                    //Allow changing window
-                    AllowSetForegroundWindow(processId);
-                    await Task.Delay(100);
+                    try
+                    {
+                        //Allow changing window
+                        AllowSetForegroundWindow(processId);
+                        await Task.Delay(100);
 
-                    //Bring window to top
-                    BringWindowToTop(processWindowHandle);
-                    await Task.Delay(100);
+                        //Bring window to top
+                        BringWindowToTop(processWindowHandle);
+                        await Task.Delay(100);
 
-                    //Switch to the window
-                    SwitchToThisWindow(processWindowHandle, true);
-                    await Task.Delay(100);
+                        //Switch to the window
+                        SwitchToThisWindow(processWindowHandle, true);
+                        await Task.Delay(100);
 
-                    //Focus on the window
-                    AutomationElement automationElement = AutomationElement.FromHandle(processWindowHandle);
-                    automationElement.SetFocus();
-                    await Task.Delay(100);
+                        //Focus on the window
+                        AutomationElement automationElement = AutomationElement.FromHandle(processWindowHandle);
+                        automationElement.SetFocus();
+                        await Task.Delay(100);
+                    }
+                    catch { }
                 }
 
                 //Disable the process window as top most
