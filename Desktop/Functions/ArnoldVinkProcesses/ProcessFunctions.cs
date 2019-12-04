@@ -70,8 +70,8 @@ namespace ArnoldVinkCode
                 {
                     WindowPlacement processWindowState = new WindowPlacement();
                     GetWindowPlacement(processWindowHandle, ref processWindowState);
-                    Debug.WriteLine("Detected the previous window state: " + processWindowState.Flags);
-                    if (processWindowState.Flags == (int)WindowFlags.RestoreToMaximized)
+                    Debug.WriteLine("Detected the previous window state: " + processWindowState.windowFlags);
+                    if (processWindowState.windowFlags == WindowFlags.RestoreToMaximized)
                     {
                         windowStateCommand = (int)WindowShowCommand.ShowMaximized;
                     }
@@ -563,14 +563,14 @@ namespace ArnoldVinkCode
                 //Check if application is hidden to the tray
                 WindowPlacement ProcessWindowState = new WindowPlacement();
                 GetWindowPlacement(TargetWindowHandle, ref ProcessWindowState);
-                if (ProcessWindowState.ShowCmd <= 0)
+                if (ProcessWindowState.windowShowCommand <= 0)
                 {
                     //Debug.WriteLine("Application is in the tray and can't be shown or hidden.");
                     return false;
                 }
 
                 ////Check if the window size is not zero
-                //WindowPosition_Rectangle PositionRect = new WindowPosition_Rectangle();
+                //WindowRectangle PositionRect = new WindowRectangle();
                 //GetWindowRect(TargetWindowHandle, ref PositionRect);
                 //int WindowWidth = PositionRect.Right - PositionRect.Left;
                 //int WindowHeight = PositionRect.Bottom - PositionRect.Top;

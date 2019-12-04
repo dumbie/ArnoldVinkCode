@@ -408,9 +408,9 @@ namespace ArnoldVinkCode
         public static extern bool GetWindowPlacement(IntPtr hWnd, ref WindowPlacement lpwndpl);
         public struct WindowPlacement
         {
-            public int Length;
-            public int Flags;
-            public int ShowCmd;
+            public int length;
+            public WindowFlags windowFlags;
+            public WindowShowCommand windowShowCommand;
             public Point ptMinPosition;
             public Point ptMaxPosition;
             public Rectangle rcNormalPosition;
@@ -426,8 +426,8 @@ namespace ArnoldVinkCode
         {
             Hide = 0,
             Normal = 1,
-            ShowMinimized = 2,
-            Maximize = 3,
+            Minimized = 2,
+            Maximized = 3,
             ShowMaximized = 3,
             ShowNoActivate = 4,
             Show = 5,
