@@ -17,7 +17,7 @@ namespace ArnoldVinkCode
             {
                 if (focusElement != null && focusElement.Focusable && focusElement.Visibility == Visibility.Visible)
                 {
-                    int WhileLoop = 0;
+                    int whileLoopCount = 0;
                     while (Keyboard.FocusedElement != focusElement)
                     {
                         //Update the element layout
@@ -35,14 +35,18 @@ namespace ArnoldVinkCode
                             Mouse.Capture(focusElement);
                         }
 
-                        if (WhileLoop >= 30)
+                        //Press tab key when no element is focused
+                        if (whileLoopCount >= 30)
                         {
-                            Debug.WriteLine("Failed focusing on the element after " + WhileLoop + " times, pressing tab key.");
-                            KeySendSingle((byte)KeysVirtual.Tab, mainWindowHandle);
+                            if (Keyboard.FocusedElement == null)
+                            {
+                                Debug.WriteLine("Failed focusing on the element after " + whileLoopCount + " times, pressing tab key.");
+                                KeySendSingle((byte)KeysVirtual.Tab, mainWindowHandle);
+                            }
                             return;
                         }
 
-                        WhileLoop++;
+                        whileLoopCount++;
                         await Task.Delay(10);
                     }
 
