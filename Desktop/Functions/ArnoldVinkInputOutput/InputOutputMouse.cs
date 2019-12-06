@@ -12,7 +12,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                int SmallOffset = 2000;
+                int SmallOffset = 2500;
                 int NormalOffset = 15000;
                 int MouseHorizontal = 0;
                 int MouseVertical = 0;
@@ -50,7 +50,7 @@ namespace ArnoldVinkCode
             try
             {
                 //Check the thumb movement
-                int SmallOffset = 2000;
+                int SmallOffset = 2500;
                 int NormalOffset = 15000;
 
                 int AbsHorizontal = Math.Abs(ThumbHorizontal);

@@ -28,13 +28,18 @@
         </ScrollViewer>
     </ControlTemplate>
 
-    <!--Button Templates-->
+    <!--Button Template White-->
     <ControlTemplate x:Key="ButtonTemplateWhite" TargetType="{x:Type Button}">
         <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
             <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
         </Border>
         <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="BorderThickness" TargetName="border" Value="2"/>
+                <Setter Property="BorderBrush" TargetName="border" Value="#F1F1F1"/>
+                <Setter Property="Background" TargetName="border" Value="#30F1F1F1"/>
+            </Trigger>
+            <Trigger Property="IsFocused" Value="True">
                 <Setter Property="BorderThickness" TargetName="border" Value="2"/>
                 <Setter Property="BorderBrush" TargetName="border" Value="#F1F1F1"/>
                 <Setter Property="Background" TargetName="border" Value="#30F1F1F1"/>
@@ -49,12 +54,19 @@
             </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
+
+    <!--Button Template Black-->
     <ControlTemplate x:Key="ButtonTemplateBlack" TargetType="{x:Type Button}">
         <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
             <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
         </Border>
         <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="BorderThickness" TargetName="border" Value="2"/>
+                <Setter Property="BorderBrush" TargetName="border" Value="#1D1D1D"/>
+                <Setter Property="Background" TargetName="border" Value="#301D1D1D"/>
+            </Trigger>
+            <Trigger Property="IsFocused" Value="True">
                 <Setter Property="BorderThickness" TargetName="border" Value="2"/>
                 <Setter Property="BorderBrush" TargetName="border" Value="#1D1D1D"/>
                 <Setter Property="Background" TargetName="border" Value="#301D1D1D"/>
