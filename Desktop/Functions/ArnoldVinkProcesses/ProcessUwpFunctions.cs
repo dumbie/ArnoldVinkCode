@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -309,15 +308,39 @@ namespace ArnoldVinkCode
                 string[] imageFilesContrastBlack = imageFilesAllSizes.Where(x => x.Contains(searchContrastBlack)).ToArray();
                 if (imageFilesContrastNone.Count() > 0)
                 {
-                    return imageFilesContrastNone.LastOrDefault();
+                    bool containsSize = imageFilesContrastNone.Any(x => Path.GetFileNameWithoutExtension(x).Any(char.IsDigit));
+                    if (containsSize)
+                    {
+                        return imageFilesContrastNone.LastOrDefault();
+                    }
+                    else
+                    {
+                        return imageFilesContrastNone.FirstOrDefault();
+                    }
                 }
                 else if (imageFilesContrastBlack.Count() > 0)
                 {
-                    return imageFilesContrastBlack.LastOrDefault();
+                    bool containsSize = imageFilesContrastBlack.Any(x => Path.GetFileNameWithoutExtension(x).Any(char.IsDigit));
+                    if (containsSize)
+                    {
+                        return imageFilesContrastBlack.LastOrDefault();
+                    }
+                    else
+                    {
+                        return imageFilesContrastBlack.FirstOrDefault();
+                    }
                 }
                 else if (imageFilesAllSizes.Count() > 0)
                 {
-                    return imageFilesAllSizes.LastOrDefault();
+                    bool containsSize = imageFilesAllSizes.Any(x => Path.GetFileNameWithoutExtension(x).Any(char.IsDigit));
+                    if (containsSize)
+                    {
+                        return imageFilesAllSizes.LastOrDefault();
+                    }
+                    else
+                    {
+                        return imageFilesAllSizes.FirstOrDefault();
+                    }
                 }
                 else
                 {
