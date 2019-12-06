@@ -342,13 +342,9 @@ namespace ArnoldVinkCode
                         return imageFilesAllSizes.FirstOrDefault();
                     }
                 }
-                else
-                {
-                    return imagePath;
-                }
             }
             catch { }
-            return string.Empty;
+            return imagePath;
         }
 
         //Convert Indirect UWP application information to string
