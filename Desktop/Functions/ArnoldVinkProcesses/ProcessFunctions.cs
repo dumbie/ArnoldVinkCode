@@ -5,7 +5,6 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Automation;
 using static ArnoldVinkCode.AVInputOutputClass;
 using static ArnoldVinkCode.AVInputOutputKeyboard;
 using static ArnoldVinkCode.AVInteropCom;
@@ -98,34 +97,25 @@ namespace ArnoldVinkCode
                     await Task.Delay(100);
                 }
 
-                //Retry to show the window
-                for (int i = 0; i < 2; i++)
-                {
-                    try
-                    {
-                        //Allow changing window
-                        AllowSetForegroundWindow(processId);
-                        await Task.Delay(100);
+                //Allow changing window
+                AllowSetForegroundWindow(processId);
+                await Task.Delay(100);
 
-                        //Bring window to top
-                        BringWindowToTop(processWindowHandle);
-                        await Task.Delay(100);
+                //Bring window to top
+                BringWindowToTop(processWindowHandle);
+                await Task.Delay(100);
 
-                        //Switch to the window
-                        SwitchToThisWindow(processWindowHandle, true);
-                        await Task.Delay(100);
+                //Switch to the window
+                SwitchToThisWindow(processWindowHandle, true);
+                await Task.Delay(100);
 
-                        //Focus on the window
-                        AutomationElement automationElement = AutomationElement.FromHandle(processWindowHandle);
-                        automationElement.SetFocus();
-                        await Task.Delay(100);
+                //Focus on the window
+                UiaFocusWindowHandle(processWindowHandle);
+                await Task.Delay(100);
 
-                        //Disable the window as top most
-                        SetWindowPos(processWindowHandle, (IntPtr)WindowPosition.NoTopMost, 0, 0, 0, 0, (int)WindowSWP.NOMOVE | (int)WindowSWP.NOSIZE);
-                        await Task.Delay(100);
-                    }
-                    catch { }
-                }
+                //Disable the window as top most
+                SetWindowPos(processWindowHandle, (IntPtr)WindowPosition.NoTopMost, 0, 0, 0, 0, (int)WindowSWP.NOMOVE | (int)WindowSWP.NOSIZE);
+                await Task.Delay(100);
 
                 Debug.WriteLine("Changed process window: " + processTitle + " WindowHandle: " + processWindowHandle + " ShowCmd: " + windowStateCommand);
                 return true;

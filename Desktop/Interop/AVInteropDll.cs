@@ -439,6 +439,24 @@ namespace ArnoldVinkCode
             ForceMinimize = 11
         }
 
+        //AutomationElement
+        [DllImport("UIAutomationCore.dll", EntryPoint = "UiaNodeFromHandle")]
+        private static extern int RawUiaNodeFromHandle(IntPtr hWnd, out IntPtr hNode);
+        [DllImport("UIAutomationCore.dll", EntryPoint = "UiaNodeRelease")]
+        private static extern bool RawUiaNodeRelease(IntPtr hNode);
+        [DllImport("UIAutomationCore.dll", EntryPoint = "UiaSetFocus")]
+        private static extern int RawUiaSetFocus(IntPtr hNode);
+        public static void UiaFocusWindowHandle(IntPtr windowHandle)
+        {
+            try
+            {
+                RawUiaNodeFromHandle(windowHandle, out IntPtr hNode);
+                RawUiaSetFocus(hNode);
+                RawUiaNodeRelease(hNode);
+            }
+            catch { }
+        }
+
         //SystemParametersInfo
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
