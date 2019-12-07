@@ -6,16 +6,16 @@ namespace ArnoldVinkCode
 {
     public partial class ProcessNtQueryInformation
     {
-        public static string GetProcessParameterString(int ProcessId, USER_PROCESS_PARAMETERS RequestedProcessParameter)
+        public static string GetProcessParameterString(int processId, USER_PROCESS_PARAMETERS requestedProcessParameter)
         {
             string Parameterstring = string.Empty;
             try
             {
                 //Open the process for reading
-                IntPtr openProcessHandle = OpenProcess(ProcessAccessFlags.QueryInformation | ProcessAccessFlags.VirtualMemoryRead, false, ProcessId);
+                IntPtr openProcessHandle = OpenProcess(ProcessAccessFlags.QueryInformation | ProcessAccessFlags.VirtualMemoryRead, false, processId);
                 if (openProcessHandle == IntPtr.Zero)
                 {
-                    //Debug.WriteLine("Failed to open the process.");
+                    //Debug.WriteLine("Failed to open the process: " + processId);
                     return Parameterstring;
                 }
 
@@ -25,16 +25,16 @@ namespace ArnoldVinkCode
                 //Set the parameter offset
                 long userParameterOffset = 0;
                 long processParametersOffset = Windows64bits ? 0x20 : 0x10;
-                if (RequestedProcessParameter == USER_PROCESS_PARAMETERS.CurrentDirectoryPath) { userParameterOffset = Windows64bits ? 0x38 : 0x24; }
-                else if (RequestedProcessParameter == USER_PROCESS_PARAMETERS.ImagePathName) { userParameterOffset = Windows64bits ? 0x60 : 0x38; }
-                else if (RequestedProcessParameter == USER_PROCESS_PARAMETERS.CommandLine) { userParameterOffset = Windows64bits ? 0x70 : 0x40; }
+                if (requestedProcessParameter == USER_PROCESS_PARAMETERS.CurrentDirectoryPath) { userParameterOffset = Windows64bits ? 0x38 : 0x24; }
+                else if (requestedProcessParameter == USER_PROCESS_PARAMETERS.ImagePathName) { userParameterOffset = Windows64bits ? 0x60 : 0x38; }
+                else if (requestedProcessParameter == USER_PROCESS_PARAMETERS.CommandLine) { userParameterOffset = Windows64bits ? 0x70 : 0x40; }
 
                 //Read information from process
                 PROCESS_BASIC_INFORMATION process_basic_information = new PROCESS_BASIC_INFORMATION();
                 int ntQuery = NtQueryInformationProcess(openProcessHandle, PROCESSINFOCLASS.ProcessBasicInformation, ref process_basic_information, process_basic_information.Size, IntPtr.Zero);
                 if (ntQuery != 0)
                 {
-                    Debug.WriteLine("Failed to query information.");
+                    Debug.WriteLine("Failed to query information, from process: " + processId);
                     return Parameterstring;
                 }
 
@@ -42,21 +42,21 @@ namespace ArnoldVinkCode
                 long pebBaseAddress = process_basic_information.PebBaseAddress.ToInt64();
                 if (!ReadProcessMemory(openProcessHandle, new IntPtr(pebBaseAddress + processParametersOffset), ref process_parameter, new IntPtr(Marshal.SizeOf(process_parameter)), IntPtr.Zero))
                 {
-                    Debug.WriteLine("Failed to read parameter address.");
+                    Debug.WriteLine("Failed to read parameter address, from process: " + processId);
                     return Parameterstring;
                 }
 
                 UNICODE_string unicode_string = new UNICODE_string();
                 if (!ReadProcessMemory(openProcessHandle, new IntPtr(process_parameter.ToInt64() + userParameterOffset), ref unicode_string, new IntPtr(unicode_string.Size), IntPtr.Zero))
                 {
-                    Debug.WriteLine("Failed to read parameter unicode.");
+                    Debug.WriteLine("Failed to read parameter unicode, from process: " + processId);
                     return Parameterstring;
                 }
 
                 string converted_string = new string(' ', unicode_string.Length / 2);
                 if (!ReadProcessMemory(openProcessHandle, unicode_string.Buffer, converted_string, new IntPtr(unicode_string.Length), IntPtr.Zero))
                 {
-                    Debug.WriteLine("Failed to read parameter string.");
+                    Debug.WriteLine("Failed to read parameter string, from process: " + processId);
                     return Parameterstring;
                 }
 

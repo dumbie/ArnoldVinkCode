@@ -193,6 +193,8 @@ namespace ArnoldVinkCode
         {
             try
             {
+                //Debug.WriteLine("Loading app package: " + appUserModelId);
+
                 //Extract the family name from AppUserModelId
                 string appFamilyName = appUserModelId.Split('!')[0];
 
