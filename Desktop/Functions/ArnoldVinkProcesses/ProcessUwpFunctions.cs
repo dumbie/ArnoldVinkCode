@@ -46,6 +46,32 @@ namespace ArnoldVinkCode
             }
         }
 
+        //Get uwp process by window handle
+        public static Process GetUwpProcessByWindowHandle(IntPtr targetWindowHandle)
+        {
+            try
+            {
+                //Get process from the window handle
+                IntPtr threadWindowHandleEx = FindWindowEx(targetWindowHandle, IntPtr.Zero, "Windows.UI.Core.CoreWindow", null);
+                if (threadWindowHandleEx != IntPtr.Zero)
+                {
+                    GetWindowThreadProcessId(threadWindowHandleEx, out int processIdentifier);
+                    if (processIdentifier > 0)
+                    {
+                        return GetProcessById(processIdentifier);
+                    }
+                }
+
+                //Get process from the appx package
+                string appUserModelId = GetAppUserModelIdFromWindowHandle(targetWindowHandle);
+                Package appPackage = UwpGetAppPackageFromAppUserModelId(appUserModelId);
+                AppxDetails appxDetails = UwpGetAppxDetailsFromAppPackage(appPackage);
+                return GetUwpProcessByProcessNameAndAppUserModelId(Path.GetFileNameWithoutExtension(appxDetails.ExecutableName), appUserModelId);
+            }
+            catch { }
+            return null;
+        }
+
         //Get uwp process by ProcessName and AppUserModelId
         public static Process GetUwpProcessByProcessNameAndAppUserModelId(string targetProcessName, string targetAppUserModelId)
         {
@@ -121,12 +147,9 @@ namespace ArnoldVinkCode
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
             }
-            catch { return false; }
+            catch { }
+            return false;
         }
 
         //Get an uwp application window from CoreWindowHandle
@@ -260,7 +283,7 @@ namespace ArnoldVinkCode
             return appxDetails;
         }
 
-        //Get msi uwp resources string from package
+        //Get ms uwp resources string from package
         public static string UwpGetMsResourceString(string appIdentifier, string packageFullName, string resourceString)
         {
             string convertedString = string.Empty;

@@ -15,20 +15,15 @@ namespace ArnoldVinkCode
 
         public class ProcessMulti
         {
+            public string Title { get; set; } = "Unknown";
+            public string Name { get; set; } = string.Empty;
             public int Identifier { get; set; } = -1;
             public string Argument { get; set; } = string.Empty;
             public ProcessThreadCollection Threads { get; set; } = null;
             public ProcessType Type { get; set; } = ProcessType.Unknown;
             public IntPtr WindowHandle { get; set; } = IntPtr.Zero;
+            public string ClassName { get; set; } = string.Empty;
             public string Action { get; set; } = string.Empty;
-        }
-
-        public class ProcessFocus
-        {
-            public string Title { get; set; } = "Unknown";
-            public string ClassName { get; set; } = "Unknown";
-            public IntPtr WindowHandle { get; set; } = IntPtr.Zero;
-            public Process Process { get; set; } = null;
         }
     }
 }

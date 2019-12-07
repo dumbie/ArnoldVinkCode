@@ -23,8 +23,8 @@ namespace ArnoldVinkCode
         {
             try
             {
-                ProcessFocus currentProcess = GetFocusedProcess();
-                if (currentProcess.Process.ProcessName == "SearchUI")
+                ProcessMulti currentProcess = GetFocusedProcess();
+                if (currentProcess.Name == "SearchUI")
                 {
                     return true;
                 }
@@ -57,13 +57,13 @@ namespace ArnoldVinkCode
                     await Task.Delay(100);
                 }
 
-                //Check if Windows system menu is open
-                if (WindowsSystemMenuOpenCheck(processWindowHandle))
-                {
-                    Debug.WriteLine("The system menu is currently open, pressing escape to close it.");
-                    KeyPressSingleDown((byte)KeysVirtual.Escape, false);
-                    await Task.Delay(100);
-                }
+                ////Check if Windows system menu is open
+                //if (WindowsSystemMenuOpenCheck(processWindowHandle))
+                //{
+                //    Debug.WriteLine("The system menu is currently open, pressing escape to close it.");
+                //    KeyPressSingleDown((byte)KeysVirtual.Escape, false);
+                //    await Task.Delay(100);
+                //}
 
                 //Detect the previous window state
                 if (windowStateCommand == 0 && setWindowState)
@@ -91,7 +91,7 @@ namespace ArnoldVinkCode
                     await Task.Delay(100);
                 }
 
-                //Set the process window as top most
+                //Set the window as top most
                 if (setTempTopMost)
                 {
                     SetWindowPos(processWindowHandle, (IntPtr)WindowPosition.TopMost, 0, 0, 0, 0, (int)WindowSWP.NOMOVE | (int)WindowSWP.NOSIZE);
@@ -119,16 +119,12 @@ namespace ArnoldVinkCode
                         AutomationElement automationElement = AutomationElement.FromHandle(processWindowHandle);
                         automationElement.SetFocus();
                         await Task.Delay(100);
+
+                        //Disable the window as top most
+                        SetWindowPos(processWindowHandle, (IntPtr)WindowPosition.NoTopMost, 0, 0, 0, 0, (int)WindowSWP.NOMOVE | (int)WindowSWP.NOSIZE);
+                        await Task.Delay(100);
                     }
                     catch { }
-                }
-
-                //Disable the process window as top most
-                if (setTempTopMost)
-                {
-                    Debug.WriteLine("Disabling top most from process: " + processTitle);
-                    SetWindowPos(processWindowHandle, (IntPtr)WindowPosition.NoTopMost, 0, 0, 0, 0, (int)WindowSWP.NOMOVE | (int)WindowSWP.NOSIZE);
-                    await Task.Delay(100);
                 }
 
                 Debug.WriteLine("Changed process window: " + processTitle + " WindowHandle: " + processWindowHandle + " ShowCmd: " + windowStateCommand);
@@ -262,49 +258,50 @@ namespace ArnoldVinkCode
         }
 
         //Get the currently focused process
-        public static ProcessFocus GetFocusedProcess()
+        public static ProcessMulti GetFocusedProcess()
         {
             try
             {
-                AutomationElement FocusedSource = AutomationElement.FocusedElement;
-                ProcessFocus processFocus = new ProcessFocus();
-                processFocus.Process = GetProcessById(FocusedSource.Current.ProcessId);
-                processFocus.ClassName = FocusedSource.Current.ClassName;
+                ProcessMulti processMulti = new ProcessMulti();
 
                 //Get window handle
-                if (processFocus.Process.MainWindowHandle != IntPtr.Zero)
-                {
-                    processFocus.WindowHandle = processFocus.Process.MainWindowHandle;
-                }
-                else if (FocusedSource.Current.NativeWindowHandle != 0)
-                {
-                    if (FocusedSource.Current.ClassName == "ApplicationFrameWindow" || FocusedSource.Current.ClassName == "Windows.UI.Core.CoreWindow")
-                    {
-                        processFocus.WindowHandle = UwpGetWindowFromCoreWindowHandle(new IntPtr(FocusedSource.Current.NativeWindowHandle));
-                    }
-                    else
-                    {
-                        processFocus.WindowHandle = new IntPtr(FocusedSource.Current.NativeWindowHandle);
-                    }
-                }
-                else if (GetForegroundWindow() != IntPtr.Zero)
-                {
-                    processFocus.WindowHandle = GetForegroundWindow();
-                }
+                processMulti.WindowHandle = GetForegroundWindow();
 
-                //Get window title
-                if (!string.IsNullOrWhiteSpace(processFocus.Process.MainWindowTitle))
+                //Get window classname
+                processMulti.ClassName = GetClassNameFromWindowHandle(processMulti.WindowHandle);
+
+                //Get window process
+                Process focusedProcess = null;
+                if (processMulti.ClassName == "ApplicationFrameWindow")
                 {
-                    processFocus.Title = GetWindowTitleFromProcess(processFocus.Process);
+                    focusedProcess = GetUwpProcessByWindowHandle(processMulti.WindowHandle);
                 }
                 else
                 {
-                    processFocus.Title = GetWindowTitleFromWindowHandle(processFocus.WindowHandle);
+                    GetWindowThreadProcessId(processMulti.WindowHandle, out int processId);
+                    focusedProcess = GetProcessById(processId);
                 }
 
-                return processFocus;
+                //Set the identifier
+                processMulti.Identifier = focusedProcess.Id;
+
+                //Set the process name
+                processMulti.Name = focusedProcess.ProcessName;
+
+                //Get the window title
+                processMulti.Title = GetWindowTitleFromWindowHandle(processMulti.WindowHandle);
+                if (processMulti.Title == "Unknown")
+                {
+                    processMulti.Title = GetWindowTitleFromProcess(focusedProcess);
+                }
+
+                return processMulti;
             }
-            catch { return null; }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to get the focused process: " + ex.Message);
+                return null;
+            }
         }
 
         //Get a process by id safe return null
