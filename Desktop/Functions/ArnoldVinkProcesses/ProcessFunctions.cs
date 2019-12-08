@@ -97,21 +97,32 @@ namespace ArnoldVinkCode
                     await Task.Delay(100);
                 }
 
-                //Allow changing window
-                AllowSetForegroundWindow(processId);
-                await Task.Delay(100);
+                //Retry to show the window
+                for (int i = 0; i < 2; i++)
+                {
+                    try
+                    {
+                        //Allow changing window
+                        AllowSetForegroundWindow(processId);
+                        await Task.Delay(100);
 
-                //Bring window to top
-                BringWindowToTop(processWindowHandle);
-                await Task.Delay(100);
+                        //Bring window to top
+                        BringWindowToTop(processWindowHandle);
+                        await Task.Delay(100);
 
-                //Switch to the window
-                SwitchToThisWindow(processWindowHandle, true);
-                await Task.Delay(100);
+                        //Switch to the window
+                        SwitchToThisWindow(processWindowHandle, true);
+                        await Task.Delay(100);
 
-                //Focus on the window
-                UiaFocusWindowHandle(processWindowHandle);
-                await Task.Delay(100);
+                        //Focus on the window
+                        UiaFocusWindowHandle(processWindowHandle);
+                        await Task.Delay(100);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("Process focus error: " + ex.Message);
+                    }
+                }
 
                 //Disable the window as top most
                 if (setTempTopMost)
