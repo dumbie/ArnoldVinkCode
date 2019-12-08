@@ -114,8 +114,11 @@ namespace ArnoldVinkCode
                 await Task.Delay(100);
 
                 //Disable the window as top most
-                SetWindowPos(processWindowHandle, (IntPtr)WindowPosition.NoTopMost, 0, 0, 0, 0, (int)WindowSWP.NOMOVE | (int)WindowSWP.NOSIZE);
-                await Task.Delay(100);
+                if (setTempTopMost)
+                {
+                    SetWindowPos(processWindowHandle, (IntPtr)WindowPosition.NoTopMost, 0, 0, 0, 0, (int)WindowSWP.NOMOVE | (int)WindowSWP.NOSIZE);
+                    await Task.Delay(100);
+                }
 
                 Debug.WriteLine("Changed process window: " + processTitle + " WindowHandle: " + processWindowHandle + " ShowCmd: " + windowStateCommand);
                 return true;
