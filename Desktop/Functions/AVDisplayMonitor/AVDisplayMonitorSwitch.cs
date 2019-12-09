@@ -7,12 +7,6 @@ namespace ArnoldVinkCode
 {
     public partial class AVDisplayMonitor
     {
-        public class DisplayMonitorSummary
-        {
-            public uint Id = 0;
-            public string Name = string.Empty;
-        }
-
         public static bool EnableMonitorFirst()
         {
             try
@@ -162,7 +156,7 @@ namespace ArnoldVinkCode
                         if (pathInfo.targetInfo.targetAvailable)
                         {
                             uint monitorId = pathInfo.targetInfo.id;
-                            if (!monitorListSummary.Any(x => x.Id == monitorId))
+                            if (!monitorListSummary.Any(x => x.Identifier == monitorId))
                             {
                                 //Check if the monitor id is valid
                                 if (monitorId > validationId)
@@ -182,7 +176,7 @@ namespace ArnoldVinkCode
                                     monitorName = monitorName + " (" + monitorId + ")";
 
                                     //Add monitor to summary list
-                                    monitorListSummary.Add(new DisplayMonitorSummary() { Id = monitorId, Name = monitorName });
+                                    monitorListSummary.Add(new DisplayMonitorSummary() { Identifier = monitorId, Name = monitorName });
                                 }
                             }
                         }
