@@ -6,14 +6,8 @@ using static ArnoldVinkCode.AVInteropCom;
 
 namespace ArnoldVinkCode
 {
-    public class AVSwitchAudioDevice
+    public partial class AVAudioDevice
     {
-        public class AudioDeviceSummary
-        {
-            public string Id = string.Empty;
-            public string Name = string.Empty;
-        }
-
         //Set a new default audio device
         public static bool SetDefaultDevice(string deviceId)
         {
@@ -48,7 +42,7 @@ namespace ArnoldVinkCode
                 propertyStore.GetValue(ref PKEY_Device_FriendlyName, out propertyVariant);
                 string deviceName = Marshal.PtrToStringUni(propertyVariant.pwszVal);
 
-                return new AudioDeviceSummary() { Id = deviceId, Name = deviceName };
+                return new AudioDeviceSummary() { Identifier = deviceId, Name = deviceName };
             }
             catch
             {
@@ -81,7 +75,7 @@ namespace ArnoldVinkCode
                     string deviceName = Marshal.PtrToStringUni(propertyVariant.pwszVal);
 
                     //Add device to summary list
-                    deviceListSummary.Add(new AudioDeviceSummary() { Id = deviceId, Name = deviceName });
+                    deviceListSummary.Add(new AudioDeviceSummary() { Identifier = deviceId, Name = deviceName });
                 }
 
                 return deviceListSummary;

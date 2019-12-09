@@ -41,9 +41,9 @@ namespace IMMDevice
         void SetProcessingPeriod();
         void GetShareMode();
         void SetShareMode();
-        void GetPropertyValue([MarshalAs(UnmanagedType.LPWStr)]string wszDeviceId, ref PropertyKey pKey, ref PropertyVariant pVar);
-        void SetPropertyValue([MarshalAs(UnmanagedType.LPWStr)]string wszDeviceId, ref PropertyKey pKey, ref PropertyVariant pVar);
-        void SetDefaultEndpoint([MarshalAs(UnmanagedType.LPWStr)]string wszDeviceId, ERole eRole);
-        void SetEndpointVisibility([MarshalAs(UnmanagedType.LPWStr)]string wszDeviceId, [MarshalAs(UnmanagedType.I2)]short isVisible);
+        void GetPropertyValue([MarshalAs(UnmanagedType.LPWStr)] string wszDeviceId, ref PropertyKey pKey, ref PropertyVariant pVar);
+        void SetPropertyValue([MarshalAs(UnmanagedType.LPWStr)] string wszDeviceId, ref PropertyKey pKey, ref PropertyVariant pVar);
+        void SetDefaultEndpoint([MarshalAs(UnmanagedType.LPWStr)] string wszDeviceId, ERole eRole);
+        void SetEndpointVisibility([MarshalAs(UnmanagedType.LPWStr)] string wszDeviceId, [MarshalAs(UnmanagedType.I2)] short isVisible);
     }
 }

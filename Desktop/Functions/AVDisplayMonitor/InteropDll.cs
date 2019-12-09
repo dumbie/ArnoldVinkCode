@@ -2,7 +2,7 @@
 
 namespace ArnoldVinkCode
 {
-    public partial class AVSwitchDisplayMonitor
+    public partial class AVDisplayMonitor
     {
         private enum SetDisplayConfig_Flags : uint
         {

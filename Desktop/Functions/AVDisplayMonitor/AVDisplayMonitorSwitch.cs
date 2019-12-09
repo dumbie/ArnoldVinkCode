@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace ArnoldVinkCode
 {
-    public partial class AVSwitchDisplayMonitor
+    public partial class AVDisplayMonitor
     {
         public class DisplayMonitorSummary
         {
