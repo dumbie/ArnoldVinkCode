@@ -93,5 +93,28 @@ namespace ArnoldVinkCode
                 Debug.WriteLine("Failed to switch the mute status.");
             }
         }
+
+        //Get the audio device mute status
+        public static bool GetAudioMuteStatus()
+        {
+            try
+            {
+                IMMDeviceEnumerator deviceEnumerator = (IMMDeviceEnumerator)new MMDeviceEnumerator();
+                IMMDevice.IMMDevice deviceItem = deviceEnumerator.GetDefaultAudioEndpoint(EDataFlow.eRender, ERole.eMultimedia);
+
+                //Get the audio device volume endpoint
+                deviceItem.Activate(typeof(IAudioEndpointVolume).GUID, 0, IntPtr.Zero, out object deviceActivated);
+                IAudioEndpointVolume audioEndPointVolume = (IAudioEndpointVolume)deviceActivated;
+
+                //Get the current mute status
+                audioEndPointVolume.GetMute(out bool muteStatus);
+                return muteStatus;
+            }
+            catch
+            {
+                Debug.WriteLine("Failed to get the mute status.");
+                return false;
+            }
+        }
     }
 }
