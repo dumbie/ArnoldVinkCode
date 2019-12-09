@@ -7,7 +7,7 @@ namespace ArnoldVinkCode
     public partial class AVAudioDevice
     {
         //Set the current audio device volume (0-100)
-        public static bool SetAudioVolume(int targetVolume)
+        public static bool AudioVolumeSet(int targetVolume)
         {
             try
             {
@@ -19,18 +19,11 @@ namespace ArnoldVinkCode
                 IAudioEndpointVolume audioEndPointVolume = (IAudioEndpointVolume)deviceActivated;
 
                 //Check the target volume
-                if (targetVolume > 100)
-                {
-                    targetVolume = 100;
-                }
-
-                if (targetVolume < 0)
-                {
-                    targetVolume = 0;
-                }
+                if (targetVolume > 100) { targetVolume = 100; }
+                if (targetVolume < 0) { targetVolume = 0; }
 
                 //Set the audio device volume
-                float volumeLevelFloat = (float)(targetVolume / 100F);
+                float volumeLevelFloat = targetVolume / 100F;
                 audioEndPointVolume.SetMasterVolumeLevelScalar(volumeLevelFloat, Guid.Empty);
 
                 Debug.WriteLine("Set volume: " + targetVolume + "% / " + volumeLevelFloat);
@@ -43,8 +36,8 @@ namespace ArnoldVinkCode
             }
         }
 
-        //Get the current audio device volume (0-100)
-        public static int GetAudioVolume()
+        //Up the current audio device volume (0-100)
+        public static bool AudioVolumeUp(int targetStep)
         {
             try
             {
@@ -56,8 +49,74 @@ namespace ArnoldVinkCode
                 IAudioEndpointVolume audioEndPointVolume = (IAudioEndpointVolume)deviceActivated;
 
                 //Get the audio device volume
-                audioEndPointVolume.GetMasterVolumeLevelScalar(out float volumeLevelFloat);
-                int volumeLevelInt = Convert.ToInt32(volumeLevelFloat * 100);
+                audioEndPointVolume.GetMasterVolumeLevelScalar(out float volumeLevelCurrentFloat);
+                float volumeLevelFloat = volumeLevelCurrentFloat + (targetStep / 100F);
+
+                //Check the target volume
+                if (volumeLevelFloat > 1.00) { volumeLevelFloat = 1.00F; }
+                if (volumeLevelFloat < 0.00) { volumeLevelFloat = 0.00F; }
+
+                //Change the audio device volume
+                audioEndPointVolume.SetMasterVolumeLevelScalar(volumeLevelFloat, Guid.Empty);
+
+                Debug.WriteLine("Up volume: " + targetStep + "% / " + volumeLevelFloat);
+                return true;
+            }
+            catch
+            {
+                Debug.WriteLine("Failed to up the audio device volume.");
+                return false;
+            }
+        }
+
+        //Down the current audio device volume (0-100)
+        public static bool AudioVolumeDown(int targetStep)
+        {
+            try
+            {
+                IMMDeviceEnumerator deviceEnumerator = (IMMDeviceEnumerator)new MMDeviceEnumerator();
+                IMMDevice.IMMDevice deviceItem = deviceEnumerator.GetDefaultAudioEndpoint(EDataFlow.eRender, ERole.eMultimedia);
+
+                //Get the audio device volume endpoint
+                deviceItem.Activate(typeof(IAudioEndpointVolume).GUID, 0, IntPtr.Zero, out object deviceActivated);
+                IAudioEndpointVolume audioEndPointVolume = (IAudioEndpointVolume)deviceActivated;
+
+                //Get the audio device volume
+                audioEndPointVolume.GetMasterVolumeLevelScalar(out float volumeLevelCurrentFloat);
+                float volumeLevelFloat = volumeLevelCurrentFloat - (targetStep / 100F);
+
+                //Check the target volume
+                if (volumeLevelFloat > 1.00) { volumeLevelFloat = 1.00F; }
+                if (volumeLevelFloat < 0.00) { volumeLevelFloat = 0.00F; }
+
+                //Change the audio device volume
+                audioEndPointVolume.SetMasterVolumeLevelScalar(volumeLevelFloat, Guid.Empty);
+
+                Debug.WriteLine("Down volume: " + targetStep + "% / " + volumeLevelFloat);
+                return true;
+            }
+            catch
+            {
+                Debug.WriteLine("Failed to down the audio device volume.");
+                return false;
+            }
+        }
+
+        //Get the current audio device volume (0-100)
+        public static int AudioVolumeGet()
+        {
+            try
+            {
+                IMMDeviceEnumerator deviceEnumerator = (IMMDeviceEnumerator)new MMDeviceEnumerator();
+                IMMDevice.IMMDevice deviceItem = deviceEnumerator.GetDefaultAudioEndpoint(EDataFlow.eRender, ERole.eMultimedia);
+
+                //Get the audio device volume endpoint
+                deviceItem.Activate(typeof(IAudioEndpointVolume).GUID, 0, IntPtr.Zero, out object deviceActivated);
+                IAudioEndpointVolume audioEndPointVolume = (IAudioEndpointVolume)deviceActivated;
+
+                //Get the audio device volume
+                audioEndPointVolume.GetMasterVolumeLevelScalar(out float volumeLevelCurrentFloat);
+                int volumeLevelInt = Convert.ToInt32(volumeLevelCurrentFloat * 100);
 
                 //Debug.WriteLine("Current volume: " + volumeLevelInt + "%");
                 return volumeLevelInt;
@@ -70,7 +129,7 @@ namespace ArnoldVinkCode
         }
 
         //Switch the audio device mute status
-        public static void SwitchAudioMute()
+        public static void AudioMuteSwitch()
         {
             try
             {
@@ -95,7 +154,7 @@ namespace ArnoldVinkCode
         }
 
         //Get the audio device mute status
-        public static bool GetAudioMuteStatus()
+        public static bool AudioMuteGetStatus()
         {
             try
             {
