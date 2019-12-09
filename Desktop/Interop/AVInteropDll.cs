@@ -72,6 +72,51 @@ namespace ArnoldVinkCode
         public static extern int SHLoadIndirectString(string pszSource, StringBuilder pszOutBuf, int cchOutBuf, IntPtr ppvReserved);
         [DllImport("shlwapi.dll", CharSet = CharSet.Unicode)]
         public static extern int SHCreateStreamOnFileEx(string pszFile, STGM_MODES grfMode, int dwAttributes, bool fCreate, IntPtr pstmTemplate, out IStream ppstm);
+        [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
+        public static extern int SHFileOperation(ref SHFILEOPSTRUCT shFileOpstruct);
+
+        public enum FILEOP_FUNC : uint
+        {
+            FO_MOVE = 0x0001,
+            FO_COPY = 0x0002,
+            FO_DELETE = 0x0003,
+            FO_RENAME = 0x0004,
+        }
+
+        public enum FILEOP_FLAGS : ushort
+        {
+            FOF_MULTIDESTFILES = 0x1,
+            FOF_CONFIRMMOUSE = 0x2,
+            FOF_SILENT = 0x4,
+            FOF_RENAMEONCOLLISION = 0x8,
+            FOF_NOCONFIRMATION = 0x10,
+            FOF_WANTMAPPINGHANDLE = 0x20,
+            FOF_ALLOWUNDO = 0x40,
+            FOF_FILESONLY = 0x80,
+            FOF_SIMPLEPROGRESS = 0x100,
+            FOF_NOCONFIRMMKDIR = 0x200,
+            FOF_NOERRORUI = 0x400,
+            FOF_NOCOPYSECURITYATTRIBS = 0x800,
+            FOF_NORECURSION = 0x1000,
+            FOF_NO_CONNECTED_ELEMENTS = 0x2000,
+            FOF_WANTNUKEWARNING = 0x4000,
+            FOF_NORECURSEREPARSE = 0x8000
+        }
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        public struct SHFILEOPSTRUCT
+        {
+            public IntPtr hWnd;
+            [MarshalAs(UnmanagedType.U4)]
+            public FILEOP_FUNC wFunc;
+            public string pFrom;
+            public string pTo;
+            public FILEOP_FLAGS fFlags;
+            [MarshalAs(UnmanagedType.Bool)]
+            public bool fAnyOperationsAborted;
+            public IntPtr hNameMappings;
+            public string lpszProgressTitle;
+        }
 
         public enum STGM_MODES : int
         {
