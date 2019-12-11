@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using System.Runtime.Serialization.Formatters.Binary;
 
@@ -7,6 +8,18 @@ namespace ArnoldVinkCode
 {
     public partial class AVClassConverters
     {
+        //Clone existing class object
+        public static T CloneClassObject<T>(T classObject) where T : class
+        {
+            try
+            {
+                MethodInfo methodIndo = classObject.GetType().GetMethod("MemberwiseClone", BindingFlags.Instance | BindingFlags.NonPublic);
+                return (T)methodIndo?.Invoke(classObject, null);
+            }
+            catch { }
+            return null;
+        }
+
         //Convert bytes to hex string
         public static byte[] GetHexStringToBytes(string value)
         {
