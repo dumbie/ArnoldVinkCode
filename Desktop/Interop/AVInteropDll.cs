@@ -74,13 +74,22 @@ namespace ArnoldVinkCode
         public static extern int SHCreateStreamOnFileEx(string pszFile, STGM_MODES grfMode, int dwAttributes, bool fCreate, IntPtr pstmTemplate, out IStream ppstm);
         [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
         public static extern int SHFileOperation(ref SHFILEOPSTRUCT shFileOpstruct);
+        [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
+        public static extern uint SHEmptyRecycleBin(IntPtr hWnd, string pszRootPath, RecycleBin_FLAGS dwFlags);
+
+        public enum RecycleBin_FLAGS : uint
+        {
+            SHRB_NOCONFIRMATION = 0x00000001,
+            SHRB_NOPROGRESSUI = 0x00000002,
+            SHRB_NOSOUND = 0x00000004
+        }
 
         public enum FILEOP_FUNC : uint
         {
             FO_MOVE = 0x0001,
             FO_COPY = 0x0002,
             FO_DELETE = 0x0003,
-            FO_RENAME = 0x0004,
+            FO_RENAME = 0x0004
         }
 
         public enum FILEOP_FLAGS : ushort
