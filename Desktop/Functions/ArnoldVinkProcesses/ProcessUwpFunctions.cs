@@ -251,26 +251,26 @@ namespace ArnoldVinkCode
                     //Check the largest available square logo
                     if (!string.IsNullOrWhiteSpace(appxDetails.Square310x310Logo))
                     {
-                        appxDetails.SquareLargestLogoPath = appxDetails.InstallPath + "\\" + appxDetails.Square310x310Logo;
+                        appxDetails.SquareLargestLogoPath = Path.Combine(appxDetails.InstallPath, appxDetails.Square310x310Logo);
                     }
                     else if (!string.IsNullOrWhiteSpace(appxDetails.Square150x150Logo))
                     {
-                        appxDetails.SquareLargestLogoPath = appxDetails.InstallPath + "\\" + appxDetails.Square150x150Logo;
+                        appxDetails.SquareLargestLogoPath = Path.Combine(appxDetails.InstallPath, appxDetails.Square150x150Logo);
                     }
                     else if (!string.IsNullOrWhiteSpace(appxDetails.Square70x70Logo))
                     {
-                        appxDetails.SquareLargestLogoPath = appxDetails.InstallPath + "\\" + appxDetails.Square70x70Logo;
+                        appxDetails.SquareLargestLogoPath = Path.Combine(appxDetails.InstallPath, appxDetails.Square70x70Logo);
                     }
                     else if (!string.IsNullOrWhiteSpace(appxDetails.Square30x30Logo))
                     {
-                        appxDetails.SquareLargestLogoPath = appxDetails.InstallPath + "\\" + appxDetails.Square30x30Logo;
+                        appxDetails.SquareLargestLogoPath = Path.Combine(appxDetails.InstallPath, appxDetails.Square30x30Logo);
                     }
                     appxDetails.SquareLargestLogoPath = UwpGetImageSizePath(appxDetails.SquareLargestLogoPath);
 
                     //Check the largest available wide logo
                     if (!string.IsNullOrWhiteSpace(appxDetails.Wide310x310Logo))
                     {
-                        appxDetails.WideLargestLogoPath = appxDetails.InstallPath + "\\" + appxDetails.Wide310x310Logo;
+                        appxDetails.WideLargestLogoPath = Path.Combine(appxDetails.InstallPath, appxDetails.Wide310x310Logo);
                     }
                     appxDetails.WideLargestLogoPath = UwpGetImageSizePath(appxDetails.WideLargestLogoPath);
                 }

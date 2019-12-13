@@ -201,8 +201,7 @@
 
     <!--ProgressBar Styles-->
     <Style x:Key="ProgressBarAccent" TargetType="ProgressBar">
-        <Setter Property="Height" Value="3"/>
-        <Setter Property="Margin" Value="0,3,0,3"/>
+        <Setter Property="Height" Value="4"/>
         <Setter Property="Background" Value="#CDCDCD"/>
         <Setter Property="BorderBrush" Value="#CDCDCD"/>
         <Setter Property="Foreground" Value="{DynamicResource ApplicationAccentLightBrush}"/>
