@@ -11,21 +11,21 @@ namespace ArnoldVinkCode
         //async void TaskAction() { void(); }
         //AVActions.TaskStart(TaskAction, null);
         //Tip: Don't forget to use try and catch to improve stability
-        public static Task TaskStart(Action ActionRun, CancellationTokenSource TaskToken)
+        public static Task TaskStart(Action actionRun, CancellationTokenSource taskToken)
         {
             try
             {
-                if (TaskToken == null)
+                if (taskToken == null)
                 {
-                    TaskToken = new CancellationTokenSource();
-                    using (TaskToken)
+                    taskToken = new CancellationTokenSource();
+                    using (taskToken)
                     {
-                        return Task.Run(ActionRun, TaskToken.Token);
+                        return Task.Run(actionRun, taskToken.Token);
                     }
                 }
                 else
                 {
-                    return Task.Run(ActionRun, TaskToken.Token);
+                    return Task.Run(actionRun, taskToken.Token);
                 }
             }
             catch (Exception ex)
@@ -35,24 +35,50 @@ namespace ArnoldVinkCode
             }
         }
 
-        //async Task<string> TaskAction() { return ""; }
-        //AVActions.TaskStartReturn(TaskAction, null);
+        //async Task TaskAction() { void(); }
+        //await AVActions.TaskStartAsync(TaskAction, null);
         //Tip: Don't forget to use try and catch to improve stability
-        public static Task<T> TaskStartReturn<T>(Func<T> ActionRun, CancellationTokenSource TaskToken)
+        public static async Task TaskStartAsync(Func<Task> actionRun, CancellationTokenSource taskToken)
         {
             try
             {
-                if (TaskToken == null)
+                if (taskToken == null)
                 {
-                    TaskToken = new CancellationTokenSource();
-                    using (TaskToken)
+                    taskToken = new CancellationTokenSource();
+                    using (taskToken)
                     {
-                        return Task.Run(ActionRun, TaskToken.Token);
+                        await Task.Run(actionRun, taskToken.Token);
                     }
                 }
                 else
                 {
-                    return Task.Run(ActionRun, TaskToken.Token);
+                    await Task.Run(actionRun, taskToken.Token);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to start task: " + ex.Message);
+            }
+        }
+
+        //string TaskAction() { return ""; }
+        //await AVActions.TaskStartReturn(TaskAction, null);
+        //Tip: Don't forget to use try and catch to improve stability
+        public static Task<T> TaskStartReturn<T>(Func<T> actionRun, CancellationTokenSource taskToken)
+        {
+            try
+            {
+                if (taskToken == null)
+                {
+                    taskToken = new CancellationTokenSource();
+                    using (taskToken)
+                    {
+                        return Task.Run(actionRun, taskToken.Token);
+                    }
+                }
+                else
+                {
+                    return Task.Run(actionRun, taskToken.Token);
                 }
             }
             catch (Exception ex)
@@ -63,26 +89,26 @@ namespace ArnoldVinkCode
         }
 
         //Check if a task is still running
-        public static bool TaskRunningCheck(CancellationTokenSource TaskToken)
+        public static bool TaskRunningCheck(CancellationTokenSource taskToken)
         {
             try
             {
-                return TaskToken != null && !TaskToken.IsCancellationRequested;
+                return taskToken != null && !taskToken.IsCancellationRequested;
             }
             catch { }
             return false;
         }
 
         //Example: AVActions.TaskStop(Task, Token);
-        public async static Task TaskStop(Task TaskStop, CancellationTokenSource TaskToken)
+        public async static Task TaskStop(Task taskStop, CancellationTokenSource taskToken)
         {
             try
             {
                 //Cancel the task token
-                TaskToken.Cancel();
+                taskToken.Cancel();
 
                 //Wait for task loop
-                while (!TaskStop.IsCompleted)
+                while (!taskStop.IsCompleted)
                 {
                     Debug.WriteLine("Waiting for task loop to complete.");
                     await Task.Delay(500);
@@ -92,8 +118,8 @@ namespace ArnoldVinkCode
                 await Task.Delay(1000);
 
                 //Dispose the used task
-                TaskStop.Dispose();
-                TaskToken.Dispose();
+                taskStop.Dispose();
+                taskToken.Dispose();
             }
             catch (Exception ex)
             {
@@ -104,11 +130,11 @@ namespace ArnoldVinkCode
         //async void DispatchAction() { void(); }
         //AVActions.ActionDispatcherInvoke(DispatchAction, null);
         //Tip: Don't forget to use try and catch to improve stability
-        public static void ActionDispatcherInvoke(Action ActionRun)
+        public static void ActionDispatcherInvoke(Action actionRun)
         {
             try
             {
-                Application.Current.Dispatcher.Invoke(ActionRun);
+                Application.Current.Dispatcher.Invoke(actionRun);
             }
             catch { }
         }
@@ -116,11 +142,11 @@ namespace ArnoldVinkCode
         //async void DispatchAction() { void(); }
         //await AVActions.ActionDispatcherInvokeAsync(DispatchAction, null);
         //Tip: Don't forget to use try and catch to improve stability
-        public static async Task ActionDispatcherInvokeAsync(Action ActionRun)
+        public static async Task ActionDispatcherInvokeAsync(Action actionRun)
         {
             try
             {
-                await Application.Current.Dispatcher.InvokeAsync(ActionRun);
+                await Application.Current.Dispatcher.InvokeAsync(actionRun);
             }
             catch { }
         }
