@@ -297,6 +297,7 @@
         <Setter Property="Foreground" Value="#F1F1F1"/>
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
     </Style>
 
     <Style x:Key="ListBoxUniformGrid" TargetType="ListBox">
@@ -305,6 +306,7 @@
         <Setter Property="Foreground" Value="#F1F1F1"/>
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
     </Style>
 
     <Style x:Key="ListBoxVertical" TargetType="ListBox">
@@ -313,6 +315,7 @@
         <Setter Property="Foreground" Value="#F1F1F1"/>
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
     </Style>
 
     <Style x:Key="ListBoxHorizontal" TargetType="ListBox">
@@ -320,13 +323,10 @@
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
         <Setter Property="Foreground" Value="#F1F1F1"/>
         <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
     </Style>
 
-    <Style x:Key="ListBoxMenuStackPanel" TargetType="StackPanel">
-        <Setter Property="Width" Value="90"/>
-        <Setter Property="Height" Value="80"/>
-    </Style>
-
+    <!--ListBoxItem Styles-->
     <Style x:Key="ListBoxItemPaddingBlackVertical" TargetType="ListBoxItem">
         <Setter Property="Padding" Value="0,3,0,3"/>
         <Setter Property="BorderThickness" Value="2"/>
@@ -365,6 +365,12 @@
 
     <Style x:Key="ListBoxItemDisabled" TargetType="ListBoxItem">
         <Setter Property="IsEnabled" Value="False"/>
+    </Style>
+
+    <!--StackPanel Styles-->
+    <Style x:Key="ListBoxMenuStackPanel" TargetType="StackPanel">
+        <Setter Property="Width" Value="90"/>
+        <Setter Property="Height" Value="80"/>
     </Style>
 
     <!--ScrollViewer Styles-->
