@@ -336,6 +336,28 @@ namespace ArnoldVinkCode
             catch { }
         }
 
+        //Convert bytes size to display string
+        public static string ConvertBytesSizeToString(float bytesRaw)
+        {
+            try
+            {
+                int bytesCounter = 0;
+                while (bytesRaw / 1024 >= 1)
+                {
+                    try
+                    {
+                        bytesRaw = bytesRaw / 1024;
+                        bytesCounter++;
+                    }
+                    catch { }
+                }
+                string[] formatBytesSuffix = { "B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
+                return bytesRaw.ToString("0.00") + formatBytesSuffix[bytesCounter];
+            }
+            catch { }
+            return "Unknown";
+        }
+
         //Check if a file exists in app
         public static bool AppFileExists(string FileName)
         {
