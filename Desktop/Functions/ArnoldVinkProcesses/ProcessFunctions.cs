@@ -17,30 +17,48 @@ namespace ArnoldVinkCode
 {
     public partial class ProcessFunctions
     {
-        //Check if start menu, cortana or search is open
-        public static bool WindowsStartMenuOpenCheck()
+        //Close open start menu, cortana or search
+        public static async Task CloseOpenWindowsStartMenu(ProcessMulti foregroundProcess)
         {
             try
             {
-                ProcessMulti currentProcess = GetFocusedProcess();
-                if (currentProcess.Name == "SearchUI")
+                if (foregroundProcess.Name == "SearchUI")
                 {
-                    return true;
+                    Debug.WriteLine("Start menu is currently open, pressing escape to close it.");
+                    KeyPressSingleDown((byte)KeysVirtual.Escape, false);
+                    await Task.Delay(100);
                 }
             }
             catch { }
-            return false;
         }
 
-        //Check if a Windows system menu is open
-        public static bool WindowsSystemMenuOpenCheck(IntPtr windowHandleTarget)
+        //Close open Windows system menu
+        public static async Task CloseOpenWindowsSystemMenu(ProcessMulti foregroundProcess)
         {
             try
             {
-                //Improve: code workaround to close an open system menu.
+                Debug.WriteLine("Closing system menu for window: " + foregroundProcess.WindowHandle);
+                SendMessage(foregroundProcess.WindowHandle, (int)WindowMessages.WM_CANCELMODE, 0, 0);
+                await Task.Delay(100);
             }
             catch { }
-            return false;
+        }
+
+        //Close open Windows admin prompt
+        public static async Task CloseOpenWindowsAdminPrompt()
+        {
+            try
+            {
+                if (GetProcessByNameOrTitle("consent", false) != null)
+                {
+                    Debug.WriteLine("Admin consent prompt is open, killing the process.");
+                    CloseProcessesByNameOrTitle("consent", false);
+                    await Task.Delay(500);
+                    KeyPressSingleDown((byte)KeysVirtual.Escape, false);
+                    await Task.Delay(100);
+                }
+            }
+            catch { }
         }
 
         //Focus on a process window
@@ -48,21 +66,17 @@ namespace ArnoldVinkCode
         {
             try
             {
-                //Close open start menu, cortana or search
-                if (WindowsStartMenuOpenCheck())
-                {
-                    Debug.WriteLine("The start menu is currently open, pressing escape to close it.");
-                    KeyPressSingleDown((byte)KeysVirtual.Escape, false);
-                    await Task.Delay(100);
-                }
+                //Close open Windows admin prompt
+                await CloseOpenWindowsAdminPrompt();
 
-                ////Check if Windows system menu is open
-                //if (WindowsSystemMenuOpenCheck(processWindowHandle))
-                //{
-                //    Debug.WriteLine("The system menu is currently open, pressing escape to close it.");
-                //    KeyPressSingleDown((byte)KeysVirtual.Escape, false);
-                //    await Task.Delay(100);
-                //}
+                //Get the current focused application
+                ProcessMulti foregroundProcess = GetFocusedProcess();
+
+                //Close open start menu, cortana or search
+                await CloseOpenWindowsStartMenu(foregroundProcess);
+
+                //Close open Windows system menu
+                await CloseOpenWindowsSystemMenu(foregroundProcess);
 
                 //Detect the previous window state
                 if (windowStateCommand == 0 && setWindowState)
@@ -250,13 +264,13 @@ namespace ArnoldVinkCode
         }
 
         //Get the class name from window handle
-        public static string GetClassNameFromWindowHandle(IntPtr TargetWindowHandle)
+        public static string GetClassNameFromWindowHandle(IntPtr targetWindowHandle)
         {
             try
             {
-                StringBuilder ClassNameBuilder = new StringBuilder(256);
-                GetClassName(TargetWindowHandle, ClassNameBuilder, ClassNameBuilder.Capacity);
-                return ClassNameBuilder.ToString();
+                StringBuilder classNameBuilder = new StringBuilder(256);
+                GetClassName(targetWindowHandle, classNameBuilder, classNameBuilder.Capacity);
+                return classNameBuilder.ToString();
             }
             catch { return string.Empty; }
         }

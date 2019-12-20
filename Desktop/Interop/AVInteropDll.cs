@@ -378,6 +378,7 @@ namespace ArnoldVinkCode
             WH_KEYBOARD_LL = 13,
             WH_MOUSE_LL = 14,
             WM_CLOSE = 0x0010,
+            WM_CANCELMODE = 0x001F,
             WM_QUIT = 0x0012
         }
 
