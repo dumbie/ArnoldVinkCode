@@ -51,25 +51,6 @@ namespace ArnoldVinkCode
             catch { }
         }
 
-        //Simulate single key press down only
-        public static void KeyPressSingleDown(byte virtualKey, bool ExtendedKey)
-        {
-            try
-            {
-                byte scanByte = Convert.ToByte(MapVirtualKey(virtualKey, MAPVK_VK_TO_VSC));
-                uint KeyFlagsDown = KEYEVENTF_NONE;
-
-                if (ExtendedKey)
-                {
-                    scanByte = Convert.ToByte(MapVirtualKey(virtualKey, MAPVK_VK_TO_VSC_EX));
-                    KeyFlagsDown = KEYEVENTF_EXTENDEDKEY | KEYEVENTF_NONE;
-                }
-
-                keybd_event(virtualKey, scanByte, KeyFlagsDown, 0); //Key Press
-            }
-            catch { }
-        }
-
         //Simulate combo key press
         public static void KeyPressCombo(byte Modifier, byte virtualKey, bool ExtendedKey)
         {

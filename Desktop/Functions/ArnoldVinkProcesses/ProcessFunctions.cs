@@ -25,7 +25,7 @@ namespace ArnoldVinkCode
                 if (foregroundProcess.Name == "SearchUI")
                 {
                     Debug.WriteLine("Start menu is currently open, pressing escape to close it.");
-                    KeyPressSingleDown((byte)KeysVirtual.Escape, false);
+                    KeyPressSingle((byte)KeysVirtual.Escape, false);
                     await Task.Delay(100);
                 }
             }
@@ -52,10 +52,13 @@ namespace ArnoldVinkCode
                 if (GetProcessByNameOrTitle("consent", false) != null)
                 {
                     Debug.WriteLine("Admin consent prompt is open, killing the process.");
-                    CloseProcessesByNameOrTitle("consent", false);
+                    bool closedProcess = CloseProcessesByNameOrTitle("consent", false);
                     await Task.Delay(500);
-                    KeyPressSingleDown((byte)KeysVirtual.Escape, false);
-                    await Task.Delay(100);
+                    if (closedProcess)
+                    {
+                        KeyPressSingle((byte)KeysVirtual.Escape, false);
+                        await Task.Delay(100);
+                    }
                 }
             }
             catch { }
