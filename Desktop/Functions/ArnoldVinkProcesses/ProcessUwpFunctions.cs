@@ -8,6 +8,7 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
+using Windows.Foundation;
 using Windows.Management.Deployment;
 using static ArnoldVinkCode.AVInteropCom;
 using static ArnoldVinkCode.AVInteropDll;
@@ -64,7 +65,7 @@ namespace ArnoldVinkCode
 
                 //Get process from the appx package
                 string appUserModelId = GetAppUserModelIdFromWindowHandle(targetWindowHandle);
-                Package appPackage = UwpGetAppPackageFromAppUserModelId(appUserModelId);
+                Package appPackage = UwpGetAppPackageByAppUserModelId(appUserModelId);
                 AppxDetails appxDetails = UwpGetAppxDetailsFromAppPackage(appPackage);
                 return GetUwpProcessByProcessNameAndAppUserModelId(Path.GetFileNameWithoutExtension(appxDetails.ExecutableName), appUserModelId);
             }
@@ -188,8 +189,8 @@ namespace ArnoldVinkCode
             return IntPtr.Zero;
         }
 
-        //Get uwp application package from AppUserModelId
-        public static Package UwpGetAppPackageFromAppUserModelId(string appUserModelId)
+        //Get uwp application package by AppUserModelId
+        public static Package UwpGetAppPackageByAppUserModelId(string appUserModelId)
         {
             try
             {
@@ -205,6 +206,40 @@ namespace ArnoldVinkCode
             }
             catch { }
             return null;
+        }
+
+        //Update uwp application package by AppUserModelId
+        public static void UwpUpdateApplicationByAppUserModelId(string appUserModelId)
+        {
+            try
+            {
+                Debug.WriteLine("Updating app package: " + appUserModelId);
+
+                //Get the application package
+                Package appPackage = UwpGetAppPackageByAppUserModelId(appUserModelId);
+
+                //Check for application update
+                IAsyncOperation<PackageUpdateAvailabilityResult> updatePackage = appPackage.CheckUpdateAvailabilityAsync();
+            }
+            catch { }
+        }
+
+        //Remove uwp application package by PackageFullName
+        public static bool UwpRemoveApplicationByPackageFullName(string packageFullName)
+        {
+            try
+            {
+                Debug.WriteLine("Removing app package: " + packageFullName);
+
+                //Remove application from pc
+                PackageManager deployPackageManager = new PackageManager();
+                IAsyncOperationWithProgress<DeploymentResult, DeploymentProgress> removePackage = deployPackageManager.RemovePackageAsync(packageFullName, RemovalOptions.RemoveForAllUsers);
+
+                //Check if application is removed
+                return true;
+            }
+            catch { }
+            return false;
         }
 
         //Get uwp application details from package
