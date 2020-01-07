@@ -7,17 +7,30 @@ namespace ArnoldVinkCode
     public static class AVExtensions
     {
         //Sort items in collection
-        public static void SortList<TSource, TKey>(this Collection<TSource> SourceList, Func<TSource, TKey> SortKey)
+        public static void SortList<TSource, TKey>(this Collection<TSource> sourceList, Func<TSource, TKey> sortKey)
         {
-            SourceList.Clear();
-            GC.Collect();
-            foreach (TSource SortingItem in SourceList.OrderBy(SortKey).ToList()) { SourceList.Add(SortingItem); }
+            try
+            {
+                sourceList.Clear();
+                foreach (TSource SortingItem in sourceList.OrderBy(sortKey).ToList())
+                {
+                    sourceList.Add(SortingItem);
+                }
+            }
+            catch { }
         }
 
         //Remove all from collection
-        public static void RemoveAll<TSource>(this Collection<TSource> SourceList, Func<TSource, bool> RemoveCondition)
+        public static void RemoveAll<TSource>(this Collection<TSource> sourceList, Func<TSource, bool> removeCondition)
         {
-            foreach (TSource RemovalItem in SourceList.Where(RemoveCondition).ToList()) { SourceList.Remove(RemovalItem); }
+            try
+            {
+                foreach (TSource RemovalItem in sourceList.Where(removeCondition).ToList())
+                {
+                    sourceList.Remove(RemovalItem);
+                }
+            }
+            catch { }
         }
     }
 }
