@@ -6,8 +6,8 @@ namespace ArnoldVinkCode
 {
     public static class AVExtensions
     {
-        //Sort items in collection
-        public static void SortList<TSource, TKey>(this Collection<TSource> sourceList, Func<TSource, TKey> sortKey)
+        //List sort items
+        public static void ListSort<TSource, TKey>(this Collection<TSource> sourceList, Func<TSource, TKey> sortKey)
         {
             try
             {
@@ -20,8 +20,8 @@ namespace ArnoldVinkCode
             catch { }
         }
 
-        //Remove all from collection
-        public static void RemoveAll<TSource>(this Collection<TSource> sourceList, Func<TSource, bool> removeCondition)
+        //List remove all
+        public static void ListRemoveAll<TSource>(this Collection<TSource> sourceList, Func<TSource, bool> removeCondition)
         {
             try
             {
