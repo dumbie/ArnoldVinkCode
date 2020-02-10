@@ -72,6 +72,16 @@ namespace ArnoldVinkCode
             }
         }
 
+        //Open Windows Firewall Settings
+        public static void Firewall_OpenWindowsSettings()
+        {
+            try
+            {
+                Process.Start("wf.msc");
+            }
+            catch { }
+        }
+
         //Firewall variables
         private enum NET_FW_PROFILE_TYPE2 : int
         {
