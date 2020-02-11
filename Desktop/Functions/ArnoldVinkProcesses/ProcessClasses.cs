@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 
 namespace ArnoldVinkCode
 {
@@ -19,7 +18,6 @@ namespace ArnoldVinkCode
             public string Name { get; set; } = string.Empty;
             public int Identifier { get; set; } = -1;
             public string Argument { get; set; } = string.Empty;
-            public ProcessThreadCollection Threads { get; set; } = null;
             public ProcessType Type { get; set; } = ProcessType.Unknown;
             public IntPtr WindowHandle { get; set; } = IntPtr.Zero;
             public string ClassName { get; set; } = string.Empty;

@@ -426,6 +426,17 @@ namespace ArnoldVinkCode
             catch { return false; }
         }
 
+        //Get threads from ProcessMulti
+        public static ProcessThreadCollection GetProcessThreads(ProcessMulti processMulti)
+        {
+            try
+            {
+                return GetProcessById(processMulti.Identifier).Threads;
+            }
+            catch { }
+            return null;
+        }
+
         //Get the full exe path from process
         public static string GetExecutablePathFromProcess(Process TargetProcess)
         {
@@ -641,7 +652,6 @@ namespace ArnoldVinkCode
             {
                 convertedProcess.Type = processType;
                 convertedProcess.Identifier = convertProcess.Id;
-                convertedProcess.Threads = convertProcess.Threads;
                 convertedProcess.WindowHandle = convertProcess.MainWindowHandle;
 
                 //Get the process launch argument
