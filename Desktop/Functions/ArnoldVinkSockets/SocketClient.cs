@@ -19,7 +19,7 @@ namespace ArnoldVinkCode
                 {
                     //Clean disconnected tcp clients
                     //Debug.WriteLine("Cleaning disconnected tcp clients (C)");
-                    vTcpClients.RemoveAll(x => x == null || !x.Connected);
+                    vTcpClients.RemoveAll(x => x == null || !x.Connected || !x.Client.Connected);
 
                     //Look for target tcp client
                     foreach (TcpClient tcpClient in vTcpClients)

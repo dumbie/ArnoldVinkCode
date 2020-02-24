@@ -114,27 +114,29 @@ namespace ArnoldVinkCode
                         int bytesReceivedLength = await NetworkStreamReadAsyncTimeout(networkStream, receivedBytes, 0, receivedBytes.Length, vTcpListenerTimeout);
                         if (bytesReceivedLength > 0)
                         {
-                            //Debug.WriteLine("Received bytes (S): " + bytesReceivedLength);
+                            //Debug.WriteLine("Received bytes from tcp client (S): " + bytesReceivedLength);
                             await EventBytesReceived(tcpClient, receivedBytes);
                         }
                         else
                         {
-                            Debug.WriteLine("No more bytes received (S)");
+                            Debug.WriteLine("No more bytes received from tcp client (S)");
                             break;
                         }
                     }
                     catch (Exception ex)
                     {
-                        Debug.WriteLine("Failed reading bytes (S) " + ex.Message);
+                        Debug.WriteLine("Failed reading bytes from tcp client (S) " + ex.Message);
                         break;
                     }
                 }
 
+                TcpClientDisconnect(tcpClient);
                 Debug.WriteLine("Finished tcp client session (S)");
                 return true;
             }
             catch
             {
+                TcpClientDisconnect(tcpClient);
                 Debug.WriteLine("Failed tcp client session (S)");
                 return true;
             }
