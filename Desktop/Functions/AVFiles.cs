@@ -5,55 +5,152 @@ namespace ArnoldVinkCode
 {
     public partial class AVFiles
     {
-        //Directory remove
-        public static void Directory_Remove(string removeDirectoryPath)
+        //Directory create
+        public static bool Directory_Create(string createDirectoryPath, bool overWrite)
         {
             try
             {
-                if (Directory.Exists(removeDirectoryPath))
+                if (overWrite && Directory.Exists(createDirectoryPath))
                 {
-                    Debug.WriteLine("Removing: " + removeDirectoryPath);
-                    Directory.Delete(removeDirectoryPath, true);
+                    Debug.WriteLine("Deleting: " + createDirectoryPath);
+                    Directory_Delete(createDirectoryPath);
+                }
+                else if (!overWrite && Directory.Exists(createDirectoryPath))
+                {
+                    Debug.WriteLine("Failed creating directory: " + createDirectoryPath + " already exist");
+                    return true;
+                }
+
+                Debug.WriteLine("Creating: " + createDirectoryPath);
+                Directory.CreateDirectory(createDirectoryPath);
+                return true;
+            }
+            catch
+            {
+                Debug.WriteLine("Failed creating directory: " + createDirectoryPath);
+                return false;
+            }
+        }
+
+        //Directory delete
+        public static bool Directory_Delete(string deleteDirectoryPath)
+        {
+            try
+            {
+                if (Directory.Exists(deleteDirectoryPath))
+                {
+                    Debug.WriteLine("Deleting: " + deleteDirectoryPath);
+                    Directory.Delete(deleteDirectoryPath, true);
+                    return true;
+                }
+                else
+                {
+                    Debug.WriteLine("Failed deleting directory: " + deleteDirectoryPath + " does not exist");
+                    return true;
                 }
             }
             catch
             {
-                Debug.WriteLine("Failed removing directory: " + removeDirectoryPath);
+                Debug.WriteLine("Failed deleting directory: " + deleteDirectoryPath);
+                return false;
             }
         }
 
-        //File remove
-        public static void File_Remove(string removeFilePath)
+        //Directory move
+        public static bool Directory_Move(string oldDirPath, string newDirPath, bool overWrite)
         {
             try
             {
-                if (File.Exists(removeFilePath))
+                if (Directory.Exists(oldDirPath))
                 {
-                    Debug.WriteLine("Removing: " + removeFilePath);
-                    File.Delete(removeFilePath);
+                    Debug.WriteLine("Moving: " + oldDirPath + " to " + newDirPath);
+                    if (overWrite) { Directory_Delete(newDirPath); }
+                    Directory.Move(oldDirPath, newDirPath);
+                    return true;
+                }
+                else
+                {
+                    Debug.WriteLine("Failed moving directory: " + oldDirPath + " does not exist");
+                    return false;
                 }
             }
             catch
             {
-                Debug.WriteLine("Failed removing file: " + removeFilePath);
+                Debug.WriteLine("Failed moving directory: " + oldDirPath + " to" + newDirPath);
+                return false;
             }
         }
 
-        //File rename
-        public static void File_Rename(string oldFilePath, string newFilePath, bool overWrite)
+        //File delete
+        public static bool File_Delete(string deleteFilePath)
+        {
+            try
+            {
+                if (File.Exists(deleteFilePath))
+                {
+                    Debug.WriteLine("Deleting: " + deleteFilePath);
+                    File.Delete(deleteFilePath);
+                    return true;
+                }
+                else
+                {
+                    Debug.WriteLine("Failed deleting file: " + deleteFilePath + " does not exist");
+                    return true;
+                }
+            }
+            catch
+            {
+                Debug.WriteLine("Failed deleting file: " + deleteFilePath);
+                return false;
+            }
+        }
+
+        //File move
+        public static bool File_Move(string oldFilePath, string newFilePath, bool overWrite)
         {
             try
             {
                 if (File.Exists(oldFilePath))
                 {
-                    Debug.WriteLine("Renaming: " + oldFilePath + " to " + newFilePath);
-                    if (overWrite) { File_Remove(newFilePath); }
+                    Debug.WriteLine("Moving: " + oldFilePath + " to " + newFilePath);
+                    if (overWrite) { File_Delete(newFilePath); }
                     File.Move(oldFilePath, newFilePath);
+                    return true;
+                }
+                else
+                {
+                    Debug.WriteLine("Failed moving file: " + oldFilePath + " does not exist");
+                    return false;
                 }
             }
             catch
             {
-                Debug.WriteLine("Failed renaming file: " + oldFilePath + " to" + newFilePath);
+                Debug.WriteLine("Failed moving file: " + oldFilePath + " to" + newFilePath);
+                return false;
+            }
+        }
+
+        //File copy
+        public static bool File_Copy(string oldFilePath, string newFilePath, bool overWrite)
+        {
+            try
+            {
+                if (File.Exists(oldFilePath))
+                {
+                    Debug.WriteLine("Copying: " + oldFilePath + " to " + newFilePath);
+                    File.Copy(oldFilePath, newFilePath, overWrite);
+                    return true;
+                }
+                else
+                {
+                    Debug.WriteLine("Failed copying file: " + oldFilePath + " does not exist");
+                    return false;
+                }
+            }
+            catch
+            {
+                Debug.WriteLine("Failed copying file: " + oldFilePath + " to" + newFilePath);
+                return false;
             }
         }
     }
