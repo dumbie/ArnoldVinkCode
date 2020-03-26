@@ -20,12 +20,17 @@ namespace ArnoldVinkCode
     public partial class ProcessUwpFunctions
     {
         //Launch an uwp application manually
-        public static void ProcessLauncherUwpAndWin32Store(string pathExe, string argument)
+        public static void ProcessLauncherUwpAndWin32Store(string appUserModelId, string argument)
         {
             try
             {
                 //Show launching message
-                Debug.WriteLine("Launching UWP or Win32Store: " + pathExe + "/" + argument);
+                Debug.WriteLine("Launching UWP or Win32Store: " + appUserModelId + "/" + argument);
+
+                //Get detailed application information
+                Package appPackage = UwpGetAppPackageByAppUserModelId(appUserModelId);
+                AppxDetails appxDetails = UwpGetAppxDetailsFromAppPackage(appPackage);
+                appUserModelId = appxDetails.FamilyNameId;
 
                 //Prepare the launching task
                 void TaskAction()
@@ -33,7 +38,7 @@ namespace ArnoldVinkCode
                     try
                     {
                         UWPActivationManager UWPActivationManager = new UWPActivationManager();
-                        UWPActivationManager.ActivateApplication(pathExe, argument, UWPActivationManagerOptions.None, out int ProcessId);
+                        UWPActivationManager.ActivateApplication(appUserModelId, argument, UWPActivationManagerOptions.None, out int ProcessId);
                     }
                     catch { }
                 }
@@ -43,7 +48,7 @@ namespace ArnoldVinkCode
             }
             catch
             {
-                Debug.WriteLine("Failed launching UWP or Win32Store: " + pathExe + "/" + argument);
+                Debug.WriteLine("Failed launching UWP or Win32Store: " + appUserModelId + "/" + argument);
             }
         }
 
@@ -122,7 +127,7 @@ namespace ArnoldVinkCode
         }
 
         //Restart a uwp process or app
-        public static async Task<bool> RestartProcessUwp(string processName, string processPathExe, int processId, IntPtr processWindowHandle, string processArgument)
+        public static async Task<bool> RestartProcessUwp(string processName, string processAppUserModelId, int processId, IntPtr processWindowHandle, string processArgument)
         {
             try
             {
@@ -131,7 +136,7 @@ namespace ArnoldVinkCode
                 await Task.Delay(1000);
 
                 //Relaunch the process or app
-                ProcessLauncherUwpAndWin32Store(processPathExe, processArgument);
+                ProcessLauncherUwpAndWin32Store(processAppUserModelId, processArgument);
                 return true;
             }
             catch { }
@@ -309,9 +314,9 @@ namespace ArnoldVinkCode
                         FileStream fileStream = File.OpenRead(appxDetails.SquareLargestLogoPath);
                         fileStream.Dispose();
                     }
-                    catch (Exception ex)
+                    catch
                     {
-                        Debug.WriteLine("No permission to open: " + appxDetails.SquareLargestLogoPath + "/" + ex.Message);
+                        //Debug.WriteLine("No permission to open: " + appxDetails.SquareLargestLogoPath);
                         appxDetails.SquareLargestLogoPath = originalSquareLargestLogoPath;
                     }
 
@@ -331,6 +336,7 @@ namespace ArnoldVinkCode
                     }
                     catch
                     {
+                        //Debug.WriteLine("No permission to open: " + appxDetails.WideLargestLogoPath);
                         appxDetails.WideLargestLogoPath = originalWideLargestLogoPath;
                     }
                 }
