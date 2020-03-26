@@ -10,10 +10,18 @@
         </ScrollViewer>
     </ControlTemplate>
 
+    <ControlTemplate x:Key="ListBoxVerticalNoScrollTemplate" TargetType="ListBox">
+        <VirtualizingStackPanel IsItemsHost="True" Orientation="Vertical"/>
+    </ControlTemplate>
+
     <ControlTemplate x:Key="ListBoxHorizontalTemplate" TargetType="ListBox">
         <ScrollViewer Style="{DynamicResource ScrollViewerHorizontal}">
             <VirtualizingStackPanel IsItemsHost="True" Orientation="Horizontal"/>
         </ScrollViewer>
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="ListBoxHorizontalNoScrollTemplate" TargetType="ListBox">
+        <VirtualizingStackPanel IsItemsHost="True" Orientation="Horizontal"/>
     </ControlTemplate>
 
     <ControlTemplate x:Key="ListBoxWrapPanelTemplate" TargetType="ListBox">
