@@ -300,14 +300,39 @@ namespace ArnoldVinkCode
                     {
                         appxDetails.SquareLargestLogoPath = Path.Combine(appxDetails.InstallPath, appxDetails.Square30x30Logo);
                     }
+                    string originalSquareLargestLogoPath = appxDetails.SquareLargestLogoPath;
                     appxDetails.SquareLargestLogoPath = UwpGetImageSizePath(appxDetails.SquareLargestLogoPath);
+
+                    //Check if the file can be accessed
+                    try
+                    {
+                        FileStream fileStream = File.OpenRead(appxDetails.SquareLargestLogoPath);
+                        fileStream.Dispose();
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("No permission to open: " + appxDetails.SquareLargestLogoPath + "/" + ex.Message);
+                        appxDetails.SquareLargestLogoPath = originalSquareLargestLogoPath;
+                    }
 
                     //Check the largest available wide logo
                     if (!string.IsNullOrWhiteSpace(appxDetails.Wide310x310Logo))
                     {
                         appxDetails.WideLargestLogoPath = Path.Combine(appxDetails.InstallPath, appxDetails.Wide310x310Logo);
                     }
+                    string originalWideLargestLogoPath = appxDetails.SquareLargestLogoPath;
                     appxDetails.WideLargestLogoPath = UwpGetImageSizePath(appxDetails.WideLargestLogoPath);
+
+                    //Check if the file can be accessed
+                    try
+                    {
+                        FileStream fileStream = File.OpenRead(appxDetails.WideLargestLogoPath);
+                        fileStream.Dispose();
+                    }
+                    catch
+                    {
+                        appxDetails.WideLargestLogoPath = originalWideLargestLogoPath;
+                    }
                 }
             }
             catch (Exception ex)
