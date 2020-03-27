@@ -6,22 +6,22 @@
     <!--ListBox Templates-->
     <ControlTemplate x:Key="ListBoxVerticalTemplate" TargetType="ListBox">
         <ScrollViewer Style="{DynamicResource ScrollViewerVertical}">
-            <VirtualizingStackPanel IsItemsHost="True" Orientation="Vertical"/>
+            <StackPanel IsItemsHost="True" Orientation="Vertical"/>
         </ScrollViewer>
     </ControlTemplate>
 
     <ControlTemplate x:Key="ListBoxVerticalNoScrollTemplate" TargetType="ListBox">
-        <VirtualizingStackPanel IsItemsHost="True" Orientation="Vertical"/>
+        <StackPanel IsItemsHost="True" Orientation="Vertical"/>
     </ControlTemplate>
 
     <ControlTemplate x:Key="ListBoxHorizontalTemplate" TargetType="ListBox">
         <ScrollViewer Style="{DynamicResource ScrollViewerHorizontal}">
-            <VirtualizingStackPanel IsItemsHost="True" Orientation="Horizontal"/>
+            <StackPanel IsItemsHost="True" Orientation="Horizontal"/>
         </ScrollViewer>
     </ControlTemplate>
 
     <ControlTemplate x:Key="ListBoxHorizontalNoScrollTemplate" TargetType="ListBox">
-        <VirtualizingStackPanel IsItemsHost="True" Orientation="Horizontal"/>
+        <StackPanel IsItemsHost="True" Orientation="Horizontal"/>
     </ControlTemplate>
 
     <ControlTemplate x:Key="ListBoxWrapPanelTemplate" TargetType="ListBox">
