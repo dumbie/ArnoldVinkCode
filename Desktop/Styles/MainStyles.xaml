@@ -11,6 +11,7 @@
     <sys:Double x:Key="TextSizeMedium">20</sys:Double>
     <sys:Double x:Key="TextSizeLarge">24</sys:Double>
     <sys:Double x:Key="TextSizeHuge">28</sys:Double>
+    <sys:Double x:Key="TextSizePreTitle">50</sys:Double>
     <sys:Double x:Key="TextSizeSubTitle">60</sys:Double>
     <sys:Double x:Key="TextSizeTitle">75</sys:Double>
 
