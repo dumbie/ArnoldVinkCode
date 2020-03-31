@@ -1,5 +1,4 @@
-﻿using ArnoldVinkCode;
-using System;
+﻿using System;
 using System.Threading;
 using static ArnoldVinkCode.AVInteropDll;
 
