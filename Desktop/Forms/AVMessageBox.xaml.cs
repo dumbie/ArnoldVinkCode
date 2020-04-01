@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -11,9 +11,9 @@ namespace AVForms
         public AVMessageBox() { InitializeComponent(); }
 
         //Message Box Variables
-        static bool vMessageBoxPopupCancelled = false;
-        static int vMessageBoxPopupResult = 0;
-        static AVMessageBox vAVMessageBox = null;
+        private static bool vMessageBoxPopupCancelled = false;
+        private static int vMessageBoxPopupResult = 0;
+        private static AVMessageBox vAVMessageBox = null;
 
         //Set MessageBox Popup Result
         void grid_MessageBox_Btn1_Click(object sender, RoutedEventArgs e) { vMessageBoxPopupResult = 1; }
@@ -22,16 +22,30 @@ namespace AVForms
         void grid_MessageBox_Btn4_Click(object sender, RoutedEventArgs e) { vMessageBoxPopupResult = 4; }
 
         //Show and close Messagebox Popup
-        async public static Task<int> MessageBoxPopup(string Question, string Description, string Answer1, string Answer2, string Answer3, string Answer4)
+        public async static Task<int> MessageBoxPopup(FrameworkElement disableElement, string Question, string Description, string Answer1, string Answer2, string Answer3, string Answer4)
         {
             try
             {
                 //Set the variable class
-                vAVMessageBox = new AVMessageBox();
+                if (vAVMessageBox == null)
+                {
+                    vAVMessageBox = new AVMessageBox();
+                }
+                else
+                {
+                    Debug.WriteLine("AVMessageBox is already open.");
+                    return -1;
+                }
+
+                //Disable the source frameworkelement
+                if (disableElement != null)
+                {
+                    disableElement.IsEnabled = false;
+                }
 
                 //Set messagebox question content
                 vAVMessageBox.grid_MessageBox_Text.Text = Question;
-                if (!String.IsNullOrWhiteSpace(Description))
+                if (!string.IsNullOrWhiteSpace(Description))
                 {
                     vAVMessageBox.grid_MessageBox_Description.Text = Description;
                     vAVMessageBox.grid_MessageBox_Description.Visibility = Visibility.Visible;
@@ -41,7 +55,7 @@ namespace AVForms
                     vAVMessageBox.grid_MessageBox_Description.Text = "";
                     vAVMessageBox.grid_MessageBox_Description.Visibility = Visibility.Collapsed;
                 }
-                if (!String.IsNullOrWhiteSpace(Answer1))
+                if (!string.IsNullOrWhiteSpace(Answer1))
                 {
                     vAVMessageBox.grid_MessageBox_Btn1.Content = Answer1;
                     vAVMessageBox.grid_MessageBox_Btn1.Visibility = Visibility.Visible;
@@ -51,7 +65,7 @@ namespace AVForms
                     vAVMessageBox.grid_MessageBox_Btn1.Content = "";
                     vAVMessageBox.grid_MessageBox_Btn1.Visibility = Visibility.Collapsed;
                 }
-                if (!String.IsNullOrWhiteSpace(Answer2))
+                if (!string.IsNullOrWhiteSpace(Answer2))
                 {
                     vAVMessageBox.grid_MessageBox_Btn2.Content = Answer2;
                     vAVMessageBox.grid_MessageBox_Btn2.Visibility = Visibility.Visible;
@@ -61,7 +75,7 @@ namespace AVForms
                     vAVMessageBox.grid_MessageBox_Btn2.Content = "";
                     vAVMessageBox.grid_MessageBox_Btn2.Visibility = Visibility.Collapsed;
                 }
-                if (!String.IsNullOrWhiteSpace(Answer3))
+                if (!string.IsNullOrWhiteSpace(Answer3))
                 {
                     vAVMessageBox.grid_MessageBox_Btn3.Content = Answer3;
                     vAVMessageBox.grid_MessageBox_Btn3.Visibility = Visibility.Visible;
@@ -71,7 +85,7 @@ namespace AVForms
                     vAVMessageBox.grid_MessageBox_Btn3.Content = "";
                     vAVMessageBox.grid_MessageBox_Btn3.Visibility = Visibility.Collapsed;
                 }
-                if (!String.IsNullOrWhiteSpace(Answer4))
+                if (!string.IsNullOrWhiteSpace(Answer4))
                 {
                     vAVMessageBox.grid_MessageBox_Btn4.Content = Answer4;
                     vAVMessageBox.grid_MessageBox_Btn4.Visibility = Visibility.Visible;
@@ -92,6 +106,12 @@ namespace AVForms
                 //Wait for user messagebox input
                 while (vMessageBoxPopupResult == 0 && !vMessageBoxPopupCancelled) { await Task.Delay(500); }
                 if (vMessageBoxPopupCancelled) { return 0; }
+
+                //Enable the source frameworkelement
+                if (disableElement != null)
+                {
+                    disableElement.IsEnabled = true;
+                }
 
                 //Hide the messagebox popup
                 vAVMessageBox.Hide();
