@@ -211,13 +211,24 @@ namespace ArnoldVinkCode
             else { return (NowNumber > StartNumber) && (NowNumber < EndNumber); }
         }
 
-        //Reset a timer tick estimate
-        public static void ResetTimer(DispatcherTimer ResetTimer)
+        //Reset dispatch timer tick estimate
+        public static void TimerReset(DispatcherTimer dispatchTimer)
         {
             try
             {
-                ResetTimer.Stop();
-                ResetTimer.Start();
+                dispatchTimer.Stop();
+                dispatchTimer.Start();
+            }
+            catch { }
+        }
+
+        //Renew dispatch timer
+        public static void TimerRenew(ref DispatcherTimer dispatchTimer)
+        {
+            try
+            {
+                if (dispatchTimer != null) { dispatchTimer.Stop(); }
+                dispatchTimer = new DispatcherTimer();
             }
             catch { }
         }
