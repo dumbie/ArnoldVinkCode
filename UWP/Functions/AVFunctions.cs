@@ -24,7 +24,7 @@ namespace ArnoldVinkCode
         internal static string ToTitleCase(string ToTitleCase)
         {
             char[] TitleCase = ToTitleCase.ToLower().ToCharArray();
-            for (Int32 i = 0; i < TitleCase.Count(); i++) { TitleCase[i] = i == 0 || TitleCase[i - 1] == ' ' ? char.ToUpper(TitleCase[i]) : TitleCase[i]; }
+            for (int i = 0; i < TitleCase.Count(); i++) { TitleCase[i] = i == 0 || TitleCase[i - 1] == ' ' ? char.ToUpper(TitleCase[i]) : TitleCase[i]; }
             return new string(TitleCase);
         }
 
@@ -32,7 +32,7 @@ namespace ArnoldVinkCode
         internal static string StringReplaceFirst(string StringText, string SearchFor, string ReplaceWith, bool StartsWith)
         {
             if (StartsWith) { if (!StringText.ToLower().StartsWith(SearchFor.ToLower())) { return StringText; } }
-            Int32 Position = StringText.IndexOf(SearchFor, StringComparison.CurrentCultureIgnoreCase);
+            int Position = StringText.IndexOf(SearchFor, StringComparison.CurrentCultureIgnoreCase);
             if (Position < 0) { return StringText; }
             return StringText.Substring(0, Position) + ReplaceWith + StringText.Substring(Position + SearchFor.Length);
         }
@@ -114,7 +114,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                if (!String.IsNullOrWhiteSpace(OldString)) { OldString = OldString + Character + " " + AddString; }
+                if (!string.IsNullOrWhiteSpace(OldString)) { OldString = OldString + Character + " " + AddString; }
                 else { OldString = AddString; }
                 return OldString;
             }
@@ -122,7 +122,7 @@ namespace ArnoldVinkCode
         }
 
         //Remove text after certain character
-        internal static string StringRemoveAfter(string String, string RemoveCharacter, Int32 RemoveAfter)
+        internal static string StringRemoveAfter(string String, string RemoveCharacter, int RemoveAfter)
         {
             try
             {
@@ -133,7 +133,7 @@ namespace ArnoldVinkCode
         }
 
         //Convert String To Cutted String
-        internal static string StringCut(string CutString, Int32 CutAt, string AddString)
+        internal static string StringCut(string CutString, int CutAt, string AddString)
         {
             if (CutString.Length > CutAt) { return CutString.Substring(0, CutAt) + AddString; }
             else { return CutString; }
@@ -148,7 +148,7 @@ namespace ArnoldVinkCode
                 string[] teens = { "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen" };
                 string[] tens = { "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety" };
 
-                Int32 IntNumber = Convert.ToInt32(StrNumber);
+                int IntNumber = Convert.ToInt32(StrNumber);
                 if (IntNumber < 10) { StrNumber = ones[IntNumber]; }
                 else if (IntNumber < 20) { StrNumber = teens[IntNumber - 10]; }
                 else if (IntNumber < 100)
@@ -167,28 +167,46 @@ namespace ArnoldVinkCode
         {
             try
             {
-                if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar")) { return true; }
-                else { return false; }
+                //Debug.WriteLine("Device family: " + AnalyticsInfo.VersionInfo.DeviceFamily);
+                if (AnalyticsInfo.VersionInfo.DeviceFamily == "Windows.Mobile") { return true; }
             }
-            catch { return false; }
+            catch { }
+            return false;
         }
 
         //Check device os version
-        internal static Int32 DevOsVersion()
+        internal static int DevOsVersion()
         {
             try
             {
-                Int64 OsVersion = Int64.Parse(AnalyticsInfo.VersionInfo.DeviceFamilyVersion);
-                Int64 BuildNumber = (OsVersion & 0x00000000FFFF0000L) >> 16;
+                long OsVersion = long.Parse(AnalyticsInfo.VersionInfo.DeviceFamilyVersion);
+                long BuildNumber = (OsVersion & 0x00000000FFFF0000L) >> 16;
                 return Convert.ToInt32(BuildNumber);
             }
             catch { return 999999999; }
         }
 
         //Get device free memory in MB
-        internal static ulong DevAvailableMemory()
+        internal static ulong DevMemoryAvailableMB()
         {
-            try { return (MemoryManager.AppMemoryUsageLimit - MemoryManager.AppMemoryUsage) / 1024 / 1024; }
+            try
+            {
+                ulong memoryUsage = MemoryManager.AppMemoryUsage;
+                ulong memoryLimit = MemoryManager.AppMemoryUsageLimit;
+                return (memoryLimit - memoryUsage) / 1024 / 1024;
+            }
+            catch { return 0; }
+        }
+
+        //Get device memory usage in percentage
+        internal static ulong DevMemoryUsePercentage()
+        {
+            try
+            {
+                ulong memoryUsage = MemoryManager.AppMemoryUsage;
+                ulong memoryLimit = MemoryManager.AppMemoryUsageLimit;
+                return (memoryUsage * 100) / memoryLimit;
+            }
             catch { return 0; }
         }
 
@@ -240,7 +258,7 @@ namespace ArnoldVinkCode
                 {
                     //Get Wi-Fi / Ethernet name
                     string FirstNetwork = ConnectionProfile.GetNetworkNames().FirstOrDefault();
-                    if (!String.IsNullOrWhiteSpace(FirstNetwork)) { return FirstNetwork; }
+                    if (!string.IsNullOrWhiteSpace(FirstNetwork)) { return FirstNetwork; }
 
                     //Get Cellular name
                     if (ConnectionProfile.IsWwanConnectionProfile)
@@ -307,7 +325,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                for (Int32 i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
+                for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
                 {
                     DependencyObject child = VisualTreeHelper.GetChild(obj, i);
                     if (child is T) { return (T)child; }
@@ -325,7 +343,7 @@ namespace ArnoldVinkCode
         //Check if a file exists in app
         internal static async Task<bool> AppFileExists(string FileName)
         {
-            FileName = FileName.Replace("ms-appx:///", String.Empty);
+            FileName = FileName.Replace("ms-appx:///", string.Empty);
             try
             {
                 await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///" + FileName));
@@ -341,7 +359,7 @@ namespace ArnoldVinkCode
         //Check if a file exists in local
         internal static async Task<bool> LocalFileExists(string FileName)
         {
-            FileName = FileName.Replace("ms-appdata:///local/", String.Empty);
+            FileName = FileName.Replace("ms-appdata:///local/", string.Empty);
             try { return await ApplicationData.Current.LocalFolder.TryGetItemAsync(FileName) != null; }
             catch
             {
