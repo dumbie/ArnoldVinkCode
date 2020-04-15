@@ -127,6 +127,42 @@ namespace ArnoldVinkCode
             }
         }
 
+        //AVActions.ElementGetValue(targetElement, targetProperty);
+        public static object ElementGetValue(FrameworkElement targetElement, DependencyProperty targetProperty)
+        {
+            object returnValue = null;
+            try
+            {
+                ActionDispatcherInvoke(delegate
+                {
+                    try
+                    {
+                        returnValue = targetElement.GetValue(targetProperty);
+                    }
+                    catch { }
+                });
+            }
+            catch { }
+            return returnValue;
+        }
+
+        //AVActions.ElementSetValue(targetElement, targetProperty, targetValue);
+        public static void ElementSetValue(FrameworkElement targetElement, DependencyProperty targetProperty, object targetValue)
+        {
+            try
+            {
+                ActionDispatcherInvoke(delegate
+                {
+                    try
+                    {
+                        targetElement.SetValue(targetProperty, targetValue);
+                    }
+                    catch { }
+                });
+            }
+            catch { }
+        }
+
         //async void DispatchAction() { void(); }
         //AVActions.ActionDispatcherInvoke(DispatchAction, null);
         //Tip: Don't forget to use try and catch to improve stability
