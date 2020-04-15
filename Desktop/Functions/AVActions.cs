@@ -139,7 +139,10 @@ namespace ArnoldVinkCode
                     {
                         returnValue = targetElement.GetValue(targetProperty);
                     }
-                    catch { }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("Failed getting value: " + ex.Message);
+                    }
                 });
             }
             catch { }
@@ -157,7 +160,10 @@ namespace ArnoldVinkCode
                     {
                         targetElement.SetValue(targetProperty, targetValue);
                     }
-                    catch { }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("Failed setting value: " + ex.Message);
+                    }
                 });
             }
             catch { }
