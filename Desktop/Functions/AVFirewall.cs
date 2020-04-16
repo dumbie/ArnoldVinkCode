@@ -55,6 +55,7 @@ namespace ArnoldVinkCode
                 {
                     try
                     {
+                        if (firewallRule.ApplicationName == null) { continue; }
                         if (firewallRule.ApplicationName.ToLower() == executablePath.ToLower())
                         {
                             firewallPolicy.Rules.Remove(firewallRule.Name);
