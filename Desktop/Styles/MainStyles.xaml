@@ -370,7 +370,7 @@
 
     <!--StackPanel Styles-->
     <Style x:Key="ListBoxMenuStackPanel" TargetType="StackPanel">
-        <Setter Property="Width" Value="90"/>
+        <Setter Property="MinWidth" Value="90"/>
         <Setter Property="Height" Value="80"/>
     </Style>
 
