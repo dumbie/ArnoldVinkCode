@@ -122,7 +122,7 @@ namespace ArnoldVinkCode
             try
             {
                 //Check if the tcp client is connected
-                if (tcpClient == null || !tcpClient.Connected)
+                if (tcpClient == null || !tcpClient.Connected || !tcpClient.Client.Connected)
                 {
                     Debug.WriteLine("The sending tcp client is not connected (C)");
                     return false;
