@@ -109,6 +109,9 @@ namespace ArnoldVinkCode
                             break;
                         }
 
+                        //Check if tcp client has keepalive option
+                        bool keepAliveEnabled = Convert.ToInt32(tcpClient.Client.GetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive)) == 1;
+
                         //Receive the data from the network stream
                         byte[] receivedBytes = new byte[tcpClient.ReceiveBufferSize];
                         int bytesReceivedLength = await NetworkStreamReadAsyncTimeout(networkStream, receivedBytes, 0, receivedBytes.Length, vTcpListenerTimeout);
@@ -117,7 +120,7 @@ namespace ArnoldVinkCode
                             //Debug.WriteLine("Received bytes from tcp client (S): " + bytesReceivedLength);
                             await EventBytesReceived(tcpClient, receivedBytes);
                         }
-                        else
+                        else if (!keepAliveEnabled)
                         {
                             Debug.WriteLine("No more bytes received from tcp client (S)");
                             break;

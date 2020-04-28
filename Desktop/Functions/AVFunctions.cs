@@ -369,18 +369,21 @@ namespace ArnoldVinkCode
             return "Unknown";
         }
 
-        //Check if a file exists in app
-        public static bool AppFileExists(string FileName)
+        //Get screen by number
+        public static Screen GetScreenByNumber(int monitorNumber, out bool monitorSuccess)
         {
-            //Not available on desktop
-            return false;
-        }
-
-        //Check if a file exists in local
-        public static bool LocalFileExists(string FileName)
-        {
-            //Not available on desktop
-            return false;
+            try
+            {
+                Screen targetScreen = Screen.AllScreens[monitorNumber];
+                monitorSuccess = true;
+                return targetScreen;
+            }
+            catch
+            {
+                Screen targetScreen = Screen.PrimaryScreen;
+                monitorSuccess = false;
+                return targetScreen;
+            }
         }
     }
 }
