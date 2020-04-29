@@ -114,7 +114,7 @@ namespace ArnoldVinkCode
 
                         //Receive the data from the network stream
                         byte[] receivedBytes = new byte[tcpClient.ReceiveBufferSize];
-                        int bytesReceivedLength = await NetworkStreamReadAsyncTimeout(networkStream, receivedBytes, 0, receivedBytes.Length, vTcpListenerTimeout);
+                        int bytesReceivedLength = await networkStream.ReadAsync(receivedBytes, 0, receivedBytes.Length);
                         if (bytesReceivedLength > 0)
                         {
                             //Debug.WriteLine("Received bytes from tcp client (S): " + bytesReceivedLength);
@@ -213,27 +213,6 @@ namespace ArnoldVinkCode
                 }
             }
             catch { }
-        }
-
-        //Read network stream with timeout
-        private async Task<int> NetworkStreamReadAsyncTimeout(NetworkStream stream, byte[] buffer, int offset, int count, int timeOut)
-        {
-            try
-            {
-                Task<int> timeTask = Task.Run(async delegate
-                {
-                    return await stream.ReadAsync(buffer, offset, count);
-                });
-
-                Task delayTask = Task.Delay(timeOut);
-                Task timeoutTask = await Task.WhenAny(timeTask, delayTask);
-                if (timeoutTask == timeTask)
-                {
-                    return timeTask.Result;
-                }
-            }
-            catch { }
-            return 0;
         }
     }
 }

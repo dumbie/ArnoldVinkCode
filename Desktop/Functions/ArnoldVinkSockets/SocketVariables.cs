@@ -26,7 +26,6 @@ namespace ArnoldVinkCode
         //Variables
         public string vTcpListenerIp = "127.0.0.1";
         public int vTcpListenerPort = 1000;
-        public int vTcpListenerTimeout = 3000;
-        public int vTcpClientTimeout = 2000;
+        public int vTcpClientTimeout = 3000;
     }
 }
