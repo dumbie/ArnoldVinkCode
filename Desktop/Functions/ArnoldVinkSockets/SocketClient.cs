@@ -21,7 +21,7 @@ namespace ArnoldVinkCode
                     TcpClientCleanConnections();
 
                     //Look for target tcp client
-                    foreach (TcpClient tcpClient in vTcpClients)
+                    foreach (TcpClient tcpClient in vTcpClients.ToList())
                     {
                         try
                         {
@@ -124,7 +124,7 @@ namespace ArnoldVinkCode
             try
             {
                 Debug.WriteLine("Disconnecting all tcp clients (C)");
-                foreach (TcpClient tcpClient in vTcpClients)
+                foreach (TcpClient tcpClient in vTcpClients.ToList())
                 {
                     try
                     {
