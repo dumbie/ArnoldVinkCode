@@ -81,7 +81,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                Debug.WriteLine("Cleaning disconnected tcp clients (C)");
+                //Debug.WriteLine("Cleaning disconnected tcp clients (C)");
                 foreach (TcpClient tcpClient in vTcpClients.ToList())
                 {
                     try
