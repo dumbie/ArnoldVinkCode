@@ -67,95 +67,108 @@ namespace ArnoldVinkCode
         //Focus on a process window
         public static async Task<bool> FocusProcessWindow(string processTitle, int processId, IntPtr processWindowHandle, int windowStateCommand, bool setWindowState, bool setTempTopMost)
         {
+            bool returnBool = false;
             try
             {
-                //Close open Windows admin prompt
-                await CloseOpenWindowsAdminPrompt();
-
-                //Get the current focused application
-                ProcessMulti foregroundProcess = GetFocusedProcess();
-
-                //Close open start menu, cortana or search
-                await CloseOpenWindowsStartMenu(foregroundProcess);
-
-                //Close open Windows system menu
-                await CloseOpenWindowsSystemMenu(foregroundProcess);
-
-                //Detect the previous window state
-                if (windowStateCommand == 0 && setWindowState)
-                {
-                    WindowPlacement processWindowState = new WindowPlacement();
-                    GetWindowPlacement(processWindowHandle, ref processWindowState);
-                    Debug.WriteLine("Detected the previous window state: " + processWindowState.windowFlags);
-                    if (processWindowState.windowFlags == WindowFlags.RestoreToMaximized)
-                    {
-                        windowStateCommand = (int)WindowShowCommand.ShowMaximized;
-                    }
-                    else
-                    {
-                        windowStateCommand = (int)WindowShowCommand.Restore;
-                    }
-                }
-
-                //Change the window state command
-                if (setWindowState)
-                {
-                    ShowWindowAsync(processWindowHandle, windowStateCommand);
-                    await Task.Delay(100);
-
-                    ShowWindow(processWindowHandle, windowStateCommand);
-                    await Task.Delay(100);
-                }
-
-                //Set the window as top most
-                if (setTempTopMost)
-                {
-                    SetWindowPos(processWindowHandle, (IntPtr)WindowPosition.TopMost, 0, 0, 0, 0, (int)WindowSWP.NOMOVE | (int)WindowSWP.NOSIZE);
-                    await Task.Delay(100);
-                }
-
-                //Retry to show the window
-                for (int i = 0; i < 2; i++)
+                //Prepare the process focus
+                Task timeTask = Task.Run(async delegate
                 {
                     try
                     {
-                        //Allow changing window
-                        AllowSetForegroundWindow(processId);
-                        await Task.Delay(100);
+                        //Close open Windows admin prompt
+                        await CloseOpenWindowsAdminPrompt();
 
-                        //Bring window to top
-                        BringWindowToTop(processWindowHandle);
-                        await Task.Delay(100);
+                        //Get the current focused application
+                        ProcessMulti foregroundProcess = GetFocusedProcess();
 
-                        //Switch to the window
-                        SwitchToThisWindow(processWindowHandle, true);
-                        await Task.Delay(100);
+                        //Close open start menu, cortana or search
+                        await CloseOpenWindowsStartMenu(foregroundProcess);
 
-                        //Focus on the window
-                        UiaFocusWindowHandle(processWindowHandle);
-                        await Task.Delay(100);
+                        //Close open Windows system menu
+                        await CloseOpenWindowsSystemMenu(foregroundProcess);
+
+                        //Detect the previous window state
+                        if (windowStateCommand == 0 && setWindowState)
+                        {
+                            WindowPlacement processWindowState = new WindowPlacement();
+                            GetWindowPlacement(processWindowHandle, ref processWindowState);
+                            Debug.WriteLine("Detected the previous window state: " + processWindowState.windowFlags);
+                            if (processWindowState.windowFlags == WindowFlags.RestoreToMaximized)
+                            {
+                                windowStateCommand = (int)WindowShowCommand.ShowMaximized;
+                            }
+                            else
+                            {
+                                windowStateCommand = (int)WindowShowCommand.Restore;
+                            }
+                        }
+
+                        //Change the window state command
+                        if (setWindowState)
+                        {
+                            ShowWindowAsync(processWindowHandle, windowStateCommand);
+                            await Task.Delay(100);
+
+                            ShowWindow(processWindowHandle, windowStateCommand);
+                            await Task.Delay(100);
+                        }
+
+                        //Set the window as top most
+                        if (setTempTopMost)
+                        {
+                            SetWindowPos(processWindowHandle, (IntPtr)WindowPosition.TopMost, 0, 0, 0, 0, (int)WindowSWP.NOMOVE | (int)WindowSWP.NOSIZE);
+                            await Task.Delay(100);
+                        }
+
+                        //Retry to show the window
+                        for (int i = 0; i < 2; i++)
+                        {
+                            try
+                            {
+                                //Allow changing window
+                                AllowSetForegroundWindow(processId);
+                                await Task.Delay(100);
+
+                                //Bring window to top
+                                BringWindowToTop(processWindowHandle);
+                                await Task.Delay(100);
+
+                                //Switch to the window
+                                SwitchToThisWindow(processWindowHandle, true);
+                                await Task.Delay(100);
+
+                                //Focus on the window
+                                UiaFocusWindowHandle(processWindowHandle);
+                                await Task.Delay(100);
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.WriteLine("Process focus error: " + ex.Message);
+                            }
+                        }
+
+                        //Disable the window as top most
+                        if (setTempTopMost)
+                        {
+                            SetWindowPos(processWindowHandle, (IntPtr)WindowPosition.NoTopMost, 0, 0, 0, 0, (int)WindowSWP.NOMOVE | (int)WindowSWP.NOSIZE);
+                            await Task.Delay(100);
+                        }
+
+                        //Return bool
+                        returnBool = true;
+                        Debug.WriteLine("Focused process window: " + processTitle + " WindowHandle: " + processWindowHandle + " ShowCmd: " + windowStateCommand);
                     }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine("Process focus error: " + ex.Message);
-                    }
-                }
+                    catch { }
+                });
 
-                //Disable the window as top most
-                if (setTempTopMost)
-                {
-                    SetWindowPos(processWindowHandle, (IntPtr)WindowPosition.NoTopMost, 0, 0, 0, 0, (int)WindowSWP.NOMOVE | (int)WindowSWP.NOSIZE);
-                    await Task.Delay(100);
-                }
-
-                Debug.WriteLine("Changed process window: " + processTitle + " WindowHandle: " + processWindowHandle + " ShowCmd: " + windowStateCommand);
-                return true;
+                //Focus the process with timeout
+                Task delayTask = Task.Delay(3000);
+                Task timeoutTask = await Task.WhenAny(timeTask, delayTask);
+                return returnBool;
             }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("Failed showing the application: " + ex.Message);
-                return false;
-            }
+            catch { }
+            Debug.WriteLine("Failed focusing process: " + processTitle);
+            return returnBool;
         }
 
         //Enumerate all thread windows including fullscreen

@@ -20,36 +20,43 @@ namespace ArnoldVinkCode
     public partial class ProcessUwpFunctions
     {
         //Launch an uwp application manually
-        public static void ProcessLauncherUwpAndWin32Store(string appUserModelId, string argument)
+        public static async Task<Process> ProcessLauncherUwpAndWin32StoreAsync(string appUserModelId, string runArgument)
         {
+            Process returnProcess = null;
             try
             {
-                //Show launching message
-                Debug.WriteLine("Launching UWP or Win32Store: " + appUserModelId + "/" + argument);
-
-                //Get detailed application information
-                Package appPackage = UwpGetAppPackageByAppUserModelId(appUserModelId);
-                AppxDetails appxDetails = UwpGetAppxDetailsFromAppPackage(appPackage);
-                appUserModelId = appxDetails.FamilyNameId;
-
-                //Prepare the launching task
-                void TaskAction()
+                //Prepare the process launch
+                Task timeTask = Task.Run(delegate
                 {
                     try
                     {
+                        //Show launching message
+                        Debug.WriteLine("Launching UWP or Win32Store: " + appUserModelId + " / " + runArgument);
+
+                        //Get detailed application information
+                        Package appPackage = UwpGetAppPackageByAppUserModelId(appUserModelId);
+                        AppxDetails appxDetails = UwpGetAppxDetailsFromAppPackage(appPackage);
+                        appUserModelId = appxDetails.FamilyNameId;
+
+                        //Start the process
                         UWPActivationManager UWPActivationManager = new UWPActivationManager();
-                        UWPActivationManager.ActivateApplication(appUserModelId, argument, UWPActivationManagerOptions.None, out int ProcessId);
+                        UWPActivationManager.ActivateApplication(appUserModelId, runArgument, UWPActivationManagerOptions.None, out int processId);
+
+                        //Return process
+                        returnProcess = GetProcessById(processId);
+                        Debug.WriteLine("Launched UWP or Win32Store process identifier: " + returnProcess.Id);
                     }
                     catch { }
-                }
+                });
 
-                //Launch the application
-                AVActions.TaskStart(TaskAction, null);
+                //Launch the process with timeout
+                Task delayTask = Task.Delay(3000);
+                Task timeoutTask = await Task.WhenAny(timeTask, delayTask);
+                return returnProcess;
             }
-            catch
-            {
-                Debug.WriteLine("Failed launching UWP or Win32Store: " + appUserModelId + "/" + argument);
-            }
+            catch { }
+            Debug.WriteLine("Failed launching UWP or Win32Store: " + appUserModelId + "/" + runArgument);
+            return returnProcess;
         }
 
         //Get uwp process by window handle
@@ -127,7 +134,7 @@ namespace ArnoldVinkCode
         }
 
         //Restart a uwp process or app
-        public static async Task<bool> RestartProcessUwp(string processName, string processAppUserModelId, int processId, IntPtr processWindowHandle, string processArgument)
+        public static async Task<Process> RestartProcessUwp(string processName, string processAppUserModelId, int processId, IntPtr processWindowHandle, string processArgument)
         {
             try
             {
@@ -136,11 +143,10 @@ namespace ArnoldVinkCode
                 await Task.Delay(1000);
 
                 //Relaunch the process or app
-                ProcessLauncherUwpAndWin32Store(processAppUserModelId, processArgument);
-                return true;
+                return await ProcessLauncherUwpAndWin32StoreAsync(processAppUserModelId, processArgument);
             }
             catch { }
-            return false;
+            return null;
         }
 
         //Check if a window is an uwp application

@@ -7,135 +7,74 @@ namespace ArnoldVinkCode
 {
     public partial class ProcessWin32Functions
     {
-        //Launch a win32 application manually
-        public static void ProcessLauncherWin32(string PathExe, string PathLaunch, string Argument, bool RunAsAdmin, bool CreateNoWindow)
-        {
-            try
-            {
-                //Check if the application exe file exists
-                if (!File.Exists(PathExe))
-                {
-                    Debug.WriteLine("Launch executable not found.");
-                    return;
-                }
-
-                //Show launching message
-                Debug.WriteLine("Launching Win32: " + Path.GetFileNameWithoutExtension(PathExe));
-
-                //Check the working path
-                if (string.IsNullOrWhiteSpace(PathLaunch)) { PathLaunch = Path.GetDirectoryName(PathExe); }
-
-                //Prepare the launching task
-                void TaskAction()
-                {
-                    try
-                    {
-                        Process LaunchProcess = new Process();
-                        LaunchProcess.StartInfo.FileName = PathExe;
-                        if (!string.IsNullOrWhiteSpace(PathLaunch))
-                        {
-                            LaunchProcess.StartInfo.WorkingDirectory = PathLaunch;
-                        }
-                        if (!string.IsNullOrWhiteSpace(Argument))
-                        {
-                            LaunchProcess.StartInfo.Arguments = Argument;
-                        }
-
-                        if (CreateNoWindow)
-                        {
-                            LaunchProcess.StartInfo.UseShellExecute = false;
-                            LaunchProcess.StartInfo.CreateNoWindow = true;
-                        }
-
-                        if (RunAsAdmin)
-                        {
-                            LaunchProcess.StartInfo.Verb = "runas";
-                        }
-
-                        LaunchProcess.Start();
-                    }
-                    catch
-                    {
-                        Debug.WriteLine("Failed launching Win32: " + Path.GetFileNameWithoutExtension(PathExe));
-                    }
-                }
-
-                //Launch the application
-                AVActions.TaskStart(TaskAction, null);
-            }
-            catch
-            {
-                Debug.WriteLine("Failed launching Win32: " + Path.GetFileNameWithoutExtension(PathExe));
-            }
-        }
-
         //Launch a win32 application manually async
-        public static async Task<int> ProcessLauncherWin32Async(string PathExe, string PathLaunch, string Argument, bool RunAsAdmin, bool CreateNoWindow)
+        public static async Task<Process> ProcessLauncherWin32Async(string pathExe, string pathLaunch, string runArgument, bool runAsAdmin, bool createNoWindow)
         {
+            Process returnProcess = null;
             try
             {
-                //Check if the application exe file exists
-                if (!File.Exists(PathExe))
-                {
-                    Debug.WriteLine("Launch executable not found.");
-                    return -1;
-                }
-
-                //Show launching message
-                Debug.WriteLine("Launching Win32: " + Path.GetFileNameWithoutExtension(PathExe));
-
-                //Check the working path
-                if (string.IsNullOrWhiteSpace(PathLaunch)) { PathLaunch = Path.GetDirectoryName(PathExe); }
-
-                //Prepare the launching task
-                int TaskAction()
+                //Prepare the process launch
+                Task timeTask = Task.Run(delegate
                 {
                     try
                     {
-                        Process LaunchProcess = new Process();
-                        LaunchProcess.StartInfo.FileName = PathExe;
-                        if (!string.IsNullOrWhiteSpace(PathLaunch))
+                        //Check if the exe file exists
+                        if (!File.Exists(pathExe))
                         {
-                            LaunchProcess.StartInfo.WorkingDirectory = PathLaunch;
-                        }
-                        if (!string.IsNullOrWhiteSpace(Argument))
-                        {
-                            LaunchProcess.StartInfo.Arguments = Argument;
+                            Debug.WriteLine("Launch executable not found.");
+                            returnProcess = null;
+                            return;
                         }
 
-                        if (CreateNoWindow)
+                        //Show launching message
+                        Debug.WriteLine("Launching Win32: " + Path.GetFileNameWithoutExtension(pathExe));
+
+                        //Check the working path
+                        if (string.IsNullOrWhiteSpace(pathLaunch)) { pathLaunch = Path.GetDirectoryName(pathExe); }
+
+                        //Create process to start
+                        Process launchProcess = new Process();
+                        launchProcess.StartInfo.FileName = pathExe;
+                        if (!string.IsNullOrWhiteSpace(pathLaunch))
                         {
-                            LaunchProcess.StartInfo.UseShellExecute = false;
-                            LaunchProcess.StartInfo.CreateNoWindow = true;
+                            launchProcess.StartInfo.WorkingDirectory = pathLaunch;
+                        }
+                        if (!string.IsNullOrWhiteSpace(runArgument))
+                        {
+                            launchProcess.StartInfo.Arguments = runArgument;
+                        }
+                        if (createNoWindow)
+                        {
+                            launchProcess.StartInfo.UseShellExecute = false;
+                            launchProcess.StartInfo.CreateNoWindow = true;
+                        }
+                        if (runAsAdmin)
+                        {
+                            launchProcess.StartInfo.Verb = "runas";
                         }
 
-                        if (RunAsAdmin)
-                        {
-                            LaunchProcess.StartInfo.Verb = "runas";
-                        }
+                        //Start the process
+                        launchProcess.Start();
 
-                        LaunchProcess.Start();
-                        return LaunchProcess.Id;
+                        //Return process
+                        returnProcess = launchProcess;
+                        Debug.WriteLine("Launched Win32 process identifier: " + returnProcess.Id);
                     }
-                    catch
-                    {
-                        Debug.WriteLine("Failed launching Win32: " + Path.GetFileNameWithoutExtension(PathExe));
-                        return -1;
-                    }
-                }
+                    catch { }
+                });
 
-                //Launch the application
-                return await AVActions.TaskStartReturn(TaskAction, null);
+                //Launch the process with timeout
+                Task delayTask = Task.Delay(3000);
+                Task timeoutTask = await Task.WhenAny(timeTask, delayTask);
+                return returnProcess;
             }
-            catch
-            {
-                Debug.WriteLine("Failed launching Win32: " + Path.GetFileNameWithoutExtension(PathExe));
-                return -1;
-            }
+            catch { }
+            Debug.WriteLine("Failed launching Win32: " + Path.GetFileNameWithoutExtension(pathExe));
+            return returnProcess;
         }
 
         //Restart a win32 process or app
-        public static async Task RestartProcessWin32(int ProcessId, string PathExe, string PathLaunch, string Argument)
+        public static async Task<Process> RestartProcessWin32(int ProcessId, string PathExe, string PathLaunch, string Argument)
         {
             try
             {
@@ -143,18 +82,18 @@ namespace ArnoldVinkCode
                 if (ProcessId > 0)
                 {
                     CloseProcessById(ProcessId);
-                    await Task.Delay(1000);
                 }
                 else
                 {
                     CloseProcessesByNameOrTitle(Path.GetFileNameWithoutExtension(PathExe), false);
-                    await Task.Delay(1000);
                 }
+                await Task.Delay(1000);
 
-                //Launch the Win32 application
-                ProcessLauncherWin32(PathExe, PathLaunch, Argument, true, false);
+                //Relaunch the process or app
+                return await ProcessLauncherWin32Async(PathExe, PathLaunch, Argument, true, false);
             }
             catch { }
+            return null;
         }
     }
 }

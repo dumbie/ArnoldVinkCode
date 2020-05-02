@@ -362,8 +362,13 @@ namespace ArnoldVinkCode
                     }
                     catch { }
                 }
+
+                string sizeString = bytesRaw.ToString("0.00");
+                sizeString = StringRemoveEnd(sizeString, ",00");
+                sizeString = StringRemoveEnd(sizeString, ".00");
+
                 string[] formatBytesSuffix = { "B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
-                return bytesRaw.ToString("0.00") + formatBytesSuffix[bytesCounter];
+                return sizeString + formatBytesSuffix[bytesCounter];
             }
             catch { }
             return "Unknown";
