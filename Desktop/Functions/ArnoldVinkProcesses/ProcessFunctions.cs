@@ -309,6 +309,17 @@ namespace ArnoldVinkCode
                 //Set the process name
                 processMulti.Name = focusedProcess.ProcessName;
 
+                //Get and set the process path
+                string processAppUserModelId = GetAppUserModelIdFromProcess(focusedProcess);
+                if (!string.IsNullOrWhiteSpace(processAppUserModelId))
+                {
+                    processMulti.Path = processAppUserModelId;
+                }
+                else
+                {
+                    processMulti.Path = GetExecutablePathFromProcess(focusedProcess);
+                }
+
                 //Get the window title
                 processMulti.Title = GetWindowTitleFromWindowHandle(processMulti.WindowHandle);
                 if (processMulti.Title == "Unknown")
