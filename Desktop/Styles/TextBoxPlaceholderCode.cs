@@ -7,41 +7,40 @@ namespace ArnoldVinkCode.Styles
     //xmlns:styles="clr-namespace:ArnoldVinkCode.Styles"
     //Usage:
     //<Textbox Text="Hello" styles:TextboxPlaceholder.Placeholder="Hello"/>
-    public static class TextboxPlaceholder
+    public class TextboxPlaceholder
     {
         public static readonly DependencyProperty PlaceholderProperty = DependencyProperty.RegisterAttached("Placeholder", typeof(string), typeof(TextboxPlaceholder), new PropertyMetadata(default(string), PlaceholderChanged));
-
         private static void PlaceholderChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
         {
-            TextBox textbox = dependencyObject as TextBox;
-            if (textbox == null) { return; }
+            TextBox targetTextbox = dependencyObject as TextBox;
+            if (targetTextbox == null) { return; }
 
-            textbox.LostFocus -= OnLostFocus;
-            textbox.GotFocus -= OnGotFocus;
+            targetTextbox.LostFocus -= OnLostFocus;
+            targetTextbox.GotFocus -= OnGotFocus;
 
             if (args.NewValue != null)
             {
-                textbox.GotFocus += OnGotFocus;
-                textbox.LostFocus += OnLostFocus;
+                targetTextbox.GotFocus += OnGotFocus;
+                targetTextbox.LostFocus += OnLostFocus;
             }
         }
 
         private static void OnLostFocus(object sender, RoutedEventArgs routedEventArgs)
         {
-            TextBox textbox = sender as TextBox;
-            if (string.IsNullOrWhiteSpace(textbox.Text))
+            TextBox targetTextbox = sender as TextBox;
+            if (string.IsNullOrWhiteSpace(targetTextbox.Text))
             {
-                textbox.Text = GetPlaceholder(textbox);
+                targetTextbox.Text = GetPlaceholder(targetTextbox);
             }
         }
 
         private static void OnGotFocus(object sender, RoutedEventArgs routedEventArgs)
         {
-            TextBox textbox = sender as TextBox;
-            string placeholderText = GetPlaceholder(textbox);
-            if (textbox.Text == placeholderText)
+            TextBox targetTextbox = sender as TextBox;
+            string placeholderText = GetPlaceholder(targetTextbox);
+            if (targetTextbox.Text == placeholderText)
             {
-                textbox.Text = string.Empty;
+                targetTextbox.Text = string.Empty;
             }
         }
 

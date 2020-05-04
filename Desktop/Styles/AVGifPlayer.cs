@@ -4,11 +4,13 @@ using System.Windows.Controls;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 
-namespace ArnoldVinkGifPlayer
+namespace ArnoldVinkCode.Styles
 {
-    //xmlns:ArnoldVinkGifPlayer="clr-namespace:ArnoldVinkGifPlayer"
-    //<ArnoldVinkGifPlayer:GifPlayer GifSource="/Assets/Icons/Loading.gif"/>
-    public class GifPlayer : Image
+    //Import:
+    //xmlns:styles="clr-namespace:ArnoldVinkCode.Styles"
+    //Usage:
+    //<styles:AVGifPlayer GifSource="Assets/Icons/Loading.gif"/>
+    public class AVGifPlayer : Image
     {
         //GifPlayer variables
         private GifBitmapDecoder vGifDecoder = null;
@@ -23,12 +25,12 @@ namespace ArnoldVinkGifPlayer
             get { return (int)GetValue(FrameIndexProperty); }
             set { SetValue(FrameIndexProperty, value); }
         }
-        private static readonly DependencyProperty FrameIndexProperty = DependencyProperty.Register("FrameIndex", typeof(int), typeof(GifPlayer), new FrameworkPropertyMetadata(0, FrameIndexPropertyChanged));
+        private static readonly DependencyProperty FrameIndexProperty = DependencyProperty.Register("FrameIndex", typeof(int), typeof(AVGifPlayer), new FrameworkPropertyMetadata(0, FrameIndexPropertyChanged));
         private static void FrameIndexPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs ev)
         {
             try
             {
-                GifPlayer gifPlayer = sender as GifPlayer;
+                AVGifPlayer gifPlayer = sender as AVGifPlayer;
                 gifPlayer.Source = gifPlayer.vGifDecoder.Frames[(int)ev.NewValue];
             }
             catch { }
@@ -42,14 +44,14 @@ namespace ArnoldVinkGifPlayer
             get { return (bool)GetValue(AutoStartProperty); }
             set { SetValue(AutoStartProperty, value); }
         }
-        public static readonly DependencyProperty AutoStartProperty = DependencyProperty.Register("AutoStart", typeof(bool), typeof(GifPlayer), new FrameworkPropertyMetadata(false, AutoStartPropertyChanged));
+        public static readonly DependencyProperty AutoStartProperty = DependencyProperty.Register("AutoStart", typeof(bool), typeof(AVGifPlayer), new FrameworkPropertyMetadata(false, AutoStartPropertyChanged));
         private static void AutoStartPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             try
             {
                 if ((bool)e.NewValue)
                 {
-                    GifPlayer gifPlayer = sender as GifPlayer;
+                    AVGifPlayer gifPlayer = sender as AVGifPlayer;
                     gifPlayer.StartAnimation();
                 }
             }
@@ -61,15 +63,15 @@ namespace ArnoldVinkGifPlayer
         /// </summary>
         public Uri GifSource
         {
-            get { return (Uri)GetValue(GifSourceProperty); }
+            get { return new Uri(GetValue(GifSourceProperty).ToString(), UriKind.RelativeOrAbsolute); }
             set { SetValue(GifSourceProperty, value); }
         }
-        public static readonly DependencyProperty GifSourceProperty = DependencyProperty.Register("GifSource", typeof(Uri), typeof(GifPlayer), new FrameworkPropertyMetadata(null, GifSourcePropertyChanged));
+        public static readonly DependencyProperty GifSourceProperty = DependencyProperty.Register("GifSource", typeof(Uri), typeof(AVGifPlayer), new FrameworkPropertyMetadata(null, GifSourcePropertyChanged));
         private static void GifSourcePropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             try
             {
-                GifPlayer gifPlayer = sender as GifPlayer;
+                AVGifPlayer gifPlayer = sender as AVGifPlayer;
                 gifPlayer.InitializeGif();
             }
             catch { }
@@ -83,12 +85,12 @@ namespace ArnoldVinkGifPlayer
             get { return (double)GetValue(SpeedRatioProperty); }
             set { SetValue(SpeedRatioProperty, value); }
         }
-        public static readonly DependencyProperty SpeedRatioProperty = DependencyProperty.Register("SpeedRatio", typeof(double), typeof(GifPlayer), new FrameworkPropertyMetadata(1.00, SpeedRatioPropertyChanged));
+        public static readonly DependencyProperty SpeedRatioProperty = DependencyProperty.Register("SpeedRatio", typeof(double), typeof(AVGifPlayer), new FrameworkPropertyMetadata(1.00, SpeedRatioPropertyChanged));
         private static void SpeedRatioPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             try
             {
-                GifPlayer gifPlayer = sender as GifPlayer;
+                AVGifPlayer gifPlayer = sender as AVGifPlayer;
                 if (gifPlayer.vInt32Animation != null)
                 {
                     gifPlayer.vInt32Animation.SpeedRatio = (double)e.NewValue;
