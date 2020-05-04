@@ -9,38 +9,6 @@ namespace ArnoldVinkCode
 {
     public partial class AVImage
     {
-        //Convert file to a string
-        public static string FileToString(string[] stringSource)
-        {
-            try
-            {
-                //Load application bitmap image
-                foreach (string loadFile in stringSource)
-                {
-                    try
-                    {
-                        //Validate the load path
-                        if (string.IsNullOrWhiteSpace(loadFile)) { continue; }
-
-                        //Adjust the load path
-                        string loadFileLower = loadFile.ToLower();
-                        loadFileLower = AVFunctions.StringRemoveStart(loadFileLower, " ");
-                        loadFileLower = AVFunctions.StringRemoveEnd(loadFileLower, " ");
-                        //Debug.WriteLine("Loading text: " + loadFileLower);
-
-                        //Read the text file
-                        if (File.Exists(loadFileLower))
-                        {
-                            return File.ReadAllText(loadFileLower);
-                        }
-                    }
-                    catch { }
-                }
-            }
-            catch { }
-            return string.Empty;
-        }
-
         //Begin bitmap image
         private static BitmapImage BeginBitmapImage(int pixelWidth)
         {
