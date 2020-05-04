@@ -11,7 +11,7 @@ namespace ArnoldVinkCode.Styles
     public class ScrollViewerLoopHorizontal : ScrollViewer
     {
         private bool MovingToEnding = false;
-        public bool ScrollPaused = false;
+        public bool ScrollPaused { get; set; } = false;
         public int ScrollLoopSpeed { get; set; } = 120;
         public double ScrollLoopStep { get; set; } = 0.80;
 
@@ -52,7 +52,7 @@ namespace ArnoldVinkCode.Styles
     public class ScrollViewerLoopVertical : ScrollViewer
     {
         private bool MovingToEnding = false;
-        public bool ScrollPaused = false;
+        public bool ScrollPaused { get; set; } = false;
         public int ScrollLoopSpeed { get; set; } = 120;
         public double ScrollLoopStep { get; set; } = 0.80;
 

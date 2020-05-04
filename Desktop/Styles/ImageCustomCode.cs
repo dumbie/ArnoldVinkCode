@@ -8,34 +8,40 @@ namespace ArnoldVinkCode.Styles
     //Import:
     //xmlns:styles="clr-namespace:ArnoldVinkCode.Styles"
     //Usage:
-    //<Image Source="Assets/Image.png"/>
-    public class ImageCustom : Image
+    //<Image styles:SourceCustom.Source="Assets/Image.png"/>
+    public class SourceCustom
     {
-        /// <summary>
-        /// Defines the custom uri source
-        /// </summary>
-        public Uri SourceCustom
-        {
-            get { return new Uri(GetValue(SourceCustomProperty).ToString(), UriKind.RelativeOrAbsolute); }
-            set { SetValue(SourceCustomProperty, value); }
-        }
-        public static readonly DependencyProperty SourceCustomProperty = DependencyProperty.Register("SourceCustom", typeof(Uri), typeof(ImageCustom), new FrameworkPropertyMetadata(null, SourceCustomPropertyChanged));
-        private static void SourceCustomPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        public static readonly DependencyProperty SourceProperty = DependencyProperty.RegisterAttached("Source", typeof(string), typeof(SourceCustom), new PropertyMetadata(default(string), SourceChanged));
+        private static void SourceChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             try
             {
-                BitmapImage bitmapImage = new BitmapImage();
-                bitmapImage.BeginInit();
-                bitmapImage.CreateOptions = BitmapCreateOptions.None;
-                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapImage.UriSource = new Uri(e.NewValue.ToString(), UriKind.RelativeOrAbsolute);
-                bitmapImage.EndInit();
-                bitmapImage.Freeze();
+                Uri imageUri = new Uri(e.NewValue.ToString(), UriKind.RelativeOrAbsolute);
 
-                ImageCustom imageCustom = sender as ImageCustom;
-                imageCustom.Source = bitmapImage;
+                BitmapImage imageBitmap = new BitmapImage();
+                imageBitmap.BeginInit();
+                imageBitmap.CreateOptions = BitmapCreateOptions.None;
+                //imageBitmap.CacheOption = BitmapCacheOption.OnLoad; //Notworkinginpreview
+                imageBitmap.UriSource = imageUri;
+                imageBitmap.EndInit();
+                //imageBitmap.Freeze(); //Notworkinginpreview
+
+                Image imageCustom = sender as Image;
+                imageCustom.Source = imageBitmap;
             }
             catch { }
+        }
+
+        [AttachedPropertyBrowsableForType(typeof(Image))]
+        public static void SetSource(DependencyObject element, string value)
+        {
+            element.SetValue(SourceProperty, value);
+        }
+
+        [AttachedPropertyBrowsableForType(typeof(Image))]
+        public static string GetSource(DependencyObject element)
+        {
+            return (string)element.GetValue(SourceProperty);
         }
     }
 }

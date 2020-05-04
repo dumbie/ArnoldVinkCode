@@ -68,7 +68,10 @@ namespace ArnoldVinkCode
             try
             {
                 imageToBitmapImage.EndInit();
-                imageToBitmapImage.Freeze();
+                if (imageToBitmapImage.CanFreeze)
+                {
+                    imageToBitmapImage.Freeze();
+                }
 
                 //Clear memory stream
                 if (imageMemoryStream != null)

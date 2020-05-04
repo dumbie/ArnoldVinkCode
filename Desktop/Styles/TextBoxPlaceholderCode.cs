@@ -10,38 +10,49 @@ namespace ArnoldVinkCode.Styles
     public class TextboxPlaceholder
     {
         public static readonly DependencyProperty PlaceholderProperty = DependencyProperty.RegisterAttached("Placeholder", typeof(string), typeof(TextboxPlaceholder), new PropertyMetadata(default(string), PlaceholderChanged));
-        private static void PlaceholderChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
+        private static void PlaceholderChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            TextBox targetTextbox = dependencyObject as TextBox;
-            if (targetTextbox == null) { return; }
-
-            targetTextbox.LostFocus -= OnLostFocus;
-            targetTextbox.GotFocus -= OnGotFocus;
-
-            if (args.NewValue != null)
+            try
             {
-                targetTextbox.GotFocus += OnGotFocus;
-                targetTextbox.LostFocus += OnLostFocus;
+                TextBox targetTextbox = sender as TextBox;
+
+                targetTextbox.LostFocus -= OnLostFocus;
+                targetTextbox.GotFocus -= OnGotFocus;
+
+                if (e.NewValue != null)
+                {
+                    targetTextbox.GotFocus += OnGotFocus;
+                    targetTextbox.LostFocus += OnLostFocus;
+                }
             }
+            catch { }
         }
 
-        private static void OnLostFocus(object sender, RoutedEventArgs routedEventArgs)
+        private static void OnLostFocus(object sender, RoutedEventArgs e)
         {
-            TextBox targetTextbox = sender as TextBox;
-            if (string.IsNullOrWhiteSpace(targetTextbox.Text))
+            try
             {
-                targetTextbox.Text = GetPlaceholder(targetTextbox);
+                TextBox targetTextbox = sender as TextBox;
+                if (string.IsNullOrWhiteSpace(targetTextbox.Text))
+                {
+                    targetTextbox.Text = GetPlaceholder(targetTextbox);
+                }
             }
+            catch { }
         }
 
-        private static void OnGotFocus(object sender, RoutedEventArgs routedEventArgs)
+        private static void OnGotFocus(object sender, RoutedEventArgs e)
         {
-            TextBox targetTextbox = sender as TextBox;
-            string placeholderText = GetPlaceholder(targetTextbox);
-            if (targetTextbox.Text == placeholderText)
+            try
             {
-                targetTextbox.Text = string.Empty;
+                TextBox targetTextbox = sender as TextBox;
+                string placeholderText = GetPlaceholder(targetTextbox);
+                if (targetTextbox.Text == placeholderText)
+                {
+                    targetTextbox.Text = string.Empty;
+                }
             }
+            catch { }
         }
 
         [AttachedPropertyBrowsableForType(typeof(TextBox))]
