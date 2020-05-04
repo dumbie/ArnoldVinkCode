@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -231,6 +232,29 @@ namespace ArnoldVinkCode
                 dispatchTimer = new DispatcherTimer();
             }
             catch { }
+        }
+
+        //Find all visual children of object
+        public static List<T> FindVisualChildren<T>(DependencyObject objChild) where T : DependencyObject
+        {
+            List<T> childrenList = new List<T>();
+            try
+            {
+                for (int i = 0; i < VisualTreeHelper.GetChildrenCount(objChild); i++)
+                {
+                    DependencyObject child = VisualTreeHelper.GetChild(objChild, i);
+                    if (child != null && child is T)
+                    {
+                        childrenList.Add((T)child);
+                    }
+                    foreach (T childOfChild in FindVisualChildren<T>(child))
+                    {
+                        childrenList.Add(childOfChild);
+                    }
+                }
+            }
+            catch { }
+            return childrenList;
         }
 
         //Find the visual child of object
