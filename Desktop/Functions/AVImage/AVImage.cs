@@ -93,7 +93,7 @@ namespace ArnoldVinkCode
         }
 
         //Convert file to a BitmapImage
-        public static BitmapImage FileToBitmapImage(string[] imageSource, IntPtr windowHandle, int pixelWidth, int iconIndex)
+        public static BitmapImage FileToBitmapImage(string[] sourceImages, string[] sourceFolders, string sourceBackup, IntPtr windowHandle, int pixelWidth, int iconIndex)
         {
             try
             {
@@ -102,7 +102,7 @@ namespace ArnoldVinkCode
                 MemoryStream imageMemoryStream = new MemoryStream();
 
                 //Load application bitmap image
-                foreach (string loadFile in imageSource)
+                foreach (string loadFile in sourceImages)
                 {
                     try
                     {
@@ -120,14 +120,6 @@ namespace ArnoldVinkCode
                         {
                             imageToBitmapImage.UriSource = new Uri(loadFileLower, UriKind.RelativeOrAbsolute);
                         }
-                        else if (File.Exists("Assets\\Apps\\" + loadFileSafe + ".png"))
-                        {
-                            imageToBitmapImage.UriSource = new Uri("Assets\\Apps\\" + loadFileSafe + ".png", UriKind.RelativeOrAbsolute);
-                        }
-                        else if (File.Exists("Assets\\Roms\\" + loadFileSafe + ".png"))
-                        {
-                            imageToBitmapImage.UriSource = new Uri("Assets\\Roms\\" + loadFileSafe + ".png", UriKind.RelativeOrAbsolute);
-                        }
                         else if (File.Exists(loadFileLower) && !loadFileLower.EndsWith(".exe") && !loadFileLower.EndsWith(".dll") && !loadFileLower.EndsWith(".bin") && !loadFileLower.EndsWith(".tmp"))
                         {
                             imageToBitmapImage.UriSource = new Uri(loadFileLower, UriKind.RelativeOrAbsolute);
@@ -143,6 +135,28 @@ namespace ArnoldVinkCode
                                 executableImage.Dispose();
                             }
                         }
+                        else
+                        {
+                            foreach (string loadFolder in sourceFolders)
+                            {
+                                try
+                                {
+                                    string folderFilePng = loadFolder + "/" + loadFileSafe + ".png";
+                                    if (File.Exists(folderFilePng))
+                                    {
+                                        imageToBitmapImage.UriSource = new Uri(folderFilePng, UriKind.RelativeOrAbsolute);
+                                        break;
+                                    }
+                                    string folderFileJpg = loadFolder + "/" + loadFileSafe + ".jpg";
+                                    if (File.Exists(folderFileJpg))
+                                    {
+                                        imageToBitmapImage.UriSource = new Uri(folderFileJpg, UriKind.RelativeOrAbsolute);
+                                        break;
+                                    }
+                                }
+                                catch { }
+                            }
+                        }
 
                         //Return application bitmap image
                         if (imageToBitmapImage.UriSource != null || imageToBitmapImage.StreamSource != null)
@@ -156,10 +170,10 @@ namespace ArnoldVinkCode
                     }
                 }
 
-                //Image source not found, loading default or window icon
+                //Image source not found, loading backup or window icon
                 if (windowHandle == IntPtr.Zero)
                 {
-                    imageToBitmapImage.UriSource = new Uri("Assets\\Apps\\Unknown.png", UriKind.RelativeOrAbsolute);
+                    imageToBitmapImage.UriSource = new Uri(sourceBackup, UriKind.RelativeOrAbsolute);
                 }
                 else
                 {
@@ -174,7 +188,7 @@ namespace ArnoldVinkCode
                     }
                     else
                     {
-                        imageToBitmapImage.UriSource = new Uri("Assets\\Apps\\Unknown.png", UriKind.RelativeOrAbsolute);
+                        imageToBitmapImage.UriSource = new Uri(sourceBackup, UriKind.RelativeOrAbsolute);
                     }
                 }
 

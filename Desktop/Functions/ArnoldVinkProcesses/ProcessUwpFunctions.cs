@@ -265,7 +265,7 @@ namespace ArnoldVinkCode
                 string appFamilyName = appPackage.Id.FamilyName;
                 appxDetails.FullPackageName = appPackage.Id.FullName;
                 appxDetails.InstallPath = appPackage.InstalledLocation.Path;
-                string manifestPath = appxDetails.InstallPath + "\\AppXManifest.xml";
+                string manifestPath = appxDetails.InstallPath + "/AppXManifest.xml";
                 //Debug.WriteLine("Reading uwp app manifest file: " + manifestPath);
 
                 //Open the uwp application manifest file
