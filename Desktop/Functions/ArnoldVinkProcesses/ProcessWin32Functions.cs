@@ -64,7 +64,7 @@ namespace ArnoldVinkCode
                 });
 
                 //Launch the process with timeout
-                Task delayTask = Task.Delay(3000);
+                Task delayTask = Task.Delay(4000);
                 Task timeoutTask = await Task.WhenAny(timeTask, delayTask);
                 return returnProcess;
             }
