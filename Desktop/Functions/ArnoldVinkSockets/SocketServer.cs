@@ -28,8 +28,12 @@ namespace ArnoldVinkCode
             try
             {
                 Debug.WriteLine("Enabling the tcp listener (S)");
+
                 vTaskToken_SocketServer = new CancellationTokenSource();
                 vTask_SocketServer = AVActions.TaskStart(ListenerLoop, vTaskToken_SocketServer);
+
+                vTaskToken_SocketClean = new CancellationTokenSource();
+                vTask_SocketClean = AVActions.TaskStart(CleanLoop, vTaskToken_SocketClean);
             }
             catch (Exception ex)
             {
@@ -52,6 +56,9 @@ namespace ArnoldVinkCode
 
                 //Stop the listener loop
                 await AVActions.TaskStop(vTask_SocketServer, vTaskToken_SocketServer);
+
+                //Stop the clean loop
+                await AVActions.TaskStop(vTask_SocketClean, vTaskToken_SocketClean);
             }
             catch (Exception ex)
             {
@@ -154,7 +161,7 @@ namespace ArnoldVinkCode
                 vTcpListener.Server.LingerState = new LingerOption(true, 0);
                 vTcpListener.Start();
 
-                Debug.WriteLine("The tcp listener is running on (S): " + vTcpListener.LocalEndpoint);
+                Debug.WriteLine("Tcp listener is running on (S): " + vTcpListener.LocalEndpoint);
 
                 //Tcp listener loop
                 while (vIsServerRunning())

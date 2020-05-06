@@ -135,7 +135,7 @@ namespace ArnoldVinkCode
                                 executableImage.Dispose();
                             }
                         }
-                        else
+                        else if (sourceFolders != null)
                         {
                             foreach (string loadFolder in sourceFolders)
                             {

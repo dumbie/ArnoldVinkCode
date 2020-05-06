@@ -26,7 +26,7 @@ namespace ArnoldVinkCode
                 {
                     Debug.WriteLine("Start menu is currently open, pressing escape to close it.");
                     KeyPressSingle((byte)KeysVirtual.Escape, false);
-                    await Task.Delay(100);
+                    await Task.Delay(10);
                 }
             }
             catch { }
@@ -39,7 +39,7 @@ namespace ArnoldVinkCode
             {
                 Debug.WriteLine("Closing system menu for window: " + foregroundProcess.WindowHandle);
                 SendMessage(foregroundProcess.WindowHandle, (int)WindowMessages.WM_CANCELMODE, 0, 0);
-                await Task.Delay(100);
+                await Task.Delay(10);
             }
             catch { }
         }
@@ -57,7 +57,7 @@ namespace ArnoldVinkCode
                     if (closedProcess)
                     {
                         KeyPressSingle((byte)KeysVirtual.Escape, false);
-                        await Task.Delay(100);
+                        await Task.Delay(10);
                     }
                 }
             }
@@ -67,11 +67,10 @@ namespace ArnoldVinkCode
         //Focus on a process window
         public static async Task<bool> FocusProcessWindow(string processTitle, int processId, IntPtr processWindowHandle, int windowStateCommand, bool setWindowState, bool setTempTopMost)
         {
-            bool returnBool = false;
             try
             {
                 //Prepare the process focus
-                Task timeTask = Task.Run(async delegate
+                async Task<bool> TaskAction()
                 {
                     try
                     {
@@ -107,17 +106,17 @@ namespace ArnoldVinkCode
                         if (setWindowState)
                         {
                             ShowWindowAsync(processWindowHandle, windowStateCommand);
-                            await Task.Delay(100);
+                            await Task.Delay(10);
 
                             ShowWindow(processWindowHandle, windowStateCommand);
-                            await Task.Delay(100);
+                            await Task.Delay(10);
                         }
 
                         //Set the window as top most
                         if (setTempTopMost)
                         {
                             SetWindowPos(processWindowHandle, (IntPtr)WindowPosition.TopMost, 0, 0, 0, 0, (int)WindowSWP.NOMOVE | (int)WindowSWP.NOSIZE);
-                            await Task.Delay(100);
+                            await Task.Delay(10);
                         }
 
                         //Retry to show the window
@@ -127,19 +126,19 @@ namespace ArnoldVinkCode
                             {
                                 //Allow changing window
                                 AllowSetForegroundWindow(processId);
-                                await Task.Delay(100);
+                                await Task.Delay(10);
 
                                 //Bring window to top
                                 BringWindowToTop(processWindowHandle);
-                                await Task.Delay(100);
+                                await Task.Delay(10);
 
                                 //Switch to the window
                                 SwitchToThisWindow(processWindowHandle, true);
-                                await Task.Delay(100);
+                                await Task.Delay(10);
 
                                 //Focus on the window
                                 UiaFocusWindowHandle(processWindowHandle);
-                                await Task.Delay(100);
+                                await Task.Delay(10);
                             }
                             catch (Exception ex)
                             {
@@ -151,24 +150,24 @@ namespace ArnoldVinkCode
                         if (setTempTopMost)
                         {
                             SetWindowPos(processWindowHandle, (IntPtr)WindowPosition.NoTopMost, 0, 0, 0, 0, (int)WindowSWP.NOMOVE | (int)WindowSWP.NOSIZE);
-                            await Task.Delay(100);
+                            await Task.Delay(10);
                         }
 
                         //Return bool
-                        returnBool = true;
                         Debug.WriteLine("Focused process window: " + processTitle + " WindowHandle: " + processWindowHandle + " ShowCmd: " + windowStateCommand);
+                        return true;
                     }
                     catch { }
-                });
+                    Debug.WriteLine("Failed focusing process: " + processTitle);
+                    return false;
+                };
 
-                //Focus the process with timeout
-                Task delayTask = Task.Delay(3000);
-                Task timeoutTask = await Task.WhenAny(timeTask, delayTask);
-                return returnBool;
+                //Focus the process
+                return await AVActions.TaskStartReturn(TaskAction, null).Result;
             }
             catch { }
             Debug.WriteLine("Failed focusing process: " + processTitle);
-            return returnBool;
+            return false;
         }
 
         //Enumerate all thread windows including fullscreen

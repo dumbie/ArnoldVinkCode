@@ -12,6 +12,10 @@ namespace ArnoldVinkCode
         private CancellationTokenSource vTaskToken_SocketServer;
         public bool vIsServerRunning() { return vTaskToken_SocketServer != null && !vTaskToken_SocketServer.IsCancellationRequested; }
 
+        private Task vTask_SocketClean;
+        private CancellationTokenSource vTaskToken_SocketClean;
+        public bool vIsCleanRunning() { return vTaskToken_SocketClean != null && !vTaskToken_SocketClean.IsCancellationRequested; }
+
         //Events
         public delegate Task DelegateBytesReceived(TcpClient tcpClient, byte[] bytesReceived);
         public DelegateBytesReceived EventBytesReceived = null;

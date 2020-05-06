@@ -17,9 +17,6 @@ namespace ArnoldVinkCode
                 //Check existing tcp client
                 if (vTcpClients.Any())
                 {
-                    //Clean disconnected tcp clients
-                    TcpClientCleanConnections();
-
                     //Look for target tcp client
                     foreach (TcpClient tcpClient in vTcpClients.ToList())
                     {
@@ -76,48 +73,6 @@ namespace ArnoldVinkCode
             }
         }
 
-        //Clean disconnected tcp clients
-        public void TcpClientCleanConnections()
-        {
-            try
-            {
-                //Debug.WriteLine("Cleaning disconnected tcp clients (C)");
-                foreach (TcpClient tcpClient in vTcpClients.ToList())
-                {
-                    try
-                    {
-                        //Check if the tcp client is connected
-                        if (tcpClient == null || !tcpClient.Connected || !tcpClient.Client.Connected)
-                        {
-                            Debug.WriteLine("Cleaned disconnected tcp client (C)");
-                            vTcpClients.Remove(tcpClient);
-                            continue;
-                        }
-
-                        //Check if the tcp client has timed out
-                        if (tcpClient.Client.Poll(0, SelectMode.SelectRead))
-                        {
-                            if (tcpClient.Client.Receive(new byte[1], SocketFlags.Peek) == 0)
-                            {
-                                Debug.WriteLine("Cleaned timed out tcp client (C)");
-                                vTcpClients.Remove(tcpClient);
-                                continue;
-                            }
-                        }
-                    }
-                    catch
-                    {
-                        Debug.WriteLine("Cleaned failed tcp client (C)");
-                        vTcpClients.Remove(tcpClient);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("Failed cleaning tcp clients (C): " + ex.Message);
-            }
-        }
-
         //Tcp client disconnect all
         public void TcpClientDisconnectAll()
         {
@@ -145,14 +100,6 @@ namespace ArnoldVinkCode
         {
             try
             {
-                //Check if the tcp client is connected
-                if (tcpClient == null || !tcpClient.Connected || !tcpClient.Client.Connected)
-                {
-                    Debug.WriteLine("Tcp client is not connected, disposing the client (C)");
-                    tcpClient = null;
-                    return;
-                }
-
                 Debug.WriteLine("Disconnecting and disposing tcp client (C)");
                 tcpClient.GetStream().Close();
                 tcpClient.Client.Close();

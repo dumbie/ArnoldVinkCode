@@ -10,11 +10,10 @@ namespace ArnoldVinkCode
         //Launch a win32 application manually async
         public static async Task<Process> ProcessLauncherWin32Async(string pathExe, string pathLaunch, string runArgument, bool runAsAdmin, bool createNoWindow)
         {
-            Process returnProcess = null;
             try
             {
                 //Prepare the process launch
-                Task timeTask = Task.Run(delegate
+                Process TaskAction()
                 {
                     try
                     {
@@ -22,8 +21,7 @@ namespace ArnoldVinkCode
                         if (!File.Exists(pathExe))
                         {
                             Debug.WriteLine("Launch executable not found.");
-                            returnProcess = null;
-                            return;
+                            return null;
                         }
 
                         //Show launching message
@@ -57,20 +55,20 @@ namespace ArnoldVinkCode
                         launchProcess.Start();
 
                         //Return process
-                        returnProcess = launchProcess;
-                        Debug.WriteLine("Launched Win32 process identifier: " + returnProcess.Id);
+                        Debug.WriteLine("Launched Win32 process identifier: " + launchProcess.Id);
+                        return launchProcess;
                     }
                     catch { }
-                });
+                    Debug.WriteLine("Failed launching Win32: " + Path.GetFileNameWithoutExtension(pathExe));
+                    return null;
+                };
 
-                //Launch the process with timeout
-                Task delayTask = Task.Delay(4000);
-                Task timeoutTask = await Task.WhenAny(timeTask, delayTask);
-                return returnProcess;
+                //Launch the process
+                return await AVActions.TaskStartReturn(TaskAction, null);
             }
             catch { }
             Debug.WriteLine("Failed launching Win32: " + Path.GetFileNameWithoutExtension(pathExe));
-            return returnProcess;
+            return null;
         }
 
         //Restart a win32 process or app

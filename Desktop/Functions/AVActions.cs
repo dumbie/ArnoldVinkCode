@@ -35,32 +35,6 @@ namespace ArnoldVinkCode
             }
         }
 
-        //async Task TaskAction() { void(); }
-        //await AVActions.TaskStartAsync(TaskAction, null);
-        //Tip: Don't forget to use try and catch to improve stability
-        public static async Task TaskStartAsync(Func<Task> actionRun, CancellationTokenSource taskToken)
-        {
-            try
-            {
-                if (taskToken == null)
-                {
-                    taskToken = new CancellationTokenSource();
-                    using (taskToken)
-                    {
-                        await Task.Run(actionRun, taskToken.Token);
-                    }
-                }
-                else
-                {
-                    await Task.Run(actionRun, taskToken.Token);
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("Failed to start task: " + ex.Message);
-            }
-        }
-
         //string TaskAction() { return ""; }
         //await AVActions.TaskStartReturn(TaskAction, null);
         //Tip: Don't forget to use try and catch to improve stability

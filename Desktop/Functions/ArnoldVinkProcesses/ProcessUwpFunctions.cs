@@ -22,11 +22,10 @@ namespace ArnoldVinkCode
         //Launch an uwp application manually
         public static async Task<Process> ProcessLauncherUwpAndWin32StoreAsync(string appUserModelId, string runArgument)
         {
-            Process returnProcess = null;
             try
             {
                 //Prepare the process launch
-                Task timeTask = Task.Run(delegate
+                Process TaskAction()
                 {
                     try
                     {
@@ -43,20 +42,21 @@ namespace ArnoldVinkCode
                         UWPActivationManager.ActivateApplication(appUserModelId, runArgument, UWPActivationManagerOptions.None, out int processId);
 
                         //Return process
-                        returnProcess = GetProcessById(processId);
+                        Process returnProcess = GetProcessById(processId);
                         Debug.WriteLine("Launched UWP or Win32Store process identifier: " + returnProcess.Id);
+                        return returnProcess;
                     }
                     catch { }
-                });
+                    Debug.WriteLine("Failed launching UWP or Win32Store: " + appUserModelId + " / " + runArgument);
+                    return null;
+                };
 
-                //Launch the process with timeout
-                Task delayTask = Task.Delay(8000);
-                Task timeoutTask = await Task.WhenAny(timeTask, delayTask);
-                return returnProcess;
+                //Launch the process
+                return await AVActions.TaskStartReturn(TaskAction, null);
             }
             catch { }
-            Debug.WriteLine("Failed launching UWP or Win32Store: " + appUserModelId + "/" + runArgument);
-            return returnProcess;
+            Debug.WriteLine("Failed launching UWP or Win32Store: " + appUserModelId + " / " + runArgument);
+            return null;
         }
 
         //Get uwp process by window handle

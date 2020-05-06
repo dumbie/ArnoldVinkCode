@@ -10,7 +10,7 @@ namespace AVForms
         //Window Initialize
         public AVMessageBox() { InitializeComponent(); }
 
-        //Message Box Variables
+        //MessageBox Variables
         private static bool vMessageBoxPopupCancelled = false;
         private static int vMessageBoxPopupResult = 0;
         private static AVMessageBox vAVMessageBox = null;
