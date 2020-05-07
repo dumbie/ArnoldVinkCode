@@ -84,7 +84,7 @@ namespace ArnoldVinkCode
                     try
                     {
                         TcpClientDisconnect(tcpClient);
-                        vTcpClients.Remove(tcpClient);
+                        CleanRemoveTcpClientFromList(tcpClient);
                     }
                     catch { }
                 }

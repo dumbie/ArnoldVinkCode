@@ -28,20 +28,27 @@ namespace ArnoldVinkCode
                                 //Check if the tcp client is connected
                                 if (tcpClient == null || !tcpClient.Connected || !tcpClient.Client.Connected)
                                 {
-                                    vTcpClients.Remove(tcpClient);
+                                    CleanRemoveTcpClientFromList(tcpClient);
                                     Debug.WriteLine("Cleaned disconnected tcp client (L)");
                                     continue;
                                 }
 
                                 //Check if the tcp client has timed out
-                                if (tcpClient.Client.Receive(new byte[1], SocketFlags.Peek) == 0)
+                                if (tcpClient.Client.Poll(0, SelectMode.SelectRead))
                                 {
-                                    vTcpClients.Remove(tcpClient);
-                                    Debug.WriteLine("Cleaned timed out tcp client (L)");
-                                    continue;
+                                    if (tcpClient.Client.Receive(new byte[1], SocketFlags.Peek) == 0)
+                                    {
+                                        CleanRemoveTcpClientFromList(tcpClient);
+                                        Debug.WriteLine("Cleaned timed out tcp client (L)");
+                                        continue;
+                                    }
                                 }
                             }
-                            catch { }
+                            catch
+                            {
+                                CleanRemoveTcpClientFromList(tcpClient);
+                                Debug.WriteLine("Cleaned failed tcp client (L)");
+                            }
                         }
                     }
                     catch { }
@@ -52,6 +59,17 @@ namespace ArnoldVinkCode
             {
                 Debug.WriteLine("Failed tcp client cleaner (L): " + ex.Message);
             }
+        }
+
+        //Remove tcp client from the list
+        void CleanRemoveTcpClientFromList(TcpClient tcpClient)
+        {
+            try
+            {
+                vTcpClients.Remove(tcpClient);
+                tcpClient = null;
+            }
+            catch { }
         }
     }
 }
