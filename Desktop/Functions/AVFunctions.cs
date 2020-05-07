@@ -397,22 +397,5 @@ namespace ArnoldVinkCode
             catch { }
             return "Unknown";
         }
-
-        //Get screen by number
-        public static Screen GetScreenByNumber(int monitorNumber, out bool monitorSuccess)
-        {
-            try
-            {
-                Screen targetScreen = Screen.AllScreens[monitorNumber];
-                monitorSuccess = true;
-                return targetScreen;
-            }
-            catch
-            {
-                Screen targetScreen = Screen.PrimaryScreen;
-                monitorSuccess = false;
-                return targetScreen;
-            }
-        }
     }
 }
