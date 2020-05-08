@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 
 namespace ArnoldVinkCode
 {
     public partial class AVDisplayMonitor
     {
-        public static void GetScreenRefreshRate(int screenNumber, out int refreshRate)
+        public static int GetScreenRefreshRate(int screenNumber)
         {
-            refreshRate = -1;
+            int refreshRate = -1;
             try
             {
                 IntPtr createDC = CreateDC(@"\\.\DISPLAY" + screenNumber, null, null, IntPtr.Zero);
@@ -14,50 +17,70 @@ namespace ArnoldVinkCode
                 ReleaseDC(IntPtr.Zero, createDC);
             }
             catch { }
+            return refreshRate;
         }
 
-        public static void GetScreenResolution(int screenNumber, out int screenWidth, out int screenHeight, out float dpiScale)
+        private static List<DisplayMonitorResolution> GetScreenHandles()
         {
-            screenWidth = -1;
-            screenHeight = -1;
-            dpiScale = -1;
+            List<DisplayMonitorResolution> screenHandles = new List<DisplayMonitorResolution>();
             try
             {
-                IntPtr createDC = CreateDC(@"\\.\DISPLAY" + screenNumber, null, null, IntPtr.Zero);
-
-                int nativeScreenWidth = GetDeviceCaps(createDC, DEVICECAP.HORZRES);
-                screenWidth = nativeScreenWidth;
-                //int desktopScreenWidth = GetDeviceCaps(createDC, DeviceCap.DESKTOPHORZRES);
-                //int dpiWidth = GetDeviceCaps(createDC, DeviceCap.LOGPIXELSX);
-                //int dpiScreenWidth = (int)(desktopScreenWidth / (float)dpiWidth * (float)96);
-
-                int nativeScreenHeight = GetDeviceCaps(createDC, DEVICECAP.VERTRES);
-                screenHeight = nativeScreenHeight;
-                //int desktopScreenHeight = GetDeviceCaps(createDC, DeviceCap.DESKTOPVERTRES);
-                //int dpiHeight = GetDeviceCaps(createDC, DeviceCap.LOGPIXELSY);
-                //int dpiScreenHeight = (int)(desktopScreenHeight / (float)dpiHeight * (float)96);
-
-                //Highest used DPI on all monitors
-                int dpiWidth = GetDeviceCaps(createDC, DEVICECAP.LOGPIXELSX);
-                dpiScale = (float)dpiWidth / (float)96;
-
-                ReleaseDC(IntPtr.Zero, createDC);
+                EnumDisplayMonitors(IntPtr.Zero, IntPtr.Zero,
+                delegate (IntPtr hMonitor, IntPtr hdcMonitor, ref RECT lprcMonitor, IntPtr dwData)
+                {
+                    DisplayMonitorResolution displayMonitorResolution = new DisplayMonitorResolution();
+                    displayMonitorResolution.ScreenHandle = hMonitor;
+                    screenHandles.Add(displayMonitorResolution);
+                    return true;
+                },
+                IntPtr.Zero);
             }
             catch { }
+            return screenHandles;
         }
 
-        public static void GetScreenBounds(int screenNumber, out int boundsLeft, out int boundsTop)
+        //Requires app manifest dpiawareness permonitor
+        public static DisplayMonitorResolution GetScreenResolutionBounds(int screenNumber)
         {
-            boundsLeft = -1;
-            boundsTop = -1;
+            DisplayMonitorResolution displayMonitorResolution = null;
             try
             {
-                DEVMODE devMode = new DEVMODE();
-                EnumDisplaySettings(@"\\.\DISPLAY" + screenNumber, IMODENUM.ENUM_CURRENT_SETTINGS, ref devMode);
-                boundsLeft = devMode.dmPositionX;
-                boundsTop = devMode.dmPositionY;
+                //Get the screen handle
+                if (screenNumber <= 0) { screenNumber = 1; }
+                List<DisplayMonitorResolution> screenHandles = GetScreenHandles();
+                try
+                {
+                    displayMonitorResolution = screenHandles[screenNumber - 1];
+                }
+                catch
+                {
+                    displayMonitorResolution = screenHandles.FirstOrDefault();
+                }
+
+                //Get the screen dpi
+                GetDpiForMonitor(displayMonitorResolution.ScreenHandle, DPITYPE.Effective, out int dpiWidth, out int dpiHeight);
+                displayMonitorResolution.ScreenDpiScale = dpiWidth / (float)96;
+
+                //Get the screen bounds
+                //Improve get total dpi difference and substract
+                MONITORINFOEX monitorInfoEx = new MONITORINFOEX();
+                GetMonitorInfo(displayMonitorResolution.ScreenHandle, monitorInfoEx);
+                displayMonitorResolution.BoundsLeft = monitorInfoEx.rcMonitor.Left;
+                displayMonitorResolution.BoundsTop = monitorInfoEx.rcMonitor.Top;
+                displayMonitorResolution.BoundsRight = monitorInfoEx.rcMonitor.Right;
+                displayMonitorResolution.BoundsBottom = monitorInfoEx.rcMonitor.Bottom;
+
+                //Get the screen resolution
+                displayMonitorResolution.ScreenWidth = (int)(monitorInfoEx.rcMonitor.Width() / (float)dpiWidth * (float)96);
+                displayMonitorResolution.ScreenHeight = (int)(monitorInfoEx.rcMonitor.Height() / (float)dpiWidth * (float)96);
+
+                return displayMonitorResolution;
             }
-            catch { }
+            catch
+            {
+                Debug.WriteLine("Failed getting monitor resolution.");
+            }
+            return displayMonitorResolution;
         }
     }
 }
