@@ -22,8 +22,8 @@ namespace ArnoldVinkCode
             public int Top;
             public int Right;
             public int Bottom;
-            public int Width() { return this.Right - this.Left; }
-            public int Height() { return this.Bottom - this.Top; }
+            public int Width { get { return this.Right - this.Left; } }
+            public int Height { get { return this.Bottom - this.Top; } }
         }
 
         [StructLayout(LayoutKind.Sequential)]

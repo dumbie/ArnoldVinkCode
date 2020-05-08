@@ -122,7 +122,7 @@ namespace ArnoldVinkCode
         }
 
         //List all the connected display monitors
-        public static List<DisplayMonitorSummary> ListDisplayMonitors()
+        public static List<DisplayMonitorSwitch> ListDisplayMonitors()
         {
             try
             {
@@ -144,7 +144,7 @@ namespace ArnoldVinkCode
                     return null;
                 }
 
-                List<DisplayMonitorSummary> monitorListSummary = new List<DisplayMonitorSummary>();
+                List<DisplayMonitorSwitch> monitorListSummary = new List<DisplayMonitorSwitch>();
 
                 uint prevMonitorId = 0;
                 int pathInfoIndex = 0;
@@ -176,7 +176,7 @@ namespace ArnoldVinkCode
                                     monitorName = monitorName + " (" + monitorId + ")";
 
                                     //Add monitor to summary list
-                                    monitorListSummary.Add(new DisplayMonitorSummary() { Identifier = monitorId, Name = monitorName });
+                                    monitorListSummary.Add(new DisplayMonitorSwitch() { Identifier = monitorId, Name = monitorName });
                                 }
                             }
                         }
