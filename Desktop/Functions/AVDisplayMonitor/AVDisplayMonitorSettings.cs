@@ -46,8 +46,8 @@ namespace ArnoldVinkCode
 
                 //Get the screen dpi scale
                 GetDpiForMonitor(displayMonitorSettings.Handle, DPITYPE.Effective, out int dpiHorizontal, out int dpiVertical);
-                displayMonitorSettings.DpiScaleHorizontal = dpiHorizontal / (float)96;
-                displayMonitorSettings.DpiScaleVertical = dpiVertical / (float)96;
+                displayMonitorSettings.DpiScaleHorizontal = (float)dpiHorizontal / (float)96;
+                displayMonitorSettings.DpiScaleVertical = (float)dpiVertical / (float)96;
 
                 MONITORINFOEX monitorInfoEx = new MONITORINFOEX();
                 GetMonitorInfo(displayMonitorSettings.Handle, monitorInfoEx);
@@ -57,27 +57,15 @@ namespace ArnoldVinkCode
 
                 //Get the screen resolution
                 displayMonitorSettings.WidthNative = monitorInfoEx.rcMonitor.Width;
-                displayMonitorSettings.WidthDpi = (int)(displayMonitorSettings.WidthNative / (float)dpiHorizontal * 96);
+                displayMonitorSettings.WidthDpi = (int)(displayMonitorSettings.WidthNative / (float)dpiHorizontal * (float)96);
                 displayMonitorSettings.HeightNative = monitorInfoEx.rcMonitor.Height;
-                displayMonitorSettings.HeightDpi = (int)(displayMonitorSettings.HeightNative / (float)dpiVertical * 96);
+                displayMonitorSettings.HeightDpi = (int)(displayMonitorSettings.HeightNative / (float)dpiVertical * (float)96);
 
                 //Get the screen bounds
                 displayMonitorSettings.BoundsLeft = monitorInfoEx.rcMonitor.Left;
                 displayMonitorSettings.BoundsTop = monitorInfoEx.rcMonitor.Top;
                 displayMonitorSettings.BoundsRight = monitorInfoEx.rcMonitor.Right;
                 displayMonitorSettings.BoundsBottom = monitorInfoEx.rcMonitor.Bottom;
-
-                //Check the screen bounds
-                //Improve get dpi difference vs native and substract
-                //int widthDpiDifference = displayMonitorSettings.WidthNative - displayMonitorSettings.WidthDpi;
-                //if (displayMonitorSettings.BoundsLeft < 0)
-                //{
-                //    displayMonitorSettings.BoundsLeft += widthDpiDifference;
-                //}
-                //else if (displayMonitorSettings.BoundsLeft > 0)
-                //{
-                //    displayMonitorSettings.BoundsLeft -= widthDpiDifference;
-                //}
 
                 IntPtr createDC = CreateDC(displayMonitorSettings.Name, null, null, IntPtr.Zero);
 

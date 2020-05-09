@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Media;
 using System.Windows.Threading;
+using static ArnoldVinkCode.AVInteropDll;
 
 namespace ArnoldVinkCode
 {
@@ -328,6 +329,26 @@ namespace ArnoldVinkCode
                 return System.Windows.Application.Current.Windows.OfType<T>().FirstOrDefault();
             }
             catch { return null; }
+        }
+
+        //Application window move
+        public static void WindowMove(IntPtr windowHandle, int horLeft, int verTop)
+        {
+            try
+            {
+                SetWindowPos(windowHandle, IntPtr.Zero, horLeft, verTop, 0, 0, (int)WindowSWP.NOSIZE);
+            }
+            catch { }
+        }
+
+        //Application window resize
+        public static void WindowResize(IntPtr windowHandle, int width, int height)
+        {
+            try
+            {
+                SetWindowPos(windowHandle, IntPtr.Zero, 0, 0, width, height, (int)WindowSWP.NOMOVE);
+            }
+            catch { }
         }
 
         //Get screen aspect ratio

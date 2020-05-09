@@ -18,10 +18,10 @@ namespace ArnoldVinkCode
         [StructLayout(LayoutKind.Sequential)]
         private struct RECT
         {
-            public int Left;
-            public int Top;
-            public int Right;
-            public int Bottom;
+            public int Left { get; set; }
+            public int Top { get; set; }
+            public int Right { get; set; }
+            public int Bottom { get; set; }
             public int Width { get { return this.Right - this.Left; } }
             public int Height { get { return this.Bottom - this.Top; } }
         }
