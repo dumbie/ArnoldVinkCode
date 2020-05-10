@@ -57,9 +57,9 @@ namespace ArnoldVinkCode
 
                 //Get the screen resolution
                 displayMonitorSettings.WidthNative = monitorInfoEx.rcMonitor.Width;
-                displayMonitorSettings.WidthDpi = (int)(displayMonitorSettings.WidthNative / (float)dpiHorizontal * (float)96);
+                displayMonitorSettings.WidthDpi = (int)(displayMonitorSettings.WidthNative / displayMonitorSettings.DpiScaleHorizontal);
                 displayMonitorSettings.HeightNative = monitorInfoEx.rcMonitor.Height;
-                displayMonitorSettings.HeightDpi = (int)(displayMonitorSettings.HeightNative / (float)dpiVertical * (float)96);
+                displayMonitorSettings.HeightDpi = (int)(displayMonitorSettings.HeightNative / displayMonitorSettings.DpiScaleVertical);
 
                 //Get the screen bounds
                 displayMonitorSettings.BoundsLeft = monitorInfoEx.rcMonitor.Left;
