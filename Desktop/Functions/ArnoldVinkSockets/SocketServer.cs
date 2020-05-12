@@ -2,9 +2,9 @@
 using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using static ArnoldVinkCode.AVActions;
 
 namespace ArnoldVinkCode
 {
@@ -28,12 +28,8 @@ namespace ArnoldVinkCode
             try
             {
                 Debug.WriteLine("Enabling the tcp listener (S)");
-
-                vTaskToken_SocketServer = new CancellationTokenSource();
-                vTask_SocketServer = AVActions.TaskStart(ListenerLoop, vTaskToken_SocketServer);
-
-                vTaskToken_SocketClean = new CancellationTokenSource();
-                vTask_SocketClean = AVActions.TaskStart(CleanLoop, vTaskToken_SocketClean);
+                AVActions.TaskStartLoop(LoopTcpListener, vTask_SocketServer);
+                AVActions.TaskStartLoop(LoopTcpCleaner, vTask_SocketClean);
             }
             catch (Exception ex)
             {
@@ -55,10 +51,10 @@ namespace ArnoldVinkCode
                 TcpListenerStop(vTcpListener);
 
                 //Stop the listener loop
-                await AVActions.TaskStop(vTask_SocketServer, vTaskToken_SocketServer);
+                await AVActions.TaskStopLoop(vTask_SocketServer);
 
                 //Stop the clean loop
-                await AVActions.TaskStop(vTask_SocketClean, vTaskToken_SocketClean);
+                await AVActions.TaskStopLoop(vTask_SocketClean);
             }
             catch (Exception ex)
             {
@@ -122,7 +118,7 @@ namespace ArnoldVinkCode
                         if (bytesReceivedLength > 0)
                         {
                             //Debug.WriteLine("Received bytes from tcp client (S): " + bytesReceivedLength);
-                            await EventBytesReceived(tcpClient, receivedBytes);
+                            EventBytesReceived(tcpClient, receivedBytes);
                         }
                         else
                         {
@@ -150,7 +146,7 @@ namespace ArnoldVinkCode
         }
 
         //Receive incoming tcp clients
-        private async void ListenerLoop()
+        private async void LoopTcpListener()
         {
             try
             {
@@ -164,7 +160,7 @@ namespace ArnoldVinkCode
                 Debug.WriteLine("Tcp listener is running on (S): " + vTcpListener.LocalEndpoint);
 
                 //Tcp listener loop
-                while (vIsServerRunning())
+                while (vTask_SocketServer.Status == AVTaskStatus.Running)
                 {
                     try
                     {
@@ -180,7 +176,7 @@ namespace ArnoldVinkCode
                                 }
                                 catch { }
                             }
-                            await AVActions.TaskStart(TaskAction, null);
+                            await AVActions.TaskStart(TaskAction);
                         }
                     }
                     catch { }
@@ -189,6 +185,10 @@ namespace ArnoldVinkCode
             catch (Exception ex)
             {
                 await ListenerLoop_Exception(ex);
+            }
+            finally
+            {
+                vTask_SocketServer.Status = AVTaskStatus.Stopped;
             }
         }
 

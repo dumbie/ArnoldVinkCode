@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -9,51 +8,30 @@ namespace ArnoldVinkCode
     public partial class AVActions
     {
         //async void TaskAction() { void(); }
-        //AVActions.TaskStart(TaskAction, null);
+        //AVActions.TaskStart(TaskAction);
         //Tip: Don't forget to use try and catch to improve stability
-        public static Task TaskStart(Action actionRun, CancellationTokenSource taskToken)
+        public static Task TaskStart(Action actionRun)
         {
             try
             {
-                if (taskToken == null)
-                {
-                    taskToken = new CancellationTokenSource();
-                    using (taskToken)
-                    {
-                        return Task.Run(actionRun, taskToken.Token);
-                    }
-                }
-                else
-                {
-                    return Task.Run(actionRun, taskToken.Token);
-                }
+                return Task.Run(actionRun);
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to start task: " + ex.Message);
+                Debug.WriteLine("Failed to start regular task: " + ex.Message);
                 return null;
             }
         }
 
         //string TaskAction() { return ""; }
-        //await AVActions.TaskStartReturn(TaskAction, null);
+        //async Task<string> TaskAction() { return ""; }
+        //await AVActions.TaskStartReturn(TaskAction);
         //Tip: Don't forget to use try and catch to improve stability
-        public static Task<T> TaskStartReturn<T>(Func<T> actionRun, CancellationTokenSource taskToken)
+        public static Task<T> TaskStartReturn<T>(Func<T> actionRun)
         {
             try
             {
-                if (taskToken == null)
-                {
-                    taskToken = new CancellationTokenSource();
-                    using (taskToken)
-                    {
-                        return Task.Run(actionRun, taskToken.Token);
-                    }
-                }
-                else
-                {
-                    return Task.Run(actionRun, taskToken.Token);
-                }
+                return Task.Run(actionRun);
             }
             catch (Exception ex)
             {
@@ -62,42 +40,59 @@ namespace ArnoldVinkCode
             }
         }
 
-        //Check if a task is still running
-        public static bool TaskRunningCheck(CancellationTokenSource taskToken)
+        //async void TaskAction() { void(); }
+        //AVActions.TaskStartLoop(TaskAction, AVTaskDetails);
+        //Tip: Don't forget to use try and catch to improve stability
+        public static void TaskStartLoop(Action actionRun, AVTaskDetails avTask)
         {
             try
             {
-                return taskToken != null && !taskToken.IsCancellationRequested;
-            }
-            catch { }
-            return false;
-        }
-
-        //Example: AVActions.TaskStop(Task, Token);
-        public async static Task TaskStop(Task taskStop, CancellationTokenSource taskToken)
-        {
-            try
-            {
-                //Cancel the task token
-                taskToken.Cancel();
-
-                //Wait for task loop
-                while (!taskStop.IsCompleted)
+                if (avTask == null)
                 {
-                    Debug.WriteLine("Waiting for task loop to complete.");
-                    await Task.Delay(500);
+                    Task.Run(actionRun);
                 }
-
-                //Wait for task stop
-                await Task.Delay(1000);
-
-                //Dispose the used task
-                taskStop.Dispose();
-                taskToken.Dispose();
+                else
+                {
+                    avTask.Status = AVTaskStatus.Running;
+                    avTask.Task = Task.Run(actionRun);
+                }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to stop task: " + ex.Message);
+                Debug.WriteLine("Failed to start loop task: " + ex.Message);
+            }
+        }
+
+        //Example: AVActions.TaskStop(AVTaskDetails);
+        //Tip: Don't forget to set status to cancelled after loop ends
+        public static async Task TaskStopLoop(AVTaskDetails avTask)
+        {
+            try
+            {
+                //Check if the task is stopped
+                if (avTask.Status != AVTaskStatus.Running)
+                {
+                    Debug.WriteLine("Task is already stopped.");
+                    return;
+                }
+
+                    //Signal the task to stop
+                    avTask.Status = AVTaskStatus.StopRequested;
+
+                //Wait for task to have stopped
+                while (avTask.Status != AVTaskStatus.Stopped)
+                {
+                    Debug.WriteLine("Waiting for task to stop...");
+                    await Task.Delay(10);
+                }
+
+                //Reset the used task
+                avTask.Status = AVTaskStatus.Null;
+                avTask.Task = null;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to stop loop task: " + ex.Message);
             }
         }
 

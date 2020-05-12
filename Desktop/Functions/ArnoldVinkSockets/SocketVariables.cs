@@ -1,23 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Net.Sockets;
-using System.Threading;
-using System.Threading.Tasks;
+using static ArnoldVinkCode.AVActions;
 
 namespace ArnoldVinkCode
 {
     public partial class ArnoldVinkSockets
     {
         //Tasks
-        private Task vTask_SocketServer;
-        private CancellationTokenSource vTaskToken_SocketServer;
-        public bool vIsServerRunning() { return vTaskToken_SocketServer != null && !vTaskToken_SocketServer.IsCancellationRequested; }
-
-        private Task vTask_SocketClean;
-        private CancellationTokenSource vTaskToken_SocketClean;
-        public bool vIsCleanRunning() { return vTaskToken_SocketClean != null && !vTaskToken_SocketClean.IsCancellationRequested; }
+        public AVTaskDetails vTask_SocketServer = new AVTaskDetails();
+        public AVTaskDetails vTask_SocketClean = new AVTaskDetails();
 
         //Events
-        public delegate Task DelegateBytesReceived(TcpClient tcpClient, byte[] bytesReceived);
+        public delegate void DelegateBytesReceived(TcpClient tcpClient, byte[] bytesReceived);
         public DelegateBytesReceived EventBytesReceived = null;
 
         //Tcp clients

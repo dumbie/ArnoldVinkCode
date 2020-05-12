@@ -52,7 +52,7 @@ namespace ArnoldVinkCode
                 };
 
                 //Launch the process
-                return await AVActions.TaskStartReturn(TaskAction, null);
+                return await AVActions.TaskStartReturn(TaskAction);
             }
             catch { }
             Debug.WriteLine("Failed launching UWP or Win32Store: " + appUserModelId + " / " + runArgument);

@@ -3,20 +3,21 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using static ArnoldVinkCode.AVActions;
 
 namespace ArnoldVinkCode
 {
     public partial class ArnoldVinkSockets
     {
         //Clean disconnected tcp clients
-        public async void CleanLoop()
+        private async void LoopTcpCleaner()
         {
             try
             {
                 Debug.WriteLine("Tcp client cleaner is now running (L)");
 
-                //Tcp clean loop
-                while (vIsCleanRunning())
+                //Tcp cleaner loop
+                while (vTask_SocketClean.Status == AVTaskStatus.Running)
                 {
                     try
                     {
@@ -58,6 +59,10 @@ namespace ArnoldVinkCode
             catch (Exception ex)
             {
                 Debug.WriteLine("Failed tcp client cleaner (L): " + ex.Message);
+            }
+            finally
+            {
+                vTask_SocketClean.Status = AVTaskStatus.Stopped;
             }
         }
 

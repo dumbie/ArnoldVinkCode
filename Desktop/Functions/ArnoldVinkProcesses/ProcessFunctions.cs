@@ -163,7 +163,7 @@ namespace ArnoldVinkCode
                 };
 
                 //Focus the process
-                return await AVActions.TaskStartReturn(TaskAction, null).Result;
+                return await AVActions.TaskStartReturn(TaskAction).Result;
             }
             catch { }
             Debug.WriteLine("Failed focusing process: " + processTitle);
