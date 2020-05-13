@@ -76,13 +76,14 @@ namespace ArnoldVinkCode
                     return;
                 }
 
-                    //Signal the task to stop
-                    avTask.Status = AVTaskStatus.StopRequested;
+                //Signal the loop task to stop
+                avTask.Status = AVTaskStatus.StopRequested;
 
-                //Wait for task to have stopped
-                while (avTask.Status != AVTaskStatus.Stopped)
+                //Wait for task to have stopped or timeout
+                int taskStopTimeout = Environment.TickCount;
+                while (avTask.Status != AVTaskStatus.Stopped && (Environment.TickCount - taskStopTimeout) < 2000)
                 {
-                    Debug.WriteLine("Waiting for task to stop...");
+                    Debug.WriteLine("Waiting for task to stop or timeout...");
                     await Task.Delay(10);
                 }
 

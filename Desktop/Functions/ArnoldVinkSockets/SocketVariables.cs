@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 using static ArnoldVinkCode.AVActions;
 
 namespace ArnoldVinkCode
@@ -11,7 +12,7 @@ namespace ArnoldVinkCode
         public AVTaskDetails vTask_SocketClean = new AVTaskDetails();
 
         //Events
-        public delegate void DelegateBytesReceived(TcpClient tcpClient, byte[] bytesReceived);
+        public delegate Task DelegateBytesReceived(TcpClient tcpClient, byte[] bytesReceived);
         public DelegateBytesReceived EventBytesReceived = null;
 
         //Tcp clients

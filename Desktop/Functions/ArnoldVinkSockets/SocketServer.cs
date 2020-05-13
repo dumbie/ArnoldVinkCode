@@ -118,7 +118,7 @@ namespace ArnoldVinkCode
                         if (bytesReceivedLength > 0)
                         {
                             //Debug.WriteLine("Received bytes from tcp client (S): " + bytesReceivedLength);
-                            EventBytesReceived(tcpClient, receivedBytes);
+                            await EventBytesReceived(tcpClient, receivedBytes);
                         }
                         else
                         {
