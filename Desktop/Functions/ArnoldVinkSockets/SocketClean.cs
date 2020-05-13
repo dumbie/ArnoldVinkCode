@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Sockets;
-using System.Threading.Tasks;
 using static ArnoldVinkCode.AVActions;
 
 namespace ArnoldVinkCode
@@ -53,7 +52,9 @@ namespace ArnoldVinkCode
                         }
                     }
                     catch { }
-                    await Task.Delay(3000);
+
+                    //Delay the loop task
+                    await TaskDelayLoop(3000, vTask_SocketClean);
                 }
             }
             catch (Exception ex)

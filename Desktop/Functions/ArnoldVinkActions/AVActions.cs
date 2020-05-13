@@ -40,7 +40,7 @@ namespace ArnoldVinkCode
             }
         }
 
-        //async void TaskAction() { void(); }
+        //async void TaskAction() { void(); await TaskDelayLoop(1000, AVTaskDetails); }
         //AVActions.TaskStartLoop(TaskAction, AVTaskDetails);
         //Tip: Don't forget to use try and catch to improve stability
         public static void TaskStartLoop(Action actionRun, AVTaskDetails avTask)
@@ -63,7 +63,7 @@ namespace ArnoldVinkCode
             }
         }
 
-        //Example: AVActions.TaskStop(AVTaskDetails);
+        //Example: AVActions.TaskStopLoop(AVTaskDetails);
         //Tip: Don't forget to set status to cancelled after loop ends
         public static async Task TaskStopLoop(AVTaskDetails avTask)
         {
@@ -81,10 +81,10 @@ namespace ArnoldVinkCode
 
                 //Wait for task to have stopped or timeout
                 int taskStopTimeout = Environment.TickCount;
-                while (avTask.Status != AVTaskStatus.Stopped && (Environment.TickCount - taskStopTimeout) < 2000)
+                while (avTask.Status != AVTaskStatus.Stopped && (Environment.TickCount - taskStopTimeout) < 3000)
                 {
                     Debug.WriteLine("Waiting for task to stop or timeout...");
-                    await Task.Delay(10);
+                    await Task.Delay(1);
                 }
 
                 //Reset the used task
@@ -94,6 +94,23 @@ namespace ArnoldVinkCode
             catch (Exception ex)
             {
                 Debug.WriteLine("Failed to stop loop task: " + ex.Message);
+            }
+        }
+
+        //Example: AVActions.TaskDelayLoop(1000, AVTaskDetails);
+        public static async Task TaskDelayLoop(int millisecondsDelay, AVTaskDetails avTask)
+        {
+            try
+            {
+                int delayedTime = Environment.TickCount;
+                while (avTask.Status == AVTaskStatus.Running && (Environment.TickCount - delayedTime) < millisecondsDelay)
+                {
+                    await Task.Delay(1);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to delay loop task: " + ex.Message);
             }
         }
 
