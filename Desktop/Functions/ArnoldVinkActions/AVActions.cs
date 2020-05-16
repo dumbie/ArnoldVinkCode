@@ -41,7 +41,7 @@ namespace ArnoldVinkCode
             }
         }
 
-        ///<param name="actionRun">async Task TaskAction() { while (!AVTask.TaskStopRequest) { void(); await TaskDelayLoop(1000, AVTask); } }</param>
+        ///<param name="actionRun">async Task TaskAction() { while (!AVTask.TaskStopRequest) { void(); TaskDelayLoop(1000, AVTask); } }</param>
         ///<example>AVActions.TaskStartLoop(TaskAction, AVTask);</example>
         ///<summary>Don't forget to use try and catch to improve stability</summary>
         public static void TaskStartLoop(Func<Task> actionRun, AVTaskDetails avTask)
@@ -71,7 +71,7 @@ namespace ArnoldVinkCode
             try
             {
                 //Check if the task is stopped
-                if (avTask.TaskCompleted || avTask.TaskStopRequest)
+                if (avTask.TaskStopRequest || avTask.TaskCompleted)
                 {
                     Debug.WriteLine("Loop task is stopping or not running.");
                     return;
