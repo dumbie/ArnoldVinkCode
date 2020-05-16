@@ -6,16 +6,10 @@ namespace ArnoldVinkCode
     {
         public class AVTaskDetails
         {
-            public AVTaskStatus Status { get; set; } = AVTaskStatus.Null;
             public Task Task { get; set; } = null;
-        }
-
-        public enum AVTaskStatus : int
-        {
-            Null = 0,
-            Running = 1,
-            StopRequested = 2,
-            Stopped = 3
+            public bool TaskStopRequest { get; set; } = false;
+            public bool TaskRunning { get { return Task != null && !Task.IsCompleted; } }
+            public bool TaskCompleted { get { return Task == null || Task.IsCompleted; } }
         }
     }
 }

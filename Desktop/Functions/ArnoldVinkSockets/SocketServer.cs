@@ -4,7 +4,6 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using System.Windows;
-using static ArnoldVinkCode.AVActions;
 
 namespace ArnoldVinkCode
 {
@@ -146,7 +145,7 @@ namespace ArnoldVinkCode
         }
 
         //Receive incoming tcp clients
-        private async void LoopTcpListener()
+        private async Task LoopTcpListener()
         {
             try
             {
@@ -160,7 +159,7 @@ namespace ArnoldVinkCode
                 Debug.WriteLine("Tcp listener is running on (S): " + vTcpListener.LocalEndpoint);
 
                 //Tcp listener loop
-                while (vTask_SocketServer.Status == AVTaskStatus.Running)
+                while (!vTask_SocketServer.TaskStopRequest)
                 {
                     try
                     {
@@ -185,10 +184,6 @@ namespace ArnoldVinkCode
             catch (Exception ex)
             {
                 await ListenerLoop_Exception(ex);
-            }
-            finally
-            {
-                vTask_SocketServer.Status = AVTaskStatus.Stopped;
             }
         }
 

@@ -194,51 +194,63 @@ namespace ArnoldVinkCode
         }
 
         //Check if a specific process is running by id
-        public static bool CheckRunningProcessById(int ProcessId)
+        public static bool CheckRunningProcessById(int processId)
         {
             try
             {
-                return Process.GetProcesses().Any(x => x.Id == ProcessId);
+                return Process.GetProcesses().Any(x => x.Id == processId);
             }
-            catch { return false; }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to check process by id: " + ex.Message);
+                return false;
+            }
         }
 
         //Check if a specific process is running by window handle
-        public static bool CheckRunningProcessByWindowHandle(IntPtr WindowHandle)
+        public static bool CheckRunningProcessByWindowHandle(IntPtr windowHandle)
         {
             try
             {
-                return Process.GetProcesses().Any(x => x.MainWindowHandle == WindowHandle);
+                return Process.GetProcesses().Any(x => x.MainWindowHandle == windowHandle);
             }
-            catch { return false; }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to check process by handle: " + ex.Message);
+                return false;
+            }
         }
 
         //Check if a specific process is running by name
-        public static bool CheckRunningProcessByNameOrTitle(string ProcessName, bool WindowTitle)
+        public static bool CheckRunningProcessByNameOrTitle(string processName, bool windowTitle)
         {
             try
             {
-                if (WindowTitle)
+                if (windowTitle)
                 {
-                    return Process.GetProcesses().Any(x => x.MainWindowTitle.ToLower().Contains(ProcessName.ToLower()));
+                    return Process.GetProcesses().Any(x => x.MainWindowTitle.ToLower().Contains(processName.ToLower()));
                 }
                 else
                 {
-                    return Process.GetProcessesByName(ProcessName).Any();
+                    return Process.GetProcessesByName(processName).Any();
                 }
             }
-            catch { return false; }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to check process by name: " + ex.Message);
+                return false;
+            }
         }
 
         //Get the window title from process
-        public static string GetWindowTitleFromProcess(Process TargetProcess)
+        public static string GetWindowTitleFromProcess(Process targetProcess)
         {
             string ProcessTitle = "Unknown";
             try
             {
-                ProcessTitle = TargetProcess.MainWindowTitle;
-                if (string.IsNullOrWhiteSpace(ProcessTitle)) { ProcessTitle = GetWindowTitleFromWindowHandle(TargetProcess.MainWindowHandle); }
-                if (string.IsNullOrWhiteSpace(ProcessTitle) || ProcessTitle == "Unknown") { ProcessTitle = TargetProcess.ProcessName; }
+                ProcessTitle = targetProcess.MainWindowTitle;
+                if (string.IsNullOrWhiteSpace(ProcessTitle)) { ProcessTitle = GetWindowTitleFromWindowHandle(targetProcess.MainWindowHandle); }
+                if (string.IsNullOrWhiteSpace(ProcessTitle) || ProcessTitle == "Unknown") { ProcessTitle = targetProcess.ProcessName; }
                 if (!string.IsNullOrWhiteSpace(ProcessTitle))
                 {
                     ProcessTitle = AVFunctions.StringRemoveStart(ProcessTitle, " ");
@@ -254,14 +266,14 @@ namespace ArnoldVinkCode
         }
 
         //Get the window title from window handle
-        public static string GetWindowTitleFromWindowHandle(IntPtr TargetWindowHandle)
+        public static string GetWindowTitleFromWindowHandle(IntPtr targetWindowHandle)
         {
             string ProcessTitle = "Unknown";
             try
             {
-                int WindowTextBuilderLength = GetWindowTextLength(TargetWindowHandle) + 1;
+                int WindowTextBuilderLength = GetWindowTextLength(targetWindowHandle) + 1;
                 StringBuilder WindowTextBuilder = new StringBuilder(WindowTextBuilderLength);
-                GetWindowText(TargetWindowHandle, WindowTextBuilder, WindowTextBuilder.Capacity);
+                GetWindowText(targetWindowHandle, WindowTextBuilder, WindowTextBuilder.Capacity);
                 string BuilderString = WindowTextBuilder.ToString();
                 if (!string.IsNullOrWhiteSpace(BuilderString))
                 {
@@ -287,7 +299,8 @@ namespace ArnoldVinkCode
                 GetClassName(targetWindowHandle, classNameBuilder, classNameBuilder.Capacity);
                 return classNameBuilder.ToString();
             }
-            catch { return string.Empty; }
+            catch { }
+            return string.Empty;
         }
 
         //Get the currently focused process
@@ -343,110 +356,132 @@ namespace ArnoldVinkCode
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to get the focused process: " + ex.Message);
+                Debug.WriteLine("Failed to get focused process: " + ex.Message);
                 return null;
             }
         }
 
         //Get a process by id safe return null
-        public static Process GetProcessById(int ProcessId)
+        public static Process GetProcessById(int processId)
         {
             try
             {
-                return Process.GetProcessById(ProcessId);
+                return Process.GetProcessById(processId);
             }
-            catch { return null; }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to get process by id: " + ex.Message);
+                return null;
+            }
         }
 
         //Get a single specific process by name or title
-        public static Process GetProcessByNameOrTitle(string ProcessName, bool WindowTitle)
+        public static Process GetProcessByNameOrTitle(string processName, bool windowTitle)
         {
             try
             {
-                if (WindowTitle)
+                if (windowTitle)
                 {
-                    foreach (Process AllProcess in Process.GetProcesses().Where(x => x.MainWindowTitle.ToLower().Contains(ProcessName.ToLower())))
+                    foreach (Process AllProcess in Process.GetProcesses().Where(x => x.MainWindowTitle.ToLower().Contains(processName.ToLower())))
                     {
                         return AllProcess;
                     }
                 }
                 else
                 {
-                    foreach (Process AllProcess in Process.GetProcessesByName(ProcessName))
+                    foreach (Process AllProcess in Process.GetProcessesByName(processName))
                     {
                         return AllProcess;
                     }
                 }
                 return null;
             }
-            catch { return null; }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to get process by name: " + ex.Message);
+                return null;
+            }
         }
 
         //Get multiple specific processes by name or title
-        public static Process[] GetProcessesByNameOrTitle(string ProcessName, bool WindowTitle, bool ExactName)
+        public static Process[] GetProcessesByNameOrTitle(string processName, bool windowTitle, bool exactName)
         {
             try
             {
-                if (WindowTitle)
+                if (windowTitle)
                 {
-                    return Process.GetProcesses().Where(x => x.MainWindowTitle.ToLower().Contains(ProcessName.ToLower())).ToArray();
+                    return Process.GetProcesses().Where(x => x.MainWindowTitle.ToLower().Contains(processName.ToLower())).ToArray();
                 }
                 else
                 {
-                    if (ExactName) { return Process.GetProcessesByName(ProcessName); }
-                    else { return Process.GetProcesses().Where(x => x.ProcessName.ToLower().Contains(ProcessName.ToLower())).ToArray(); }
+                    if (exactName) { return Process.GetProcessesByName(processName); }
+                    else { return Process.GetProcesses().Where(x => x.ProcessName.ToLower().Contains(processName.ToLower())).ToArray(); }
                 }
             }
-            catch { return null; }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to get processes by name: " + ex.Message);
+                return null;
+            }
         }
 
         //Close processes by name or window title
-        public static bool CloseProcessesByNameOrTitle(string ProcessName, bool WindowTitle)
+        public static bool CloseProcessesByNameOrTitle(string processName, bool windowTitle)
         {
             try
             {
-                if (WindowTitle)
+                if (windowTitle)
                 {
-                    foreach (Process AllProcess in Process.GetProcesses().Where(x => x.MainWindowTitle.ToLower().Contains(ProcessName.ToLower())))
+                    foreach (Process AllProcess in Process.GetProcesses().Where(x => x.MainWindowTitle.ToLower().Contains(processName.ToLower())))
                     {
                         AllProcess.Kill();
                     }
                 }
                 else
                 {
-                    foreach (Process AllProcess in Process.GetProcessesByName(ProcessName))
+                    foreach (Process AllProcess in Process.GetProcessesByName(processName))
                     {
                         AllProcess.Kill();
                     }
                 }
                 return true;
             }
-            catch { return false; }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to close processes by name: " + ex.Message);
+                return false;
+            }
         }
 
         //Close process by id
-        public static bool CloseProcessById(int ProcessId)
+        public static bool CloseProcessById(int processId)
         {
             try
             {
-                Debug.WriteLine("Closing process by id: " + ProcessId);
-                GetProcessById(ProcessId).Kill();
+                GetProcessById(processId).Kill();
                 return true;
             }
-            catch { return false; }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to close process by id: " + ex.Message);
+                return false;
+            }
         }
 
         //Close process by window handle
-        public static bool CloseProcessByWindowHandle(IntPtr WindowHandle)
+        public static bool CloseProcessByWindowHandle(IntPtr windowHandle)
         {
             try
             {
-                Debug.WriteLine("Closing process by window handle: " + WindowHandle);
-                SendMessage(WindowHandle, (int)WindowMessages.WM_CLOSE, 0, 0);
-                SendMessage(WindowHandle, (int)WindowMessages.WM_QUIT, 0, 0);
+                SendMessage(windowHandle, (int)WindowMessages.WM_CLOSE, 0, 0);
+                SendMessage(windowHandle, (int)WindowMessages.WM_QUIT, 0, 0);
                 return true;
             }
-            catch { return false; }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to close process by handle: " + ex.Message);
+                return false;
+            }
         }
 
         //Get threads from ProcessMulti
@@ -461,88 +496,92 @@ namespace ArnoldVinkCode
         }
 
         //Get the full exe path from process
-        public static string GetExecutablePathFromProcess(Process TargetProcess)
+        public static string GetExecutablePathFromProcess(Process targetProcess)
         {
-            string ExePath = string.Empty;
             try
             {
-                ExePath = TargetProcess.MainModule.FileName;
+                return targetProcess.MainModule.FileName;
             }
             catch { }
-            if (string.IsNullOrWhiteSpace(ExePath))
+            try
             {
-                try
+                int stringLength = 1024;
+                StringBuilder stringBuilder = new StringBuilder(stringLength);
+                bool Succes = QueryFullProcessImageName(targetProcess.Handle, 0, stringBuilder, ref stringLength);
+                if (Succes)
                 {
-                    int stringLength = 1024;
-                    StringBuilder stringBuilder = new StringBuilder((int)stringLength);
-                    bool Succes = QueryFullProcessImageName(TargetProcess.Handle, 0, stringBuilder, ref stringLength);
-                    if (Succes) { ExePath = stringBuilder.ToString(); }
+                    return stringBuilder.ToString();
                 }
-                catch { }
             }
-            return ExePath;
+            catch { }
+            return string.Empty;
         }
 
         //Get the full package name from process
         public static string GetPackageFullNameFromProcess(Process targetProcess)
         {
-            string PackageFullName = string.Empty;
             try
             {
                 int stringLength = 1024;
                 StringBuilder stringBuilder = new StringBuilder(stringLength);
                 int Succes = AVInteropDll.GetPackageFullName(targetProcess.Handle, ref stringLength, stringBuilder);
-                if (Succes == 0) { PackageFullName = stringBuilder.ToString(); }
+                if (Succes == 0)
+                {
+                    return stringBuilder.ToString();
+                }
             }
             catch { }
-            return PackageFullName;
+            return string.Empty;
         }
 
         //Get the AppUserModelId from process
         public static string GetAppUserModelIdFromProcess(Process targetProcess)
         {
-            string AppUserModelId = string.Empty;
             try
             {
                 int stringLength = 1024;
                 StringBuilder stringBuilder = new StringBuilder(stringLength);
                 int Succes = GetApplicationUserModelId(targetProcess.Handle, ref stringLength, stringBuilder);
-                if (Succes == 0) { AppUserModelId = stringBuilder.ToString(); }
+                if (Succes == 0)
+                {
+                    return stringBuilder.ToString();
+                }
             }
             catch { }
-            return AppUserModelId;
+            return string.Empty;
         }
 
         //Get the AppUserModelId from window handle
-        public static string GetAppUserModelIdFromWindowHandle(IntPtr TargetWindowHandle)
+        public static string GetAppUserModelIdFromWindowHandle(IntPtr targetWindowHandle)
         {
             try
             {
                 PropertyVariant propertyVariant = new PropertyVariant();
                 Guid propertyStoreGuid = typeof(IPropertyStore).GUID;
 
-                SHGetPropertyStoreForWindow(TargetWindowHandle, ref propertyStoreGuid, out IPropertyStore propertyStore);
+                SHGetPropertyStoreForWindow(targetWindowHandle, ref propertyStoreGuid, out IPropertyStore propertyStore);
                 propertyStore.GetValue(ref PKEY_AppUserModel_ID, out propertyVariant);
 
                 return Marshal.PtrToStringUni(propertyVariant.pwszVal);
             }
-            catch { return string.Empty; }
+            catch { }
+            return string.Empty;
         }
 
         //Get the launch arguments from process
-        public static string GetLaunchArgumentsFromProcess(Process TargetProcess, string ExecutablePath)
+        public static string GetLaunchArgumentsFromProcess(Process targetProcess, string executablePath)
         {
-            string LaunchArguments = string.Empty;
+            string launchArguments = string.Empty;
             try
             {
-                string RemoveFromArgument = '"' + ExecutablePath + '"';
+                string removeFromArgument = '"' + executablePath + '"';
                 USER_PROCESS_PARAMETERS processParameter = USER_PROCESS_PARAMETERS.CommandLine;
-                LaunchArguments = GetProcessParameterString(TargetProcess.Id, processParameter);
-                LaunchArguments = AVFunctions.StringReplaceFirst(LaunchArguments, RemoveFromArgument, string.Empty, true);
-                LaunchArguments = AVFunctions.StringRemoveStart(LaunchArguments, " ");
+                launchArguments = GetProcessParameterString(targetProcess.Id, processParameter);
+                launchArguments = AVFunctions.StringReplaceFirst(launchArguments, removeFromArgument, string.Empty, true);
+                launchArguments = AVFunctions.StringRemoveStart(launchArguments, " ");
             }
             catch { }
-            return LaunchArguments;
+            return launchArguments;
         }
 
         //Check if process is in suspended state
@@ -594,19 +633,19 @@ namespace ArnoldVinkCode
         }
 
         //Check if window handle is a window
-        public static bool ValidateWindowHandle(IntPtr TargetWindowHandle)
+        public static bool ValidateWindowHandle(IntPtr targetWindowHandle)
         {
             try
             {
                 //Check if is a window
-                if (!IsWindow(TargetWindowHandle))
+                if (!IsWindow(targetWindowHandle))
                 {
                     //Debug.WriteLine("Window handle is not a Window.");
                     return false;
                 }
 
                 //Check if window is visible
-                if (!IsWindowVisible(TargetWindowHandle))
+                if (!IsWindowVisible(targetWindowHandle))
                 {
                     //Debug.WriteLine("Window handle is not visible.");
                     return false;
@@ -614,7 +653,7 @@ namespace ArnoldVinkCode
 
                 //Check if application is hidden to the tray
                 WindowPlacement ProcessWindowState = new WindowPlacement();
-                GetWindowPlacement(TargetWindowHandle, ref ProcessWindowState);
+                GetWindowPlacement(targetWindowHandle, ref ProcessWindowState);
                 if (ProcessWindowState.windowShowCommand <= 0)
                 {
                     //Debug.WriteLine("Application is in the tray and can't be shown or hidden.");
@@ -664,7 +703,8 @@ namespace ArnoldVinkCode
                     return true;
                 }
             }
-            catch { return false; }
+            catch { }
+            return false;
         }
 
         //Convert Process to a ProcessMulti

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -7,9 +8,9 @@ namespace ArnoldVinkCode
 {
     public partial class AVActions
     {
-        //async void TaskAction() { void(); }
-        //AVActions.TaskStart(TaskAction);
-        //Tip: Don't forget to use try and catch to improve stability
+        ///<param name="actionRun">async void TaskAction() { void(); }</param>
+        ///<example>AVActions.TaskStart(TaskAction);</example>
+        ///<summary>Don't forget to use try and catch to improve stability</summary>
         public static Task TaskStart(Action actionRun)
         {
             try
@@ -23,10 +24,10 @@ namespace ArnoldVinkCode
             }
         }
 
-        //string TaskAction() { return ""; }
-        //async Task<string> TaskAction() { return ""; }
-        //await AVActions.TaskStartReturn(TaskAction);
-        //Tip: Don't forget to use try and catch to improve stability
+        ///<param name="actionRun">string TaskAction() { return ""; }</param>
+        ///<param name="actionRun">async Task<string> TaskAction() { return ""; }</param>
+        ///<example>await AVActions.TaskStartReturn(TaskAction);</example>
+        ///<summary>Don't forget to use try and catch to improve stability</summary>
         public static Task<T> TaskStartReturn<T>(Func<T> actionRun)
         {
             try
@@ -40,10 +41,10 @@ namespace ArnoldVinkCode
             }
         }
 
-        //async void TaskAction() { void(); await TaskDelayLoop(1000, AVTaskDetails); }
-        //AVActions.TaskStartLoop(TaskAction, AVTaskDetails);
-        //Tip: Don't forget to use try and catch to improve stability
-        public static void TaskStartLoop(Action actionRun, AVTaskDetails avTask)
+        ///<param name="actionRun">async Task TaskAction() { while (!AVTask.TaskStopRequest) { void(); await TaskDelayLoop(1000, AVTask); } }</param>
+        ///<example>AVActions.TaskStartLoop(TaskAction, AVTask);</example>
+        ///<summary>Don't forget to use try and catch to improve stability</summary>
+        public static void TaskStartLoop(Func<Task> actionRun, AVTaskDetails avTask)
         {
             try
             {
@@ -53,9 +54,10 @@ namespace ArnoldVinkCode
                 }
                 else
                 {
-                    avTask.Status = AVTaskStatus.Running;
+                    avTask.TaskStopRequest = false;
                     avTask.Task = Task.Run(actionRun);
                 }
+                Debug.WriteLine("Loop task has been started.");
             }
             catch (Exception ex)
             {
@@ -63,33 +65,34 @@ namespace ArnoldVinkCode
             }
         }
 
-        //Example: AVActions.TaskStopLoop(AVTaskDetails);
-        //Tip: Don't forget to set status to cancelled after loop ends
+        ///<example>AVActions.TaskStopLoop(AVTask);</example>
         public static async Task TaskStopLoop(AVTaskDetails avTask)
         {
             try
             {
                 //Check if the task is stopped
-                if (avTask.Status != AVTaskStatus.Running)
+                if (avTask.TaskCompleted || avTask.TaskStopRequest)
                 {
-                    Debug.WriteLine("Task is already stopped.");
+                    Debug.WriteLine("Loop task is stopping or not running.");
                     return;
                 }
 
                 //Signal the loop task to stop
-                avTask.Status = AVTaskStatus.StopRequested;
+                avTask.TaskStopRequest = true;
 
                 //Wait for task to have stopped or timeout
                 int taskStopTimeout = Environment.TickCount;
-                while (avTask.Status != AVTaskStatus.Stopped && (Environment.TickCount - taskStopTimeout) < 3000)
+                while (!avTask.TaskCompleted && (Environment.TickCount - taskStopTimeout) < 3000)
                 {
                     Debug.WriteLine("Waiting for task to stop or timeout...");
                     await Task.Delay(1);
                 }
 
                 //Reset the used task
-                avTask.Status = AVTaskStatus.Null;
+                avTask.TaskStopRequest = false;
+                avTask.Task.Dispose();
                 avTask.Task = null;
+                Debug.WriteLine("Loop task has been stopped.");
             }
             catch (Exception ex)
             {
@@ -97,15 +100,16 @@ namespace ArnoldVinkCode
             }
         }
 
-        //Example: AVActions.TaskDelayLoop(1000, AVTaskDetails);
-        public static async Task TaskDelayLoop(int millisecondsDelay, AVTaskDetails avTask)
+        ///<example>AVActions.TaskDelayLoop(1000, AVTask);</example>
+        public static void TaskDelayLoop(int millisecondsDelay, AVTaskDetails avTask)
         {
             try
             {
-                int delayedTime = Environment.TickCount;
-                while (avTask.Status == AVTaskStatus.Running && (Environment.TickCount - delayedTime) < millisecondsDelay)
+                if (millisecondsDelay <= 0) { return; }
+                int delayTimeMs = Environment.TickCount;
+                while (!avTask.TaskStopRequest && (Environment.TickCount - delayTimeMs) < millisecondsDelay)
                 {
-                    await Task.Delay(1);
+                    Thread.Sleep(1);
                 }
             }
             catch (Exception ex)
@@ -114,7 +118,7 @@ namespace ArnoldVinkCode
             }
         }
 
-        //AVActions.ElementGetValue(targetElement, targetProperty);
+        ///<example>AVActions.ElementGetValue(targetElement, targetProperty);</example>
         public static object ElementGetValue(FrameworkElement targetElement, DependencyProperty targetProperty)
         {
             object returnValue = null;
@@ -136,7 +140,7 @@ namespace ArnoldVinkCode
             return returnValue;
         }
 
-        //AVActions.ElementSetValue(targetElement, targetProperty, targetValue);
+        ///<example>AVActions.ElementSetValue(targetElement, targetProperty, targetValue);</example>
         public static void ElementSetValue(FrameworkElement targetElement, DependencyProperty targetProperty, object targetValue)
         {
             try
@@ -156,9 +160,9 @@ namespace ArnoldVinkCode
             catch { }
         }
 
-        //async void DispatchAction() { void(); }
-        //AVActions.ActionDispatcherInvoke(DispatchAction, null);
-        //Tip: Don't forget to use try and catch to improve stability
+        ///<param name="actionRun">void DispatchAction() { void(); }</param>
+        ///<example>AVActions.ActionDispatcherInvoke(DispatchAction, null);</example>
+        ///<summary>Don't forget to use try and catch to improve stability</summary>
         public static void ActionDispatcherInvoke(Action actionRun)
         {
             try
@@ -168,9 +172,9 @@ namespace ArnoldVinkCode
             catch { }
         }
 
-        //async void DispatchAction() { void(); }
-        //await AVActions.ActionDispatcherInvokeAsync(DispatchAction, null);
-        //Tip: Don't forget to use try and catch to improve stability
+        ///<param name="actionRun">async void DispatchAction() { void(); }</param>
+        ///<example>await AVActions.ActionDispatcherInvokeAsync(DispatchAction, null);</example>
+        ///<summary>Don't forget to use try and catch to improve stability</summary>
         public static async Task ActionDispatcherInvokeAsync(Action actionRun)
         {
             try
