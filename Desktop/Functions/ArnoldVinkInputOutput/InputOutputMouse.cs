@@ -11,7 +11,10 @@ namespace ArnoldVinkCode
         {
             try
             {
-                if (mouseHorizontal == 0 || mouseHorizontal == 0) { return; }
+                //Check the mouse movement position
+                if (mouseHorizontal == 0 && mouseVertical == 0) { return; }
+
+                //Move the mouse cursor to position
                 mouse_event((uint)MouseEvents.MOUSEEVENTF_MOVE, mouseHorizontal, mouseVertical, 0, IntPtr.Zero);
             }
             catch { }
