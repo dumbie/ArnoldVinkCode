@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Threading;
+using System.Threading.Tasks;
 using static ArnoldVinkCode.AVInteropDll;
 
 namespace ArnoldVinkCode
@@ -45,13 +45,13 @@ namespace ArnoldVinkCode
                 if (!rightClick)
                 {
                     mouse_event((uint)MouseEvents.MOUSEEVENTF_LEFTDOWN, 0, 0, 0, IntPtr.Zero);
-                    Thread.Sleep(10);
+                    Task.Delay(10).Wait();
                     mouse_event((uint)MouseEvents.MOUSEEVENTF_LEFTUP, 0, 0, 0, IntPtr.Zero);
                 }
                 else
                 {
                     mouse_event((uint)MouseEvents.MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, IntPtr.Zero);
-                    Thread.Sleep(10);
+                    Task.Delay(10).Wait();
                     mouse_event((uint)MouseEvents.MOUSEEVENTF_RIGHTUP, 0, 0, 0, IntPtr.Zero);
                 }
             }

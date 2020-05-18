@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -41,7 +40,7 @@ namespace ArnoldVinkCode
             }
         }
 
-        ///<param name="actionRun">async Task TaskAction() { while (!AVTask.TaskStopRequest) { void(); TaskDelayLoop(1000, AVTask); } }</param>
+        ///<param name="actionRun">async Task TaskAction() { while (!AVTask.TaskStopRequest) { void(); await Task.Delay(1000, AVTask.TokenCancel); } }</param>
         ///<example>AVActions.TaskStartLoop(TaskAction, AVTask);</example>
         ///<summary>Don't forget to use try and catch to improve stability</summary>
         public static void TaskStartLoop(Func<Task> actionRun, AVTaskDetails avTask)
@@ -54,7 +53,10 @@ namespace ArnoldVinkCode
                 }
                 else
                 {
-                    avTask.TaskStopRequest = false;
+                    //Dispose and reset task
+                    avTask.DisposeReset();
+
+                    //Create new loop task
                     avTask.Task = Task.Run(actionRun);
                 }
                 Debug.WriteLine("Loop task has been started.");
@@ -71,50 +73,30 @@ namespace ArnoldVinkCode
             try
             {
                 //Check if the task is stopped
-                if (avTask.TaskStopRequest || avTask.TaskCompleted)
+                if (avTask.TaskStopRequest || avTask.TaskCompleted || !avTask.TaskRunning)
                 {
                     Debug.WriteLine("Loop task is stopping or not running.");
                     return;
                 }
 
                 //Signal the loop task to stop
-                avTask.TaskStopRequest = true;
+                avTask.TokenSource.Cancel();
 
-                //Wait for task to have stopped or timeout
-                int taskStopTimeout = Environment.TickCount;
-                while (!avTask.TaskCompleted && (Environment.TickCount - taskStopTimeout) < 3000)
+                //Wait for task to have stopped
+                while (!avTask.TaskCompleted)
                 {
                     Debug.WriteLine("Waiting for task to stop or timeout...");
                     await Task.Delay(1);
                 }
 
-                //Reset the used task
-                avTask.TaskStopRequest = false;
-                avTask.Task.Dispose();
-                avTask.Task = null;
+                //Dispose and reset task
+                avTask.DisposeReset();
+
                 Debug.WriteLine("Loop task has been stopped.");
             }
             catch (Exception ex)
             {
                 Debug.WriteLine("Failed to stop loop task: " + ex.Message);
-            }
-        }
-
-        ///<example>AVActions.TaskDelayLoop(1000, AVTask);</example>
-        public static void TaskDelayLoop(int millisecondsDelay, AVTaskDetails avTask)
-        {
-            try
-            {
-                if (millisecondsDelay <= 0) { return; }
-                int delayTimeMs = Environment.TickCount;
-                while (!avTask.TaskStopRequest && (Environment.TickCount - delayTimeMs) < millisecondsDelay)
-                {
-                    Thread.Sleep(1);
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("Failed to delay loop task: " + ex.Message);
             }
         }
 

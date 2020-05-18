@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Threading;
+using System.Threading.Tasks;
 using static ArnoldVinkCode.AVInteropDll;
 
 namespace ArnoldVinkCode
@@ -12,7 +12,7 @@ namespace ArnoldVinkCode
             try
             {
                 PostMessage(WindowHandle, (int)WindowMessages.WM_KEYDOWN, virtualKey, 0); //Key Press
-                Thread.Sleep(10);
+                Task.Delay(10).Wait();
                 PostMessage(WindowHandle, (int)WindowMessages.WM_KEYUP, virtualKey, 0); //Key Release
             }
             catch { }
@@ -45,7 +45,7 @@ namespace ArnoldVinkCode
                 }
 
                 keybd_event(virtualKey, scanByte, KeyFlagsDown, 0); //Key Press
-                Thread.Sleep(10);
+                Task.Delay(10).Wait();
                 keybd_event(virtualKey, scanByte, KeyFlagsUp, 0); //Key Release
             }
             catch { }
@@ -71,7 +71,7 @@ namespace ArnoldVinkCode
 
                 keybd_event(Modifier, scanByteMod, KeyFlagsDown, 0); //Modifier Press
                 keybd_event(virtualKey, scanByteVk, KeyFlagsDown, 0); //Key Press
-                Thread.Sleep(10);
+                Task.Delay(10).Wait();
                 keybd_event(virtualKey, scanByteVk, KeyFlagsUp, 0); //Key Release
                 keybd_event(Modifier, scanByteMod, KeyFlagsUp, 0); //Modifier Release
             }

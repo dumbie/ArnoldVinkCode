@@ -3,14 +3,13 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading.Tasks;
-using static ArnoldVinkCode.AVActions;
 
 namespace ArnoldVinkCode
 {
     public partial class ArnoldVinkSockets
     {
         //Clean disconnected tcp clients
-        private Task LoopTcpCleaner()
+        private async Task LoopTcpCleaner()
         {
             try
             {
@@ -55,14 +54,13 @@ namespace ArnoldVinkCode
                     catch { }
 
                     //Delay the loop task
-                    TaskDelayLoop(3000, vTask_SocketClean);
+                    await Task.Delay(3000, vTask_SocketClean.TokenCancel);
                 }
             }
             catch (Exception ex)
             {
                 Debug.WriteLine("Failed tcp client cleaner (L): " + ex.Message);
             }
-            return Task.FromResult(0);
         }
 
         //Remove tcp client from the list
