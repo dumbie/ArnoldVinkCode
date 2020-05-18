@@ -40,7 +40,7 @@ namespace ArnoldVinkCode
             }
         }
 
-        ///<param name="actionRun">async Task TaskAction() { while (!AVTask.TaskStopRequest) { void(); await Task.Delay(1000, AVTask.TokenCancel); } }</param>
+        ///<param name="actionRun">async Task TaskAction() { while (!AVTask.TaskStopRequest) { void(); await TaskDelayLoop(1000, AVTask); } }</param>
         ///<example>AVActions.TaskStartLoop(TaskAction, AVTask);</example>
         ///<summary>Don't forget to use try and catch to improve stability</summary>
         public static void TaskStartLoop(Func<Task> actionRun, AVTaskDetails avTask)
@@ -98,6 +98,16 @@ namespace ArnoldVinkCode
             {
                 Debug.WriteLine("Failed to stop loop task: " + ex.Message);
             }
+        }
+
+        ///<example>await AVActions.TaskDelayLoop(1000, AVTask);</example>
+        public static async Task TaskDelayLoop(int millisecondsDelay, AVTaskDetails avTask)
+        {
+            try
+            {
+                await Task.Delay(millisecondsDelay, avTask.TokenCancel);
+            }
+            catch { }
         }
 
         ///<example>AVActions.ElementGetValue(targetElement, targetProperty);</example>

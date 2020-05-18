@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using static ArnoldVinkCode.AVActions;
 
 namespace ArnoldVinkCode
 {
@@ -54,7 +55,7 @@ namespace ArnoldVinkCode
                     catch { }
 
                     //Delay the loop task
-                    await Task.Delay(3000, vTask_SocketClean.TokenCancel);
+                    await TaskDelayLoop(3000, vTask_SocketClean);
                 }
             }
             catch (Exception ex)
