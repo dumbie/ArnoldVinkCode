@@ -78,7 +78,7 @@ namespace ArnoldVinkCode
                         await CloseOpenWindowsAdminPrompt();
 
                         //Get the current focused application
-                        ProcessMulti foregroundProcess = GetFocusedProcess();
+                        ProcessMulti foregroundProcess = GetProcessMultiFromWindowHandle(GetForegroundWindow());
 
                         //Close open start menu, cortana or search
                         await CloseOpenWindowsStartMenu(foregroundProcess);
@@ -303,15 +303,15 @@ namespace ArnoldVinkCode
             return string.Empty;
         }
 
-        //Get the currently focused process
-        public static ProcessMulti GetFocusedProcess()
+        //Get multi process from window handle
+        public static ProcessMulti GetProcessMultiFromWindowHandle(IntPtr targetWindowHandle)
         {
             try
             {
                 ProcessMulti processMulti = new ProcessMulti();
 
-                //Get window handle
-                processMulti.WindowHandle = GetForegroundWindow();
+                //Set window handle
+                processMulti.WindowHandle = targetWindowHandle;
 
                 //Get window classname
                 processMulti.ClassName = GetClassNameFromWindowHandle(processMulti.WindowHandle);
@@ -356,7 +356,7 @@ namespace ArnoldVinkCode
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to get focused process: " + ex.Message);
+                Debug.WriteLine("Failed to get multi process: " + ex.Message);
                 return null;
             }
         }

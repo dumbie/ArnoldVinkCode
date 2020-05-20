@@ -60,12 +60,21 @@ namespace ArnoldVinkCode
         [DllImport("Shell32.dll", CharSet = CharSet.Unicode)]
         public static extern int SHGetPropertyStoreForWindow(IntPtr hwnd, ref Guid iid, [Out(), MarshalAs(UnmanagedType.Interface)] out IPropertyStore propertyStore);
 
-        //Window change monitor
+        //Window event hook
         [DllImport("user32.dll")]
-        public static extern IntPtr SetWinEventHook(uint eventMin, uint eventMax, IntPtr hmodWinEventProc, WinEventDelegate lpfnWinEventProc, uint idProcess, uint idThread, uint dwFlags);
-        public delegate void WinEventDelegate(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime);
-        public const uint WINEVENT_OUTOFCONTEXT = 0;
-        public const uint WINEVENT_SYSTEM_FOREGROUND = 3;
+        public static extern IntPtr SetWinEventHook(WinEventHooks eventMin, WinEventHooks eventMax, IntPtr hmodWinEventProc, WinEventDelegate lpfnWinEventProc, uint idProcess, uint idThread, WinEventFlags dwFlags);
+        public delegate void WinEventDelegate(IntPtr hWinEventHook, uint eventType, IntPtr hWnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime);
+        public enum WinEventFlags : int
+        {
+            WINEVENT_OUTOFCONTEXT = 0,
+            WINEVENT_SKIPOWNTHREAD = 1,
+            WINEVENT_SKIPOWNPROCESS = 2,
+            WINEVENT_INCONTEXT = 4
+        }
+        public enum WinEventHooks : int
+        {
+            EVENT_SYSTEM_FOREGROUND = 3
+        }
 
         //SHLW Api
         [DllImport("shlwapi.dll", CharSet = CharSet.Unicode)]
