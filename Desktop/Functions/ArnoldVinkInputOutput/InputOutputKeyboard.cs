@@ -7,12 +7,12 @@ namespace ArnoldVinkCode
     public partial class AVInputOutputKeyboard
     {
         //Send single key press
-        public static void KeySendSingle(byte virtualKey, IntPtr WindowHandle)
+        public static async Task KeySendSingle(byte virtualKey, IntPtr WindowHandle)
         {
             try
             {
                 PostMessage(WindowHandle, (int)WindowMessages.WM_KEYDOWN, virtualKey, 0); //Key Press
-                Task.Delay(10).Wait();
+                await Task.Delay(10);
                 PostMessage(WindowHandle, (int)WindowMessages.WM_KEYUP, virtualKey, 0); //Key Release
             }
             catch { }
@@ -29,7 +29,7 @@ namespace ArnoldVinkCode
         //}
 
         //Simulate single key press up and down
-        public static void KeyPressSingle(byte virtualKey, bool ExtendedKey)
+        public static async Task KeyPressSingle(byte virtualKey, bool ExtendedKey)
         {
             try
             {
@@ -45,14 +45,14 @@ namespace ArnoldVinkCode
                 }
 
                 keybd_event(virtualKey, scanByte, KeyFlagsDown, 0); //Key Press
-                Task.Delay(10).Wait();
+                await Task.Delay(10);
                 keybd_event(virtualKey, scanByte, KeyFlagsUp, 0); //Key Release
             }
             catch { }
         }
 
         //Simulate combo key press
-        public static void KeyPressCombo(byte Modifier, byte virtualKey, bool ExtendedKey)
+        public static async Task KeyPressCombo(byte Modifier, byte virtualKey, bool ExtendedKey)
         {
             try
             {
@@ -71,7 +71,7 @@ namespace ArnoldVinkCode
 
                 keybd_event(Modifier, scanByteMod, KeyFlagsDown, 0); //Modifier Press
                 keybd_event(virtualKey, scanByteVk, KeyFlagsDown, 0); //Key Press
-                Task.Delay(10).Wait();
+                await Task.Delay(10);
                 keybd_event(virtualKey, scanByteVk, KeyFlagsUp, 0); //Key Release
                 keybd_event(Modifier, scanByteMod, KeyFlagsUp, 0); //Modifier Release
             }

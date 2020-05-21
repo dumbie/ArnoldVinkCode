@@ -38,20 +38,20 @@ namespace ArnoldVinkCode
         }
 
         //Simulate single key press
-        public static void MousePressSingle(bool rightClick)
+        public static async Task MousePressSingle(bool rightClick)
         {
             try
             {
                 if (!rightClick)
                 {
                     mouse_event((uint)MouseEvents.MOUSEEVENTF_LEFTDOWN, 0, 0, 0, IntPtr.Zero);
-                    Task.Delay(10).Wait();
+                    await Task.Delay(10);
                     mouse_event((uint)MouseEvents.MOUSEEVENTF_LEFTUP, 0, 0, 0, IntPtr.Zero);
                 }
                 else
                 {
                     mouse_event((uint)MouseEvents.MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, IntPtr.Zero);
-                    Task.Delay(10).Wait();
+                    await Task.Delay(10);
                     mouse_event((uint)MouseEvents.MOUSEEVENTF_RIGHTUP, 0, 0, 0, IntPtr.Zero);
                 }
             }
