@@ -120,7 +120,7 @@ namespace ArnoldVinkCode
                         {
                             imageToBitmapImage.UriSource = new Uri(loadFileLower, UriKind.RelativeOrAbsolute);
                         }
-                        else if (File.Exists(loadFileLower) && !loadFileLower.EndsWith(".exe") && !loadFileLower.EndsWith(".dll") && !loadFileLower.EndsWith(".bin") && !loadFileLower.EndsWith(".tmp"))
+                        else if (File.Exists(loadFileLower) && !loadFileLower.EndsWith(".exe") && !loadFileLower.EndsWith(".dll") && !loadFileLower.EndsWith(".bin") && !loadFileLower.EndsWith(".tmp") && !loadFileLower.EndsWith(".bat"))
                         {
                             imageToBitmapImage.UriSource = new Uri(loadFileLower, UriKind.RelativeOrAbsolute);
                         }
@@ -159,7 +159,11 @@ namespace ArnoldVinkCode
                         }
 
                         //Return application bitmap image
-                        if (imageToBitmapImage.UriSource != null || imageToBitmapImage.StreamSource != null)
+                        if (imageToBitmapImage.UriSource != null)
+                        {
+                            return EndBitmapImage(imageToBitmapImage, ref imageMemoryStream);
+                        }
+                        else if (imageToBitmapImage.StreamSource != null && imageToBitmapImage.StreamSource.Length > 75)
                         {
                             return EndBitmapImage(imageToBitmapImage, ref imageMemoryStream);
                         }
