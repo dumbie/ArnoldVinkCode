@@ -437,19 +437,6 @@ namespace ArnoldVinkCode
         [DllImport("user32.dll")]
         public static extern void mouse_event(uint dwFlags, int dx, int dy, int dwData, IntPtr dwExtraInfo);
 
-        public enum MouseEvents
-        {
-            MOUSEEVENTF_MOVE = 0x01,
-            MOUSEEVENTF_LEFTDOWN = 0x02,
-            MOUSEEVENTF_LEFTUP = 0x04,
-            MOUSEEVENTF_RIGHTDOWN = 0x08,
-            MOUSEEVENTF_RIGHTUP = 0x10,
-            MOUSEEVENTF_MIDDLEDOWN = 0x20,
-            MOUSEEVENTF_MIDDLEUP = 0x40,
-            MOUSEEVENTF_VWHEEL = 0x0800,
-            MOUSEEVENTF_HWHEEL = 0x01000
-        }
-
         [StructLayout(LayoutKind.Sequential)]
         public struct PointWin
         {

@@ -2,7 +2,20 @@
 {
     public partial class AVInputOutputClass
     {
-        public enum KeysModifiers : byte
+        public enum MouseVirtual : int
+        {
+            MOUSEEVENTF_MOVE = 0x01,
+            MOUSEEVENTF_LEFTDOWN = 0x02,
+            MOUSEEVENTF_LEFTUP = 0x04,
+            MOUSEEVENTF_RIGHTDOWN = 0x08,
+            MOUSEEVENTF_RIGHTUP = 0x10,
+            MOUSEEVENTF_MIDDLEDOWN = 0x20,
+            MOUSEEVENTF_MIDDLEUP = 0x40,
+            MOUSEEVENTF_VWHEEL = 0x0800,
+            MOUSEEVENTF_HWHEEL = 0x01000
+        }
+
+        public enum KeysModifier : byte
         {
             None = 0x0000,
             Alt = 0x0001,

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using static ArnoldVinkCode.AVInputOutputClass;
 using static ArnoldVinkCode.AVInteropDll;
 
 namespace ArnoldVinkCode
@@ -15,7 +16,7 @@ namespace ArnoldVinkCode
                 if (mouseHorizontal == 0 && mouseVertical == 0) { return; }
 
                 //Move the mouse cursor to position
-                mouse_event((uint)MouseEvents.MOUSEEVENTF_MOVE, mouseHorizontal, mouseVertical, 0, IntPtr.Zero);
+                mouse_event((uint)MouseVirtual.MOUSEEVENTF_MOVE, mouseHorizontal, mouseVertical, 0, IntPtr.Zero);
             }
             catch { }
         }
@@ -37,52 +38,52 @@ namespace ArnoldVinkCode
             catch { }
         }
 
-        //Simulate single key press
-        public static async Task MousePressSingle(bool rightClick)
+        //Simulate mouse press
+        public static async Task MousePress(bool rightClick)
         {
             try
             {
                 if (!rightClick)
                 {
-                    mouse_event((uint)MouseEvents.MOUSEEVENTF_LEFTDOWN, 0, 0, 0, IntPtr.Zero);
+                    mouse_event((uint)MouseVirtual.MOUSEEVENTF_LEFTDOWN, 0, 0, 0, IntPtr.Zero);
                     await Task.Delay(10);
-                    mouse_event((uint)MouseEvents.MOUSEEVENTF_LEFTUP, 0, 0, 0, IntPtr.Zero);
+                    mouse_event((uint)MouseVirtual.MOUSEEVENTF_LEFTUP, 0, 0, 0, IntPtr.Zero);
                 }
                 else
                 {
-                    mouse_event((uint)MouseEvents.MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, IntPtr.Zero);
+                    mouse_event((uint)MouseVirtual.MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, IntPtr.Zero);
                     await Task.Delay(10);
-                    mouse_event((uint)MouseEvents.MOUSEEVENTF_RIGHTUP, 0, 0, 0, IntPtr.Zero);
+                    mouse_event((uint)MouseVirtual.MOUSEEVENTF_RIGHTUP, 0, 0, 0, IntPtr.Zero);
                 }
             }
             catch { }
         }
 
         //Simulate mouse up or down
-        public static void MouseToggle(bool rightClick, bool downClick)
+        public static void MouseToggle(bool rightClick, bool toggleDown)
         {
             try
             {
                 if (!rightClick)
                 {
-                    if (downClick)
+                    if (toggleDown)
                     {
-                        mouse_event((uint)MouseEvents.MOUSEEVENTF_LEFTDOWN, 0, 0, 0, IntPtr.Zero);
+                        mouse_event((uint)MouseVirtual.MOUSEEVENTF_LEFTDOWN, 0, 0, 0, IntPtr.Zero);
                     }
                     else
                     {
-                        mouse_event((uint)MouseEvents.MOUSEEVENTF_LEFTUP, 0, 0, 0, IntPtr.Zero);
+                        mouse_event((uint)MouseVirtual.MOUSEEVENTF_LEFTUP, 0, 0, 0, IntPtr.Zero);
                     }
                 }
                 else
                 {
-                    if (downClick)
+                    if (toggleDown)
                     {
-                        mouse_event((uint)MouseEvents.MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, IntPtr.Zero);
+                        mouse_event((uint)MouseVirtual.MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, IntPtr.Zero);
                     }
                     else
                     {
-                        mouse_event((uint)MouseEvents.MOUSEEVENTF_RIGHTUP, 0, 0, 0, IntPtr.Zero);
+                        mouse_event((uint)MouseVirtual.MOUSEEVENTF_RIGHTUP, 0, 0, 0, IntPtr.Zero);
                     }
                 }
             }
@@ -94,7 +95,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                mouse_event((uint)MouseEvents.MOUSEEVENTF_VWHEEL, 0, 0, scrollAmount, IntPtr.Zero);
+                mouse_event((uint)MouseVirtual.MOUSEEVENTF_VWHEEL, 0, 0, scrollAmount, IntPtr.Zero);
             }
             catch { }
         }
@@ -104,7 +105,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                mouse_event((uint)MouseEvents.MOUSEEVENTF_HWHEEL, 0, 0, scrollAmount, IntPtr.Zero);
+                mouse_event((uint)MouseVirtual.MOUSEEVENTF_HWHEEL, 0, 0, scrollAmount, IntPtr.Zero);
             }
             catch { }
         }
