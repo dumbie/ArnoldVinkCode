@@ -1,4 +1,6 @@
-﻿namespace ArnoldVinkCode
+﻿using System;
+
+namespace ArnoldVinkCode
 {
     public partial class AVInputOutputClass
     {
@@ -28,17 +30,17 @@
         {
             LeftButton = 0x01,
             RightButton = 0x02,
-            Cancel = 0x03,
+            Break = 0x03,
             MiddleButton = 0x04,
             ExtraButton1 = 0x05,
             ExtraButton2 = 0x06,
-            Back = 0x08,
+            BackSpace = 0x08,
             Tab = 0x09,
             Clear = 0x0C,
-            Return = 0x0D,
+            Enter = 0x0D,
             Shift = 0x10,
             Control = 0x11,
-            Menu = 0x12,
+            Alt = 0x12,
             Pause = 0x13,
             CapsLock = 0x14,
             Kana = 0x15,
@@ -63,22 +65,22 @@
             Right = 0x27,
             Down = 0x28,
             Select = 0x29,
-            Print = 0x2A,
+            PrintScreen = 0x2A,
             Execute = 0x2B,
             Snapshot = 0x2C,
             Insert = 0x2D,
             Delete = 0x2E,
             Help = 0x2F,
-            N0 = 0x30,
-            N1 = 0x31,
-            N2 = 0x32,
-            N3 = 0x33,
-            N4 = 0x34,
-            N5 = 0x35,
-            N6 = 0x36,
-            N7 = 0x37,
-            N8 = 0x38,
-            N9 = 0x39,
+            Digit0 = 0x30,
+            Digit1 = 0x31,
+            Digit2 = 0x32,
+            Digit3 = 0x33,
+            Digit4 = 0x34,
+            Digit5 = 0x35,
+            Digit6 = 0x36,
+            Digit7 = 0x37,
+            Digit8 = 0x38,
+            Digit9 = 0x39,
             A = 0x41,
             B = 0x42,
             C = 0x43,
@@ -107,7 +109,7 @@
             Z = 0x5A,
             LeftWindows = 0x5B,
             RightWindows = 0x5C,
-            Application = 0x5D,
+            ContextMenu = 0x5D,
             Sleep = 0x5F,
             Numpad0 = 0x60,
             Numpad1 = 0x61,
@@ -161,8 +163,8 @@
             RightShift = 0xA1,
             LeftControl = 0xA2,
             RightControl = 0xA3,
-            LeftMenu = 0xA4,
-            RightMenu = 0xA5,
+            LeftAlt = 0xA4,
+            RightAlt = 0xA5,
             BrowserBack = 0xA6,
             BrowserForward = 0xA7,
             BrowserRefresh = 0xA8,
@@ -174,27 +176,27 @@
             VolumeDown = 0xAE,
             VolumeUp = 0xAF,
             MediaNextTrack = 0xB0,
-            MediaPrevTrack = 0xB1,
+            MediaPreviousTrack = 0xB1,
             MediaStop = 0xB2,
             MediaPlayPause = 0xB3,
             LaunchMail = 0xB4,
-            LaunchMediaSelect = 0xB5,
+            LaunchMedia = 0xB5,
             LaunchApplication1 = 0xB6,
             LaunchApplication2 = 0xB7,
-            OEM1 = 0xBA,
+            OEMSemicolon = 0xBA,
             OEMPlus = 0xBB,
             OEMComma = 0xBC,
             OEMMinus = 0xBD,
             OEMPeriod = 0xBE,
-            OEM2 = 0xBF,
-            OEM3 = 0xC0,
-            OEM4 = 0xDB,
-            OEM5 = 0xDC,
-            OEM6 = 0xDD,
-            OEM7 = 0xDE,
-            OEM8 = 0xDF,
-            OEMAX = 0xE1,
-            OEM102 = 0xE2,
+            OEMQuestion = 0xBF,
+            OEMTilde = 0xC0,
+            OEMOpenBracket = 0xDB,
+            OEMPipe = 0xDC,
+            OEMCloseBracket = 0xDD,
+            OEMQuote = 0xDE,
+            OEMMisc = 0xDF,
+            OEMAx = 0xE1,
+            OEMBackslash = 0xE2,
             ICOHelp = 0xE3,
             ICO00 = 0xE4,
             ProcessKey = 0xE5,
@@ -213,6 +215,7 @@
             OEMAuto = 0xF3,
             OEMENLW = 0xF4,
             OEMBackTab = 0xF5,
+            OEMClear = 0xFE,
             ATTN = 0xF6,
             CRSel = 0xF7,
             EXSel = 0xF8,
@@ -220,8 +223,275 @@
             Play = 0xFA,
             Zoom = 0xFB,
             Noname = 0xFC,
-            PA1 = 0xFD,
-            OEMClear = 0xFE
+            PA1 = 0xFD
+        }
+
+        //Get virtual key name
+        public static string GetVirtualKeyName(KeysVirtual keyVirtual, bool shortName)
+        {
+            try
+            {
+                switch (keyVirtual)
+                {
+                    //Letters
+                    case KeysVirtual.A:
+                    case KeysVirtual.B:
+                    case KeysVirtual.C:
+                    case KeysVirtual.D:
+                    case KeysVirtual.E:
+                    case KeysVirtual.F:
+                    case KeysVirtual.G:
+                    case KeysVirtual.H:
+                    case KeysVirtual.I:
+                    case KeysVirtual.J:
+                    case KeysVirtual.K:
+                    case KeysVirtual.L:
+                    case KeysVirtual.M:
+                    case KeysVirtual.N:
+                    case KeysVirtual.O:
+                    case KeysVirtual.P:
+                    case KeysVirtual.Q:
+                    case KeysVirtual.R:
+                    case KeysVirtual.S:
+                    case KeysVirtual.T:
+                    case KeysVirtual.U:
+                    case KeysVirtual.V:
+                    case KeysVirtual.W:
+                    case KeysVirtual.X:
+                    case KeysVirtual.Y:
+                    case KeysVirtual.Z:
+                        return Enum.GetName(typeof(KeysVirtual), keyVirtual);
+
+                    //Digits
+                    case KeysVirtual.Digit0:
+                        return "0";
+                    case KeysVirtual.Numpad0:
+                        if (shortName) { return "Pad 0"; } else { return "Numpad 0"; }
+                    case KeysVirtual.Digit1:
+                        return "1";
+                    case KeysVirtual.Numpad1:
+                        if (shortName) { return "Pad 1"; } else { return "Numpad 1"; }
+                    case KeysVirtual.Digit2:
+                        return "2";
+                    case KeysVirtual.Numpad2:
+                        if (shortName) { return "Pad 2"; } else { return "Numpad 2"; }
+                    case KeysVirtual.Digit3:
+                        return "3";
+                    case KeysVirtual.Numpad3:
+                        if (shortName) { return "Pad 3"; } else { return "Numpad 3"; }
+                    case KeysVirtual.Digit4:
+                        return "4";
+                    case KeysVirtual.Numpad4:
+                        if (shortName) { return "Pad 4"; } else { return "Numpad 4"; }
+                    case KeysVirtual.Digit5:
+                        return "5";
+                    case KeysVirtual.Numpad5:
+                        if (shortName) { return "Pad 5"; } else { return "Numpad 5"; }
+                    case KeysVirtual.Digit6:
+                        return "6";
+                    case KeysVirtual.Numpad6:
+                        if (shortName) { return "Pad 6"; } else { return "Numpad 6"; }
+                    case KeysVirtual.Digit7:
+                        return "7";
+                    case KeysVirtual.Numpad7:
+                        if (shortName) { return "Pad 7"; } else { return "Numpad 7"; }
+                    case KeysVirtual.Digit8:
+                        return "8";
+                    case KeysVirtual.Numpad8:
+                        if (shortName) { return "Pad 8"; } else { return "Numpad 8"; }
+                    case KeysVirtual.Digit9:
+                        return "9";
+                    case KeysVirtual.Numpad9:
+                        if (shortName) { return "Pad 9"; } else { return "Numpad 9"; }
+
+                    //Numpad
+                    case KeysVirtual.Add:
+                        if (shortName) { return "Pad +"; } else { return "Numpad +"; }
+                    case KeysVirtual.Subtract:
+                        if (shortName) { return "Pad -"; } else { return "Numpad -"; }
+                    case KeysVirtual.Divide:
+                        if (shortName) { return "Pad /"; } else { return "Numpad /"; }
+                    case KeysVirtual.Multiply:
+                        if (shortName) { return "Pad *"; } else { return "Numpad *"; }
+                    case KeysVirtual.Decimal:
+                        if (shortName) { return "Pad ."; } else { return "Numpad ."; }
+                    case KeysVirtual.Space:
+                        if (shortName) { return "Space"; } else { return "Spacebar"; }
+
+                    //OEM
+                    case KeysVirtual.OEMSemicolon:
+                        return ";";
+                    case KeysVirtual.OEMQuestion:
+                        return "?";
+                    case KeysVirtual.OEMTilde:
+                        return "~";
+                    case KeysVirtual.OEMOpenBracket:
+                        return "[";
+                    case KeysVirtual.OEMCloseBracket:
+                        return "]";
+                    case KeysVirtual.OEMPipe:
+                        return "|";
+                    case KeysVirtual.OEMBackslash:
+                        return "\\";
+                    case KeysVirtual.OEMQuote:
+                        return "'";
+                    case KeysVirtual.OEMPlus:
+                        return "+";
+                    case KeysVirtual.OEMMinus:
+                        return "-";
+                    case KeysVirtual.OEMComma:
+                        return ",";
+                    case KeysVirtual.OEMPeriod:
+                        return ".";
+
+                    //Function
+                    case KeysVirtual.F1:
+                    case KeysVirtual.F2:
+                    case KeysVirtual.F3:
+                    case KeysVirtual.F4:
+                    case KeysVirtual.F5:
+                    case KeysVirtual.F6:
+                    case KeysVirtual.F7:
+                    case KeysVirtual.F8:
+                    case KeysVirtual.F9:
+                    case KeysVirtual.F10:
+                    case KeysVirtual.F11:
+                    case KeysVirtual.F12:
+                    case KeysVirtual.F13:
+                    case KeysVirtual.F14:
+                    case KeysVirtual.F15:
+                    case KeysVirtual.F16:
+                    case KeysVirtual.F17:
+                    case KeysVirtual.F18:
+                    case KeysVirtual.F19:
+                    case KeysVirtual.F20:
+                    case KeysVirtual.F21:
+                    case KeysVirtual.F22:
+                    case KeysVirtual.F23:
+                    case KeysVirtual.F24:
+                        return Enum.GetName(typeof(KeysVirtual), keyVirtual);
+
+                    //Navigation
+                    case KeysVirtual.Up:
+                        if (shortName) { return "Up"; } else { return "Arrow Up"; }
+                    case KeysVirtual.Down:
+                        if (shortName) { return "Down"; } else { return "Arrow Down"; }
+                    case KeysVirtual.Left:
+                        if (shortName) { return "Left"; } else { return "Arrow Left"; }
+                    case KeysVirtual.Right:
+                        if (shortName) { return "Right"; } else { return "Arrow Right"; }
+                    case KeysVirtual.Prior:
+                        if (shortName) { return "PgUp"; } else { return "Page Up"; }
+                    case KeysVirtual.Next:
+                        if (shortName) { return "PgDn"; } else { return "Page Down"; }
+                    case KeysVirtual.Home:
+                        return "Home";
+                    case KeysVirtual.End:
+                        return "End";
+
+                    //Action
+                    case KeysVirtual.Break:
+                        return "Break";
+                    case KeysVirtual.Clear:
+                        return "Clear";
+                    case KeysVirtual.BackSpace:
+                        if (shortName) { return "Bspc"; } else { return "Backspace"; }
+                    case KeysVirtual.Tab:
+                        return "Tab";
+                    case KeysVirtual.Escape:
+                        if (shortName) { return "Esc"; } else { return "Escape"; }
+                    case KeysVirtual.Enter:
+                        return "Enter";
+                    case KeysVirtual.Shift:
+                        return "Shift";
+                    case KeysVirtual.LeftShift:
+                        if (shortName) { return "LShift"; } else { return "Shift (Left)"; }
+                    case KeysVirtual.RightShift:
+                        if (shortName) { return "RShift"; } else { return "Shift (Right)"; }
+                    case KeysVirtual.Control:
+                        if (shortName) { return "Ctrl"; } else { return "Control"; }
+                    case KeysVirtual.LeftControl:
+                        if (shortName) { return "LCtrl"; } else { return "Control (Left)"; }
+                    case KeysVirtual.RightControl:
+                        if (shortName) { return "RCtrl"; } else { return "Control (Right)"; }
+                    case KeysVirtual.Alt:
+                        return "Alt";
+                    case KeysVirtual.LeftAlt:
+                        if (shortName) { return "LAlt"; } else { return "Alt (Left)"; }
+                    case KeysVirtual.RightAlt:
+                        if (shortName) { return "RAlt"; } else { return "Alt (Right)"; }
+                    case KeysVirtual.Pause:
+                        return "Pause";
+                    case KeysVirtual.CapsLock:
+                        if (shortName) { return "Caps"; } else { return "Caps Lock"; }
+                    case KeysVirtual.NumLock:
+                        if (shortName) { return "NLock"; } else { return "Num Lock"; }
+                    case KeysVirtual.ScrollLock:
+                        if (shortName) { return "SLock"; } else { return "Scroll Lock"; }
+                    case KeysVirtual.Snapshot:
+                    case KeysVirtual.PrintScreen:
+                        if (shortName) { return "PrtSc"; } else { return "Print Screen"; }
+                    case KeysVirtual.LeftWindows:
+                        if (shortName) { return "LWin"; } else { return "Windows (Left)"; }
+                    case KeysVirtual.RightWindows:
+                        if (shortName) { return "RWin"; } else { return "Windows (Right)"; }
+                    case KeysVirtual.Insert:
+                        return "Insert";
+                    case KeysVirtual.Delete:
+                        return "Delete";
+                    case KeysVirtual.Help:
+                        return "Help";
+                    case KeysVirtual.ContextMenu:
+                        return "Menu";
+                    case KeysVirtual.Zoom:
+                        return "Zoom";
+
+                    //Browser
+                    case KeysVirtual.BrowserFavorites:
+                        if (shortName) { return "BFav"; } else { return "Browser Favorites"; }
+                    case KeysVirtual.BrowserBack:
+                        if (shortName) { return "BBack"; } else { return "Browser Back"; }
+                    case KeysVirtual.BrowserForward:
+                        if (shortName) { return "BFrwd"; } else { return "Browser Forward"; }
+                    case KeysVirtual.BrowserHome:
+                        if (shortName) { return "BHome"; } else { return "Browser Home"; }
+                    case KeysVirtual.BrowserRefresh:
+                        if (shortName) { return "BRfsh"; } else { return "Browser Refresh"; }
+                    case KeysVirtual.BrowserSearch:
+                        if (shortName) { return "BSrch"; } else { return "Browser Search"; }
+                    case KeysVirtual.BrowserStop:
+                        if (shortName) { return "BStop"; } else { return "Browser Stop"; }
+
+                    //Media
+                    case KeysVirtual.VolumeUp:
+                        if (shortName) { return "VolUp"; } else { return "Volume Up"; }
+                    case KeysVirtual.VolumeDown:
+                        if (shortName) { return "VolDn"; } else { return "Volume Down"; }
+                    case KeysVirtual.VolumeMute:
+                        if (shortName) { return "Mute"; } else { return "Volume Mute"; }
+                    case KeysVirtual.MediaNextTrack:
+                        if (shortName) { return "Next"; } else { return "Media Next"; }
+                    case KeysVirtual.MediaPreviousTrack:
+                        if (shortName) { return "Prev"; } else { return "Media Previous"; }
+                    case KeysVirtual.Play:
+                    case KeysVirtual.MediaPlayPause:
+                        if (shortName) { return "Play"; } else { return "Media Play"; }
+                    case KeysVirtual.MediaStop:
+                        if (shortName) { return "Stop"; } else { return "Media Stop"; }
+
+                    //Launch
+                    case KeysVirtual.LaunchMedia:
+                        if (shortName) { return "Media"; } else { return "Launch Media"; }
+                    case KeysVirtual.LaunchMail:
+                        if (shortName) { return "Mail"; } else { return "Launch Mail"; }
+                    case KeysVirtual.LaunchApplication1:
+                        if (shortName) { return "App 1"; } else { return "Launch App 1"; }
+                    case KeysVirtual.LaunchApplication2:
+                        if (shortName) { return "App 2"; } else { return "Launch App 2"; }
+                }
+            }
+            catch { }
+            return Enum.GetName(typeof(KeysVirtual), keyVirtual);
         }
     }
 }
