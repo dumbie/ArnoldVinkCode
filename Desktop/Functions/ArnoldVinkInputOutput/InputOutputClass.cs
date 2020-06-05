@@ -316,7 +316,7 @@ namespace ArnoldVinkCode
                     case KeysVirtual.Decimal:
                         if (shortName) { return "Pad ."; } else { return "Numpad ."; }
                     case KeysVirtual.Space:
-                        if (shortName) { return "Space"; } else { return "Spacebar"; }
+                        if (shortName) { return "Spc"; } else { return "Spacebar"; }
 
                     //OEM
                     case KeysVirtual.OEMSemicolon:
@@ -373,13 +373,13 @@ namespace ArnoldVinkCode
 
                     //Navigation
                     case KeysVirtual.Up:
-                        if (shortName) { return "Up"; } else { return "Arrow Up"; }
+                        if (shortName) { return "⯅"; } else { return "Arrow Up"; }
                     case KeysVirtual.Down:
-                        if (shortName) { return "Down"; } else { return "Arrow Down"; }
+                        if (shortName) { return "⯆"; } else { return "Arrow Down"; }
                     case KeysVirtual.Left:
-                        if (shortName) { return "Left"; } else { return "Arrow Left"; }
+                        if (shortName) { return "⯇"; } else { return "Arrow Left"; }
                     case KeysVirtual.Right:
-                        if (shortName) { return "Right"; } else { return "Arrow Right"; }
+                        if (shortName) { return "⯈"; } else { return "Arrow Right"; }
                     case KeysVirtual.Prior:
                         if (shortName) { return "PgUp"; } else { return "Page Up"; }
                     case KeysVirtual.Next:
@@ -425,9 +425,9 @@ namespace ArnoldVinkCode
                     case KeysVirtual.CapsLock:
                         if (shortName) { return "Caps"; } else { return "Caps Lock"; }
                     case KeysVirtual.NumLock:
-                        if (shortName) { return "NLock"; } else { return "Num Lock"; }
+                        if (shortName) { return "NLck"; } else { return "Num Lock"; }
                     case KeysVirtual.ScrollLock:
-                        if (shortName) { return "SLock"; } else { return "Scroll Lock"; }
+                        if (shortName) { return "SLck"; } else { return "Scroll Lock"; }
                     case KeysVirtual.Snapshot:
                     case KeysVirtual.PrintScreen:
                         if (shortName) { return "PrtSc"; } else { return "Print Screen"; }
