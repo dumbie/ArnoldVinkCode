@@ -257,20 +257,6 @@
         <Setter Property="Template" Value="{StaticResource ButtonTemplateBlack}"/>
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidBlack}"/>
     </Style>
-    <Style x:Key="ButtonKeyboard" TargetType="Button">
-        <Setter Property="FontSize" Value="{DynamicResource TextSizeMedium}"/>
-        <Setter Property="MinHeight" Value="45"/>
-        <Setter Property="MinWidth" Value="47"/>
-        <Setter Property="Padding" Value="0"/>
-        <Setter Property="Margin" Value="4,0,0,0"/>
-        <Setter Property="Foreground" Value="#F1F1F1"/>
-        <Setter Property="Background" Value="{DynamicResource ApplicationAccentLightBrush}"/>
-        <Setter Property="BorderThickness" Value="2"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource ApplicationAccentLightBrush}"/>
-        <Setter Property="Cursor" Value="Hand"/>
-        <Setter Property="Template" Value="{StaticResource ButtonTemplateWhite}"/>
-        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidWhite}"/>
-    </Style>
 
     <!--Slider Styles-->
     <Style x:Key="SliderBlack" TargetType="Slider">
