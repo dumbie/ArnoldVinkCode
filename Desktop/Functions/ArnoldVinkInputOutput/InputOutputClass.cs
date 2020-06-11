@@ -28,6 +28,7 @@ namespace ArnoldVinkCode
 
         public enum KeysVirtual : byte
         {
+            Null = 0x00,
             LeftButton = 0x01,
             RightButton = 0x02,
             Break = 0x03,

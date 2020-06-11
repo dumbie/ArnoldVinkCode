@@ -4,6 +4,7 @@ using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Windows;
 using System.Windows.Shapes;
+using static ArnoldVinkCode.AVInputOutputClass;
 using static ArnoldVinkCode.AVInteropCom;
 
 namespace ArnoldVinkCode
@@ -413,13 +414,13 @@ namespace ArnoldVinkCode
 
         //Keyboard events
         [DllImport("user32.dll")]
-        public static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, int dwExtraInfo);
+        public static extern void keybd_event(KeysVirtual bVk, uint bScan, uint dwFlags, int dwExtraInfo);
         public const uint KEYEVENTF_NONE = 0x0;
         public const uint KEYEVENTF_EXTENDEDKEY = 0x0001;
         public const uint KEYEVENTF_KEYUP = 0x0002;
 
         [DllImport("user32.dll")]
-        public static extern uint MapVirtualKey(uint uCode, uint uMapType);
+        public static extern uint MapVirtualKey(KeysVirtual bVk, uint uMapType);
         public const uint MAPVK_VK_TO_VSC = 0x00;
         public const uint MAPVK_VSC_TO_VK = 0x01;
         public const uint MAPVK_VK_TO_CHAR = 0x02;
@@ -427,7 +428,7 @@ namespace ArnoldVinkCode
         public const uint MAPVK_VK_TO_VSC_EX = 0x04;
 
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-        public static extern short VkKeyScanEx(char ch, IntPtr dwhkl);
+        public static extern KeysVirtual VkKeyScanEx(char ch, IntPtr dwhkl);
 
         //Mouse events
         [DllImport("user32.dll")]
@@ -450,7 +451,7 @@ namespace ArnoldVinkCode
 
         //Register Hotkey
         [DllImport("user32.dll")]
-        public static extern bool RegisterHotKey(IntPtr hWnd, int id, int fsModifiers, int vk);
+        public static extern bool RegisterHotKey(IntPtr hWnd, int id, int fsModifiers, KeysVirtual bVk);
         [DllImport("user32.dll")]
         public static extern bool UnregisterHotKey(IntPtr hWnd, int id);
         public static int HotKeyRegisterId = 0x9000;

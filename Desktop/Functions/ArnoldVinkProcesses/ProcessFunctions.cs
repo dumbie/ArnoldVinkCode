@@ -25,7 +25,7 @@ namespace ArnoldVinkCode
                 if (foregroundProcess.Name == "SearchUI")
                 {
                     Debug.WriteLine("Start menu is currently open, pressing escape to close it.");
-                    await KeyPressSingle((byte)KeysVirtual.Escape, false);
+                    await KeyPressSingleAuto(KeysVirtual.Escape);
                     await Task.Delay(10);
                 }
             }
@@ -56,7 +56,7 @@ namespace ArnoldVinkCode
                     await Task.Delay(500);
                     if (closedProcess)
                     {
-                        await KeyPressSingle((byte)KeysVirtual.Escape, false);
+                        await KeyPressSingleAuto(KeysVirtual.Escape);
                         await Task.Delay(10);
                     }
                 }
