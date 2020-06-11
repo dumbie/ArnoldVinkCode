@@ -28,7 +28,6 @@ namespace ArnoldVinkCode
 
         public enum KeysVirtual : byte
         {
-            Null = 0x00,
             LeftButton = 0x01,
             RightButton = 0x02,
             Break = 0x03,
@@ -238,11 +237,11 @@ namespace ArnoldVinkCode
         };
 
         //Get virtual key name
-        public static string GetVirtualKeyName(KeysVirtual keyVirtual, bool shortName)
+        public static string GetVirtualKeyName(KeysVirtual virtualKey, bool shortName)
         {
             try
             {
-                switch (keyVirtual)
+                switch (virtualKey)
                 {
                     //Letters
                     case KeysVirtual.A:
@@ -271,7 +270,7 @@ namespace ArnoldVinkCode
                     case KeysVirtual.X:
                     case KeysVirtual.Y:
                     case KeysVirtual.Z:
-                        return Enum.GetName(typeof(KeysVirtual), keyVirtual);
+                        return Enum.GetName(typeof(KeysVirtual), virtualKey);
 
                     //Digits
                     case KeysVirtual.Digit0:
@@ -380,7 +379,7 @@ namespace ArnoldVinkCode
                     case KeysVirtual.F22:
                     case KeysVirtual.F23:
                     case KeysVirtual.F24:
-                        return Enum.GetName(typeof(KeysVirtual), keyVirtual);
+                        return Enum.GetName(typeof(KeysVirtual), virtualKey);
 
                     //Navigation
                     case KeysVirtual.Up:
@@ -502,7 +501,7 @@ namespace ArnoldVinkCode
                 }
             }
             catch { }
-            return Enum.GetName(typeof(KeysVirtual), keyVirtual);
+            return Enum.GetName(typeof(KeysVirtual), virtualKey);
         }
     }
 }
