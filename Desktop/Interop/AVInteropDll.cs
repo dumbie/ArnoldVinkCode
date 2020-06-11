@@ -414,21 +414,34 @@ namespace ArnoldVinkCode
 
         //Keyboard events
         [DllImport("user32.dll")]
-        public static extern void keybd_event(KeysVirtual bVk, uint bScan, uint dwFlags, int dwExtraInfo);
-        public const uint KEYEVENTF_NONE = 0x0;
-        public const uint KEYEVENTF_EXTENDEDKEY = 0x0001;
-        public const uint KEYEVENTF_KEYUP = 0x0002;
+        public static extern void keybd_event(KeysVirtual bVk, uint bScan, KeybdEventFlags dwFlags, int dwExtraInfo);
+        public enum KeybdEventFlags : int
+        {
+            KEYEVENTF_NONE = 0x0000,
+            KEYEVENTF_EXTENDEDKEY = 0x0001,
+            KEYEVENTF_KEYUP = 0x0002
+        }
 
         [DllImport("user32.dll")]
-        public static extern uint MapVirtualKey(KeysVirtual bVk, uint uMapType);
-        public const uint MAPVK_VK_TO_VSC = 0x00;
-        public const uint MAPVK_VSC_TO_VK = 0x01;
-        public const uint MAPVK_VK_TO_CHAR = 0x02;
-        public const uint MAPVK_VSC_TO_VK_EX = 0x03;
-        public const uint MAPVK_VK_TO_VSC_EX = 0x04;
+        public static extern uint MapVirtualKey(KeysVirtual bVk, MapVirtualKeyMapTypes uMapType);
+        public enum MapVirtualKeyMapTypes : int
+        {
+            MAPVK_VK_TO_VSC = 0x00,
+            MAPVK_VSC_TO_VK = 0x01,
+            MAPVK_VK_TO_CHAR = 0x02,
+            MAPVK_VSC_TO_VK_EX = 0x03,
+            MAPVK_VK_TO_VSC_EX = 0x04
+        }
 
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         public static extern short VkKeyScanEx(char ch, IntPtr dwhkl);
+        public enum VkKeyScanModifiers : short
+        {
+            SHIFT = 0x100,
+            ALT = 0x200,
+            CONTROL = 0x400,
+            CMD = 0x800
+        }
 
         //Mouse events
         [DllImport("user32.dll")]
@@ -519,7 +532,6 @@ namespace ArnoldVinkCode
         public static extern bool SystemParametersInfo(SPI uiAction, uint uiParam, uint pvParam, SPIF fWinIni);
         [DllImport("user32.dll")]
         public static extern bool SystemParametersInfo(SPI uiAction, uint uiParam, string pvParam, SPIF fWinIni);
-
         public enum SPI : int
         {
             SPI_SETDESKWALLPAPER = 0x0014,
@@ -530,7 +542,6 @@ namespace ArnoldVinkCode
             SPI_GETFOREGROUNDFLASHCOUNT = 0x2004,
             SPI_SETFOREGROUNDFLASHCOUNT = 0x2005
         }
-
         public enum SPIF : int
         {
             None = 0x00,
