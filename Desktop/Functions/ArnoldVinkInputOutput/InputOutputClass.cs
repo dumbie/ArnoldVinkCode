@@ -226,6 +226,16 @@ namespace ArnoldVinkCode
             PA1 = 0xFD
         }
 
+        //Virtual keys that prefer extended
+        public static KeysVirtual[] KeysVirtualExtended =
+        {
+            KeysVirtual.Up,
+            KeysVirtual.Down,
+            KeysVirtual.Left,
+            KeysVirtual.Right,
+            KeysVirtual.Delete
+        };
+
         //Get virtual key name
         public static string GetVirtualKeyName(KeysVirtual keyVirtual, bool shortName)
         {

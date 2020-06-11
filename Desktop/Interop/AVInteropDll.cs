@@ -515,11 +515,15 @@ namespace ArnoldVinkCode
 
         //SystemParametersInfo
         [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool SystemParametersInfo(SPI uiAction, uint uiParam, uint pvParam, SPIF fWinIni);
+        [DllImport("user32.dll")]
+        public static extern bool SystemParametersInfo(SPI uiAction, uint uiParam, string pvParam, SPIF fWinIni);
 
         public enum SPI : int
         {
+            SPI_SETDESKWALLPAPER = 0x0014,
+            SPI_GETDESKWALLPAPER = 0x0073,
+            SPI_SETDESKPATTERN = 0x0015,
             SPI_GETFOREGROUNDLOCKTIMEOUT = 0x2000,
             SPI_SETFOREGROUNDLOCKTIMEOUT = 0x2001,
             SPI_GETFOREGROUNDFLASHCOUNT = 0x2004,
