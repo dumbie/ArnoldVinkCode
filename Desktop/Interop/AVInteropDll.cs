@@ -428,7 +428,7 @@ namespace ArnoldVinkCode
         public const uint MAPVK_VK_TO_VSC_EX = 0x04;
 
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-        public static extern KeysVirtual VkKeyScanEx(char ch, IntPtr dwhkl);
+        public static extern short VkKeyScanEx(char ch, IntPtr dwhkl);
 
         //Mouse events
         [DllImport("user32.dll")]
