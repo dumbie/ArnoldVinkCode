@@ -83,9 +83,9 @@ namespace ArnoldVinkCode
                 avTask.TokenSource.Cancel();
 
                 //Wait for task to have stopped
+                Debug.WriteLine("Waiting for task to stop or timeout...");
                 while (!avTask.TaskCompleted)
                 {
-                    Debug.WriteLine("Waiting for task to stop or timeout...");
                     await Task.Delay(1);
                 }
 
