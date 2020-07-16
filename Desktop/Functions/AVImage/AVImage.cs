@@ -116,7 +116,7 @@ namespace ArnoldVinkCode
                         string loadFileSafe = string.Join(string.Empty, loadFileLower.Split(Path.GetInvalidFileNameChars()));
                         //Debug.WriteLine("Loading image: " + loadFileLower + "/" + loadFileSafe);
 
-                        if (loadFileLower.StartsWith("pack://application:,,,") || loadFileLower.StartsWith("pack://siteoforigin:,,,"))
+                        if (loadFileLower.StartsWith("pack://"))
                         {
                             imageToBitmapImage.UriSource = new Uri(loadFileLower, UriKind.RelativeOrAbsolute);
                         }
