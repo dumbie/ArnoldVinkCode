@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Runtime.InteropServices;
 
 namespace ArnoldVinkCode
@@ -17,7 +19,7 @@ namespace ArnoldVinkCode
             return (smallestIcon << 16) | (largestIcon & 0xFFFF);
         }
 
-        public static Bitmap GetBitmapFromExecutable(string executablePath, int iconIndex)
+        public static MemoryStream GetMemoryStreamFromExecutable(string executablePath, int iconIndex, ref MemoryStream imageMemoryStream)
         {
             try
             {
@@ -33,20 +35,26 @@ namespace ArnoldVinkCode
                     {
                         using (Icon IconRaw = Icon.FromHandle(ptrIconLarge))
                         {
-                            Bitmap IconBitmap = IconRaw.ToBitmap();
+                            Bitmap iconBitmap = IconRaw.ToBitmap();
                             if (ptrIconLarge != IntPtr.Zero) { DestroyIcon(ptrIconLarge); }
                             if (ptrIconSmall != IntPtr.Zero) { DestroyIcon(ptrIconSmall); }
-                            return IconBitmap;
+                            iconBitmap.Save(imageMemoryStream, ImageFormat.Png);
+                            imageMemoryStream.Seek(0, SeekOrigin.Begin);
+                            iconBitmap.Dispose();
+                            return imageMemoryStream;
                         }
                     }
                     if (ptrIconSmall != IntPtr.Zero)
                     {
                         using (Icon IconRaw = Icon.FromHandle(ptrIconSmall))
                         {
-                            Bitmap IconBitmap = IconRaw.ToBitmap();
+                            Bitmap iconBitmap = IconRaw.ToBitmap();
                             if (ptrIconLarge != IntPtr.Zero) { DestroyIcon(ptrIconLarge); }
                             if (ptrIconSmall != IntPtr.Zero) { DestroyIcon(ptrIconSmall); }
-                            return IconBitmap;
+                            iconBitmap.Save(imageMemoryStream, ImageFormat.Png);
+                            imageMemoryStream.Seek(0, SeekOrigin.Begin);
+                            iconBitmap.Dispose();
+                            return imageMemoryStream;
                         }
                     }
                 }

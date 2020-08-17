@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Media.Imaging;
 
@@ -36,6 +34,8 @@ namespace ArnoldVinkCode
             try
             {
                 imageToBitmapImage.EndInit();
+
+                //Freeze bitmap image
                 if (imageToBitmapImage.CanFreeze)
                 {
                     imageToBitmapImage.Freeze();
@@ -120,20 +120,17 @@ namespace ArnoldVinkCode
                         {
                             imageToBitmapImage.UriSource = new Uri(loadFileLower, UriKind.RelativeOrAbsolute);
                         }
+                        else if (File.Exists(loadFileLower) && loadFileLower.EndsWith(".ico"))
+                        {
+                            imageToBitmapImage.StreamSource = ExtractImage.GetMemoryStreamFromIcoFileLarge(loadFileLower, ref imageMemoryStream);
+                        }
                         else if (File.Exists(loadFileLower) && !loadFileLower.EndsWith(".exe") && !loadFileLower.EndsWith(".dll") && !loadFileLower.EndsWith(".bin") && !loadFileLower.EndsWith(".tmp") && !loadFileLower.EndsWith(".bat"))
                         {
                             imageToBitmapImage.UriSource = new Uri(loadFileLower, UriKind.RelativeOrAbsolute);
                         }
                         else if (File.Exists(loadFileLower) && (loadFileLower.EndsWith(".exe") || loadFileLower.EndsWith(".dll") || loadFileLower.EndsWith(".bin") || loadFileLower.EndsWith(".tmp")))
                         {
-                            Bitmap executableImage = ExtractImage.GetBitmapFromExecutable(loadFileLower, iconIndex);
-                            if (executableImage != null)
-                            {
-                                executableImage.Save(imageMemoryStream, ImageFormat.Png);
-                                imageMemoryStream.Seek(0, SeekOrigin.Begin);
-                                imageToBitmapImage.StreamSource = imageMemoryStream;
-                                executableImage.Dispose();
-                            }
+                            imageToBitmapImage.StreamSource = ExtractImage.GetMemoryStreamFromExecutable(loadFileLower, iconIndex, ref imageMemoryStream);
                         }
                         else if (sourceFolders != null)
                         {
@@ -181,14 +178,10 @@ namespace ArnoldVinkCode
                 }
                 else
                 {
-                    BitmapSource windowImage = ExtractImage.GetBitmapSourceFromWinow(windowHandle);
+                    MemoryStream windowImage = ExtractImage.GetMemoryStreamFromWindowIcon(windowHandle, ref imageMemoryStream);
                     if (windowImage != null)
                     {
-                        PngBitmapEncoder pngEncoder = new PngBitmapEncoder();
-                        pngEncoder.Frames.Add(BitmapFrame.Create(windowImage));
-                        pngEncoder.Save(imageMemoryStream);
-                        imageMemoryStream.Seek(0, SeekOrigin.Begin);
-                        imageToBitmapImage.StreamSource = imageMemoryStream;
+                        imageToBitmapImage.StreamSource = windowImage;
                     }
                     else
                     {

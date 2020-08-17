@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
@@ -9,7 +10,7 @@ namespace ArnoldVinkCode
     public partial class ExtractImage
     {
         //Get the window icon from process
-        public static BitmapSource GetBitmapSourceFromWinow(IntPtr windowHandle)
+        public static MemoryStream GetMemoryStreamFromWindowIcon(IntPtr windowHandle, ref MemoryStream imageMemoryStream)
         {
             try
             {
@@ -41,7 +42,12 @@ namespace ArnoldVinkCode
                     return null;
                 }
 
-                return Imaging.CreateBitmapSourceFromHIcon(iconHandle, new Int32Rect(), BitmapSizeOptions.FromEmptyOptions());
+                BitmapSource windowImage = Imaging.CreateBitmapSourceFromHIcon(iconHandle, new Int32Rect(), BitmapSizeOptions.FromEmptyOptions());
+                PngBitmapEncoder bitmapEncoder = new PngBitmapEncoder();
+                bitmapEncoder.Frames.Add(BitmapFrame.Create(windowImage));
+                bitmapEncoder.Save(imageMemoryStream);
+                imageMemoryStream.Seek(0, SeekOrigin.Begin);
+                return imageMemoryStream;
             }
             catch { }
             return null;
