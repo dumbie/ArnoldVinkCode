@@ -14,18 +14,13 @@ namespace ArnoldVinkCode
         [DllImport("User32.dll")]
         private static extern bool DestroyIcon(IntPtr hIcon);
 
-        private static int CalculateIconSize(int largestIcon, int smallestIcon)
-        {
-            return (smallestIcon << 16) | (largestIcon & 0xFFFF);
-        }
-
         public static MemoryStream GetMemoryStreamFromExecutable(string executablePath, int iconIndex, ref MemoryStream imageMemoryStream)
         {
             try
             {
                 IntPtr ptrIconLarge = IntPtr.Zero;
                 IntPtr ptrIconSmall = IntPtr.Zero;
-                uint largestSmallest = Convert.ToUInt32(CalculateIconSize(256, 1));
+                uint largestSmallest = (1 << 16) | (256 & 0xFFFF);
 
                 IntPtr intPtrExePath = Marshal.StringToHGlobalUni(executablePath);
                 int iconExtractResult = SHDefExtractIconW(intPtrExePath, iconIndex, 0, ref ptrIconLarge, ref ptrIconSmall, largestSmallest);
