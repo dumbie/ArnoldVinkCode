@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Windows.Media.Imaging;
+using static LibraryShared.Classes;
 
 namespace ArnoldVinkCode
 {
@@ -93,7 +96,7 @@ namespace ArnoldVinkCode
         }
 
         //Convert file to a BitmapImage
-        public static BitmapImage FileToBitmapImage(string[] sourceImages, string[] sourceFolders, string sourceBackup, IntPtr windowHandle, int pixelWidth, int iconIndex)
+        public static BitmapImage FileToBitmapImage(string[] sourceImages, ImageSourceFolders[] sourceFolders, string sourceBackup, IntPtr windowHandle, int pixelWidth, int iconIndex)
         {
             try
             {
@@ -134,20 +137,17 @@ namespace ArnoldVinkCode
                         }
                         else if (sourceFolders != null)
                         {
-                            foreach (string loadFolder in sourceFolders)
+                            foreach (ImageSourceFolders sourceFolder in sourceFolders)
                             {
                                 try
                                 {
-                                    string folderFilePng = loadFolder + "/" + loadFileSafe + ".png";
-                                    if (File.Exists(folderFilePng))
+                                    string[] pngImages = Directory.GetFiles(sourceFolder.SourcePath, "*.png", sourceFolder.SearchOption);
+                                    string[] jpgImages = Directory.GetFiles(sourceFolder.SourcePath, "*.jpg", sourceFolder.SearchOption);
+                                    IEnumerable<string> foundImages = pngImages.Concat(jpgImages);
+                                    string foundImage = foundImages.FirstOrDefault(x => Path.GetFileNameWithoutExtension(x).ToLower() == loadFileSafe);
+                                    if (!string.IsNullOrWhiteSpace(foundImage))
                                     {
-                                        imageToBitmapImage.UriSource = new Uri(folderFilePng, UriKind.RelativeOrAbsolute);
-                                        break;
-                                    }
-                                    string folderFileJpg = loadFolder + "/" + loadFileSafe + ".jpg";
-                                    if (File.Exists(folderFileJpg))
-                                    {
-                                        imageToBitmapImage.UriSource = new Uri(folderFileJpg, UriKind.RelativeOrAbsolute);
+                                        imageToBitmapImage.UriSource = new Uri(foundImage, UriKind.RelativeOrAbsolute);
                                         break;
                                     }
                                 }
