@@ -200,6 +200,22 @@ namespace ArnoldVinkCode
             return IntPtr.Zero;
         }
 
+        //Get uwp application package by FamilyName
+        public static Package UwpGetAppPackageByFamilyName(string familyName)
+        {
+            try
+            {
+                //Debug.WriteLine("Loading app package: " + familyName);
+
+                //Find the application package
+                PackageManager deployPackageManager = new PackageManager();
+                string currentUserIdentity = WindowsIdentity.GetCurrent().User.Value;
+                return deployPackageManager.FindPackagesForUser(currentUserIdentity, familyName).FirstOrDefault();
+            }
+            catch { }
+            return null;
+        }
+
         //Get uwp application package by AppUserModelId
         public static Package UwpGetAppPackageByAppUserModelId(string appUserModelId)
         {
@@ -210,7 +226,7 @@ namespace ArnoldVinkCode
                 //Extract the family name from AppUserModelId
                 string appFamilyName = appUserModelId.Split('!')[0];
 
-                //Get the application path from application package
+                //Find the application package
                 PackageManager deployPackageManager = new PackageManager();
                 string currentUserIdentity = WindowsIdentity.GetCurrent().User.Value;
                 return deployPackageManager.FindPackagesForUser(currentUserIdentity, appFamilyName).FirstOrDefault();
