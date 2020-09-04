@@ -303,6 +303,23 @@ namespace ArnoldVinkCode
             return string.Empty;
         }
 
+        //Get process id from window handle
+        public static int GetProcessIdFromWindowHandle(IntPtr targetWindowHandle)
+        {
+            int processId = -1;
+            try
+            {
+                GetWindowThreadProcessId(targetWindowHandle, out processId);
+                if (processId == 0)
+                {
+                    //Debug.WriteLine("Process id 0, using GetProcessHandleFromHwnd as backup.");
+                    processId = GetProcessId(GetProcessHandleFromHwnd(targetWindowHandle));
+                }
+            }
+            catch { }
+            return processId;
+        }
+
         //Get multi process from window handle
         public static ProcessMulti GetProcessMultiFromWindowHandle(IntPtr targetWindowHandle)
         {
@@ -324,8 +341,7 @@ namespace ArnoldVinkCode
                 }
                 else
                 {
-                    GetWindowThreadProcessId(processMulti.WindowHandle, out int processId);
-                    focusedProcess = GetProcessById(processId);
+                    focusedProcess = GetProcessById(GetProcessIdFromWindowHandle(processMulti.WindowHandle));
                 }
 
                 //Set the identifier

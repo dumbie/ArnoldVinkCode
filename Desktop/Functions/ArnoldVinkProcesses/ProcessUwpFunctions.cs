@@ -68,10 +68,10 @@ namespace ArnoldVinkCode
                 IntPtr threadWindowHandleEx = FindWindowEx(targetWindowHandle, IntPtr.Zero, "Windows.UI.Core.CoreWindow", null);
                 if (threadWindowHandleEx != IntPtr.Zero)
                 {
-                    GetWindowThreadProcessId(threadWindowHandleEx, out int processIdentifier);
-                    if (processIdentifier > 0)
+                    int processId = GetProcessIdFromWindowHandle(threadWindowHandleEx);
+                    if (processId > 0)
                     {
-                        return GetProcessById(processIdentifier);
+                        return GetProcessById(processId);
                     }
                 }
 

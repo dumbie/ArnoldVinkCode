@@ -48,8 +48,10 @@ namespace ArnoldVinkCode
         public static extern uint GetDoubleClickTime();
         [DllImport("user32.dll")]
         public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out int lpdwProcessId);
-        [DllImport("user32.dll")]
-        public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+        [DllImport("oleacc.dll")]
+        public static extern IntPtr GetProcessHandleFromHwnd(IntPtr hWnd);
+        [DllImport("kernel32.dll")]
+        public static extern int GetProcessId(IntPtr processHandle);
         [DllImport("user32.dll")]
         public static extern bool IsWindowVisible(IntPtr hWnd);
         [DllImport("user32.dll")]
@@ -57,7 +59,7 @@ namespace ArnoldVinkCode
         [DllImport("user32.dll")]
         public static extern bool IsWindow(IntPtr hWnd);
         [DllImport("kernel32.dll")]
-        public static extern uint GetProcessIdOfThread(IntPtr hWnd);
+        public static extern int GetProcessIdOfThread(IntPtr hWnd);
         [DllImport("Shell32.dll", CharSet = CharSet.Unicode)]
         public static extern int SHGetPropertyStoreForWindow(IntPtr hwnd, ref Guid iid, [Out(), MarshalAs(UnmanagedType.Interface)] out IPropertyStore propertyStore);
 
