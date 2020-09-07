@@ -310,7 +310,11 @@ namespace ArnoldVinkCode
             try
             {
                 GetWindowThreadProcessId(targetWindowHandle, out processId);
-                if (processId == 0)
+            }
+            catch { }
+            try
+            {
+                if (processId == -1 || processId == 0)
                 {
                     //Debug.WriteLine("Process id 0, using GetProcessHandleFromHwnd as backup.");
                     processId = GetProcessId(GetProcessHandleFromHwnd(targetWindowHandle));
