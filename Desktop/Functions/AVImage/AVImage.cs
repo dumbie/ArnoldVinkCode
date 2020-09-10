@@ -141,14 +141,17 @@ namespace ArnoldVinkCode
                             {
                                 try
                                 {
-                                    string[] pngImages = Directory.GetFiles(sourceFolder.SourcePath, "*.png", sourceFolder.SearchOption);
-                                    string[] jpgImages = Directory.GetFiles(sourceFolder.SourcePath, "*.jpg", sourceFolder.SearchOption);
-                                    IEnumerable<string> foundImages = pngImages.Concat(jpgImages);
-                                    string foundImage = foundImages.FirstOrDefault(x => Path.GetFileNameWithoutExtension(x).ToLower() == loadFileSafe);
-                                    if (!string.IsNullOrWhiteSpace(foundImage))
+                                    if (Directory.Exists(sourceFolder.SourcePath))
                                     {
-                                        imageToBitmapImage.UriSource = new Uri(foundImage, UriKind.RelativeOrAbsolute);
-                                        break;
+                                        string[] pngImages = Directory.GetFiles(sourceFolder.SourcePath, "*.png", sourceFolder.SearchOption);
+                                        string[] jpgImages = Directory.GetFiles(sourceFolder.SourcePath, "*.jpg", sourceFolder.SearchOption);
+                                        IEnumerable<string> foundImages = pngImages.Concat(jpgImages);
+                                        string foundImage = foundImages.FirstOrDefault(x => Path.GetFileNameWithoutExtension(x).ToLower() == loadFileSafe);
+                                        if (!string.IsNullOrWhiteSpace(foundImage))
+                                        {
+                                            imageToBitmapImage.UriSource = new Uri(foundImage, UriKind.RelativeOrAbsolute);
+                                            break;
+                                        }
                                     }
                                 }
                                 catch { }
