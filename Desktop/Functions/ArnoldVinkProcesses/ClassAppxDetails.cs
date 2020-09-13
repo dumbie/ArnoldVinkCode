@@ -14,7 +14,7 @@
             public string Square150x150Logo = string.Empty;
             public string Square310x310Logo = string.Empty;
             public string SquareLargestLogoPath = string.Empty;
-            public string Wide310x310Logo = string.Empty;
+            public string Wide310x150Logo = string.Empty;
             public string WideLargestLogoPath = string.Empty;
         }
     }

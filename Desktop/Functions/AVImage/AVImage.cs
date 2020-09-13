@@ -116,8 +116,11 @@ namespace ArnoldVinkCode
                         string loadFileLower = loadFile.ToLower();
                         loadFileLower = AVFunctions.StringRemoveStart(loadFileLower, " ");
                         loadFileLower = AVFunctions.StringRemoveEnd(loadFileLower, " ");
-                        string loadFileSafe = string.Join(string.Empty, loadFileLower.Split(Path.GetInvalidFileNameChars()));
-                        //Debug.WriteLine("Loading image: " + loadFileLower + "/" + loadFileSafe);
+                        if (!loadFileLower.Contains("/") && !loadFileLower.Contains("\\"))
+                        {
+                            loadFileLower = string.Join(string.Empty, loadFileLower.Split(Path.GetInvalidFileNameChars()));
+                        }
+                        //Debug.WriteLine("Loading image: " + loadFileLower);
 
                         if (loadFileLower.StartsWith("pack://"))
                         {
@@ -146,7 +149,7 @@ namespace ArnoldVinkCode
                                         string[] pngImages = Directory.GetFiles(sourceFolder.SourcePath, "*.png", sourceFolder.SearchOption);
                                         string[] jpgImages = Directory.GetFiles(sourceFolder.SourcePath, "*.jpg", sourceFolder.SearchOption);
                                         IEnumerable<string> foundImages = pngImages.Concat(jpgImages);
-                                        string foundImage = foundImages.FirstOrDefault(x => Path.GetFileNameWithoutExtension(x).ToLower() == loadFileSafe);
+                                        string foundImage = foundImages.FirstOrDefault(x => Path.GetFileNameWithoutExtension(x).ToLower() == loadFileLower);
                                         if (!string.IsNullOrWhiteSpace(foundImage))
                                         {
                                             imageToBitmapImage.UriSource = new Uri(foundImage, UriKind.RelativeOrAbsolute);

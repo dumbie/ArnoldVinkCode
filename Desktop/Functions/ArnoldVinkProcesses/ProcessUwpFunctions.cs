@@ -308,7 +308,7 @@ namespace ArnoldVinkCode
                     appxManifestApplication.GetStringValue("Square70x70Logo", out appxDetails.Square70x70Logo);
                     appxManifestApplication.GetStringValue("Square150x150Logo", out appxDetails.Square150x150Logo);
                     appxManifestApplication.GetStringValue("Square310x310Logo", out appxDetails.Square310x310Logo);
-                    appxManifestApplication.GetStringValue("Wide310x310Logo", out appxDetails.Wide310x310Logo);
+                    appxManifestApplication.GetStringValue("Wide310x150Logo", out appxDetails.Wide310x150Logo);
 
                     //Check the largest available square logo
                     if (!string.IsNullOrWhiteSpace(appxDetails.Square310x310Logo))
@@ -333,8 +333,15 @@ namespace ArnoldVinkCode
                     //Check if the file can be accessed
                     try
                     {
-                        FileStream fileStream = File.OpenRead(appxDetails.SquareLargestLogoPath);
-                        fileStream.Dispose();
+                        if (!string.IsNullOrWhiteSpace(appxDetails.SquareLargestLogoPath))
+                        {
+                            FileStream fileStream = File.OpenRead(appxDetails.SquareLargestLogoPath);
+                            fileStream.Dispose();
+                        }
+                        else
+                        {
+                            appxDetails.SquareLargestLogoPath = originalSquareLargestLogoPath;
+                        }
                     }
                     catch
                     {
@@ -343,18 +350,25 @@ namespace ArnoldVinkCode
                     }
 
                     //Check the largest available wide logo
-                    if (!string.IsNullOrWhiteSpace(appxDetails.Wide310x310Logo))
+                    if (!string.IsNullOrWhiteSpace(appxDetails.Wide310x150Logo))
                     {
-                        appxDetails.WideLargestLogoPath = Path.Combine(appxDetails.InstallPath, appxDetails.Wide310x310Logo);
+                        appxDetails.WideLargestLogoPath = Path.Combine(appxDetails.InstallPath, appxDetails.Wide310x150Logo);
                     }
-                    string originalWideLargestLogoPath = appxDetails.SquareLargestLogoPath;
+                    string originalWideLargestLogoPath = appxDetails.WideLargestLogoPath;
                     appxDetails.WideLargestLogoPath = UwpGetImageSizePath(appxDetails.WideLargestLogoPath);
 
                     //Check if the file can be accessed
                     try
                     {
-                        FileStream fileStream = File.OpenRead(appxDetails.WideLargestLogoPath);
-                        fileStream.Dispose();
+                        if (!string.IsNullOrWhiteSpace(appxDetails.WideLargestLogoPath))
+                        {
+                            FileStream fileStream = File.OpenRead(appxDetails.WideLargestLogoPath);
+                            fileStream.Dispose();
+                        }
+                        else
+                        {
+                            appxDetails.WideLargestLogoPath = originalWideLargestLogoPath;
+                        }
                     }
                     catch
                     {
@@ -410,6 +424,12 @@ namespace ArnoldVinkCode
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(imagePath))
+                {
+                    //Debug.WriteLine("Uwp application image path not found.");
+                    return string.Empty;
+                }
+
                 string fileExtension = Path.GetExtension(imagePath);
                 string fileDirectory = Path.GetDirectoryName(imagePath);
                 string fileName = Path.GetFileNameWithoutExtension(imagePath);
