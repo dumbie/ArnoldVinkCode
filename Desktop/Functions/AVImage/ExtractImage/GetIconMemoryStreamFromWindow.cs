@@ -10,7 +10,7 @@ namespace ArnoldVinkCode
     public partial class ExtractImage
     {
         //Get the window icon from process
-        public static MemoryStream GetMemoryStreamFromWindowIcon(IntPtr windowHandle, ref MemoryStream imageMemoryStream)
+        public static MemoryStream GetIconMemoryStreamFromWindow(IntPtr windowHandle, ref MemoryStream imageMemoryStream)
         {
             try
             {
@@ -42,9 +42,9 @@ namespace ArnoldVinkCode
                     return null;
                 }
 
-                BitmapSource windowImage = Imaging.CreateBitmapSourceFromHIcon(iconHandle, new Int32Rect(), BitmapSizeOptions.FromEmptyOptions());
+                BitmapFrame windowImage = BitmapFrame.Create(Imaging.CreateBitmapSourceFromHIcon(iconHandle, new Int32Rect(), BitmapSizeOptions.FromEmptyOptions()));
                 PngBitmapEncoder bitmapEncoder = new PngBitmapEncoder();
-                bitmapEncoder.Frames.Add(BitmapFrame.Create(windowImage));
+                bitmapEncoder.Frames.Add(windowImage);
                 bitmapEncoder.Save(imageMemoryStream);
                 imageMemoryStream.Seek(0, SeekOrigin.Begin);
                 return imageMemoryStream;

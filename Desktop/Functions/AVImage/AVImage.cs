@@ -128,7 +128,7 @@ namespace ArnoldVinkCode
                         }
                         else if (File.Exists(loadFileLower) && loadFileLower.EndsWith(".ico"))
                         {
-                            imageToBitmapImage.StreamSource = ExtractImage.GetMemoryStreamFromIcoFileLarge(loadFileLower, ref imageMemoryStream);
+                            imageToBitmapImage.StreamSource = ExtractImage.GetIconMemoryStreamFromIcoFile(loadFileLower, ref imageMemoryStream);
                         }
                         else if (File.Exists(loadFileLower) && !loadFileLower.EndsWith(".exe") && !loadFileLower.EndsWith(".dll") && !loadFileLower.EndsWith(".bin") && !loadFileLower.EndsWith(".tmp") && !loadFileLower.EndsWith(".bat"))
                         {
@@ -136,7 +136,7 @@ namespace ArnoldVinkCode
                         }
                         else if (File.Exists(loadFileLower) && (loadFileLower.EndsWith(".exe") || loadFileLower.EndsWith(".dll") || loadFileLower.EndsWith(".bin") || loadFileLower.EndsWith(".tmp")))
                         {
-                            imageToBitmapImage.StreamSource = ExtractImage.GetMemoryStreamFromExecutable(loadFileLower, iconIndex, ref imageMemoryStream);
+                            imageToBitmapImage.StreamSource = ExtractImage.GetIconMemoryStreamFromExeFile(loadFileLower, iconIndex, ref imageMemoryStream);
                         }
                         else if (sourceFolders != null)
                         {
@@ -184,7 +184,7 @@ namespace ArnoldVinkCode
                 }
                 else
                 {
-                    MemoryStream windowImage = ExtractImage.GetMemoryStreamFromWindowIcon(windowHandle, ref imageMemoryStream);
+                    MemoryStream windowImage = ExtractImage.GetIconMemoryStreamFromWindow(windowHandle, ref imageMemoryStream);
                     if (windowImage != null)
                     {
                         imageToBitmapImage.StreamSource = windowImage;
