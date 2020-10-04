@@ -63,9 +63,68 @@
         </ControlTemplate.Triggers>
     </ControlTemplate>
 
+    <!--Button Template White Round-->
+    <ControlTemplate x:Key="ButtonTemplateWhiteRound" TargetType="{x:Type Button}">
+        <Border x:Name="border" CornerRadius="1" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
+            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+        </Border>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="BorderThickness" TargetName="border" Value="2"/>
+                <Setter Property="BorderBrush" TargetName="border" Value="#F1F1F1"/>
+                <Setter Property="Background" TargetName="border" Value="#30F1F1F1"/>
+            </Trigger>
+            <Trigger Property="IsFocused" Value="True">
+                <Setter Property="BorderThickness" TargetName="border" Value="2"/>
+                <Setter Property="BorderBrush" TargetName="border" Value="#F1F1F1"/>
+                <Setter Property="Background" TargetName="border" Value="#30F1F1F1"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="BorderThickness" TargetName="border" Value="2"/>
+                <Setter Property="BorderBrush" TargetName="border" Value="#F1F1F1"/>
+                <Setter Property="Background" TargetName="border" Value="#60F1F1F1"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value="0.50"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
     <!--Button Template Black-->
     <ControlTemplate x:Key="ButtonTemplateBlack" TargetType="{x:Type Button}">
         <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
+            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+        </Border>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="BorderThickness" TargetName="border" Value="2"/>
+                <Setter Property="BorderBrush" TargetName="border" Value="#1D1D1D"/>
+                <Setter Property="Background" TargetName="border" Value="#301D1D1D"/>
+            </Trigger>
+            <Trigger Property="IsFocused" Value="True">
+                <Setter Property="BorderThickness" TargetName="border" Value="2"/>
+                <Setter Property="BorderBrush" TargetName="border" Value="#1D1D1D"/>
+                <Setter Property="Background" TargetName="border" Value="#301D1D1D"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="BorderThickness" TargetName="border" Value="2"/>
+                <Setter Property="BorderBrush" TargetName="border" Value="#1D1D1D"/>
+                <Setter Property="Background" TargetName="border" Value="#601D1D1D"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value="0.50"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+    <ControlTemplate x:Key="ButtonTemplateTransparent" TargetType="{x:Type Button}">
+        <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
+            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+        </Border>
+    </ControlTemplate>
+
+    <!--Button Template Black Round-->
+    <ControlTemplate x:Key="ButtonTemplateBlackRound" TargetType="{x:Type Button}">
+        <Border x:Name="border" CornerRadius="1" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
             <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
         </Border>
         <ControlTemplate.Triggers>
