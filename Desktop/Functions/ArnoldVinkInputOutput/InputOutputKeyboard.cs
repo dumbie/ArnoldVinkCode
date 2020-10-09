@@ -22,8 +22,8 @@ namespace ArnoldVinkCode
             catch { }
         }
 
-        //Keyboard type string
-        public static void KeyTypeString(string typeString)
+        //Keyboard type string SendInput (UTF-32)
+        public static void KeyTypeStringSend(string typeString)
         {
             try
             {
@@ -42,7 +42,33 @@ namespace ArnoldVinkCode
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to type string: " + ex.Message);
+                Debug.WriteLine("Failed to send type string: " + ex.Message);
+            }
+        }
+
+        //Keyboard type string Event
+        public static async Task KeyTypeStringEvent(string typeString)
+        {
+            try
+            {
+                foreach (char charString in typeString)
+                {
+                    short scanVirtualKey = VkKeyScanEx(charString, IntPtr.Zero);
+                    KeysVirtual usedVirtualKey = (KeysVirtual)scanVirtualKey;
+                    bool shiftPressed = (scanVirtualKey & (short)VkKeyScanModifiers.SHIFT) > 0;
+                    if (shiftPressed)
+                    {
+                        await KeyPressComboAuto(KeysVirtual.Shift, usedVirtualKey);
+                    }
+                    else
+                    {
+                        await KeyPressSingleAuto(usedVirtualKey);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to event type string: " + ex.Message);
             }
         }
 
