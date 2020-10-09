@@ -414,15 +414,55 @@ namespace ArnoldVinkCode
             public IntPtr lpData;
         }
 
+        //Input events
+        [DllImport("user32.dll")]
+        public static extern uint SendInput(int nInputs, INPUT[] pInputs, int cbSize);
+
+        [StructLayout(LayoutKind.Explicit)]
+        public struct INPUT
+        {
+            [FieldOffset(0)]
+            public InputTypes type;
+            [FieldOffset(8)]
+            public MOUSEINPUT mouse;
+            [FieldOffset(8)]
+            public KEYBOARDINPUT keyboard;
+            [FieldOffset(8)]
+            public HARDWAREINPUT hardware;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct MOUSEINPUT
+        {
+            public int dx;
+            public int dy;
+            public int mouseData;
+            public MouseEventFlags dwFlags;
+            public uint time;
+            public IntPtr dwExtraInfo;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct KEYBOARDINPUT
+        {
+            public short wVk;
+            public short wScan;
+            public KeyboardEventFlags dwFlags;
+            public uint time;
+            public IntPtr dwExtraInfo;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct HARDWAREINPUT
+        {
+            public int uMsg;
+            public short wParamL;
+            public short wParamH;
+        }
+
         //Keyboard events
         [DllImport("user32.dll")]
-        public static extern void keybd_event(KeysVirtual bVk, uint bScan, KeybdEventFlags dwFlags, int dwExtraInfo);
-        public enum KeybdEventFlags : int
-        {
-            KEYEVENTF_NONE = 0x0000,
-            KEYEVENTF_EXTENDEDKEY = 0x0001,
-            KEYEVENTF_KEYUP = 0x0002
-        }
+        public static extern void keybd_event(KeysVirtual bVk, uint bScan, KeyboardEventFlags dwFlags, int dwExtraInfo);
 
         [DllImport("user32.dll")]
         public static extern uint MapVirtualKey(KeysVirtual bVk, MapVirtualKeyMapTypes uMapType);
@@ -451,7 +491,7 @@ namespace ArnoldVinkCode
         [DllImport("user32.dll")]
         public static extern bool SetCursorPos(int x, int y);
         [DllImport("user32.dll")]
-        public static extern void mouse_event(uint dwFlags, int dx, int dy, int dwData, IntPtr dwExtraInfo);
+        public static extern void mouse_event(MouseEventFlags dwFlags, int dx, int dy, int dwData, IntPtr dwExtraInfo);
 
         [StructLayout(LayoutKind.Sequential)]
         public struct PointWin

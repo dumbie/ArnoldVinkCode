@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using static ArnoldVinkCode.AVInputOutputClass;
 using static ArnoldVinkCode.AVInteropDll;
@@ -20,15 +22,29 @@ namespace ArnoldVinkCode
             catch { }
         }
 
-        ////Send combo key press
-        //public static void KeySendCombo(byte Modifier, byte virtualKey, IntPtr WindowHandle)
-        //{
-        //    try
-        //    {
-        //        //PostMessage and SendMessage does not support key combinations
-        //    }
-        //    catch { }
-        //}
+        //Keyboard type string
+        public static void KeyTypeString(string typeString)
+        {
+            try
+            {
+                INPUT[] input = new INPUT[typeString.Length];
+                for (int i = 0; i < input.Length; i++)
+                {
+                    input[i] = new INPUT();
+                    input[i].type = InputTypes.INPUT_KEYBOARD;
+                    input[i].keyboard.wVk = 0;
+                    input[i].keyboard.wScan = (short)typeString[i];
+                    input[i].keyboard.time = 0;
+                    input[i].keyboard.dwFlags = KeyboardEventFlags.KEYEVENTF_UNICODE;
+                    input[i].keyboard.dwExtraInfo = IntPtr.Zero;
+                }
+                SendInput(input.Length, input, Marshal.SizeOf(typeof(INPUT)));
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to type string: " + ex.Message);
+            }
+        }
 
         //Simulate single key press
         public static async Task KeyPressSingleAuto(KeysVirtual virtualKey)
@@ -45,19 +61,19 @@ namespace ArnoldVinkCode
             try
             {
                 uint scanByte = 0;
-                KeybdEventFlags KeyFlagsDown = 0;
-                KeybdEventFlags KeyFlagsUp = 0;
+                KeyboardEventFlags KeyFlagsDown = 0;
+                KeyboardEventFlags KeyFlagsUp = 0;
                 if (extendedKey)
                 {
                     scanByte = MapVirtualKey(virtualKey, MapVirtualKeyMapTypes.MAPVK_VK_TO_VSC_EX);
-                    KeyFlagsDown = KeybdEventFlags.KEYEVENTF_EXTENDEDKEY | KeybdEventFlags.KEYEVENTF_NONE;
-                    KeyFlagsUp = KeybdEventFlags.KEYEVENTF_EXTENDEDKEY | KeybdEventFlags.KEYEVENTF_KEYUP;
+                    KeyFlagsDown = KeyboardEventFlags.KEYEVENTF_EXTENDEDKEY | KeyboardEventFlags.KEYEVENTF_NONE;
+                    KeyFlagsUp = KeyboardEventFlags.KEYEVENTF_EXTENDEDKEY | KeyboardEventFlags.KEYEVENTF_KEYUP;
                 }
                 else
                 {
                     scanByte = MapVirtualKey(virtualKey, MapVirtualKeyMapTypes.MAPVK_VK_TO_VSC);
-                    KeyFlagsDown = KeybdEventFlags.KEYEVENTF_NONE;
-                    KeyFlagsUp = KeybdEventFlags.KEYEVENTF_KEYUP;
+                    KeyFlagsDown = KeyboardEventFlags.KEYEVENTF_NONE;
+                    KeyFlagsUp = KeyboardEventFlags.KEYEVENTF_KEYUP;
                 }
 
                 keybd_event(virtualKey, scanByte, KeyFlagsDown, 0); //Key Press
@@ -82,19 +98,19 @@ namespace ArnoldVinkCode
             try
             {
                 uint scanByte = 0;
-                KeybdEventFlags KeyFlagsDown = 0;
-                KeybdEventFlags KeyFlagsUp = 0;
+                KeyboardEventFlags KeyFlagsDown = 0;
+                KeyboardEventFlags KeyFlagsUp = 0;
                 if (extendedKey)
                 {
                     scanByte = MapVirtualKey(virtualKey, MapVirtualKeyMapTypes.MAPVK_VK_TO_VSC_EX);
-                    KeyFlagsDown = KeybdEventFlags.KEYEVENTF_EXTENDEDKEY | KeybdEventFlags.KEYEVENTF_NONE;
-                    KeyFlagsUp = KeybdEventFlags.KEYEVENTF_EXTENDEDKEY | KeybdEventFlags.KEYEVENTF_KEYUP;
+                    KeyFlagsDown = KeyboardEventFlags.KEYEVENTF_EXTENDEDKEY | KeyboardEventFlags.KEYEVENTF_NONE;
+                    KeyFlagsUp = KeyboardEventFlags.KEYEVENTF_EXTENDEDKEY | KeyboardEventFlags.KEYEVENTF_KEYUP;
                 }
                 else
                 {
                     scanByte = MapVirtualKey(virtualKey, MapVirtualKeyMapTypes.MAPVK_VK_TO_VSC);
-                    KeyFlagsDown = KeybdEventFlags.KEYEVENTF_NONE;
-                    KeyFlagsUp = KeybdEventFlags.KEYEVENTF_KEYUP;
+                    KeyFlagsDown = KeyboardEventFlags.KEYEVENTF_NONE;
+                    KeyFlagsUp = KeyboardEventFlags.KEYEVENTF_KEYUP;
                 }
 
                 if (toggleDown)
@@ -125,35 +141,35 @@ namespace ArnoldVinkCode
             try
             {
                 uint scanByteMod = 0;
-                KeybdEventFlags KeyFlagsDownMod = 0;
-                KeybdEventFlags KeyFlagsUpMod = 0;
+                KeyboardEventFlags KeyFlagsDownMod = 0;
+                KeyboardEventFlags KeyFlagsUpMod = 0;
                 if (extendedModifier)
                 {
                     scanByteMod = MapVirtualKey(modifierKey, MapVirtualKeyMapTypes.MAPVK_VK_TO_VSC_EX);
-                    KeyFlagsDownMod = KeybdEventFlags.KEYEVENTF_EXTENDEDKEY | KeybdEventFlags.KEYEVENTF_NONE;
-                    KeyFlagsUpMod = KeybdEventFlags.KEYEVENTF_EXTENDEDKEY | KeybdEventFlags.KEYEVENTF_KEYUP;
+                    KeyFlagsDownMod = KeyboardEventFlags.KEYEVENTF_EXTENDEDKEY | KeyboardEventFlags.KEYEVENTF_NONE;
+                    KeyFlagsUpMod = KeyboardEventFlags.KEYEVENTF_EXTENDEDKEY | KeyboardEventFlags.KEYEVENTF_KEYUP;
                 }
                 else
                 {
                     scanByteMod = MapVirtualKey(modifierKey, MapVirtualKeyMapTypes.MAPVK_VK_TO_VSC);
-                    KeyFlagsDownMod = KeybdEventFlags.KEYEVENTF_NONE;
-                    KeyFlagsUpMod = KeybdEventFlags.KEYEVENTF_KEYUP;
+                    KeyFlagsDownMod = KeyboardEventFlags.KEYEVENTF_NONE;
+                    KeyFlagsUpMod = KeyboardEventFlags.KEYEVENTF_KEYUP;
                 }
 
                 uint scanByteVk = 0;
-                KeybdEventFlags KeyFlagsDownVk = 0;
-                KeybdEventFlags KeyFlagsUpVk = 0;
+                KeyboardEventFlags KeyFlagsDownVk = 0;
+                KeyboardEventFlags KeyFlagsUpVk = 0;
                 if (extendedVirtual)
                 {
                     scanByteVk = MapVirtualKey(virtualKey, MapVirtualKeyMapTypes.MAPVK_VK_TO_VSC_EX);
-                    KeyFlagsDownVk = KeybdEventFlags.KEYEVENTF_EXTENDEDKEY | KeybdEventFlags.KEYEVENTF_NONE;
-                    KeyFlagsUpVk = KeybdEventFlags.KEYEVENTF_EXTENDEDKEY | KeybdEventFlags.KEYEVENTF_KEYUP;
+                    KeyFlagsDownVk = KeyboardEventFlags.KEYEVENTF_EXTENDEDKEY | KeyboardEventFlags.KEYEVENTF_NONE;
+                    KeyFlagsUpVk = KeyboardEventFlags.KEYEVENTF_EXTENDEDKEY | KeyboardEventFlags.KEYEVENTF_KEYUP;
                 }
                 else
                 {
                     scanByteVk = MapVirtualKey(virtualKey, MapVirtualKeyMapTypes.MAPVK_VK_TO_VSC);
-                    KeyFlagsDownVk = KeybdEventFlags.KEYEVENTF_NONE;
-                    KeyFlagsUpVk = KeybdEventFlags.KEYEVENTF_KEYUP;
+                    KeyFlagsDownVk = KeyboardEventFlags.KEYEVENTF_NONE;
+                    KeyFlagsUpVk = KeyboardEventFlags.KEYEVENTF_KEYUP;
                 }
 
                 keybd_event(modifierKey, scanByteMod, KeyFlagsDownMod, 0); //Modifier Press
@@ -181,35 +197,35 @@ namespace ArnoldVinkCode
             try
             {
                 uint scanByteMod = 0;
-                KeybdEventFlags KeyFlagsDownMod = 0;
-                KeybdEventFlags KeyFlagsUpMod = 0;
+                KeyboardEventFlags KeyFlagsDownMod = 0;
+                KeyboardEventFlags KeyFlagsUpMod = 0;
                 if (extendedModifier)
                 {
                     scanByteMod = MapVirtualKey(modifierKey, MapVirtualKeyMapTypes.MAPVK_VK_TO_VSC_EX);
-                    KeyFlagsDownMod = KeybdEventFlags.KEYEVENTF_EXTENDEDKEY | KeybdEventFlags.KEYEVENTF_NONE;
-                    KeyFlagsUpMod = KeybdEventFlags.KEYEVENTF_EXTENDEDKEY | KeybdEventFlags.KEYEVENTF_KEYUP;
+                    KeyFlagsDownMod = KeyboardEventFlags.KEYEVENTF_EXTENDEDKEY | KeyboardEventFlags.KEYEVENTF_NONE;
+                    KeyFlagsUpMod = KeyboardEventFlags.KEYEVENTF_EXTENDEDKEY | KeyboardEventFlags.KEYEVENTF_KEYUP;
                 }
                 else
                 {
                     scanByteMod = MapVirtualKey(modifierKey, MapVirtualKeyMapTypes.MAPVK_VK_TO_VSC);
-                    KeyFlagsDownMod = KeybdEventFlags.KEYEVENTF_NONE;
-                    KeyFlagsUpMod = KeybdEventFlags.KEYEVENTF_KEYUP;
+                    KeyFlagsDownMod = KeyboardEventFlags.KEYEVENTF_NONE;
+                    KeyFlagsUpMod = KeyboardEventFlags.KEYEVENTF_KEYUP;
                 }
 
                 uint scanByteVk = 0;
-                KeybdEventFlags KeyFlagsDownVk = 0;
-                KeybdEventFlags KeyFlagsUpVk = 0;
+                KeyboardEventFlags KeyFlagsDownVk = 0;
+                KeyboardEventFlags KeyFlagsUpVk = 0;
                 if (extendedVirtual)
                 {
                     scanByteVk = MapVirtualKey(virtualKey, MapVirtualKeyMapTypes.MAPVK_VK_TO_VSC_EX);
-                    KeyFlagsDownVk = KeybdEventFlags.KEYEVENTF_EXTENDEDKEY | KeybdEventFlags.KEYEVENTF_NONE;
-                    KeyFlagsUpVk = KeybdEventFlags.KEYEVENTF_EXTENDEDKEY | KeybdEventFlags.KEYEVENTF_KEYUP;
+                    KeyFlagsDownVk = KeyboardEventFlags.KEYEVENTF_EXTENDEDKEY | KeyboardEventFlags.KEYEVENTF_NONE;
+                    KeyFlagsUpVk = KeyboardEventFlags.KEYEVENTF_EXTENDEDKEY | KeyboardEventFlags.KEYEVENTF_KEYUP;
                 }
                 else
                 {
                     scanByteVk = MapVirtualKey(virtualKey, MapVirtualKeyMapTypes.MAPVK_VK_TO_VSC);
-                    KeyFlagsDownVk = KeybdEventFlags.KEYEVENTF_NONE;
-                    KeyFlagsUpVk = KeybdEventFlags.KEYEVENTF_KEYUP;
+                    KeyFlagsDownVk = KeyboardEventFlags.KEYEVENTF_NONE;
+                    KeyFlagsUpVk = KeyboardEventFlags.KEYEVENTF_KEYUP;
                 }
 
                 if (toggleDown)

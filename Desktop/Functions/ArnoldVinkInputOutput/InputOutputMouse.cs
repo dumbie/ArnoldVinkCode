@@ -16,7 +16,7 @@ namespace ArnoldVinkCode
                 if (mouseHorizontal == 0 && mouseVertical == 0) { return; }
 
                 //Move the mouse cursor to position
-                mouse_event((uint)MouseVirtual.MOUSEEVENTF_MOVE, mouseHorizontal, mouseVertical, 0, IntPtr.Zero);
+                mouse_event(MouseEventFlags.MOUSEEVENTF_MOVE, mouseHorizontal, mouseVertical, 0, IntPtr.Zero);
             }
             catch { }
         }
@@ -45,15 +45,15 @@ namespace ArnoldVinkCode
             {
                 if (!rightClick)
                 {
-                    mouse_event((uint)MouseVirtual.MOUSEEVENTF_LEFTDOWN, 0, 0, 0, IntPtr.Zero);
+                    mouse_event(MouseEventFlags.MOUSEEVENTF_LEFTDOWN, 0, 0, 0, IntPtr.Zero);
                     await Task.Delay(10);
-                    mouse_event((uint)MouseVirtual.MOUSEEVENTF_LEFTUP, 0, 0, 0, IntPtr.Zero);
+                    mouse_event(MouseEventFlags.MOUSEEVENTF_LEFTUP, 0, 0, 0, IntPtr.Zero);
                 }
                 else
                 {
-                    mouse_event((uint)MouseVirtual.MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, IntPtr.Zero);
+                    mouse_event(MouseEventFlags.MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, IntPtr.Zero);
                     await Task.Delay(10);
-                    mouse_event((uint)MouseVirtual.MOUSEEVENTF_RIGHTUP, 0, 0, 0, IntPtr.Zero);
+                    mouse_event(MouseEventFlags.MOUSEEVENTF_RIGHTUP, 0, 0, 0, IntPtr.Zero);
                 }
             }
             catch { }
@@ -68,22 +68,22 @@ namespace ArnoldVinkCode
                 {
                     if (toggleDown)
                     {
-                        mouse_event((uint)MouseVirtual.MOUSEEVENTF_LEFTDOWN, 0, 0, 0, IntPtr.Zero);
+                        mouse_event(MouseEventFlags.MOUSEEVENTF_LEFTDOWN, 0, 0, 0, IntPtr.Zero);
                     }
                     else
                     {
-                        mouse_event((uint)MouseVirtual.MOUSEEVENTF_LEFTUP, 0, 0, 0, IntPtr.Zero);
+                        mouse_event(MouseEventFlags.MOUSEEVENTF_LEFTUP, 0, 0, 0, IntPtr.Zero);
                     }
                 }
                 else
                 {
                     if (toggleDown)
                     {
-                        mouse_event((uint)MouseVirtual.MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, IntPtr.Zero);
+                        mouse_event(MouseEventFlags.MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, IntPtr.Zero);
                     }
                     else
                     {
-                        mouse_event((uint)MouseVirtual.MOUSEEVENTF_RIGHTUP, 0, 0, 0, IntPtr.Zero);
+                        mouse_event(MouseEventFlags.MOUSEEVENTF_RIGHTUP, 0, 0, 0, IntPtr.Zero);
                     }
                 }
             }
@@ -95,7 +95,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                mouse_event((uint)MouseVirtual.MOUSEEVENTF_VWHEEL, 0, 0, scrollAmount, IntPtr.Zero);
+                mouse_event(MouseEventFlags.MOUSEEVENTF_VWHEEL, 0, 0, scrollAmount, IntPtr.Zero);
             }
             catch { }
         }
@@ -105,7 +105,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                mouse_event((uint)MouseVirtual.MOUSEEVENTF_HWHEEL, 0, 0, scrollAmount, IntPtr.Zero);
+                mouse_event(MouseEventFlags.MOUSEEVENTF_HWHEEL, 0, 0, scrollAmount, IntPtr.Zero);
             }
             catch { }
         }
