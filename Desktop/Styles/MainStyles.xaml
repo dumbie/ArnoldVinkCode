@@ -101,9 +101,18 @@
         <Setter Property="FontWeight" Value="Light"/>
     </Style>
 
+    <Style x:Key="RunAccent" TargetType="Run">
+        <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ApplicationAccentLightBrush}"/>
+    </Style>
     <Style x:Key="TextBlockAccent" BasedOn="{StaticResource EmptyTextBlock}" TargetType="TextBlock">
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
         <Setter Property="Foreground" Value="{DynamicResource ApplicationAccentLightBrush}"/>
+    </Style>
+    <Style x:Key="RunAccentLight" TargetType="Run">
+        <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ApplicationAccentLightBrush}"/>
+        <Setter Property="FontWeight" Value="Light"/>
     </Style>
     <Style x:Key="TextBlockAccentLight" BasedOn="{StaticResource EmptyTextBlock}" TargetType="TextBlock">
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
