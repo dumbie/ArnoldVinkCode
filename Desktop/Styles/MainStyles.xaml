@@ -20,7 +20,7 @@
         <Setter Property="Control.Template">
             <Setter.Value>
                 <ControlTemplate>
-                    <Border BorderBrush="#1D1D1D" Background="#301D1D1D" BorderThickness="2" SnapsToDevicePixels="True"/>
+                    <Border CornerRadius="2" BorderBrush="#1D1D1D" Background="#301D1D1D" BorderThickness="2" SnapsToDevicePixels="True"/>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -29,7 +29,7 @@
         <Setter Property="Control.Template">
             <Setter.Value>
                 <ControlTemplate>
-                    <Border BorderBrush="#F1F1F1" Background="#30F1F1F1" BorderThickness="2" SnapsToDevicePixels="True"/>
+                    <Border CornerRadius="2" BorderBrush="#F1F1F1" Background="#30F1F1F1" BorderThickness="2" SnapsToDevicePixels="True"/>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -202,11 +202,16 @@
         <Setter Property="Padding" Value="0,5,0,5"/>
     </Style>
 
-    <!--Rectangle Styles-->
-    <Style x:Key="RectangleHorizontalAccent" TargetType="Rectangle">
+    <!--Border Styles-->
+    <Style x:Key="BorderHorizontalAccentLight" TargetType="Border">
         <Setter Property="Height" Value="2"/>
-        <Setter Property="Fill" Value="{DynamicResource ApplicationAccentLightBrush}"/>
-        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Setter Property="CornerRadius" Value="2"/>
+        <Setter Property="Background" Value="{DynamicResource ApplicationAccentLightBrush}"/>
+    </Style>
+    <Style x:Key="BorderVerticalAccentLight" TargetType="Border">
+        <Setter Property="Width" Value="2"/>
+        <Setter Property="CornerRadius" Value="2"/>
+        <Setter Property="Background" Value="{DynamicResource ApplicationAccentLightBrush}"/>
     </Style>
 
     <!--ProgressBar Styles-->
@@ -323,16 +328,7 @@
     </Style>
 
     <!--ListBoxItem Styles-->
-    <Style x:Key="ListBoxItemPaddingBlackVertical" TargetType="ListBoxItem">
-        <Setter Property="Padding" Value="0,3,0,3"/>
-        <Setter Property="BorderThickness" Value="2"/>
-        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-        <Setter Property="VerticalContentAlignment" Value="Stretch"/>
-        <Setter Property="Template" Value="{StaticResource ListBoxItemTemplateBlack}"/>
-        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidBlack}"/>
-    </Style>
-
-    <Style x:Key="ListBoxItemNoPaddingBlack" TargetType="ListBoxItem">
+    <Style x:Key="ListBoxItemBlack" TargetType="ListBoxItem">
         <Setter Property="Padding" Value="0,0,0,0"/>
         <Setter Property="BorderThickness" Value="2"/>
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -341,16 +337,7 @@
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidBlack}"/>
     </Style>
 
-    <Style x:Key="ListBoxItemPaddingWhiteVertical" TargetType="ListBoxItem">
-        <Setter Property="Padding" Value="0,3,0,3"/>
-        <Setter Property="BorderThickness" Value="2"/>
-        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-        <Setter Property="VerticalContentAlignment" Value="Stretch"/>
-        <Setter Property="Template" Value="{StaticResource ListBoxItemTemplateWhite}"/>
-        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidWhite}"/>
-    </Style>
-
-    <Style x:Key="ListBoxItemNoPaddingWhite" TargetType="ListBoxItem">
+    <Style x:Key="ListBoxItemWhite" TargetType="ListBoxItem">
         <Setter Property="Padding" Value="0,0,0,0"/>
         <Setter Property="BorderThickness" Value="2"/>
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>

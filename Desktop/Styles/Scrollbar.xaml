@@ -4,150 +4,126 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <!-- Custom Scrollbar -->
-    <Style TargetType="{x:Type ScrollBar}">
-        <!-- Style Resources -->
-        <Style.Resources>
-            <Style x:Key="RepeatButton" TargetType="{x:Type RepeatButton}">
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type RepeatButton}">
-                            <Rectangle Fill="Transparent"/>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-            <Style x:Key="ThumbVertical" TargetType="{x:Type Thumb}">
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type Thumb}">
-                            <Border Width="10" HorizontalAlignment="Right" Background="Transparent">
-                                <Rectangle x:Name="Slider" Fill="{DynamicResource ApplicationAccentLightBrush}" Opacity="0.50" Width="3" HorizontalAlignment="Right"/>
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Trigger.EnterActions>
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <DoubleAnimation To="10" Storyboard.TargetName="Slider" Storyboard.TargetProperty="Width" Duration="0:0:0.5"/>
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </Trigger.EnterActions>
-                                    <Trigger.ExitActions>
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <DoubleAnimation To="3" Storyboard.TargetName="Slider" Storyboard.TargetProperty="Width" Duration="0:0:0.25"/>
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </Trigger.ExitActions>
-                                </Trigger>
-                                <Trigger Property="IsMouseCaptured" Value="True">
-                                    <Trigger.EnterActions>
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <DoubleAnimation To="1" Storyboard.TargetName="Slider" Storyboard.TargetProperty="Opacity" Duration="0:0:1"/>
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </Trigger.EnterActions>
-                                    <Trigger.ExitActions>
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <DoubleAnimation To="0.30" Storyboard.TargetName="Slider" Storyboard.TargetProperty="Opacity" Duration="0:0:1"/>
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </Trigger.ExitActions>
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-            <Style x:Key="ThumbHorizontal" TargetType="{x:Type Thumb}">
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type Thumb}">
-                            <Border Height="10" VerticalAlignment="Bottom" Background="Transparent">
-                                <Rectangle x:Name="Slider" Fill="{DynamicResource ApplicationAccentLightBrush}" Opacity="0.50" Height="3" VerticalAlignment="Bottom"/>
-                            </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Trigger.EnterActions>
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <DoubleAnimation To="10" Storyboard.TargetName="Slider" Storyboard.TargetProperty="Height" Duration="0:0:0.5"/>
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </Trigger.EnterActions>
-                                    <Trigger.ExitActions>
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <DoubleAnimation To="3" Storyboard.TargetName="Slider" Storyboard.TargetProperty="Height" Duration="0:0:0.25"/>
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </Trigger.ExitActions>
-                                </Trigger>
-                                <Trigger Property="IsMouseCaptured" Value="True">
-                                    <Trigger.EnterActions>
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <DoubleAnimation To="1" Storyboard.TargetName="Slider" Storyboard.TargetProperty="Opacity" Duration="0:0:1"/>
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </Trigger.EnterActions>
-                                    <Trigger.ExitActions>
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <DoubleAnimation To="0.30" Storyboard.TargetName="Slider" Storyboard.TargetProperty="Opacity" Duration="0:0:1"/>
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </Trigger.ExitActions>
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
-        </Style.Resources>
-        <!-- Style Triggers -->
-        <Style.Triggers>
-            <Trigger Property="Orientation" Value="Vertical">
-                <Setter Property="Margin" Value="-17,0,0,0"/>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type ScrollBar}">
-                            <Track x:Name="PART_Track" IsDirectionReversed="true" IsEnabled="{TemplateBinding IsMouseOver}">
-                                <Track.DecreaseRepeatButton>
-                                    <RepeatButton Command="{x:Static ScrollBar.PageUpCommand}" Style="{StaticResource RepeatButton}"/>
-                                </Track.DecreaseRepeatButton>
-                                <Track.IncreaseRepeatButton>
-                                    <RepeatButton Command="{x:Static ScrollBar.PageDownCommand}" Style="{StaticResource RepeatButton}"/>
-                                </Track.IncreaseRepeatButton>
-                                <Track.Thumb>
-                                    <Thumb Style="{StaticResource ThumbVertical}"/>
-                                </Track.Thumb>
-                            </Track>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
+    <ControlTemplate x:Key="ScrollBarRepeatButton" TargetType="{x:Type RepeatButton}">
+        <Border Background="Transparent"/>
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="ThumbVertical" TargetType="{x:Type Thumb}">
+        <Border Width="10" HorizontalAlignment="Right" Background="Transparent">
+            <Border CornerRadius="2" x:Name="Slider" Background="{DynamicResource ApplicationAccentLightBrush}" Opacity="0.50" Width="3" HorizontalAlignment="Right"/>
+        </Border>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Trigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation To="10" Storyboard.TargetName="Slider" Storyboard.TargetProperty="Width" Duration="0:0:0.5"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.EnterActions>
+                <Trigger.ExitActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation To="3" Storyboard.TargetName="Slider" Storyboard.TargetProperty="Width" Duration="0:0:0.25"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.ExitActions>
             </Trigger>
+            <Trigger Property="IsMouseCaptured" Value="True">
+                <Trigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation To="1" Storyboard.TargetName="Slider" Storyboard.TargetProperty="Opacity" Duration="0:0:1"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.EnterActions>
+                <Trigger.ExitActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation To="0.30" Storyboard.TargetName="Slider" Storyboard.TargetProperty="Opacity" Duration="0:0:1"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.ExitActions>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="ThumbHorizontal" TargetType="{x:Type Thumb}">
+        <Border Height="10" VerticalAlignment="Bottom" Background="Transparent">
+            <Border CornerRadius="2" x:Name="Slider" Background="{DynamicResource ApplicationAccentLightBrush}" Opacity="0.50" Height="3" VerticalAlignment="Bottom"/>
+        </Border>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Trigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation To="10" Storyboard.TargetName="Slider" Storyboard.TargetProperty="Height" Duration="0:0:0.5"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.EnterActions>
+                <Trigger.ExitActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation To="3" Storyboard.TargetName="Slider" Storyboard.TargetProperty="Height" Duration="0:0:0.25"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.ExitActions>
+            </Trigger>
+            <Trigger Property="IsMouseCaptured" Value="True">
+                <Trigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation To="1" Storyboard.TargetName="Slider" Storyboard.TargetProperty="Opacity" Duration="0:0:1"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.EnterActions>
+                <Trigger.ExitActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation To="0.30" Storyboard.TargetName="Slider" Storyboard.TargetProperty="Opacity" Duration="0:0:1"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.ExitActions>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="VerticalTemplateAccent" TargetType="{x:Type ScrollBar}">
+        <Track Name="PART_Track" IsDirectionReversed="True">
+            <Track.DecreaseRepeatButton>
+                <RepeatButton Template="{StaticResource ScrollBarRepeatButton}" Command="ScrollBar.PageUpCommand"/>
+            </Track.DecreaseRepeatButton>
+            <Track.IncreaseRepeatButton>
+                <RepeatButton Template="{StaticResource ScrollBarRepeatButton}" Command="ScrollBar.PageDownCommand"/>
+            </Track.IncreaseRepeatButton>
+            <Track.Thumb>
+                <Thumb Template="{StaticResource ThumbVertical}"/>
+            </Track.Thumb>
+        </Track>
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="HorizontalTemplateAccent" TargetType="{x:Type ScrollBar}">
+        <Track Name="PART_Track" IsDirectionReversed="False">
+            <Track.DecreaseRepeatButton>
+                <RepeatButton Template="{StaticResource ScrollBarRepeatButton}" Command="ScrollBar.PageLeftCommand"/>
+            </Track.DecreaseRepeatButton>
+            <Track.IncreaseRepeatButton>
+                <RepeatButton Template="{StaticResource ScrollBarRepeatButton}" Command="ScrollBar.PageRightCommand"/>
+            </Track.IncreaseRepeatButton>
+            <Track.Thumb>
+                <Thumb Template="{StaticResource ThumbHorizontal}"/>
+            </Track.Thumb>
+        </Track>
+    </ControlTemplate>
+
+    <Style x:Key="{x:Type ScrollBar}" TargetType="{x:Type ScrollBar}">
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Style.Triggers>
             <Trigger Property="Orientation" Value="Horizontal">
-                <Setter Property="Margin" Value="0,-17,0,0"/>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type ScrollBar}">
-                            <Track x:Name="PART_Track" IsEnabled="{TemplateBinding IsMouseOver}">
-                                <Track.DecreaseRepeatButton>
-                                    <RepeatButton Command="{x:Static ScrollBar.PageLeftCommand}" Style="{StaticResource RepeatButton}"/>
-                                </Track.DecreaseRepeatButton>
-                                <Track.IncreaseRepeatButton>
-                                    <RepeatButton Command="{x:Static ScrollBar.PageRightCommand}" Style="{StaticResource RepeatButton}"/>
-                                </Track.IncreaseRepeatButton>
-                                <Track.Thumb>
-                                    <Thumb Style="{StaticResource ThumbHorizontal}"/>
-                                </Track.Thumb>
-                            </Track>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
+                <Setter Property="Template" Value="{StaticResource HorizontalTemplateAccent}"/>
+            </Trigger>
+            <Trigger Property="Orientation" Value="Vertical">
+                <Setter Property="Template" Value="{StaticResource VerticalTemplateAccent}"/>
             </Trigger>
         </Style.Triggers>
     </Style>
