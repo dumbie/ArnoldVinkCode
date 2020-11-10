@@ -1,5 +1,5 @@
 ﻿<ResourceDictionary
-    x:Class="ArnoldVinkCode.Styles.ControlTemplates"
+    x:Class="ArnoldVinkCode.Styles.ListBoxAccent"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
@@ -36,67 +36,6 @@
         </ScrollViewer>
     </ControlTemplate>
 
-    <!--Button Template White-->
-    <ControlTemplate x:Key="ButtonTemplateWhite" TargetType="{x:Type Button}">
-        <Border x:Name="border" CornerRadius="2" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
-            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-        </Border>
-        <ControlTemplate.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="BorderThickness" TargetName="border" Value="2"/>
-                <Setter Property="BorderBrush" TargetName="border" Value="#F1F1F1"/>
-                <Setter Property="Background" TargetName="border" Value="#30F1F1F1"/>
-            </Trigger>
-            <Trigger Property="IsFocused" Value="True">
-                <Setter Property="BorderThickness" TargetName="border" Value="2"/>
-                <Setter Property="BorderBrush" TargetName="border" Value="#F1F1F1"/>
-                <Setter Property="Background" TargetName="border" Value="#30F1F1F1"/>
-            </Trigger>
-            <Trigger Property="IsPressed" Value="True">
-                <Setter Property="BorderThickness" TargetName="border" Value="2"/>
-                <Setter Property="BorderBrush" TargetName="border" Value="#F1F1F1"/>
-                <Setter Property="Background" TargetName="border" Value="#60F1F1F1"/>
-            </Trigger>
-            <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Opacity" Value="0.50"/>
-            </Trigger>
-        </ControlTemplate.Triggers>
-    </ControlTemplate>
-
-    <!--Button Template Black-->
-    <ControlTemplate x:Key="ButtonTemplateBlack" TargetType="{x:Type Button}">
-        <Border x:Name="border" CornerRadius="2" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
-            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-        </Border>
-        <ControlTemplate.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="BorderThickness" TargetName="border" Value="2"/>
-                <Setter Property="BorderBrush" TargetName="border" Value="#1D1D1D"/>
-                <Setter Property="Background" TargetName="border" Value="#301D1D1D"/>
-            </Trigger>
-            <Trigger Property="IsFocused" Value="True">
-                <Setter Property="BorderThickness" TargetName="border" Value="2"/>
-                <Setter Property="BorderBrush" TargetName="border" Value="#1D1D1D"/>
-                <Setter Property="Background" TargetName="border" Value="#301D1D1D"/>
-            </Trigger>
-            <Trigger Property="IsPressed" Value="True">
-                <Setter Property="BorderThickness" TargetName="border" Value="2"/>
-                <Setter Property="BorderBrush" TargetName="border" Value="#1D1D1D"/>
-                <Setter Property="Background" TargetName="border" Value="#601D1D1D"/>
-            </Trigger>
-            <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Opacity" Value="0.50"/>
-            </Trigger>
-        </ControlTemplate.Triggers>
-    </ControlTemplate>
-
-    <!--Button Template Transparent-->
-    <ControlTemplate x:Key="ButtonTemplateTransparent" TargetType="{x:Type Button}">
-        <Border x:Name="border" CornerRadius="2" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
-            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-        </Border>
-    </ControlTemplate>
-
     <!--ListBoxItem Template White-->
     <ControlTemplate x:Key="ListBoxItemTemplateWhite" TargetType="{x:Type ListBoxItem}">
         <Border x:Name="border" CornerRadius="2" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
@@ -108,8 +47,8 @@
             </Trigger>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="BorderThickness" Value="2"/>
-                <Setter Property="BorderBrush" TargetName="border" Value="#F1F1F1"/>
-                <Setter Property="Background" TargetName="border" Value="#30F1F1F1"/>
+                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ApplicationWhiteBrush}"/>
+                <Setter Property="Background" TargetName="border" Value="Transparent"/>
             </Trigger>
             <MultiTrigger>
                 <MultiTrigger.Conditions>
@@ -126,7 +65,7 @@
                     <Condition Property="IsSelected" Value="True"/>
                 </MultiTrigger.Conditions>
                 <Setter Property="BorderThickness" Value="2"/>
-                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ApplicationAccentLightBrush}"/>
+                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ApplicationWhiteBrush}"/>
                 <Setter Property="Background" TargetName="border" Value="Transparent"/>
             </MultiTrigger>
         </ControlTemplate.Triggers>
@@ -143,8 +82,8 @@
             </Trigger>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="BorderThickness" Value="2"/>
-                <Setter Property="BorderBrush" TargetName="border" Value="#1D1D1D"/>
-                <Setter Property="Background" TargetName="border" Value="#301D1D1D"/>
+                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ApplicationBlackBrush}"/>
+                <Setter Property="Background" TargetName="border" Value="Transparent"/>
             </Trigger>
             <MultiTrigger>
                 <MultiTrigger.Conditions>
@@ -161,7 +100,7 @@
                     <Condition Property="IsSelected" Value="True"/>
                 </MultiTrigger.Conditions>
                 <Setter Property="BorderThickness" Value="2"/>
-                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ApplicationAccentLightBrush}"/>
+                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ApplicationBlackBrush}"/>
                 <Setter Property="Background" TargetName="border" Value="Transparent"/>
             </MultiTrigger>
         </ControlTemplate.Triggers>

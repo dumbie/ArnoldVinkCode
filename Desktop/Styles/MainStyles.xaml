@@ -4,6 +4,52 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
+    <!-- Focus Visual Style -->
+    <Style x:Key="FocusVisualStyleSolidBlack">
+        <Setter Property="Control.Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Border CornerRadius="2" BorderBrush="#1D1D1D" BorderThickness="2" SnapsToDevicePixels="True">
+                        <Border.Background>
+                            <SolidColorBrush x:Name="BorderBackground" Color="#301D1D1D"/>
+                        </Border.Background>
+                        <Border.Triggers>
+                            <EventTrigger RoutedEvent="Border.Loaded">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation From="#301D1D1D" To="Transparent" Duration="0:0:0.5" Storyboard.TargetName="BorderBackground" Storyboard.TargetProperty="Color"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Border.Triggers>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="FocusVisualStyleSolidWhite">
+        <Setter Property="Control.Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Border CornerRadius="2" BorderBrush="#F1F1F1" BorderThickness="2" SnapsToDevicePixels="True">
+                        <Border.Background>
+                            <SolidColorBrush x:Name="BorderBackground" Color="#30F1F1F1"/>
+                        </Border.Background>
+                        <Border.Triggers>
+                            <EventTrigger RoutedEvent="Border.Loaded">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation From="#30F1F1F1" To="Transparent" Duration="0:0:0.5" Storyboard.TargetName="BorderBackground" Storyboard.TargetProperty="Color"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Border.Triggers>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!-- Text Sizes -->
     <sys:Double x:Key="TextSizeTiny">10</sys:Double>
     <sys:Double x:Key="TextSizeInterface">16</sys:Double>
@@ -14,26 +60,6 @@
     <sys:Double x:Key="TextSizePreTitle">50</sys:Double>
     <sys:Double x:Key="TextSizeSubTitle">60</sys:Double>
     <sys:Double x:Key="TextSizeTitle">75</sys:Double>
-
-    <!-- Focus Visual Style -->
-    <Style x:Key="FocusVisualStyleSolidBlack">
-        <Setter Property="Control.Template">
-            <Setter.Value>
-                <ControlTemplate>
-                    <Border CornerRadius="2" BorderBrush="#1D1D1D" Background="#301D1D1D" BorderThickness="2" SnapsToDevicePixels="True"/>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-    <Style x:Key="FocusVisualStyleSolidWhite">
-        <Setter Property="Control.Template">
-            <Setter.Value>
-                <ControlTemplate>
-                    <Border CornerRadius="2" BorderBrush="#F1F1F1" Background="#30F1F1F1" BorderThickness="2" SnapsToDevicePixels="True"/>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
 
     <!--Text Styles-->
     <Style x:Key="EmptyTextBlock" TargetType="TextBlock">
@@ -46,58 +72,58 @@
 
     <Style x:Key="RunBlack" TargetType="Run">
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
-        <Setter Property="Foreground" Value="#1D1D1D"/>
+        <Setter Property="Foreground" Value="{DynamicResource ApplicationBlackBrush}"/>
     </Style>
     <Style x:Key="TextBlockBlack" BasedOn="{StaticResource EmptyTextBlock}" TargetType="TextBlock">
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
-        <Setter Property="Foreground" Value="#1D1D1D"/>
+        <Setter Property="Foreground" Value="{DynamicResource ApplicationBlackBrush}"/>
     </Style>
     <Style x:Key="RunBlackLight" TargetType="Run">
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
-        <Setter Property="Foreground" Value="#1D1D1D"/>
+        <Setter Property="Foreground" Value="{DynamicResource ApplicationBlackBrush}"/>
         <Setter Property="FontWeight" Value="Light"/>
     </Style>
     <Style x:Key="TextBlockBlackLight" BasedOn="{StaticResource EmptyTextBlock}" TargetType="TextBlock">
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
-        <Setter Property="Foreground" Value="#1D1D1D"/>
+        <Setter Property="Foreground" Value="{DynamicResource ApplicationBlackBrush}"/>
         <Setter Property="FontWeight" Value="Light"/>
     </Style>
 
     <Style x:Key="RunWhite" TargetType="Run">
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
-        <Setter Property="Foreground" Value="#F1F1F1"/>
+        <Setter Property="Foreground" Value="{DynamicResource ApplicationWhiteBrush}"/>
     </Style>
     <Style x:Key="TextBlockWhite" BasedOn="{StaticResource EmptyTextBlock}" TargetType="TextBlock">
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
-        <Setter Property="Foreground" Value="#F1F1F1"/>
+        <Setter Property="Foreground" Value="{DynamicResource ApplicationWhiteBrush}"/>
     </Style>
     <Style x:Key="RunWhiteLight" TargetType="Run">
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
-        <Setter Property="Foreground" Value="#F1F1F1"/>
+        <Setter Property="Foreground" Value="{DynamicResource ApplicationWhiteBrush}"/>
         <Setter Property="FontWeight" Value="Light"/>
     </Style>
     <Style x:Key="TextBlockWhiteLight" BasedOn="{StaticResource EmptyTextBlock}" TargetType="TextBlock">
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
-        <Setter Property="Foreground" Value="#F1F1F1"/>
+        <Setter Property="Foreground" Value="{DynamicResource ApplicationWhiteBrush}"/>
         <Setter Property="FontWeight" Value="Light"/>
     </Style>
 
     <Style x:Key="RunGray" TargetType="Run">
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
-        <Setter Property="Foreground" Value="#888"/>
+        <Setter Property="Foreground" Value="{DynamicResource ApplicationGrayBrush}"/>
     </Style>
     <Style x:Key="TextBlockGray" BasedOn="{StaticResource EmptyTextBlock}" TargetType="TextBlock">
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
-        <Setter Property="Foreground" Value="#888"/>
+        <Setter Property="Foreground" Value="{DynamicResource ApplicationGrayBrush}"/>
     </Style>
     <Style x:Key="RunGrayLight" TargetType="Run">
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
-        <Setter Property="Foreground" Value="#888"/>
+        <Setter Property="Foreground" Value="{DynamicResource ApplicationGrayBrush}"/>
         <Setter Property="FontWeight" Value="Light"/>
     </Style>
     <Style x:Key="TextBlockGrayLight" BasedOn="{StaticResource EmptyTextBlock}" TargetType="TextBlock">
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
-        <Setter Property="Foreground" Value="#888"/>
+        <Setter Property="Foreground" Value="{DynamicResource ApplicationGrayBrush}"/>
         <Setter Property="FontWeight" Value="Light"/>
     </Style>
 
@@ -122,18 +148,16 @@
 
     <!--ComboBox Styles-->
     <Style x:Key="ComboBoxWhite" TargetType="ComboBox">
+        <Setter Property="Template" Value="{StaticResource ComboBoxTemplateAccent}"/>
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Foreground" Value="#F1F1F1"/>
-        <Setter Property="BorderBrush" Value="#F1F1F1"/>
-        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="Foreground" Value="{DynamicResource ApplicationWhiteBrush}"/>
+        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidWhite}"/>
     </Style>
     <Style x:Key="ComboBoxBlack" TargetType="ComboBox">
+        <Setter Property="Template" Value="{StaticResource ComboBoxTemplateAccent}"/>
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
-        <Setter Property="Background" Value="White"/>
-        <Setter Property="Foreground" Value="#1D1D1D"/>
-        <Setter Property="BorderBrush" Value="#1D1D1D"/>
-        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="Foreground" Value="{DynamicResource ApplicationBlackBrush}"/>
+        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidBlack}"/>
     </Style>
 
     <!--CheckBox Styles-->
@@ -149,34 +173,34 @@
         <Setter Property="Template" Value="{StaticResource CheckBoxTemplateAccent}"/>
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidBlack}"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
-        <Setter Property="Foreground" Value="#1D1D1D"/>
+        <Setter Property="Foreground" Value="{DynamicResource ApplicationBlackBrush}"/>
     </Style>
 
     <!--TextBox Styles-->
     <Style x:Key="TextBoxWhite" TargetType="TextBox">
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
-        <Setter Property="BorderBrush" Value="#F1F1F1"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ApplicationWhiteBrush}"/>
         <Setter Property="BorderThickness" Value="2"/>
         <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Foreground" Value="#F1F1F1"/>
-        <Setter Property="CaretBrush" Value="#F1F1F1"/>
+        <Setter Property="Foreground" Value="{DynamicResource ApplicationWhiteBrush}"/>
+        <Setter Property="CaretBrush" Value="{DynamicResource ApplicationWhiteBrush}"/>
         <Setter Property="Padding" Value="0,5,0,5"/>
     </Style>
     <Style x:Key="TextBoxBlack" TargetType="TextBox">
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
-        <Setter Property="BorderBrush" Value="#1D1D1D"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ApplicationBlackBrush}"/>
         <Setter Property="BorderThickness" Value="2"/>
-        <Setter Property="Background" Value="White"/>
-        <Setter Property="Foreground" Value="#1D1D1D"/>
-        <Setter Property="CaretBrush" Value="#1D1D1D"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{DynamicResource ApplicationBlackBrush}"/>
+        <Setter Property="CaretBrush" Value="{DynamicResource ApplicationBlackBrush}"/>
         <Setter Property="Padding" Value="0,5,0,5"/>
     </Style>
     <Style x:Key="TextBoxTransparent" TargetType="TextBox">
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Foreground" Value="#F1F1F1"/>
-        <Setter Property="CaretBrush" Value="#F1F1F1"/>
+        <Setter Property="Foreground" Value="{DynamicResource ApplicationBlackBrush}"/>
+        <Setter Property="CaretBrush" Value="{DynamicResource ApplicationBlackBrush}"/>
         <Setter Property="Padding" Value="0,5,0,5"/>
     </Style>
     <Style x:Key="PasswordBoxWhite" TargetType="PasswordBox">
@@ -189,10 +213,10 @@
     </Style>
     <Style x:Key="PasswordBoxBlack" TargetType="PasswordBox">
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
-        <Setter Property="BorderBrush" Value="#1D1D1D"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ApplicationBlackBrush}"/>
         <Setter Property="BorderThickness" Value="2"/>
         <Setter Property="Background" Value="White"/>
-        <Setter Property="Foreground" Value="#1D1D1D"/>
+        <Setter Property="Foreground" Value="{DynamicResource ApplicationBlackBrush}"/>
         <Setter Property="Padding" Value="0,5,0,5"/>
     </Style>
 
@@ -220,7 +244,7 @@
     <!--Button Styles-->
     <Style x:Key="ButtonAccentWhite" TargetType="Button">
         <Setter Property="FontSize" Value="{DynamicResource TextSizeSmall}"/>
-        <Setter Property="Foreground" Value="#F1F1F1"/>
+        <Setter Property="Foreground" Value="{DynamicResource ApplicationWhiteBrush}"/>
         <Setter Property="Background" Value="{DynamicResource ApplicationAccentLightBrush}"/>
         <Setter Property="BorderThickness" Value="2"/>
         <Setter Property="BorderBrush" Value="{DynamicResource ApplicationAccentLightBrush}"/>
@@ -231,7 +255,7 @@
     </Style>
     <Style x:Key="ButtonAccentBlack" TargetType="Button">
         <Setter Property="FontSize" Value="{DynamicResource TextSizeSmall}"/>
-        <Setter Property="Foreground" Value="#F1F1F1"/>
+        <Setter Property="Foreground" Value="{DynamicResource ApplicationBlackBrush}"/>
         <Setter Property="Background" Value="{DynamicResource ApplicationAccentLightBrush}"/>
         <Setter Property="BorderThickness" Value="2"/>
         <Setter Property="BorderBrush" Value="{DynamicResource ApplicationAccentLightBrush}"/>
@@ -246,6 +270,7 @@
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="Template" Value="{StaticResource ButtonTemplateTransparent}"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
     </Style>
     <Style x:Key="ButtonImageTransparentWhiteBorder" TargetType="Button">
         <Setter Property="Foreground" Value="Transparent"/>
@@ -289,7 +314,7 @@
         <Setter Property="Template" Value="{StaticResource ListBoxWrapPanelTemplate}"/>
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>
-        <Setter Property="Foreground" Value="#F1F1F1"/>
+        <Setter Property="Foreground" Value="{DynamicResource ApplicationWhiteBrush}"/>
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
@@ -298,7 +323,7 @@
     <Style x:Key="ListBoxUniformGrid" TargetType="ListBox">
         <Setter Property="Template" Value="{StaticResource ListBoxUniformGridTemplate}"/>
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
-        <Setter Property="Foreground" Value="#F1F1F1"/>
+        <Setter Property="Foreground" Value="{DynamicResource ApplicationWhiteBrush}"/>
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
@@ -307,7 +332,7 @@
     <Style x:Key="ListBoxVertical" TargetType="ListBox">
         <Setter Property="Template" Value="{StaticResource ListBoxVerticalTemplate}"/>
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
-        <Setter Property="Foreground" Value="#F1F1F1"/>
+        <Setter Property="Foreground" Value="{DynamicResource ApplicationWhiteBrush}"/>
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
@@ -316,7 +341,7 @@
     <Style x:Key="ListBoxHorizontal" TargetType="ListBox">
         <Setter Property="Template" Value="{StaticResource ListBoxHorizontalTemplate}"/>
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
-        <Setter Property="Foreground" Value="#F1F1F1"/>
+        <Setter Property="Foreground" Value="{DynamicResource ApplicationWhiteBrush}"/>
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
     </Style>

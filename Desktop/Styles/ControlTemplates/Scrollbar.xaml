@@ -1,5 +1,5 @@
 ﻿<ResourceDictionary
-    x:Class="ArnoldVinkCode.Styles.Scrollbar"
+    x:Class="ArnoldVinkCode.Styles.ScrollbarAccent"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
@@ -91,13 +91,13 @@
     <ControlTemplate x:Key="VerticalTemplateAccent" TargetType="{x:Type ScrollBar}">
         <Track Name="PART_Track" IsDirectionReversed="True">
             <Track.DecreaseRepeatButton>
-                <RepeatButton Template="{StaticResource ScrollBarRepeatButton}" Command="ScrollBar.PageUpCommand"/>
+                <RepeatButton IsTabStop="False" Template="{StaticResource ScrollBarRepeatButton}" Command="ScrollBar.PageUpCommand"/>
             </Track.DecreaseRepeatButton>
             <Track.IncreaseRepeatButton>
-                <RepeatButton Template="{StaticResource ScrollBarRepeatButton}" Command="ScrollBar.PageDownCommand"/>
+                <RepeatButton IsTabStop="False" Template="{StaticResource ScrollBarRepeatButton}" Command="ScrollBar.PageDownCommand"/>
             </Track.IncreaseRepeatButton>
             <Track.Thumb>
-                <Thumb Template="{StaticResource ThumbVertical}"/>
+                <Thumb IsTabStop="False" Template="{StaticResource ThumbVertical}"/>
             </Track.Thumb>
         </Track>
     </ControlTemplate>
@@ -105,13 +105,13 @@
     <ControlTemplate x:Key="HorizontalTemplateAccent" TargetType="{x:Type ScrollBar}">
         <Track Name="PART_Track" IsDirectionReversed="False">
             <Track.DecreaseRepeatButton>
-                <RepeatButton Template="{StaticResource ScrollBarRepeatButton}" Command="ScrollBar.PageLeftCommand"/>
+                <RepeatButton IsTabStop="False" Template="{StaticResource ScrollBarRepeatButton}" Command="ScrollBar.PageLeftCommand"/>
             </Track.DecreaseRepeatButton>
             <Track.IncreaseRepeatButton>
-                <RepeatButton Template="{StaticResource ScrollBarRepeatButton}" Command="ScrollBar.PageRightCommand"/>
+                <RepeatButton IsTabStop="False" Template="{StaticResource ScrollBarRepeatButton}" Command="ScrollBar.PageRightCommand"/>
             </Track.IncreaseRepeatButton>
             <Track.Thumb>
-                <Thumb Template="{StaticResource ThumbHorizontal}"/>
+                <Thumb IsTabStop="False" Template="{StaticResource ThumbHorizontal}"/>
             </Track.Thumb>
         </Track>
     </ControlTemplate>
