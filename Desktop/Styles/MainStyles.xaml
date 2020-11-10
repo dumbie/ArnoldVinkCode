@@ -142,20 +142,14 @@
         <Setter Property="Template" Value="{StaticResource CheckBoxTemplateAccent}"/>
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidWhite}"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
-        <Setter Property="Padding" Value="5,-3,0,0"/>
-        <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Foreground" Value="#F1F1F1"/>
-        <Setter Property="BorderBrush" Value="#F1F1F1"/>
     </Style>
     <Style x:Key="CheckBoxBlack" TargetType="CheckBox">
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
         <Setter Property="Template" Value="{StaticResource CheckBoxTemplateAccent}"/>
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidBlack}"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
-        <Setter Property="Padding" Value="5,-3,0,0"/>
-        <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Foreground" Value="#1D1D1D"/>
-        <Setter Property="BorderBrush" Value="#1D1D1D"/>
     </Style>
 
     <!--TextBox Styles-->
