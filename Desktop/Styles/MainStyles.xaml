@@ -148,16 +148,26 @@
 
     <!--ComboBox Styles-->
     <Style x:Key="ComboBoxWhite" TargetType="ComboBox">
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="Template" Value="{StaticResource ComboBoxTemplateAccent}"/>
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
         <Setter Property="Foreground" Value="{DynamicResource ApplicationWhiteBrush}"/>
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidWhite}"/>
+        <Setter Property="ItemContainerStyle" Value="{DynamicResource ComboBoxItemAccent}"/>
     </Style>
     <Style x:Key="ComboBoxBlack" TargetType="ComboBox">
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="Template" Value="{StaticResource ComboBoxTemplateAccent}"/>
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
-        <Setter Property="Foreground" Value="{DynamicResource ApplicationBlackBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ApplicationWhiteBrush}"/>
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidBlack}"/>
+        <Setter Property="ItemContainerStyle" Value="{DynamicResource ComboBoxItemAccent}"/>
+    </Style>
+
+    <!--ComboBoxItem Styles-->
+    <Style x:Key="ComboBoxItemAccent" TargetType="ComboBoxItem">
+        <Setter Property="Template" Value="{StaticResource ComboBoxBoxItemTemplateAccent}"/>
+        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidWhite}"/>
     </Style>
 
     <!--CheckBox Styles-->
@@ -166,7 +176,7 @@
         <Setter Property="Template" Value="{StaticResource CheckBoxTemplateAccent}"/>
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidWhite}"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
-        <Setter Property="Foreground" Value="#F1F1F1"/>
+        <Setter Property="Foreground" Value="{DynamicResource ApplicationWhiteBrush}"/>
     </Style>
     <Style x:Key="CheckBoxBlack" TargetType="CheckBox">
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
@@ -205,17 +215,17 @@
     </Style>
     <Style x:Key="PasswordBoxWhite" TargetType="PasswordBox">
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
-        <Setter Property="BorderBrush" Value="#F1F1F1"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ApplicationWhiteBrush}"/>
         <Setter Property="BorderThickness" Value="2"/>
         <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Foreground" Value="#F1F1F1"/>
+        <Setter Property="Foreground" Value="{DynamicResource ApplicationWhiteBrush}"/>
         <Setter Property="Padding" Value="0,5,0,5"/>
     </Style>
     <Style x:Key="PasswordBoxBlack" TargetType="PasswordBox">
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource ApplicationBlackBrush}"/>
         <Setter Property="BorderThickness" Value="2"/>
-        <Setter Property="Background" Value="White"/>
+        <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Foreground" Value="{DynamicResource ApplicationBlackBrush}"/>
         <Setter Property="Padding" Value="0,5,0,5"/>
     </Style>
@@ -255,7 +265,7 @@
     </Style>
     <Style x:Key="ButtonAccentBlack" TargetType="Button">
         <Setter Property="FontSize" Value="{DynamicResource TextSizeSmall}"/>
-        <Setter Property="Foreground" Value="{DynamicResource ApplicationBlackBrush}"/>
+        <Setter Property="Foreground" Value="{DynamicResource ApplicationWhiteBrush}"/>
         <Setter Property="Background" Value="{DynamicResource ApplicationAccentLightBrush}"/>
         <Setter Property="BorderThickness" Value="2"/>
         <Setter Property="BorderBrush" Value="{DynamicResource ApplicationAccentLightBrush}"/>

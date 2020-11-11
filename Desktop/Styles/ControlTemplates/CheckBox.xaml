@@ -5,7 +5,7 @@
 
     <ControlTemplate x:Key="CheckBoxTemplateAccent" TargetType="{x:Type CheckBox}">
         <StackPanel Orientation="Horizontal">
-            <Border x:Name="checkBoxBorder" Width="50" Height="25" Background="{DynamicResource ApplicationAccentLightBrush}" CornerRadius="12">
+            <Border x:Name="checkBoxBorder" Width="50" Height="24" Background="{DynamicResource ApplicationAccentLightBrush}" CornerRadius="12">
                 <Ellipse x:Name="checkBoxEllipse" VerticalAlignment="Center" HorizontalAlignment="{TemplateBinding HorizontalAlignment}" Width="20" Height="20" Fill="{TemplateBinding Foreground}" Margin="3,0,3,0"/>
             </Border>
             <ContentPresenter x:Name="contentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}" ContentStringFormat="{TemplateBinding ContentStringFormat}" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
