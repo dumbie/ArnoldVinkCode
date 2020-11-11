@@ -9,15 +9,15 @@
         <Setter Property="Control.Template">
             <Setter.Value>
                 <ControlTemplate>
-                    <Border CornerRadius="2" BorderBrush="#1D1D1D" BorderThickness="2" SnapsToDevicePixels="True">
+                    <Border CornerRadius="2" BorderBrush="#1D1D1D" BorderThickness="2">
                         <Border.Background>
-                            <SolidColorBrush x:Name="BorderBackground" Color="#301D1D1D"/>
+                            <SolidColorBrush x:Name="BorderBackground" Color="#5A1D1D1D"/>
                         </Border.Background>
                         <Border.Triggers>
                             <EventTrigger RoutedEvent="Border.Loaded">
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <ColorAnimation From="#301D1D1D" To="Transparent" Duration="0:0:0.5" Storyboard.TargetName="BorderBackground" Storyboard.TargetProperty="Color"/>
+                                        <ColorAnimation From="#5A1D1D1D" To="Transparent" Duration="0:0:0.5" Storyboard.TargetName="BorderBackground" Storyboard.TargetProperty="Color"/>
                                     </Storyboard>
                                 </BeginStoryboard>
                             </EventTrigger>
@@ -31,15 +31,15 @@
         <Setter Property="Control.Template">
             <Setter.Value>
                 <ControlTemplate>
-                    <Border CornerRadius="2" BorderBrush="#F1F1F1" BorderThickness="2" SnapsToDevicePixels="True">
+                    <Border CornerRadius="2" BorderBrush="#F1F1F1" BorderThickness="2">
                         <Border.Background>
-                            <SolidColorBrush x:Name="BorderBackground" Color="#30F1F1F1"/>
+                            <SolidColorBrush x:Name="BorderBackground" Color="#5AF1F1F1"/>
                         </Border.Background>
                         <Border.Triggers>
                             <EventTrigger RoutedEvent="Border.Loaded">
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <ColorAnimation From="#30F1F1F1" To="Transparent" Duration="0:0:0.5" Storyboard.TargetName="BorderBackground" Storyboard.TargetProperty="Color"/>
+                                        <ColorAnimation From="#5AF1F1F1" To="Transparent" Duration="0:0:0.5" Storyboard.TargetName="BorderBackground" Storyboard.TargetProperty="Color"/>
                                     </Storyboard>
                                 </BeginStoryboard>
                             </EventTrigger>
@@ -209,7 +209,7 @@
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Foreground" Value="{DynamicResource ApplicationWhiteBrush}"/>
         <Setter Property="CaretBrush" Value="{DynamicResource ApplicationWhiteBrush}"/>
-        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidWhite}"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
         <Setter Property="Padding" Value="0,5,0,5"/>
     </Style>
     <Style x:Key="TextBoxTransparentBlack" TargetType="TextBox">
@@ -218,7 +218,7 @@
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Foreground" Value="{DynamicResource ApplicationBlackBrush}"/>
         <Setter Property="CaretBrush" Value="{DynamicResource ApplicationBlackBrush}"/>
-        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidWhite}"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
         <Setter Property="Padding" Value="0,5,0,5"/>
     </Style>
     <Style x:Key="PasswordBoxWhite" TargetType="PasswordBox">
@@ -243,13 +243,11 @@
         <Setter Property="Height" Value="2"/>
         <Setter Property="CornerRadius" Value="2"/>
         <Setter Property="Background" Value="{DynamicResource ApplicationAccentLightBrush}"/>
-        <Setter Property="SnapsToDevicePixels" Value="True"/>
     </Style>
     <Style x:Key="BorderVerticalAccentLight" TargetType="Border">
         <Setter Property="Width" Value="2"/>
         <Setter Property="CornerRadius" Value="2"/>
         <Setter Property="Background" Value="{DynamicResource ApplicationAccentLightBrush}"/>
-        <Setter Property="SnapsToDevicePixels" Value="True"/>
     </Style>
 
     <!--ProgressBar Styles-->
@@ -258,7 +256,6 @@
         <Setter Property="Background" Value="{DynamicResource ApplicationGrayBrush}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource ApplicationGrayBrush}"/>
         <Setter Property="Foreground" Value="{DynamicResource ApplicationAccentLightBrush}"/>
-        <Setter Property="SnapsToDevicePixels" Value="True"/>
     </Style>
 
     <!--Button Styles-->

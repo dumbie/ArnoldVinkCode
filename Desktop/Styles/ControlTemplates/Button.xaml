@@ -5,7 +5,7 @@
 
     <!--Button Template White-->
     <ControlTemplate x:Key="ButtonTemplateWhite" TargetType="{x:Type Button}">
-        <Border x:Name="border" CornerRadius="2" BorderThickness="2" BorderBrush="{TemplateBinding BorderBrush}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
+        <Border x:Name="border" CornerRadius="2" BorderThickness="2" BorderBrush="{TemplateBinding BorderBrush}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
             <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
         </Border>
         <ControlTemplate.Triggers>
@@ -30,7 +30,7 @@
 
     <!--Button Template Black-->
     <ControlTemplate x:Key="ButtonTemplateBlack" TargetType="{x:Type Button}">
-        <Border x:Name="border" CornerRadius="2" BorderThickness="2" BorderBrush="{TemplateBinding BorderBrush}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
+        <Border x:Name="border" CornerRadius="2" BorderThickness="2" BorderBrush="{TemplateBinding BorderBrush}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
             <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
         </Border>
         <ControlTemplate.Triggers>
@@ -55,7 +55,7 @@
 
     <!--Button Template Transparent-->
     <ControlTemplate x:Key="ButtonTemplateTransparent" TargetType="{x:Type Button}">
-        <Border x:Name="border" CornerRadius="2" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
+        <Border x:Name="border" CornerRadius="2" BorderThickness="2" BorderBrush="{TemplateBinding BorderBrush}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
             <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
         </Border>
     </ControlTemplate>
