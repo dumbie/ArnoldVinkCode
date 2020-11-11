@@ -186,47 +186,55 @@
         <Setter Property="Foreground" Value="{DynamicResource ApplicationBlackBrush}"/>
     </Style>
 
-    <!--TextBox Styles-->
+    <!--TextBox and PasswordBox Styles-->
     <Style x:Key="TextBoxWhite" TargetType="TextBox">
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource ApplicationWhiteBrush}"/>
-        <Setter Property="BorderThickness" Value="2"/>
-        <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Foreground" Value="{DynamicResource ApplicationWhiteBrush}"/>
         <Setter Property="CaretBrush" Value="{DynamicResource ApplicationWhiteBrush}"/>
+        <Setter Property="Template" Value="{StaticResource TextBoxTemplateWhite}"/>
+        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidWhite}"/>
         <Setter Property="Padding" Value="0,5,0,5"/>
     </Style>
     <Style x:Key="TextBoxBlack" TargetType="TextBox">
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource ApplicationBlackBrush}"/>
-        <Setter Property="BorderThickness" Value="2"/>
-        <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Foreground" Value="{DynamicResource ApplicationBlackBrush}"/>
         <Setter Property="CaretBrush" Value="{DynamicResource ApplicationBlackBrush}"/>
+        <Setter Property="Template" Value="{StaticResource TextBoxTemplateBlack}"/>
+        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidBlack}"/>
         <Setter Property="Padding" Value="0,5,0,5"/>
     </Style>
-    <Style x:Key="TextBoxTransparent" TargetType="TextBox">
+    <Style x:Key="TextBoxTransparentWhite" TargetType="TextBox">
+        <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{DynamicResource ApplicationWhiteBrush}"/>
+        <Setter Property="CaretBrush" Value="{DynamicResource ApplicationWhiteBrush}"/>
+        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidWhite}"/>
+        <Setter Property="Padding" Value="0,5,0,5"/>
+    </Style>
+    <Style x:Key="TextBoxTransparentBlack" TargetType="TextBox">
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Foreground" Value="{DynamicResource ApplicationBlackBrush}"/>
         <Setter Property="CaretBrush" Value="{DynamicResource ApplicationBlackBrush}"/>
+        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidWhite}"/>
         <Setter Property="Padding" Value="0,5,0,5"/>
     </Style>
     <Style x:Key="PasswordBoxWhite" TargetType="PasswordBox">
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource ApplicationWhiteBrush}"/>
-        <Setter Property="BorderThickness" Value="2"/>
-        <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Foreground" Value="{DynamicResource ApplicationWhiteBrush}"/>
+        <Setter Property="CaretBrush" Value="{DynamicResource ApplicationWhiteBrush}"/>
+        <Setter Property="Template" Value="{StaticResource PasswordBoxTemplateWhite}"/>
+        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidWhite}"/>
         <Setter Property="Padding" Value="0,5,0,5"/>
     </Style>
     <Style x:Key="PasswordBoxBlack" TargetType="PasswordBox">
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource ApplicationBlackBrush}"/>
-        <Setter Property="BorderThickness" Value="2"/>
-        <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Foreground" Value="{DynamicResource ApplicationBlackBrush}"/>
+        <Setter Property="CaretBrush" Value="{DynamicResource ApplicationBlackBrush}"/>
+        <Setter Property="Template" Value="{StaticResource PasswordBoxTemplateBlack}"/>
+        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidBlack}"/>
         <Setter Property="Padding" Value="0,5,0,5"/>
     </Style>
 
@@ -235,18 +243,20 @@
         <Setter Property="Height" Value="2"/>
         <Setter Property="CornerRadius" Value="2"/>
         <Setter Property="Background" Value="{DynamicResource ApplicationAccentLightBrush}"/>
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
     </Style>
     <Style x:Key="BorderVerticalAccentLight" TargetType="Border">
         <Setter Property="Width" Value="2"/>
         <Setter Property="CornerRadius" Value="2"/>
         <Setter Property="Background" Value="{DynamicResource ApplicationAccentLightBrush}"/>
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
     </Style>
 
     <!--ProgressBar Styles-->
     <Style x:Key="ProgressBarAccent" TargetType="ProgressBar">
         <Setter Property="Height" Value="4"/>
-        <Setter Property="Background" Value="#CDCDCD"/>
-        <Setter Property="BorderBrush" Value="#CDCDCD"/>
+        <Setter Property="Background" Value="{DynamicResource ApplicationGrayBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ApplicationGrayBrush}"/>
         <Setter Property="Foreground" Value="{DynamicResource ApplicationAccentLightBrush}"/>
         <Setter Property="SnapsToDevicePixels" Value="True"/>
     </Style>
