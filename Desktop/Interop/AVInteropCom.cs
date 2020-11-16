@@ -22,21 +22,14 @@ namespace ArnoldVinkCode
 
         public enum UWPActivationManagerOptions { None = 0x00000000, DesignMode = 0x00000001, NoErrorUI = 0x00000002, NoSplashScreen = 0x00000004 }
 
-        //IPropertyStore
-        public static PropertyKey PKEY_AppUserModel_ID = new PropertyKey(new Guid("9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3"), 5);
-        public static PropertyKey PKEY_Device_FriendlyName = new PropertyKey(new Guid("A45C254E-DF1C-4EFD-8020-67D146A850E0"), 14);
-
+        //PropertyKey
+        public static PropertyKey PKEY_AppUserModel_ID = new PropertyKey { fmtId = new Guid("9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3"), pId = 5 };
+        public static PropertyKey PKEY_Device_FriendlyName = new PropertyKey { fmtId = new Guid("A45C254E-DF1C-4EFD-8020-67D146A850E0"), pId = 14 };
         [StructLayout(LayoutKind.Sequential)]
         public struct PropertyKey
         {
-            public Guid fmtid;
-            public uint pid;
-
-            public PropertyKey(Guid InputId, uint InputPid)
-            {
-                fmtid = InputId;
-                pid = InputPid;
-            }
+            public Guid fmtId;
+            public uint pId;
         };
 
         [StructLayout(LayoutKind.Sequential, Pack = 0)]
