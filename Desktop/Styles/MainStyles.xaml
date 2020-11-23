@@ -286,7 +286,7 @@
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="Cursor" Value="Hand"/>
-        <Setter Property="Template" Value="{StaticResource ButtonTemplateTransparent}"/>
+        <Setter Property="Template" Value="{StaticResource ButtonTemplateTransparentNoBorder}"/>
         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
     </Style>
     <Style x:Key="ButtonImageTransparentWhiteBorder" TargetType="Button">
@@ -295,7 +295,7 @@
         <Setter Property="BorderThickness" Value="2"/>
         <Setter Property="BorderBrush" Value="Transparent"/>
         <Setter Property="Cursor" Value="Hand"/>
-        <Setter Property="Template" Value="{StaticResource ButtonTemplateWhite}"/>
+        <Setter Property="Template" Value="{StaticResource ButtonTemplateTransparentWhiteBorder}"/>
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidWhite}"/>
     </Style>
     <Style x:Key="ButtonImageTransparentBlackBorder" TargetType="Button">
@@ -304,7 +304,7 @@
         <Setter Property="BorderThickness" Value="2"/>
         <Setter Property="BorderBrush" Value="Transparent"/>
         <Setter Property="Cursor" Value="Hand"/>
-        <Setter Property="Template" Value="{StaticResource ButtonTemplateBlack}"/>
+        <Setter Property="Template" Value="{StaticResource ButtonTemplateTransparentBlackBorder}"/>
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidBlack}"/>
     </Style>
 
