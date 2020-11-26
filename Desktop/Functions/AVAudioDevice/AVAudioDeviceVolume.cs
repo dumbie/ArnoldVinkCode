@@ -6,13 +6,21 @@ namespace ArnoldVinkCode
 {
     public partial class AVAudioDevice
     {
-        //Set the current audio device volume (0-100)
-        public static bool AudioVolumeSet(int targetVolume)
+        //Set default audio device volume (0-100)
+        public static bool AudioVolumeSet(int targetVolume, bool inputDevice)
         {
             try
             {
                 IMMDeviceEnumerator deviceEnumerator = (IMMDeviceEnumerator)new MMDeviceEnumerator();
-                IMMDevice.IMMDevice deviceItem = deviceEnumerator.GetDefaultAudioEndpoint(EDataFlow.eRender, ERole.eMultimedia);
+                IMMDevice.IMMDevice deviceItem = null;
+                if (!inputDevice)
+                {
+                    deviceItem = deviceEnumerator.GetDefaultAudioEndpoint(EDataFlow.eRender, ERole.eMultimedia);
+                }
+                else
+                {
+                    deviceItem = deviceEnumerator.GetDefaultAudioEndpoint(EDataFlow.eCapture, ERole.eMultimedia);
+                }
 
                 //Get the audio device volume endpoint
                 deviceItem.Activate(typeof(IAudioEndpointVolume).GUID, 0, IntPtr.Zero, out object deviceActivated);
@@ -31,18 +39,26 @@ namespace ArnoldVinkCode
             }
             catch
             {
-                Debug.WriteLine("Failed to set the audio device volume.");
+                Debug.WriteLine("Failed to set default audio device volume.");
                 return false;
             }
         }
 
-        //Up the current audio device volume (0-100)
-        public static bool AudioVolumeUp(int targetStep)
+        //Up default audio device volume (0-100)
+        public static bool AudioVolumeUp(int targetStep, bool inputDevice)
         {
             try
             {
                 IMMDeviceEnumerator deviceEnumerator = (IMMDeviceEnumerator)new MMDeviceEnumerator();
-                IMMDevice.IMMDevice deviceItem = deviceEnumerator.GetDefaultAudioEndpoint(EDataFlow.eRender, ERole.eMultimedia);
+                IMMDevice.IMMDevice deviceItem = null;
+                if (!inputDevice)
+                {
+                    deviceItem = deviceEnumerator.GetDefaultAudioEndpoint(EDataFlow.eRender, ERole.eMultimedia);
+                }
+                else
+                {
+                    deviceItem = deviceEnumerator.GetDefaultAudioEndpoint(EDataFlow.eCapture, ERole.eMultimedia);
+                }
 
                 //Get the audio device volume endpoint
                 deviceItem.Activate(typeof(IAudioEndpointVolume).GUID, 0, IntPtr.Zero, out object deviceActivated);
@@ -64,18 +80,26 @@ namespace ArnoldVinkCode
             }
             catch
             {
-                Debug.WriteLine("Failed to up the audio device volume.");
+                Debug.WriteLine("Failed to up default audio device volume.");
                 return false;
             }
         }
 
-        //Down the current audio device volume (0-100)
-        public static bool AudioVolumeDown(int targetStep)
+        //Down default audio device volume (0-100)
+        public static bool AudioVolumeDown(int targetStep, bool inputDevice)
         {
             try
             {
                 IMMDeviceEnumerator deviceEnumerator = (IMMDeviceEnumerator)new MMDeviceEnumerator();
-                IMMDevice.IMMDevice deviceItem = deviceEnumerator.GetDefaultAudioEndpoint(EDataFlow.eRender, ERole.eMultimedia);
+                IMMDevice.IMMDevice deviceItem = null;
+                if (!inputDevice)
+                {
+                    deviceItem = deviceEnumerator.GetDefaultAudioEndpoint(EDataFlow.eRender, ERole.eMultimedia);
+                }
+                else
+                {
+                    deviceItem = deviceEnumerator.GetDefaultAudioEndpoint(EDataFlow.eCapture, ERole.eMultimedia);
+                }
 
                 //Get the audio device volume endpoint
                 deviceItem.Activate(typeof(IAudioEndpointVolume).GUID, 0, IntPtr.Zero, out object deviceActivated);
@@ -97,18 +121,26 @@ namespace ArnoldVinkCode
             }
             catch
             {
-                Debug.WriteLine("Failed to down the audio device volume.");
+                Debug.WriteLine("Failed to down default audio device volume.");
                 return false;
             }
         }
 
-        //Get the current audio device volume (0-100)
-        public static int AudioVolumeGet()
+        //Get default audio device volume (0-100)
+        public static int AudioVolumeGet(bool inputDevice)
         {
             try
             {
                 IMMDeviceEnumerator deviceEnumerator = (IMMDeviceEnumerator)new MMDeviceEnumerator();
-                IMMDevice.IMMDevice deviceItem = deviceEnumerator.GetDefaultAudioEndpoint(EDataFlow.eRender, ERole.eMultimedia);
+                IMMDevice.IMMDevice deviceItem = null;
+                if (!inputDevice)
+                {
+                    deviceItem = deviceEnumerator.GetDefaultAudioEndpoint(EDataFlow.eRender, ERole.eMultimedia);
+                }
+                else
+                {
+                    deviceItem = deviceEnumerator.GetDefaultAudioEndpoint(EDataFlow.eCapture, ERole.eMultimedia);
+                }
 
                 //Get the audio device volume endpoint
                 deviceItem.Activate(typeof(IAudioEndpointVolume).GUID, 0, IntPtr.Zero, out object deviceActivated);
@@ -123,18 +155,26 @@ namespace ArnoldVinkCode
             }
             catch
             {
-                Debug.WriteLine("Failed to get the audio device volume.");
+                Debug.WriteLine("Failed to get default audio device volume.");
                 return -1;
             }
         }
 
-        //Switch the audio device mute status
-        public static void AudioMuteSwitch()
+        //Switch default audio device mute status
+        public static void AudioMuteSwitch(bool inputDevice)
         {
             try
             {
                 IMMDeviceEnumerator deviceEnumerator = (IMMDeviceEnumerator)new MMDeviceEnumerator();
-                IMMDevice.IMMDevice deviceItem = deviceEnumerator.GetDefaultAudioEndpoint(EDataFlow.eRender, ERole.eMultimedia);
+                IMMDevice.IMMDevice deviceItem = null;
+                if (!inputDevice)
+                {
+                    deviceItem = deviceEnumerator.GetDefaultAudioEndpoint(EDataFlow.eRender, ERole.eMultimedia);
+                }
+                else
+                {
+                    deviceItem = deviceEnumerator.GetDefaultAudioEndpoint(EDataFlow.eCapture, ERole.eMultimedia);
+                }
 
                 //Get the audio device volume endpoint
                 deviceItem.Activate(typeof(IAudioEndpointVolume).GUID, 0, IntPtr.Zero, out object deviceActivated);
@@ -149,17 +189,85 @@ namespace ArnoldVinkCode
             }
             catch
             {
-                Debug.WriteLine("Failed to switch the mute status.");
+                Debug.WriteLine("Failed to switch mute status.");
             }
         }
 
-        //Get the audio device mute status
-        public static bool AudioMuteGetStatus()
+        //Mute default audio device
+        public static void AudioMute(bool inputDevice)
         {
             try
             {
                 IMMDeviceEnumerator deviceEnumerator = (IMMDeviceEnumerator)new MMDeviceEnumerator();
-                IMMDevice.IMMDevice deviceItem = deviceEnumerator.GetDefaultAudioEndpoint(EDataFlow.eRender, ERole.eMultimedia);
+                IMMDevice.IMMDevice deviceItem = null;
+                if (!inputDevice)
+                {
+                    deviceItem = deviceEnumerator.GetDefaultAudioEndpoint(EDataFlow.eRender, ERole.eMultimedia);
+                }
+                else
+                {
+                    deviceItem = deviceEnumerator.GetDefaultAudioEndpoint(EDataFlow.eCapture, ERole.eMultimedia);
+                }
+
+                //Get the audio device volume endpoint
+                deviceItem.Activate(typeof(IAudioEndpointVolume).GUID, 0, IntPtr.Zero, out object deviceActivated);
+                IAudioEndpointVolume audioEndPointVolume = (IAudioEndpointVolume)deviceActivated;
+
+                //Set the switched mute status
+                audioEndPointVolume.SetMute(true, Guid.Empty);
+                Debug.WriteLine("Muted audio device.");
+            }
+            catch
+            {
+                Debug.WriteLine("Failed to mute audio device.");
+            }
+        }
+
+        //Mute default audio device
+        public static void AudioUnmute(bool inputDevice)
+        {
+            try
+            {
+                IMMDeviceEnumerator deviceEnumerator = (IMMDeviceEnumerator)new MMDeviceEnumerator();
+                IMMDevice.IMMDevice deviceItem = null;
+                if (!inputDevice)
+                {
+                    deviceItem = deviceEnumerator.GetDefaultAudioEndpoint(EDataFlow.eRender, ERole.eMultimedia);
+                }
+                else
+                {
+                    deviceItem = deviceEnumerator.GetDefaultAudioEndpoint(EDataFlow.eCapture, ERole.eMultimedia);
+                }
+
+                //Get the audio device volume endpoint
+                deviceItem.Activate(typeof(IAudioEndpointVolume).GUID, 0, IntPtr.Zero, out object deviceActivated);
+                IAudioEndpointVolume audioEndPointVolume = (IAudioEndpointVolume)deviceActivated;
+
+                //Set the switched mute status
+                audioEndPointVolume.SetMute(false, Guid.Empty);
+                Debug.WriteLine("Unmuted audio device.");
+            }
+            catch
+            {
+                Debug.WriteLine("Failed to unmute audio device.");
+            }
+        }
+
+        //Get default audio device mute status
+        public static bool AudioMuteGetStatus(bool inputDevice)
+        {
+            try
+            {
+                IMMDeviceEnumerator deviceEnumerator = (IMMDeviceEnumerator)new MMDeviceEnumerator();
+                IMMDevice.IMMDevice deviceItem = null;
+                if (!inputDevice)
+                {
+                    deviceItem = deviceEnumerator.GetDefaultAudioEndpoint(EDataFlow.eRender, ERole.eMultimedia);
+                }
+                else
+                {
+                    deviceItem = deviceEnumerator.GetDefaultAudioEndpoint(EDataFlow.eCapture, ERole.eMultimedia);
+                }
 
                 //Get the audio device volume endpoint
                 deviceItem.Activate(typeof(IAudioEndpointVolume).GUID, 0, IntPtr.Zero, out object deviceActivated);
@@ -171,7 +279,7 @@ namespace ArnoldVinkCode
             }
             catch
             {
-                Debug.WriteLine("Failed to get the mute status.");
+                Debug.WriteLine("Failed to get mute status.");
                 return false;
             }
         }
