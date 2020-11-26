@@ -23,7 +23,7 @@
     <!--ComboBox Template Accent-->
     <ControlTemplate x:Key="ComboBoxTemplateAccent" TargetType="{x:Type ComboBox}">
         <Grid>
-            <Popup x:Name="PART_Popup" MaxHeight="250" AllowsTransparency="True" Width="{TemplateBinding Width}" IsOpen="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" Placement="Bottom">
+            <Popup x:Name="PART_Popup" MaxHeight="250" AllowsTransparency="True" Width="{TemplateBinding ActualWidth}" IsOpen="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" Placement="Bottom">
                 <Border x:Name="DropDownBorder" CornerRadius="2" Background="{DynamicResource ApplicationAccentLightBrush}">
                     <ScrollViewer x:Name="DropDownScrollViewer">
                         <ItemsPresenter x:Name="ItemsPresenter" KeyboardNavigation.DirectionalNavigation="Contained"/>
