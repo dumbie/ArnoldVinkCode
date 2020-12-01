@@ -69,6 +69,11 @@
                 <Thumb Style="{StaticResource SliderThumb}"/>
             </Track.Thumb>
         </Track>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value="0.50"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
     </ControlTemplate>
 
     <Style x:Key="{x:Type Slider}" TargetType="{x:Type Slider}">
