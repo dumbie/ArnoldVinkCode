@@ -84,8 +84,15 @@ namespace ArnoldVinkCode
 
                 //Wait for task to have stopped
                 Debug.WriteLine("Waiting for task to stop or timeout...");
+                int stopTimeout = 0;
                 while (!avTask.TaskCompleted)
                 {
+                    if (stopTimeout > 8000)
+                    {
+                        Debug.WriteLine("Stopping the task has timed out...");
+                        break;
+                    }
+                    stopTimeout++;
                     await Task.Delay(1);
                 }
 

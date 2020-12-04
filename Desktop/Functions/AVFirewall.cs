@@ -1,6 +1,7 @@
 ﻿using NetFwTypeLib; //C:\Windows\System32\FirewallAPI.dll
 using System;
 using System.Diagnostics;
+using System.IO;
 
 namespace ArnoldVinkCode
 {
@@ -46,20 +47,22 @@ namespace ArnoldVinkCode
         }
 
         //Firewall executable remove
-        public static bool Firewall_ExecutableRemove(string executablePath)
+        public static bool Firewall_ExecutableRemove(string executableName)
         {
             try
             {
+                string executableNameFile = Path.GetFileName(executableName).ToLower();
                 INetFwPolicy2 firewallPolicy = (INetFwPolicy2)Activator.CreateInstance(Type.GetTypeFromProgID("HNetCfg.FwPolicy2"));
                 foreach (INetFwRule firewallRule in firewallPolicy.Rules)
                 {
                     try
                     {
                         if (firewallRule.ApplicationName == null) { continue; }
-                        if (firewallRule.ApplicationName.ToLower() == executablePath.ToLower())
+                        string executableNameRule = Path.GetFileName(firewallRule.ApplicationName).ToLower();
+                        if (executableNameRule == executableNameFile)
                         {
                             firewallPolicy.Rules.Remove(firewallRule.Name);
-                            Debug.WriteLine("Removed executable from firewall: " + executablePath);
+                            Debug.WriteLine("Removed executable from firewall: " + executableName);
                         }
                     }
                     catch { }
@@ -68,7 +71,7 @@ namespace ArnoldVinkCode
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed removing from firewall: " + executablePath + " / " + ex.Message);
+                Debug.WriteLine("Failed removing from firewall: " + executableName + " / " + ex.Message);
                 return false;
             }
         }
