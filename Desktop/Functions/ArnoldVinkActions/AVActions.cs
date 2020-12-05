@@ -67,6 +67,33 @@ namespace ArnoldVinkCode
             }
         }
 
+        ///<param name="actionRun">async Task TaskAction() { while (!AVTask.TaskStopRequest) { void(); await TaskDelayLoop(1000, AVTask); } }</param>
+        ///<example>AVActions.TaskStartLoop(TaskAction, AVTask);</example>
+        ///<summary>Don't forget to use try and catch to improve stability</summary>
+        public static void TaskStartLoop(Action actionRun, AVTaskDetails avTask)
+        {
+            try
+            {
+                if (avTask == null)
+                {
+                    Task.Run(actionRun);
+                }
+                else
+                {
+                    //Dispose and reset task
+                    avTask.DisposeReset();
+
+                    //Create new loop task
+                    avTask.Task = Task.Run(actionRun);
+                }
+                Debug.WriteLine("Loop task has been started.");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to start loop task: " + ex.Message);
+            }
+        }
+
         ///<example>AVActions.TaskStopLoop(AVTask);</example>
         public static async Task TaskStopLoop(AVTaskDetails avTask)
         {
@@ -111,7 +138,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                await Task.Delay(millisecondsDelay, avTask.TokenCancel);
+                await Task.Delay(millisecondsDelay, avTask.TokenSource.Token);
             }
             catch { }
         }
