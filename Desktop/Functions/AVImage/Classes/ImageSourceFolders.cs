@@ -1,8 +1,8 @@
 ﻿using System.IO;
 
-namespace LibraryShared
+namespace ArnoldVinkCode
 {
-    public partial class Classes
+    public partial class AVImage
     {
         public class ImageSourceFolders
         {
