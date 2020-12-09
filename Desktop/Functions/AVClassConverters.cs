@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Runtime.Remoting.Metadata.W3cXsd2001;
@@ -8,16 +9,43 @@ namespace ArnoldVinkCode
 {
     public partial class AVClassConverters
     {
-        //Clone existing class object
-        public static T CloneClassObject<T>(T classObject) where T : class
+        //Shallow clone object
+        public static bool CloneObjectShallow<T>(T cloneObject, out T outObject)
         {
             try
             {
-                MethodInfo methodIndo = classObject.GetType().GetMethod("MemberwiseClone", BindingFlags.Instance | BindingFlags.NonPublic);
-                return (T)methodIndo?.Invoke(classObject, null);
+                MethodInfo methodIndo = cloneObject.GetType().GetMethod("MemberwiseClone", BindingFlags.Instance | BindingFlags.NonPublic);
+                outObject = (T)methodIndo.Invoke(cloneObject, null);
+                return true;
             }
-            catch { }
-            return null;
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to shallow clone object: " + ex.Message);
+                outObject = default(T);
+                return false;
+            }
+        }
+
+        //Deep clone object
+        public static bool CloneObjectDeep<T>(T cloneObject, out T outObject)
+        {
+            try
+            {
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    BinaryFormatter formatter = new BinaryFormatter();
+                    formatter.Serialize(memoryStream, cloneObject);
+                    memoryStream.Position = 0;
+                    outObject = (T)formatter.Deserialize(memoryStream);
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to deep clone object: " + ex.Message);
+                outObject = default(T);
+                return false;
+            }
         }
 
         //Convert bytes to hex string
@@ -25,12 +53,11 @@ namespace ArnoldVinkCode
         {
             try
             {
-                SoapHexBinary shb = SoapHexBinary.Parse(value);
-                return shb.Value;
+                return SoapHexBinary.Parse(value).Value;
             }
-            catch
+            catch (Exception ex)
             {
-                Debug.WriteLine("Failed to GetHexStringToBytes.");
+                Debug.WriteLine("Failed to GetHexStringToBytes: " + ex.Message);
                 return null;
             }
         }
@@ -39,12 +66,11 @@ namespace ArnoldVinkCode
         {
             try
             {
-                SoapHexBinary shb = new SoapHexBinary(value);
-                return shb.ToString();
+                return new SoapHexBinary(value).ToString();
             }
-            catch
+            catch (Exception ex)
             {
-                Debug.WriteLine("Failed to GetBytesToHexString.");
+                Debug.WriteLine("Failed to GetBytesToHexString: " + ex.Message);
                 return null;
             }
         }
@@ -60,26 +86,28 @@ namespace ArnoldVinkCode
                     return memoryStream.ToArray();
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                Debug.WriteLine("Failed to SerializeObjectToBytes.");
+                Debug.WriteLine("Failed to SerializeObjectToBytes: " + ex.Message);
                 return null;
             }
         }
 
-        public static T DeserializeBytesToClass<T>(byte[] bytesObject) where T : class
+        public static bool DeserializeBytesToObject<T>(byte[] bytesObject, out T outObject)
         {
             try
             {
                 using (MemoryStream memoryStream = new MemoryStream(bytesObject))
                 {
-                    return (T)new BinaryFormatter().Deserialize(memoryStream);
+                    outObject = (T)new BinaryFormatter().Deserialize(memoryStream);
+                    return true;
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                Debug.WriteLine("Failed to DeserializeBytesToObject.");
-                return null;
+                Debug.WriteLine("Failed to DeserializeBytesToObject: " + ex.Message);
+                outObject = default(T);
+                return false;
             }
         }
     }
