@@ -62,6 +62,8 @@ namespace ArnoldVinkCode
         public static extern int GetProcessIdOfThread(IntPtr hWnd);
         [DllImport("Shell32.dll", CharSet = CharSet.Unicode)]
         public static extern int SHGetPropertyStoreForWindow(IntPtr hwnd, ref Guid iid, [Out(), MarshalAs(UnmanagedType.Interface)] out IPropertyStore propertyStore);
+        [DllImport("kernel32.dll")]
+        public static extern bool CloseHandle(IntPtr hHandle);
 
         //Window event hook
         [DllImport("user32.dll")]
@@ -162,8 +164,6 @@ namespace ArnoldVinkCode
         public static extern bool OpenProcessToken(IntPtr ProcessHandle, DesiredAccessFlags desiredAccess, out IntPtr TokenHandle);
         [DllImport("kernel32.dll")]
         public static extern IntPtr OpenProcess(ProcessAccessFlags processAccess, bool bInheritHandle, int processId);
-        [DllImport("kernel32.dll")]
-        public static extern bool CloseHandle(IntPtr hHandle);
         public enum ProcessAccessFlags : uint
         {
             All = 0x001F0FFF,
@@ -590,5 +590,26 @@ namespace ArnoldVinkCode
             SPIF_UPDATEINIFILE = 0x01,
             SPIF_SENDCHANGE = 0x02
         }
+
+        //Time events
+        internal delegate void MultimediaTimerCallback(uint uTimerID, uint uMsg, UIntPtr dwUser, UIntPtr dw1, UIntPtr dw2);
+
+        [DllImport("winmm.dll")]
+        internal static extern uint timeSetEvent(uint msDelay, uint msResolution, MultimediaTimerCallback callback, uint userCtx, uint eventType);
+
+        [DllImport("winmm.dll")]
+        internal static extern void timeKillEvent(uint uTimerId);
+
+        //Kernel events
+        public const uint INFINITE = 0xFFFFFFFF;
+
+        [DllImport("kernel32.dll")]
+        public static extern IntPtr CreateEvent(IntPtr lpEventAttributes, bool bManualReset, bool bInitialState, string lpName);
+
+        [DllImport("kernel32.dll")]
+        public static extern bool SetEvent(IntPtr hEvent);
+
+        [DllImport("kernel32.dll")]
+        public static extern uint WaitForSingleObject(IntPtr hEvent, uint dwMilliseconds);
     }
 }

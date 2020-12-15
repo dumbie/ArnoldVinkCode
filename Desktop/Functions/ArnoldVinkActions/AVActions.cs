@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
+using static ArnoldVinkCode.AVInteropDll;
 
 namespace ArnoldVinkCode
 {
@@ -139,6 +140,26 @@ namespace ArnoldVinkCode
             try
             {
                 await Task.Delay(millisecondsDelay, avTask.TokenSource.Token);
+            }
+            catch { }
+        }
+
+        ///<example>await AVActions.TaskDelayNano(1);</example>
+        ///<summary>High resolution delay, only use for sub 50ms.</summary>
+        public static void TaskDelayNano(uint millisecondsDelay)
+        {
+            try
+            {
+                IntPtr createEvent = CreateEvent(IntPtr.Zero, true, false, null);
+                MultimediaTimerCallback callbackDone = delegate
+                {
+                    SetEvent(createEvent);
+                    CloseHandle(createEvent);
+                };
+
+                timeSetEvent(millisecondsDelay, 0, callbackDone, 0, 0);
+                WaitForSingleObject(createEvent, INFINITE);
+                callbackDone.EndInvoke(null);
             }
             catch { }
         }
