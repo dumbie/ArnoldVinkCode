@@ -10,14 +10,14 @@ namespace ArnoldVinkCode
     public partial class ArnoldVinkSockets
     {
         //Clean disconnected tcp clients
-        private async Task LoopTcpCleaner()
+        private async Task TcpCleanLoop()
         {
             try
             {
                 Debug.WriteLine("Tcp client cleaner is now running (L)");
 
                 //Tcp cleaner loop
-                while (!vTask_SocketClean.TaskStopRequest)
+                while (!vTask_TcpCleanLoop.TaskStopRequest)
                 {
                     try
                     {
@@ -29,7 +29,7 @@ namespace ArnoldVinkCode
                                 //Check if the tcp client is connected
                                 if (tcpClient == null || !tcpClient.Connected || !tcpClient.Client.Connected)
                                 {
-                                    CleanRemoveTcpClientFromList(tcpClient);
+                                    TcpClientRemoveFromList(tcpClient);
                                     Debug.WriteLine("Cleaned disconnected tcp client (L)");
                                     continue;
                                 }
@@ -39,7 +39,7 @@ namespace ArnoldVinkCode
                                 {
                                     if (tcpClient.Client.Receive(new byte[1], SocketFlags.Peek) == 0)
                                     {
-                                        CleanRemoveTcpClientFromList(tcpClient);
+                                        TcpClientRemoveFromList(tcpClient);
                                         Debug.WriteLine("Cleaned timed out tcp client (L)");
                                         continue;
                                     }
@@ -47,7 +47,7 @@ namespace ArnoldVinkCode
                             }
                             catch
                             {
-                                CleanRemoveTcpClientFromList(tcpClient);
+                                TcpClientRemoveFromList(tcpClient);
                                 Debug.WriteLine("Cleaned failed tcp client (L)");
                             }
                         }
@@ -55,7 +55,7 @@ namespace ArnoldVinkCode
                     catch { }
 
                     //Delay the loop task
-                    await TaskDelayLoop(3000, vTask_SocketClean);
+                    await TaskDelayLoop(3000, vTask_TcpCleanLoop);
                 }
             }
             catch (Exception ex)
@@ -65,7 +65,7 @@ namespace ArnoldVinkCode
         }
 
         //Remove tcp client from the list
-        void CleanRemoveTcpClientFromList(TcpClient tcpClient)
+        void TcpClientRemoveFromList(TcpClient tcpClient)
         {
             try
             {

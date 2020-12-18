@@ -48,13 +48,13 @@ namespace ArnoldVinkCode
                     bool connectAsync = await TcpClientConnectAsyncTimeout(tcpClient, targetIp, targetPort, timeOut);
                     if (!connectAsync)
                     {
-                        Debug.WriteLine("Failed connecting to the tcp listener (C): " + targetIp + ":" + targetPort);
+                        Debug.WriteLine("Failed connecting to the tcp server (C): " + targetIp + ":" + targetPort);
                         vCreatingClient = false;
                         return null;
                     }
                     else
                     {
-                        Debug.WriteLine("Connected to the tcp listener (C): " + targetIp + ":" + targetPort);
+                        Debug.WriteLine("Connected to the tcp server (C): " + targetIp + ":" + targetPort);
                         vTcpClients.Insert(0, tcpClient);
                         vCreatingClient = false;
                         return tcpClient;
@@ -84,7 +84,7 @@ namespace ArnoldVinkCode
                     try
                     {
                         TcpClientDisconnect(tcpClient);
-                        CleanRemoveTcpClientFromList(tcpClient);
+                        TcpClientRemoveFromList(tcpClient);
                     }
                     catch { }
                 }
@@ -121,7 +121,7 @@ namespace ArnoldVinkCode
                 //Check if the tcp client is connected
                 if (tcpClient == null || !tcpClient.Connected || !tcpClient.Client.Connected)
                 {
-                    Debug.WriteLine("The sending tcp client is not connected (C)");
+                    Debug.WriteLine("Sending tcp client is not connected (C)");
                     return false;
                 }
 
@@ -142,7 +142,7 @@ namespace ArnoldVinkCode
                 bool writeAsync = await NetworkStreamWriteAsyncTimeout(networkStream, targetBytes, 0, targetBytes.Length, timeOut);
                 if (!writeAsync)
                 {
-                    //Debug.WriteLine("Failed to write to the tcp listener (C): " + endPoint.Address.ToString() + ":" + endPoint.Port + " " + targetBytes.Length + "b");
+                    //Debug.WriteLine("Failed to write to the tcp server (C): " + endPoint.Address.ToString() + ":" + endPoint.Port + " " + targetBytes.Length + "b");
                     TcpClientDisconnect(tcpClient);
                     return false;
                 }
@@ -153,12 +153,12 @@ namespace ArnoldVinkCode
                     TcpClientDisconnect(tcpClient);
                 }
 
-                //Debug.WriteLine("Sended bytes to the tcp listener (C): " + endTargetIp + ":" + endPoint.Port + " " + targetBytes.Length + "b");
+                //Debug.WriteLine("Sended bytes to the tcp server (C): " + endTargetIp + ":" + endPoint.Port + " " + targetBytes.Length + "b");
                 return true;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed sending bytes (C): " + ex.Message);
+                Debug.WriteLine("Failed sending tcp bytes (C): " + ex.Message);
                 TcpClientDisconnect(tcpClient);
                 return false;
             }

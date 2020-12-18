@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
@@ -111,6 +112,17 @@ namespace ArnoldVinkCode
                 return Oldstring;
             }
             catch { return Oldstring; }
+        }
+
+        //Remove unicode characters from string
+        public static string StringRemoveUnicode(string stringText)
+        {
+            try
+            {
+                stringText = Regex.Replace(stringText, @"[^\u0020-\u007E]", string.Empty);
+            }
+            catch { }
+            return stringText;
         }
 
         //Remove text after certain character
