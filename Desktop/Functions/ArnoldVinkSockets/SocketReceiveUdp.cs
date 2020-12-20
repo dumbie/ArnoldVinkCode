@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-using System.Net.Sockets;
-using System.Text;
+﻿using System.Net.Sockets;
 using System.Threading.Tasks;
 
 namespace ArnoldVinkCode
@@ -20,7 +18,7 @@ namespace ArnoldVinkCode
                         byte[] receivedBytes = receiveResult.Buffer;
                         if (receivedBytes.Length > 0)
                         {
-                            Debug.WriteLine("Received bytes from udp client (S): " + receivedBytes.Length);
+                            //Debug.WriteLine("Received bytes from udp client (S): " + receivedBytes.Length);
                             await EventBytesReceived(null, receiveResult.RemoteEndPoint, receivedBytes);
                         }
                     }

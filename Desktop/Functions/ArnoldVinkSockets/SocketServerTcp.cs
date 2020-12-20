@@ -29,7 +29,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                //Set the server end point
+                //Set the server endpoint
                 IPEndPoint serverEndPoint = new IPEndPoint(IPAddress.Any, vSocketServerPort);
 
                 //Start tcp server

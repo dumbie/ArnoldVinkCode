@@ -14,7 +14,6 @@ namespace ArnoldVinkCode
             {
                 Debug.WriteLine("Stopping the udp server (S)");
                 udpClient.Close();
-                udpClient.Dispose();
                 udpClient = null;
             }
             catch (Exception ex)
@@ -29,7 +28,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                //Set the server end point
+                //Set the server endpoint
                 IPEndPoint serverEndPoint = new IPEndPoint(IPAddress.Any, vSocketServerPort);
 
                 //Start udp server

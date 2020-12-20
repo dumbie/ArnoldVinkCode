@@ -29,5 +29,7 @@ namespace ArnoldVinkCode
         public string vSocketServerIp = "127.0.0.1";
         public int vSocketServerPort = 1000;
         public int vSocketTimeout = 3000;
+        private bool vTcpServerEnabled = false;
+        private bool vUdpServerEnabled = false;
     }
 }

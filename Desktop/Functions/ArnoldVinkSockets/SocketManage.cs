@@ -9,12 +9,14 @@ namespace ArnoldVinkCode
     public partial class ArnoldVinkSockets
     {
         //Create and enable socket server
-        public ArnoldVinkSockets(string serverIp, int serverPort)
+        public ArnoldVinkSockets(string serverIp, int serverPort, bool tcpServer, bool udpServer)
         {
             try
             {
                 vSocketServerIp = serverIp;
                 vSocketServerPort = serverPort;
+                vTcpServerEnabled = tcpServer;
+                vUdpServerEnabled = udpServer;
                 SocketServerEnable();
             }
             catch { }
@@ -26,8 +28,8 @@ namespace ArnoldVinkCode
             try
             {
                 Debug.WriteLine("Enabling the socket server (S)");
-                TcpServerStart();
-                UdpServerStart();
+                if (vTcpServerEnabled) { TcpServerStart(); }
+                if (vUdpServerEnabled) { UdpServerStart(); }
             }
             catch (Exception ex)
             {
