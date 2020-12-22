@@ -112,10 +112,10 @@ namespace ArnoldVinkCode
 
                 //Wait for task to have stopped
                 Debug.WriteLine("Waiting for task to stop or timeout...");
-                int stopTimeout = Environment.TickCount;
+                long stopTimeout = GetSystemTicksMs();
                 while (!avTask.TaskCompleted)
                 {
-                    if ((Environment.TickCount - stopTimeout) > 8000)
+                    if ((GetSystemTicksMs() - stopTimeout) >= 8000)
                     {
                         Debug.WriteLine("Stopping the task has timed out...");
                         break;
