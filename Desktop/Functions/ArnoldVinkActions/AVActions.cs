@@ -144,9 +144,9 @@ namespace ArnoldVinkCode
             catch { }
         }
 
-        ///<example>await AVActions.TaskDelayNano(1);</example>
+        ///<example>await AVActions.TaskDelayMs(1);</example>
         ///<summary>High resolution delay, only use for sub 50ms.</summary>
-        public static void TaskDelayNano(uint millisecondsDelay)
+        public static void TaskDelayMs(uint millisecondsDelay)
         {
             try
             {
@@ -162,6 +162,17 @@ namespace ArnoldVinkCode
                 callbackDone.EndInvoke(null);
             }
             catch { }
+        }
+
+        ///<example>AVActions.GetSystemTicksMs();</example>
+        public static long GetSystemTicksMs()
+        {
+            try
+            {
+                return Stopwatch.GetTimestamp() / 10000;
+            }
+            catch { }
+            return Environment.TickCount;
         }
 
         ///<example>AVActions.ElementGetValue(targetElement, targetProperty);</example>
