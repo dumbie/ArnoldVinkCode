@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
@@ -14,21 +15,11 @@ namespace ArnoldVinkCode
             try
             {
                 //Check existing tcp client
-                lock (vTcpClients)
+                TcpClient tcpClientExisting = vTcpClients.Where(x => ((IPEndPoint)x.Client.RemoteEndPoint).Address.ToString() == targetIp && ((IPEndPoint)x.Client.RemoteEndPoint).Port == targetPort).FirstOrDefault();
+                if (tcpClientExisting != null)
                 {
-                    foreach (TcpClient tcpClient in vTcpClients)
-                    {
-                        try
-                        {
-                            IPEndPoint endPoint = (IPEndPoint)tcpClient.Client.RemoteEndPoint;
-                            if (endPoint.Address.ToString() == targetIp && endPoint.Port == targetPort)
-                            {
-                                //Debug.WriteLine("Reusing tcp client (C): " + endPoint.Address + ":" + endPoint.Port);
-                                return tcpClient;
-                            }
-                        }
-                        catch { }
-                    }
+                    //Debug.WriteLine("Reusing tcp client (C): " + targetIp + ":" + targetPort);
+                    return tcpClientExisting;
                 }
 
                 //Create new tcp client
@@ -171,7 +162,11 @@ namespace ArnoldVinkCode
             {
                 Task timeTask = Task.Run(async delegate
                 {
-                    await tcpClient.ConnectAsync(targetIp, targetPort);
+                    try
+                    {
+                        await tcpClient.ConnectAsync(targetIp, targetPort);
+                    }
+                    catch { }
                 });
 
                 Task delayTask = Task.Delay(timeOut);
@@ -192,7 +187,11 @@ namespace ArnoldVinkCode
             {
                 Task timeTask = Task.Run(async delegate
                 {
-                    await stream.WriteAsync(buffer, offset, count);
+                    try
+                    {
+                        await stream.WriteAsync(buffer, offset, count);
+                    }
+                    catch { }
                 });
 
                 Task delayTask = Task.Delay(timeOut);

@@ -56,7 +56,11 @@ namespace ArnoldVinkCode
             {
                 Task timeTask = Task.Run(async delegate
                 {
-                    await vUdpServer.SendAsync(targetBytes, targetBytes.Length, endPoint);
+                    try
+                    {
+                        await vUdpServer.SendAsync(targetBytes, targetBytes.Length, endPoint);
+                    }
+                    catch { }
                 });
 
                 Task delayTask = Task.Delay(timeOut);
