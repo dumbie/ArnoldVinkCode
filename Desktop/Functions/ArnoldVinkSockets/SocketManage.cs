@@ -44,19 +44,21 @@ namespace ArnoldVinkCode
             {
                 Debug.WriteLine("Disabling the socket server (S)");
 
-                //Disconnect all the clients
-                TcpClientDisconnectAll();
-
                 //Stop the socket servers
                 TcpServerStop(vTcpServer);
                 UdpServerStop(vUdpServer);
+
+                //Disconnect all the clients
+                TcpClientDisconnectAll();
+                UdpClientDisconnectAll();
 
                 //Stop the server loops
                 await AVActions.TaskStopLoop(vTask_TcpReceiveLoop);
                 await AVActions.TaskStopLoop(vTask_UdpReceiveLoop);
 
-                //Stop the clean loop
+                //Stop the clean loops
                 await AVActions.TaskStopLoop(vTask_TcpCleanLoop);
+                await AVActions.TaskStopLoop(vTask_UdpCleanLoop);
             }
             catch (Exception ex)
             {

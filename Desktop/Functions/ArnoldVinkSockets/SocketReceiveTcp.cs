@@ -61,6 +61,7 @@ namespace ArnoldVinkCode
                         if (bytesReceivedLength > 0)
                         {
                             //Debug.WriteLine("Received bytes from tcp client (S): " + bytesReceivedLength);
+                            //Signal that bytes have arrived
                             await EventBytesReceived(tcpClient, null, receivedBytes);
                         }
                         else

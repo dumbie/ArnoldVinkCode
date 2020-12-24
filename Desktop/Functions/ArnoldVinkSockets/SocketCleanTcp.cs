@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using static ArnoldVinkCode.AVActions;
@@ -22,33 +21,36 @@ namespace ArnoldVinkCode
                     try
                     {
                         //Debug.WriteLine("Cleaning disconnected tcp clients (L)");
-                        foreach (TcpClient tcpClient in vTcpClients.ToList())
+                        lock (vTcpClients)
                         {
-                            try
+                            foreach (TcpClient tcpClient in vTcpClients)
                             {
-                                //Check if the tcp client is connected
-                                if (tcpClient == null || !tcpClient.Connected || !tcpClient.Client.Connected)
+                                try
                                 {
-                                    TcpClientRemoveFromList(tcpClient);
-                                    Debug.WriteLine("Cleaned disconnected tcp client (L)");
-                                    continue;
-                                }
-
-                                //Check if the tcp client has timed out
-                                if (tcpClient.Client.Poll(0, SelectMode.SelectRead))
-                                {
-                                    if (tcpClient.Client.Receive(new byte[1], SocketFlags.Peek) == 0)
+                                    //Check if the tcp client is connected
+                                    if (tcpClient == null || !tcpClient.Connected || !tcpClient.Client.Connected)
                                     {
                                         TcpClientRemoveFromList(tcpClient);
-                                        Debug.WriteLine("Cleaned timed out tcp client (L)");
+                                        Debug.WriteLine("Cleaned disconnected tcp client (L)");
                                         continue;
                                     }
+
+                                    //Check if the tcp client has timed out
+                                    if (tcpClient.Client.Poll(0, SelectMode.SelectRead))
+                                    {
+                                        if (tcpClient.Client.Receive(new byte[1], SocketFlags.Peek) == 0)
+                                        {
+                                            TcpClientRemoveFromList(tcpClient);
+                                            Debug.WriteLine("Cleaned timed out tcp client (L)");
+                                            continue;
+                                        }
+                                    }
                                 }
-                            }
-                            catch
-                            {
-                                TcpClientRemoveFromList(tcpClient);
-                                Debug.WriteLine("Cleaned failed tcp client (L)");
+                                catch
+                                {
+                                    TcpClientRemoveFromList(tcpClient);
+                                    Debug.WriteLine("Cleaned failed tcp client (L)");
+                                }
                             }
                         }
                     }
@@ -70,9 +72,12 @@ namespace ArnoldVinkCode
             try
             {
                 vTcpClients.Remove(tcpClient);
-                tcpClient = null;
+                TcpClientDisconnect(tcpClient);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to remove tcp client from list: " + ex.Message);
+            }
         }
     }
 }

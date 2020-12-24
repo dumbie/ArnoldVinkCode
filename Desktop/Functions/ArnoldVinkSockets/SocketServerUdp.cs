@@ -38,6 +38,9 @@ namespace ArnoldVinkCode
 
                 //Start receive loop
                 AVActions.TaskStartLoop(UdpReceiveLoop, vTask_UdpReceiveLoop);
+
+                //Start clean loop
+                AVActions.TaskStartLoop(UdpCleanLoop, vTask_UdpCleanLoop);
             }
             catch (Exception ex)
             {

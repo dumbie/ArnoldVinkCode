@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using static ArnoldVinkCode.AVActions;
@@ -11,10 +10,11 @@ namespace ArnoldVinkCode
         //Tasks
         public AVTaskDetails vTask_TcpCleanLoop = new AVTaskDetails();
         public AVTaskDetails vTask_TcpReceiveLoop = new AVTaskDetails();
+        public AVTaskDetails vTask_UdpCleanLoop = new AVTaskDetails();
         public AVTaskDetails vTask_UdpReceiveLoop = new AVTaskDetails();
 
         //Events
-        public delegate Task DelegateBytesReceived(TcpClient tcpClient, IPEndPoint endPoint, byte[] bytesReceived);
+        public delegate Task DelegateBytesReceived(TcpClient tcpClient, UdpEndPointDetails endPoint, byte[] bytesReceived);
         public DelegateBytesReceived EventBytesReceived = null;
 
         //Tcp server and clients
@@ -24,11 +24,13 @@ namespace ArnoldVinkCode
 
         //Udp server and clients
         private UdpClient vUdpServer = null;
+        private List<UdpEndPointDetails> vUdpClients = new List<UdpEndPointDetails>();
 
         //Variables
         public string vSocketServerIp = "127.0.0.1";
         public int vSocketServerPort = 1000;
         public int vSocketTimeout = 3000;
+        public int vSocketCleanup = 8000;
         private bool vTcpServerEnabled = false;
         private bool vUdpServerEnabled = false;
     }

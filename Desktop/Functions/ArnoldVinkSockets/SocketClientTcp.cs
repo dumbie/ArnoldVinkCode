@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
@@ -15,10 +14,9 @@ namespace ArnoldVinkCode
             try
             {
                 //Check existing tcp client
-                if (vTcpClients.Any())
+                lock (vTcpClients)
                 {
-                    //Look for target tcp client
-                    foreach (TcpClient tcpClient in vTcpClients.ToList())
+                    foreach (TcpClient tcpClient in vTcpClients)
                     {
                         try
                         {
@@ -79,14 +77,16 @@ namespace ArnoldVinkCode
             try
             {
                 Debug.WriteLine("Disconnecting all tcp clients (C)");
-                foreach (TcpClient tcpClient in vTcpClients.ToList())
+                lock (vTcpClients)
                 {
-                    try
+                    foreach (TcpClient tcpClient in vTcpClients)
                     {
-                        TcpClientDisconnect(tcpClient);
-                        TcpClientRemoveFromList(tcpClient);
+                        try
+                        {
+                            TcpClientRemoveFromList(tcpClient);
+                        }
+                        catch { }
                     }
-                    catch { }
                 }
             }
             catch (Exception ex)

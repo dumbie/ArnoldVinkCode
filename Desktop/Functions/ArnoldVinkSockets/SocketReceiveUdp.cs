@@ -1,5 +1,8 @@
-﻿using System.Net.Sockets;
+﻿using System.Diagnostics;
+using System.Linq;
+using System.Net.Sockets;
 using System.Threading.Tasks;
+using static ArnoldVinkCode.AVActions;
 
 namespace ArnoldVinkCode
 {
@@ -19,7 +22,29 @@ namespace ArnoldVinkCode
                         if (receivedBytes.Length > 0)
                         {
                             //Debug.WriteLine("Received bytes from udp client (S): " + receivedBytes.Length);
-                            await EventBytesReceived(null, receiveResult.RemoteEndPoint, receivedBytes);
+
+                            //Add udp endpoint to client list
+                            UdpEndPointDetails updDetailsExisting = vUdpClients.Where(x => x.IPEndPoint.Address.ToString() == receiveResult.RemoteEndPoint.Address.ToString() && x.IPEndPoint.Port == receiveResult.RemoteEndPoint.Port).FirstOrDefault();
+                            if (updDetailsExisting == null)
+                            {
+                                Debug.WriteLine("Added new udp client endpoint: " + receiveResult.RemoteEndPoint.Address + ":" + receiveResult.RemoteEndPoint.Port);
+                                UdpEndPointDetails updDetailsNew = new UdpEndPointDetails();
+                                updDetailsNew.Active = true;
+                                updDetailsNew.IPEndPoint = receiveResult.RemoteEndPoint;
+                                updDetailsNew.LastConnection = GetSystemTicksMs();
+                                vUdpClients.Add(updDetailsNew);
+
+                                //Signal that bytes have arrived
+                                await EventBytesReceived(null, updDetailsNew, receivedBytes);
+                            }
+                            else
+                            {
+                                //Debug.WriteLine("Updated existing udp client endpoint: " + receiveResult.RemoteEndPoint.Address + ":" + receiveResult.RemoteEndPoint.Port);
+                                updDetailsExisting.LastConnection = GetSystemTicksMs();
+
+                                //Signal that bytes have arrived
+                                await EventBytesReceived(null, updDetailsExisting, receivedBytes);
+                            }
                         }
                     }
                     catch { }
