@@ -8,35 +8,17 @@ using System.Windows.Media.Imaging;
 
 namespace ArnoldVinkCode
 {
-    public partial class ExtractImage
+    public partial class AVImage
     {
-        private class IconDetails
-        {
-            public int IconSize;
-            public BitmapFrame BitmapFrame;
-        }
-
-        private enum LoadLibraryFlags : uint
-        {
-            LOAD_LIBRARY_AS_DATAFILE = 0x00000002,
-            LOAD_LIBRARY_AS_DATAFILE_EXCLUSIVE = 0x00000040
-        }
-
-        private enum ResourceType
-        {
-            ICON = 3,
-            GROUP_ICON = 14
-        }
-
         [DllImport("kernel32.dll")]
         private static extern IntPtr LoadLibraryEx(string lpFileName, IntPtr hFile, LoadLibraryFlags dwFlags);
 
         [DllImport("kernel32.dll")]
-        private static extern bool EnumResourceNames(IntPtr hModule, ResourceType lpszType, EnumResNameProcDelegate lpEnumFunc, IntPtr lParam);
-        private delegate bool EnumResNameProcDelegate(IntPtr hModule, ResourceType lpszType, IntPtr lpEnumFunc, IntPtr lParam);
+        private static extern bool EnumResourceNames(IntPtr hModule, ResourceTypes lpszType, EnumResNameProcDelegate lpEnumFunc, IntPtr lParam);
+        private delegate bool EnumResNameProcDelegate(IntPtr hModule, ResourceTypes lpszType, IntPtr lpEnumFunc, IntPtr lParam);
 
         [DllImport("kernel32.dll")]
-        private static extern IntPtr FindResource(IntPtr hModule, IntPtr lpName, ResourceType lpType);
+        private static extern IntPtr FindResource(IntPtr hModule, IntPtr lpName, ResourceTypes lpType);
 
         [DllImport("kernel32.dll")]
         private static extern IntPtr LoadResource(IntPtr hModule, IntPtr hResInfo);
@@ -50,7 +32,7 @@ namespace ArnoldVinkCode
         [DllImport("kernel32.dll")]
         private static extern bool FreeLibrary(IntPtr hModule);
 
-        private static byte[] GetResourceData(IntPtr hModule, IntPtr lpName, ResourceType lpType)
+        private static byte[] GetResourceData(IntPtr hModule, IntPtr lpName, ResourceTypes lpType)
         {
             try
             {
@@ -106,11 +88,13 @@ namespace ArnoldVinkCode
                     try
                     {
                         //Get data from resource
-                        byte[] resourceData = GetResourceData(hModule, name, ResourceType.GROUP_ICON);
+                        byte[] resourceData = GetResourceData(hModule, name, ResourceTypes.GROUP_ICON);
 
                         //Count available icons
                         int iconDirSize = 6;
                         int iconDirEntrySize = 16;
+                        int groupIconDirSize = 6;
+                        int groupIconDirEntrySize = 14;
                         int iconCount = BitConverter.ToUInt16(resourceData, 4);
                         int iconOffset = iconDirSize + iconDirEntrySize * iconCount;
                         List<IconDetails> listIconDetails = new List<IconDetails>();
@@ -122,15 +106,15 @@ namespace ArnoldVinkCode
                             {
                                 using (BinaryWriter binaryWriter = new BinaryWriter(memoryStream))
                                 {
-                                    binaryWriter.Write(resourceData, 0, 6);
+                                    binaryWriter.Write(resourceData, 0, groupIconDirSize);
 
                                     //Load the icon
-                                    int iconId = BitConverter.ToUInt16(resourceData, 6 + 14 * iconNum + 12);
-                                    byte[] iconData = GetResourceData(hModule, (IntPtr)iconId, ResourceType.ICON);
+                                    int iconId = BitConverter.ToUInt16(resourceData, groupIconDirSize + groupIconDirEntrySize * iconNum + 12);
+                                    byte[] iconData = GetResourceData(hModule, (IntPtr)iconId, ResourceTypes.ICON);
 
                                     //Write IconDirEntry
-                                    binaryWriter.Seek(6 + 16 * iconNum, SeekOrigin.Begin);
-                                    binaryWriter.Write(resourceData, 6 + 14 * iconNum, 8);
+                                    binaryWriter.Seek(iconDirSize + iconDirEntrySize * iconNum, SeekOrigin.Begin);
+                                    binaryWriter.Write(resourceData, groupIconDirSize + groupIconDirEntrySize * iconNum, 8);
                                     binaryWriter.Write(iconData.Length);
                                     binaryWriter.Write(iconOffset);
 
@@ -157,7 +141,7 @@ namespace ArnoldVinkCode
                     catch { }
                     return true;
                 };
-                EnumResourceNames(hModule, ResourceType.GROUP_ICON, callback, IntPtr.Zero);
+                EnumResourceNames(hModule, ResourceTypes.GROUP_ICON, callback, IntPtr.Zero);
 
                 PngBitmapEncoder bitmapEncoder = new PngBitmapEncoder();
                 bitmapEncoder.Frames.Add(listBitmapFrame[iconIndex]);

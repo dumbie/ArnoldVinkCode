@@ -5,7 +5,7 @@ using System.Windows.Media.Imaging;
 
 namespace ArnoldVinkCode
 {
-    public partial class ExtractImage
+    public partial class AVImage
     {
         public static MemoryStream GetIconMemoryStreamFromIcoFile(string icoFilePath, ref MemoryStream imageMemoryStream)
         {

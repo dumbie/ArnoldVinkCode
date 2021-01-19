@@ -7,7 +7,7 @@ using static ArnoldVinkCode.AVInteropDll;
 
 namespace ArnoldVinkCode
 {
-    public partial class ExtractImage
+    public partial class AVImage
     {
         //Get the window icon from process
         public static MemoryStream GetIconMemoryStreamFromWindow(IntPtr windowHandle, ref MemoryStream imageMemoryStream)
