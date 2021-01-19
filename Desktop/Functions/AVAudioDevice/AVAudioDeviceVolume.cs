@@ -279,7 +279,7 @@ namespace ArnoldVinkCode
             }
             catch
             {
-                Debug.WriteLine("Failed to get mute status.");
+                //Debug.WriteLine("Failed to get mute status.");
                 return false;
             }
         }

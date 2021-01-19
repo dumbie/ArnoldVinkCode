@@ -10,6 +10,12 @@ namespace ArnoldVinkCode
 {
     public partial class ExtractImage
     {
+        private class IconDetails
+        {
+            public int IconSize;
+            public BitmapFrame BitmapFrame;
+        }
+
         private enum LoadLibraryFlags : uint
         {
             LOAD_LIBRARY_AS_DATAFILE = 0x00000002,
@@ -107,15 +113,17 @@ namespace ArnoldVinkCode
                         int iconDirEntrySize = 16;
                         int iconCount = BitConverter.ToUInt16(resourceData, 4);
                         int iconOffset = iconDirSize + iconDirEntrySize * iconCount;
+                        List<IconDetails> listIconDetails = new List<IconDetails>();
 
-                        //Load and decode icon
-                        using (MemoryStream memoryStream = new MemoryStream())
+                        //Load and decode icons
+                        for (int iconNum = 0; iconNum < iconCount; iconNum++)
                         {
-                            using (BinaryWriter binaryWriter = new BinaryWriter(memoryStream))
+                            using (MemoryStream memoryStream = new MemoryStream())
                             {
-                                binaryWriter.Write(resourceData, 0, 6);
-                                for (int iconNum = 0; iconNum < iconCount; iconNum++)
+                                using (BinaryWriter binaryWriter = new BinaryWriter(memoryStream))
                                 {
+                                    binaryWriter.Write(resourceData, 0, 6);
+
                                     //Load the icon
                                     int iconId = BitConverter.ToUInt16(resourceData, 6 + 14 * iconNum + 12);
                                     byte[] iconData = GetResourceData(hModule, (IntPtr)iconId, ResourceType.ICON);
@@ -129,15 +137,22 @@ namespace ArnoldVinkCode
                                     //Write icon to stream
                                     binaryWriter.Seek(iconOffset, SeekOrigin.Begin);
                                     binaryWriter.Write(iconData, 0, iconData.Length);
-
                                     iconOffset += iconData.Length;
-                                }
 
-                                IconBitmapDecoder iconBitmapDecoder = new IconBitmapDecoder(binaryWriter.BaseStream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
-                                BitmapFrame bitmapFrameLargest = iconBitmapDecoder.Frames.OrderBy(x => x.Width).ThenBy(x => x.Thumbnail.Format.BitsPerPixel).LastOrDefault();
-                                listBitmapFrame.Add(bitmapFrameLargest);
+                                    //Decode icon bitmap
+                                    IconBitmapDecoder iconBitmapDecoder = new IconBitmapDecoder(memoryStream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+
+                                    //Add icon to list
+                                    IconDetails newIcon = new IconDetails();
+                                    newIcon.IconSize = iconData.Length;
+                                    newIcon.BitmapFrame = iconBitmapDecoder.Frames.FirstOrDefault();
+                                    listIconDetails.Add(newIcon);
+                                }
                             }
                         }
+
+                        //Get largest icon bitmap frame
+                        listBitmapFrame.Add(listIconDetails.OrderByDescending(x => x.IconSize).FirstOrDefault().BitmapFrame);
                     }
                     catch { }
                     return true;
