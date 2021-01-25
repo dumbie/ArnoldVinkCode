@@ -13,7 +13,7 @@ namespace ArnoldVinkCode.Styles
     public class AVGifPlayer : Image
     {
         //GifPlayer variables
-        private GifBitmapDecoder vGifDecoder = null;
+        private BitmapDecoder vGifDecoder = null;
         private Int32Animation vInt32Animation = null;
         private bool vAnimating = false;
 
@@ -110,7 +110,7 @@ namespace ArnoldVinkCode.Styles
             {
                 if (GifSource != null)
                 {
-                    vGifDecoder = new GifBitmapDecoder(GifSource, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+                    vGifDecoder = BitmapDecoder.Create(GifSource, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
                     vInt32Animation = new Int32Animation(0, vGifDecoder.Frames.Count - 1, new Duration(new TimeSpan(0, 0, 0, vGifDecoder.Frames.Count / 10, (int)((vGifDecoder.Frames.Count / 10.0 - vGifDecoder.Frames.Count / 10) * 1000))));
                     vInt32Animation.RepeatBehavior = RepeatBehavior.Forever;
                     vInt32Animation.SpeedRatio = SpeedRatio;

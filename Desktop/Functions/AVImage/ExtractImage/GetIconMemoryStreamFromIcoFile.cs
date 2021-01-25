@@ -12,7 +12,7 @@ namespace ArnoldVinkCode
             try
             {
                 Uri iconUri = new Uri(icoFilePath, UriKind.RelativeOrAbsolute);
-                IconBitmapDecoder iconBitmapDecoder = new IconBitmapDecoder(iconUri, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+                BitmapDecoder iconBitmapDecoder = BitmapDecoder.Create(iconUri, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
                 BitmapFrame bitmapFrameLargest = iconBitmapDecoder.Frames.OrderBy(x => x.Width).ThenBy(x => x.Thumbnail.Format.BitsPerPixel).LastOrDefault();
 
                 PngBitmapEncoder bitmapEncoder = new PngBitmapEncoder();

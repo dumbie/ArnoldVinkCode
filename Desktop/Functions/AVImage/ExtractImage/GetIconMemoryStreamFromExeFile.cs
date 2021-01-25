@@ -1,15 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Windows.Media.Imaging;
 
 namespace ArnoldVinkCode
 {
     public partial class AVImage
     {
+        //Variables
+        private static List<IntPtr> iconGroups = new List<IntPtr>();
+
+        //DllImport
         [DllImport("kernel32.dll")]
         private static extern IntPtr LoadLibraryEx(string lpFileName, IntPtr hFile, LoadLibraryFlags dwFlags);
 
@@ -32,7 +36,63 @@ namespace ArnoldVinkCode
         [DllImport("kernel32.dll")]
         private static extern bool FreeLibrary(IntPtr hModule);
 
-        private static byte[] GetResourceData(IntPtr hModule, IntPtr lpName, ResourceTypes lpType)
+        //Methods
+        private static bool ReadStuctureFromStream<T>(Stream readStream, out T readStructure)
+        {
+            IntPtr intPtr = IntPtr.Zero;
+            try
+            {
+                int byteSize = Marshal.SizeOf(typeof(T));
+                byte[] byteBuffer = new byte[byteSize];
+                readStream.Read(byteBuffer, 0, byteSize);
+                intPtr = Marshal.AllocHGlobal(byteSize);
+                Marshal.Copy(byteBuffer, 0, intPtr, byteSize);
+                readStructure = Marshal.PtrToStructure<T>(intPtr);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to ReadStuctureFromStream: " + ex.Message);
+                readStructure = default(T);
+                return false;
+            }
+            finally
+            {
+                if (intPtr != IntPtr.Zero)
+                {
+                    Marshal.FreeHGlobal(intPtr);
+                }
+            }
+        }
+
+        private static bool WriteStructureToStream<T>(Stream writeStream, T writeStructure)
+        {
+            IntPtr intPtr = IntPtr.Zero;
+            try
+            {
+                int byteSize = Marshal.SizeOf(typeof(T));
+                byte[] byteBuffer = new byte[byteSize];
+                intPtr = Marshal.AllocHGlobal(byteSize);
+                Marshal.StructureToPtr(writeStructure, intPtr, true);
+                Marshal.Copy(intPtr, byteBuffer, 0, byteSize);
+                writeStream.Write(byteBuffer, 0, byteSize);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to WriteStructureToStream: " + ex.Message);
+                return false;
+            }
+            finally
+            {
+                if (intPtr != IntPtr.Zero)
+                {
+                    Marshal.FreeHGlobal(intPtr);
+                }
+            }
+        }
+
+        private static byte[] GetResourceDataBytes(IntPtr hModule, IntPtr lpName, ResourceTypes lpType)
         {
             try
             {
@@ -68,97 +128,166 @@ namespace ArnoldVinkCode
             return null;
         }
 
+        private static T GetResourceDataStruct<T>(IntPtr hModule, IntPtr lpName, ResourceTypes lpType)
+        {
+            try
+            {
+                IntPtr findResource = FindResource(hModule, lpName, lpType);
+                if (findResource == IntPtr.Zero)
+                {
+                    return default(T);
+                }
+
+                IntPtr loadResource = LoadResource(hModule, findResource);
+                if (loadResource == IntPtr.Zero)
+                {
+                    return default(T);
+                }
+
+                IntPtr lockResource = LockResource(loadResource);
+                if (lockResource == IntPtr.Zero)
+                {
+                    return default(T);
+                }
+
+                return Marshal.PtrToStructure<T>(lockResource);
+            }
+            catch { }
+            return default(T);
+        }
+
+        private static IntPtr GetResourceDataIntPtr(IntPtr hModule, IntPtr lpName, ResourceTypes lpType)
+        {
+            try
+            {
+                IntPtr findResource = FindResource(hModule, lpName, lpType);
+                if (findResource == IntPtr.Zero)
+                {
+                    return IntPtr.Zero;
+                }
+
+                uint sizeResource = SizeofResource(hModule, findResource);
+                if (sizeResource == 0)
+                {
+                    return IntPtr.Zero;
+                }
+
+                IntPtr loadResource = LoadResource(hModule, findResource);
+                if (loadResource == IntPtr.Zero)
+                {
+                    return IntPtr.Zero;
+                }
+
+                IntPtr lockResource = LockResource(loadResource);
+                if (lockResource == IntPtr.Zero)
+                {
+                    return IntPtr.Zero;
+                }
+                else
+                {
+                    return lockResource;
+                }
+            }
+            catch { }
+            return IntPtr.Zero;
+        }
+
+        private static bool EnumResourceNamesProc(IntPtr hModule, ResourceTypes lpszType, IntPtr lpEnumFunc, IntPtr lParam)
+        {
+            try
+            {
+                iconGroups.Add(lpEnumFunc);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         public static MemoryStream GetIconMemoryStreamFromExeFile(string exeFilePath, int iconIndex, ref MemoryStream imageMemoryStream)
         {
-            IntPtr hModule = IntPtr.Zero;
+            IntPtr hLibrary = IntPtr.Zero;
             try
             {
                 //Load executable file library
-                hModule = LoadLibraryEx(exeFilePath, IntPtr.Zero, LoadLibraryFlags.LOAD_LIBRARY_AS_DATAFILE);
-                if (hModule == IntPtr.Zero)
+                hLibrary = LoadLibraryEx(exeFilePath, IntPtr.Zero, LoadLibraryFlags.LOAD_LIBRARY_AS_DATAFILE);
+                if (hLibrary == IntPtr.Zero)
                 {
                     Debug.WriteLine("Failed to load icon from exe: " + exeFilePath);
                     return null;
                 }
 
-                //Enumerate all icons
-                List<BitmapFrame> listBitmapFrame = new List<BitmapFrame>();
-                EnumResNameProcDelegate callback = (module, type, name, param) =>
+                //Enumerate all icon groups
+                EnumResourceNames(hLibrary, ResourceTypes.GROUP_ICON, EnumResourceNamesProc, IntPtr.Zero);
+                foreach (IntPtr iconGroup in iconGroups)
                 {
                     try
                     {
-                        //Get data from resource
-                        byte[] resourceData = GetResourceData(hModule, name, ResourceTypes.GROUP_ICON);
-
-                        //Count available icons
-                        int iconDirSize = 6;
-                        int iconDirEntrySize = 16;
-                        int groupIconDirSize = 6;
-                        int groupIconDirEntrySize = 14;
-                        int iconCount = BitConverter.ToUInt16(resourceData, 4);
-                        int iconOffset = iconDirSize + iconDirEntrySize * iconCount;
-                        List<IconDetails> listIconDetails = new List<IconDetails>();
-
-                        //Load and decode icons
-                        for (int iconNum = 0; iconNum < iconCount; iconNum++)
+                        //Get all icons from group
+                        MEMICONDIR memICONDIR = GetResourceDataStruct<MEMICONDIR>(hLibrary, iconGroup, ResourceTypes.GROUP_ICON);
+                        foreach (MEMICONDIRENTRY entry in memICONDIR.arEntries)
                         {
-                            using (MemoryStream memoryStream = new MemoryStream())
+                            try
                             {
-                                using (BinaryWriter binaryWriter = new BinaryWriter(memoryStream))
+                                //Get icon bitmap data
+                                byte[] iconBytes = GetResourceDataBytes(hLibrary, (IntPtr)entry.wIdentifier, ResourceTypes.ICON);
+
+                                //Encode icon bitmap frame
+                                byte signatureByte = iconBytes[0];
+                                if (signatureByte == 0x28)
                                 {
-                                    binaryWriter.Write(resourceData, 0, groupIconDirSize);
+                                    Debug.WriteLine("BMP image: " + iconBytes.Length);
+                                    using (MemoryStream memoryStream = new MemoryStream(iconBytes))
+                                    {
+                                        //Read bitmap info header
+                                        ReadStuctureFromStream(memoryStream, out BITMAPINFOHEADER infoHeader);
 
-                                    //Load the icon
-                                    int iconId = BitConverter.ToUInt16(resourceData, groupIconDirSize + groupIconDirEntrySize * iconNum + 12);
-                                    byte[] iconData = GetResourceData(hModule, (IntPtr)iconId, ResourceTypes.ICON);
+                                        Debug.WriteLine("BMP OK");
+                                        return imageMemoryStream;
+                                    }
+                                }
+                                else if (signatureByte == 0x89)
+                                {
+                                    Debug.WriteLine("PNG image: " + iconBytes.Length);
+                                    using (MemoryStream memoryStream = new MemoryStream(iconBytes))
+                                    {
+                                        //Seek to image data array
+                                        memoryStream.Seek(0, SeekOrigin.Begin);
 
-                                    //Write IconDirEntry
-                                    binaryWriter.Seek(iconDirSize + iconDirEntrySize * iconNum, SeekOrigin.Begin);
-                                    binaryWriter.Write(resourceData, groupIconDirSize + groupIconDirEntrySize * iconNum, 8);
-                                    binaryWriter.Write(iconData.Length);
-                                    binaryWriter.Write(iconOffset);
+                                        //Convert image data to bitmap
+                                        Bitmap bitmapImage = new Bitmap(memoryStream);
+                                        bitmapImage.Save(imageMemoryStream, ImageFormat.Png);
+                                        imageMemoryStream.Seek(0, SeekOrigin.Begin);
 
-                                    //Write icon to stream
-                                    binaryWriter.Seek(iconOffset, SeekOrigin.Begin);
-                                    binaryWriter.Write(iconData, 0, iconData.Length);
-                                    iconOffset += iconData.Length;
-
-                                    //Decode icon bitmap
-                                    IconBitmapDecoder iconBitmapDecoder = new IconBitmapDecoder(memoryStream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
-
-                                    //Add icon to list
-                                    IconDetails newIcon = new IconDetails();
-                                    newIcon.IconSize = iconData.Length;
-                                    newIcon.BitmapFrame = iconBitmapDecoder.Frames.FirstOrDefault();
-                                    listIconDetails.Add(newIcon);
+                                        Debug.WriteLine("w/" + bitmapImage.Width + " h/" + bitmapImage.Height);
+                                        Debug.WriteLine("PNG OK");
+                                        return imageMemoryStream;
+                                    }
                                 }
                             }
+                            catch (Exception ex)
+                            {
+                                Debug.WriteLine("No icon for you!" + ex.Message);
+                            }
                         }
-
-                        //Get largest icon bitmap frame
-                        listBitmapFrame.Add(listIconDetails.OrderByDescending(x => x.IconSize).FirstOrDefault().BitmapFrame);
                     }
                     catch { }
-                    return true;
-                };
-                EnumResourceNames(hModule, ResourceTypes.GROUP_ICON, callback, IntPtr.Zero);
+                }
 
-                PngBitmapEncoder bitmapEncoder = new PngBitmapEncoder();
-                bitmapEncoder.Frames.Add(listBitmapFrame[iconIndex]);
-                bitmapEncoder.Save(imageMemoryStream);
-                imageMemoryStream.Seek(0, SeekOrigin.Begin);
-                return imageMemoryStream;
+                Debug.WriteLine("No icon exe icon found to load.");
+                return null;
             }
-            catch
+            catch (Exception ex)
             {
-                //Debug.WriteLine("Failed to load icon from executable: " + ex.Message);
+                Debug.WriteLine("Failed to load exe icon: " + ex.Message);
                 return null;
             }
             finally
             {
-                if (hModule != IntPtr.Zero)
+                if (hLibrary != IntPtr.Zero)
                 {
-                    FreeLibrary(hModule);
+                    FreeLibrary(hLibrary);
                 }
             }
         }
