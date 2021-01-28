@@ -5,7 +5,7 @@ namespace ArnoldVinkCode
     public partial class AVImage
     {
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        struct MEMICONDIR
+        private struct MEMICONDIR
         {
             public ushort idReserved;
             public ushort idType;
@@ -14,7 +14,7 @@ namespace ArnoldVinkCode
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1)]
-        struct MEMICONDIRENTRY
+        private struct MEMICONDIRENTRY
         {
             public byte bWidth;
             public byte bHeight;

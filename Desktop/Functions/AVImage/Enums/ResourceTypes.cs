@@ -2,7 +2,7 @@
 {
     public partial class AVImage
     {
-        private enum ResourceTypes
+        private enum ResourceTypes : int
         {
             CURSOR = 1,
             BITMAP = 2,

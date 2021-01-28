@@ -11,43 +11,6 @@ namespace ArnoldVinkCode
 {
     public partial class AVImage
     {
-        //Constants
-        private const uint ICO_VERSION = 0x00030000;
-        private const uint LR_DEFAULTCOLOR = 0;
-
-        //Interop
-        [DllImport("kernel32.dll")]
-        private static extern IntPtr LoadLibraryEx(string lpFileName, IntPtr hFile, LoadLibraryFlags dwFlags);
-
-        [DllImport("kernel32.dll")]
-        private static extern bool EnumResourceNames(IntPtr hModule, ResourceTypes lpType, EnumResNameProcDelegate lpEnumFunc, IntPtr lParam);
-        private delegate bool EnumResNameProcDelegate(IntPtr hModule, ResourceTypes lpType, IntPtr lpEnumFunc, IntPtr lParam);
-
-        [DllImport("kernel32.dll")]
-        private static extern IntPtr FindResource(IntPtr hModule, string lpName, ResourceTypes lpType);
-
-        [DllImport("kernel32.dll")]
-        private static extern IntPtr FindResource(IntPtr hModule, IntPtr lpName, ResourceTypes lpType);
-
-        [DllImport("kernel32.dll")]
-        private static extern IntPtr LoadResource(IntPtr hModule, IntPtr hResInfo);
-
-        [DllImport("kernel32.dll")]
-        private static extern IntPtr LockResource(IntPtr hResData);
-
-        [DllImport("kernel32.dll")]
-        private static extern uint SizeofResource(IntPtr hModule, IntPtr hResInfo);
-
-        [DllImport("kernel32.dll")]
-        private static extern bool FreeLibrary(IntPtr hModule);
-
-        [DllImport("user32.dll")]
-        private static extern IntPtr CreateIconFromResourceEx(byte[] presbits, uint dwResSize, bool fIcon, uint dwVer, int cxDesired, int cyDesired, uint Flags);
-
-        [DllImport("user32.dll")]
-        private static extern bool DestroyIcon(IntPtr hIcon);
-
-        //Methods
         private static string IntPtrToString(IntPtr intPtr)
         {
             try
@@ -118,52 +81,32 @@ namespace ArnoldVinkCode
             return null;
         }
 
-        private static bool GetResourceDataIntPtrFromString(IntPtr hModule, string lpName, ResourceTypes lpType, out IntPtr data, out uint size)
+        private static IntPtr GetResourceDataIntPtrFromString(IntPtr hModule, string lpName, ResourceTypes lpType)
         {
             try
             {
                 IntPtr foundResource = FindResourceString(hModule, lpName, lpType);
                 if (foundResource == IntPtr.Zero)
                 {
-                    data = IntPtr.Zero;
-                    size = 0;
-                    return false;
+                    return IntPtr.Zero;
                 }
 
                 uint sizeResource = SizeofResource(hModule, foundResource);
                 if (sizeResource == 0)
                 {
-                    data = IntPtr.Zero;
-                    size = 0;
-                    return false;
+                    return IntPtr.Zero;
                 }
 
                 IntPtr loadResource = LoadResource(hModule, foundResource);
                 if (loadResource == IntPtr.Zero)
                 {
-                    data = IntPtr.Zero;
-                    size = 0;
-                    return false;
+                    return IntPtr.Zero;
                 }
 
-                IntPtr lockResource = LockResource(loadResource);
-                if (lockResource == IntPtr.Zero)
-                {
-                    data = IntPtr.Zero;
-                    size = 0;
-                    return false;
-                }
-                else
-                {
-                    data = lockResource;
-                    size = sizeResource;
-                    return true;
-                }
+                return LockResource(loadResource);
             }
             catch { }
-            data = IntPtr.Zero;
-            size = 0;
-            return false;
+            return IntPtr.Zero;
         }
 
         public static MemoryStream GetIconMemoryStreamFromExeFile(string exeFilePath, int iconIndex, ref MemoryStream imageMemoryStream)
@@ -200,51 +143,53 @@ namespace ArnoldVinkCode
                 EnumResourceNames(libraryHandle, ResourceTypes.GROUP_ICON, EnumResourceNamesCallback, IntPtr.Zero);
 
                 //Select target icon group
+                string iconGroup = string.Empty;
                 int iconGroupsCount = iconGroups.Count;
-                Debug.WriteLine("Total icon groups: " + iconGroupsCount);
-                string iconGroup = iconGroups[iconIndex];
+                //Debug.WriteLine("Total icon groups: " + iconGroupsCount);
+                if (iconGroupsCount > 0 && iconGroupsCount >= iconIndex)
+                {
+                    iconGroup = iconGroups[iconIndex];
+                }
+                else
+                {
+                    Debug.WriteLine("No exe icon found to load.");
+                    return null;
+                }
 
                 //Get all icons from group
                 List<MEMICONDIRENTRY> iconDirEntryList = new List<MEMICONDIRENTRY>();
-                GetResourceDataIntPtrFromString(libraryHandle, iconGroup, ResourceTypes.GROUP_ICON, out IntPtr iconDirIntPtr, out uint iconDirResSize);
+                IntPtr iconDirIntPtr = GetResourceDataIntPtrFromString(libraryHandle, iconGroup, ResourceTypes.GROUP_ICON);
                 unsafe
                 {
                     MEMICONDIR* iconDir = (MEMICONDIR*)iconDirIntPtr;
                     MEMICONDIRENTRY* iconDirEntryArray = &iconDir->idEntriesArray;
-                    Debug.WriteLine("Total icons in group: " + iconDir->idCount);
+                    //Debug.WriteLine("Total icons in group: " + iconDir->idCount);
                     for (int entryId = 0; entryId < iconDir->idCount; entryId++)
                     {
                         try
                         {
                             iconDirEntryList.Add(iconDirEntryArray[entryId]);
                         }
-                        catch (Exception ex)
-                        {
-                            Debug.WriteLine("No icon for you!" + ex.Message);
-                        }
+                        catch { }
                     }
                 }
 
                 //Select largest icon
-                MEMICONDIRENTRY iconDirEntry = iconDirEntryList.OrderByDescending(x => x.dwBytesInRes).ThenByDescending(x => x.wBitCount).FirstOrDefault();
+                MEMICONDIRENTRY iconDirEntry = iconDirEntryList.OrderByDescending(x => x.wBitCount).ThenByDescending(x => x.dwBytesInRes).FirstOrDefault();
 
                 //Get icon bitmap data
-                IntPtr iconIdentifier = (IntPtr)iconDirEntry.nIdentifier;
-                byte[] iconBytes = GetResourceDataBytesFromIntPtr(libraryHandle, iconIdentifier, ResourceTypes.ICON);
-                Debug.WriteLine(iconIdentifier + " / " + iconGroup);
+                byte[] iconBytes = GetResourceDataBytesFromIntPtr(libraryHandle, (IntPtr)iconDirEntry.nIdentifier, ResourceTypes.ICON);
 
                 //Encode icon bitmap frame
                 if (iconBytes[0] == 0x28)
                 {
-                    Debug.WriteLine("BMP image: " + iconBytes.Length);
+                    //Debug.WriteLine("BMP image: " + iconBytes.Length);
 
                     //Create icon from the resource
-                    iconHandle = CreateIconFromResourceEx(iconBytes, (uint)iconBytes.Length, true, ICO_VERSION, iconDirEntry.bWidth, iconDirEntry.bHeight, LR_DEFAULTCOLOR);
+                    iconHandle = CreateIconFromResourceEx(iconBytes, (uint)iconBytes.Length, true, IconVersion.Windows3x, iconDirEntry.bWidth, iconDirEntry.bHeight, IconResourceFlags.LR_DEFAULTCOLOR);
 
                     //Convert image data to bitmap
                     Bitmap bitmapImage = Icon.FromHandle(iconHandle).ToBitmap();
-                    Debug.WriteLine("w/" + bitmapImage.Width + " h/" + bitmapImage.Height);
-                    Debug.WriteLine("BMP OK" + iconIdentifier);
 
                     //Write bitmap to memorystream
                     bitmapImage.Save(imageMemoryStream, ImageFormat.Png);
@@ -253,13 +198,11 @@ namespace ArnoldVinkCode
                 }
                 else
                 {
-                    Debug.WriteLine("PNG image: " + iconBytes.Length);
+                    //Debug.WriteLine("PNG image: " + iconBytes.Length);
                     using (MemoryStream memoryStream = new MemoryStream(iconBytes))
                     {
                         //Convert image data to bitmap
                         Bitmap bitmapImage = new Bitmap(memoryStream);
-                        Debug.WriteLine("w/" + bitmapImage.Width + " h/" + bitmapImage.Height);
-                        Debug.WriteLine("PNG OK" + iconIdentifier);
 
                         //Write bitmap to memorystream
                         bitmapImage.Save(imageMemoryStream, ImageFormat.Png);
