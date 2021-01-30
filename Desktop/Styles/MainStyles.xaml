@@ -327,8 +327,18 @@
     </Style>
 
     <!--ListBox Styles-->
-    <Style x:Key="ListBoxWrapPanel" TargetType="ListBox">
-        <Setter Property="Template" Value="{StaticResource ListBoxWrapPanelTemplate}"/>
+    <Style x:Key="ListBoxWrapPanelVertical" TargetType="ListBox">
+        <Setter Property="Template" Value="{StaticResource ListBoxWrapPanelTemplateVertical}"/>
+        <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="Foreground" Value="{DynamicResource ApplicationWhiteBrush}"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+    </Style>
+
+    <Style x:Key="ListBoxWrapPanelHorizontal" TargetType="ListBox">
+        <Setter Property="Template" Value="{StaticResource ListBoxWrapPanelTemplateHorizontal}"/>
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>
         <Setter Property="Foreground" Value="{DynamicResource ApplicationWhiteBrush}"/>

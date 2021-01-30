@@ -24,9 +24,15 @@
         <StackPanel IsItemsHost="True" Orientation="Horizontal"/>
     </ControlTemplate>
 
-    <ControlTemplate x:Key="ListBoxWrapPanelTemplate" TargetType="ListBox">
+    <ControlTemplate x:Key="ListBoxWrapPanelTemplateVertical" TargetType="ListBox">
         <ScrollViewer Style="{DynamicResource ScrollViewerVertical}">
             <WrapPanel IsItemsHost="True" Orientation="Horizontal"/>
+        </ScrollViewer>
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="ListBoxWrapPanelTemplateHorizontal" TargetType="ListBox">
+        <ScrollViewer Style="{DynamicResource ScrollViewerHorizontal}">
+            <WrapPanel IsItemsHost="True" Orientation="Vertical"/>
         </ScrollViewer>
     </ControlTemplate>
 
