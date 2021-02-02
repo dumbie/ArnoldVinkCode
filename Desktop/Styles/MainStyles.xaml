@@ -392,6 +392,16 @@
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidWhite}"/>
     </Style>
 
+    <Style x:Key="ListBoxItemColor" TargetType="ListBoxItem">
+        <Setter Property="Background" Value="{Binding Path=Background, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
+        <Setter Property="Padding" Value="0,0,0,0"/>
+        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+        <Setter Property="Template" Value="{StaticResource ListBoxItemTemplateColor}"/>
+        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidWhite}"/>
+    </Style>
+
     <Style x:Key="ListBoxItemDisabled" TargetType="ListBoxItem">
         <Setter Property="IsEnabled" Value="False"/>
     </Style>
