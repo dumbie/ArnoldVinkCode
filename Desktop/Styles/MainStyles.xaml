@@ -413,22 +413,26 @@
     </Style>
 
     <!--ScrollViewer Styles-->
-    <Style x:Key="ScrollViewer" TargetType="ScrollViewer">
-        <Setter Property="Focusable" Value="False"/>
-        <Setter Property="HorizontalScrollBarVisibility" Value="Auto"/>
-        <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
-    </Style>
-
     <Style x:Key="ScrollViewerHorizontal" TargetType="ScrollViewer">
         <Setter Property="Focusable" Value="False"/>
         <Setter Property="HorizontalScrollBarVisibility" Value="Auto"/>
         <Setter Property="VerticalScrollBarVisibility" Value="Disabled"/>
         <EventSetter Event="PreviewMouseWheel" Handler="ScrollViewer_PreviewMouseWheel"/>
+        <Style.Triggers>
+            <Trigger Property="ComputedHorizontalScrollBarVisibility" Value="Visible">
+                <Setter Property="Padding" Value="0,0,0,10"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
     <Style x:Key="ScrollViewerVertical" TargetType="ScrollViewer">
         <Setter Property="Focusable" Value="False"/>
         <Setter Property="HorizontalScrollBarVisibility" Value="Disabled"/>
         <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
+        <Style.Triggers>
+            <Trigger Property="ComputedVerticalScrollBarVisibility" Value="Visible">
+                <Setter Property="Padding" Value="0,0,10,0"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
 </ResourceDictionary>
