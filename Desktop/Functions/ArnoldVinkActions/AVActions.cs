@@ -139,7 +139,14 @@ namespace ArnoldVinkCode
         {
             try
             {
-                await Task.Delay(millisecondsDelay, avTask.TokenSource.Token);
+                if (millisecondsDelay < 50)
+                {
+                    TaskDelayMs((uint)millisecondsDelay);
+                }
+                else
+                {
+                    await Task.Delay(millisecondsDelay, avTask.TokenSource.Token);
+                }
             }
             catch { }
         }
