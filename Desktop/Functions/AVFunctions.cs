@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -390,18 +391,34 @@ namespace ArnoldVinkCode
             catch { return string.Empty; }
         }
 
-        //Move byte in a byte array
-        public static void MoveByteInArray(byte[] SerialBytes, int MoveIndex, int NewIndex)
+        //Move byte in a byte array to left
+        public static void MoveByteInArrayLeft(byte[] SerialBytes, int MoveIndex, int NewIndex)
         {
             try
             {
                 byte MoveValue = SerialBytes[MoveIndex];
-                int CalcNewIndex = NewIndex - 1;
-
-                Array.Copy(SerialBytes, MoveIndex + 1, SerialBytes, MoveIndex, SerialBytes.Length - MoveIndex - 1);
-                SerialBytes[CalcNewIndex] = MoveValue;
+                Array.Copy(SerialBytes, MoveIndex + 1, SerialBytes, MoveIndex, SerialBytes.Length - 1 - MoveIndex);
+                SerialBytes[NewIndex] = MoveValue;
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to move byte left: " + ex.Message);
+            }
+        }
+
+        //Move byte in a byte array to right
+        public static void MoveByteInArrayRight(byte[] SerialBytes, int MoveIndex, int NewIndex)
+        {
+            try
+            {
+                byte MoveValue = SerialBytes[MoveIndex];
+                Array.Copy(SerialBytes, NewIndex, SerialBytes, NewIndex + 1, SerialBytes.Length - 1 - NewIndex);
+                SerialBytes[NewIndex] = MoveValue;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to move byte right: " + ex.Message);
+            }
         }
 
         //Convert bytes size to display string
