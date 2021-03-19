@@ -44,14 +44,15 @@ namespace ArnoldVinkCode
             catch { }
         }
 
-        //Close open Windows admin prompt
-        public static async Task CloseOpenWindowsAdminPrompt()
+        //Close open Windows prompts
+        public static async Task CloseOpenWindowsPrompts()
         {
             try
             {
+                //Windows administrator consent prompt
                 if (GetProcessByNameOrTitle("consent", false) != null)
                 {
-                    Debug.WriteLine("Admin consent prompt is open, killing the process.");
+                    Debug.WriteLine("Windows administrator consent prompt is open, killing the process.");
                     bool closedProcess = CloseProcessesByNameOrTitle("consent", false);
                     await Task.Delay(500);
                     if (closedProcess)
@@ -59,6 +60,13 @@ namespace ArnoldVinkCode
                         await KeyPressSingleAuto(KeysVirtual.Escape);
                         await Task.Delay(10);
                     }
+                }
+
+                //Windows feature installation prompt
+                if (GetProcessByNameOrTitle("fondue", false) != null)
+                {
+                    Debug.WriteLine("Windows feature installation prompt is open, killing the process.");
+                    CloseProcessesByNameOrTitle("fondue", false);
                 }
             }
             catch { }
@@ -74,8 +82,8 @@ namespace ArnoldVinkCode
                 {
                     try
                     {
-                        //Close open Windows admin prompt
-                        await CloseOpenWindowsAdminPrompt();
+                        //Close open Windows prompts
+                        await CloseOpenWindowsPrompts();
 
                         //Get the current focused application
                         ProcessMulti foregroundProcess = GetProcessMultiFromWindowHandle(GetForegroundWindow());
