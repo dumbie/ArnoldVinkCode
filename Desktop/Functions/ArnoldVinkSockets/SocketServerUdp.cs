@@ -12,9 +12,12 @@ namespace ArnoldVinkCode
         {
             try
             {
-                Debug.WriteLine("Stopping the udp server (S)");
-                udpClient.Close();
-                udpClient = null;
+                if (udpClient != null)
+                {
+                    Debug.WriteLine("Stopping the udp server (S)");
+                    udpClient.Close();
+                    udpClient = null;
+                }
             }
             catch (Exception ex)
             {

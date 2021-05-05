@@ -12,10 +12,13 @@ namespace ArnoldVinkCode
         {
             try
             {
-                Debug.WriteLine("Stopping the tcp server (S)");
-                tcpServer.Server.Close();
-                tcpServer.Stop();
-                tcpServer = null;
+                if (tcpServer != null)
+                {
+                    Debug.WriteLine("Stopping the tcp server (S)");
+                    tcpServer.Server.Close();
+                    tcpServer.Stop();
+                    tcpServer = null;
+                }
             }
             catch (Exception ex)
             {
