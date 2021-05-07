@@ -1,9 +1,8 @@
-﻿using System.Diagnostics;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
-namespace AVForms
+namespace ArnoldVinkCode
 {
     public partial class AVMessageBox : Window
     {
@@ -11,9 +10,8 @@ namespace AVForms
         public AVMessageBox() { InitializeComponent(); }
 
         //MessageBox Variables
-        private static bool vMessageBoxPopupCancelled = false;
-        private static int vMessageBoxPopupResult = 0;
-        private static AVMessageBox vAVMessageBox = null;
+        private bool vMessageBoxPopupCancelled = false;
+        private int vMessageBoxPopupResult = 0;
 
         //Set MessageBox Popup Result
         void grid_MessageBox_Btn1_Click(object sender, RoutedEventArgs e) { vMessageBoxPopupResult = 1; }
@@ -22,21 +20,10 @@ namespace AVForms
         void grid_MessageBox_Btn4_Click(object sender, RoutedEventArgs e) { vMessageBoxPopupResult = 4; }
 
         //Show and close Messagebox Popup
-        public async static Task<int> MessageBoxPopup(FrameworkElement disableElement, string Question, string Description, string Answer1, string Answer2, string Answer3, string Answer4)
+        public async Task<int> Popup(FrameworkElement disableElement, string Question, string Description, string Answer1, string Answer2, string Answer3, string Answer4)
         {
             try
             {
-                //Set the variable class
-                if (vAVMessageBox == null)
-                {
-                    vAVMessageBox = new AVMessageBox();
-                }
-                else
-                {
-                    Debug.WriteLine("AVMessageBox is already open.");
-                    return -1;
-                }
-
                 //Disable the source frameworkelement
                 if (disableElement != null)
                 {
@@ -44,56 +31,56 @@ namespace AVForms
                 }
 
                 //Set messagebox question content
-                vAVMessageBox.grid_MessageBox_Text.Text = Question;
+                grid_MessageBox_Text.Text = Question;
                 if (!string.IsNullOrWhiteSpace(Description))
                 {
-                    vAVMessageBox.grid_MessageBox_Description.Text = Description;
-                    vAVMessageBox.grid_MessageBox_Description.Visibility = Visibility.Visible;
+                    grid_MessageBox_Description.Text = Description;
+                    grid_MessageBox_Description.Visibility = Visibility.Visible;
                 }
                 else
                 {
-                    vAVMessageBox.grid_MessageBox_Description.Text = "";
-                    vAVMessageBox.grid_MessageBox_Description.Visibility = Visibility.Collapsed;
+                    grid_MessageBox_Description.Text = "";
+                    grid_MessageBox_Description.Visibility = Visibility.Collapsed;
                 }
                 if (!string.IsNullOrWhiteSpace(Answer1))
                 {
-                    vAVMessageBox.grid_MessageBox_Btn1.Content = Answer1;
-                    vAVMessageBox.grid_MessageBox_Btn1.Visibility = Visibility.Visible;
+                    grid_MessageBox_Btn1.Content = Answer1;
+                    grid_MessageBox_Btn1.Visibility = Visibility.Visible;
                 }
                 else
                 {
-                    vAVMessageBox.grid_MessageBox_Btn1.Content = "";
-                    vAVMessageBox.grid_MessageBox_Btn1.Visibility = Visibility.Collapsed;
+                    grid_MessageBox_Btn1.Content = "";
+                    grid_MessageBox_Btn1.Visibility = Visibility.Collapsed;
                 }
                 if (!string.IsNullOrWhiteSpace(Answer2))
                 {
-                    vAVMessageBox.grid_MessageBox_Btn2.Content = Answer2;
-                    vAVMessageBox.grid_MessageBox_Btn2.Visibility = Visibility.Visible;
+                    grid_MessageBox_Btn2.Content = Answer2;
+                    grid_MessageBox_Btn2.Visibility = Visibility.Visible;
                 }
                 else
                 {
-                    vAVMessageBox.grid_MessageBox_Btn2.Content = "";
-                    vAVMessageBox.grid_MessageBox_Btn2.Visibility = Visibility.Collapsed;
+                    grid_MessageBox_Btn2.Content = "";
+                    grid_MessageBox_Btn2.Visibility = Visibility.Collapsed;
                 }
                 if (!string.IsNullOrWhiteSpace(Answer3))
                 {
-                    vAVMessageBox.grid_MessageBox_Btn3.Content = Answer3;
-                    vAVMessageBox.grid_MessageBox_Btn3.Visibility = Visibility.Visible;
+                    grid_MessageBox_Btn3.Content = Answer3;
+                    grid_MessageBox_Btn3.Visibility = Visibility.Visible;
                 }
                 else
                 {
-                    vAVMessageBox.grid_MessageBox_Btn3.Content = "";
-                    vAVMessageBox.grid_MessageBox_Btn3.Visibility = Visibility.Collapsed;
+                    grid_MessageBox_Btn3.Content = "";
+                    grid_MessageBox_Btn3.Visibility = Visibility.Collapsed;
                 }
                 if (!string.IsNullOrWhiteSpace(Answer4))
                 {
-                    vAVMessageBox.grid_MessageBox_Btn4.Content = Answer4;
-                    vAVMessageBox.grid_MessageBox_Btn4.Visibility = Visibility.Visible;
+                    grid_MessageBox_Btn4.Content = Answer4;
+                    grid_MessageBox_Btn4.Visibility = Visibility.Visible;
                 }
                 else
                 {
-                    vAVMessageBox.grid_MessageBox_Btn4.Content = "";
-                    vAVMessageBox.grid_MessageBox_Btn4.Visibility = Visibility.Collapsed;
+                    grid_MessageBox_Btn4.Content = "";
+                    grid_MessageBox_Btn4.Visibility = Visibility.Collapsed;
                 }
 
                 //Reset messagebox variables
@@ -101,7 +88,7 @@ namespace AVForms
                 vMessageBoxPopupCancelled = false;
 
                 //Show the messagebox popup
-                vAVMessageBox.Show();
+                Show();
 
                 //Wait for user messagebox input
                 while (vMessageBoxPopupResult == 0 && !vMessageBoxPopupCancelled) { await Task.Delay(500); }
@@ -113,9 +100,8 @@ namespace AVForms
                     disableElement.IsEnabled = true;
                 }
 
-                //Hide the messagebox popup
-                vAVMessageBox.Hide();
-                vAVMessageBox = null;
+                //Close the messagebox popup
+                Close();
             }
             catch { }
             return vMessageBoxPopupResult;
