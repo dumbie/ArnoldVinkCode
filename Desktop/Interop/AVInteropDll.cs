@@ -18,6 +18,8 @@ namespace ArnoldVinkCode
         public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
         [DllImport("user32.dll")]
         public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+        [DllImport("user32.dll")]
+        public static extern bool UpdateWindow(IntPtr hWnd);
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
@@ -213,16 +215,16 @@ namespace ArnoldVinkCode
         }
 
         [DllImport("user32.dll", EntryPoint = "GetClassLong")]
-        public static extern uint GetClassLong32(IntPtr hWnd, int nIndex);
+        private static extern uint GetClassLong32(IntPtr hWnd, int nIndex);
 
         [DllImport("user32.dll", EntryPoint = "GetClassLongPtr")]
-        public static extern IntPtr GetClassLongPtr64(IntPtr hWnd, int nIndex);
+        private static extern IntPtr GetClassLongPtr64(IntPtr hWnd, int nIndex);
 
         //Get and Set Window Long
         [DllImport("user32.dll", EntryPoint = "GetWindowLong")]
-        public static extern int GetWindowLong32(IntPtr hWnd, int nIndex);
+        private static extern int GetWindowLong32(IntPtr hWnd, int nIndex);
         [DllImport("user32.dll", EntryPoint = "GetWindowLongPtr")]
-        public static extern IntPtr GetWindowLongPtr64(IntPtr hWnd, int nIndex);
+        private static extern IntPtr GetWindowLongPtr64(IntPtr hWnd, int nIndex);
         public static IntPtr GetWindowLongAuto(IntPtr hWnd, int nIndex)
         {
             if (IntPtr.Size > 4)
@@ -236,9 +238,9 @@ namespace ArnoldVinkCode
         }
 
         [DllImport("user32.dll", EntryPoint = "SetWindowLong")]
-        public static extern int SetWindowLong32(IntPtr hWnd, int nIndex, int dwNewLong);
+        private static extern int SetWindowLong32(IntPtr hWnd, int nIndex, int dwNewLong);
         [DllImport("user32.dll", EntryPoint = "SetWindowLongPtr")]
-        public static extern IntPtr SetWindowLongPtr64(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
+        private static extern IntPtr SetWindowLongPtr64(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
         public static IntPtr SetWindowLongAuto(IntPtr hWnd, int nIndex, IntPtr dwNewLong)
         {
             if (IntPtr.Size > 4)
@@ -346,7 +348,7 @@ namespace ArnoldVinkCode
             NoTopMost = -2
         }
 
-        public enum WindowSWP
+        public enum WindowSWP : int
         {
             NOSIZE = 0x0001,
             NOMOVE = 0x0002,
@@ -552,14 +554,14 @@ namespace ArnoldVinkCode
             public Point ptMaxPosition;
             public Rectangle rcNormalPosition;
         }
-        public enum WindowFlags
+        public enum WindowFlags : int
         {
             NoRequest = 0,
             SetMinPosition = 1,
             RestoreToMaximized = 2,
             AsyncWindowPlacement = 3
         }
-        public enum WindowShowCommand
+        public enum WindowShowCommand : int
         {
             Hide = 0,
             Normal = 1,
