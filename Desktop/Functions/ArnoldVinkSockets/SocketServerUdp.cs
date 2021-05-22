@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 
 namespace ArnoldVinkCode
 {
@@ -27,7 +28,7 @@ namespace ArnoldVinkCode
         }
 
         //Start the udp server
-        private void UdpServerStart()
+        private async Task UdpServerStart()
         {
             try
             {
@@ -47,7 +48,7 @@ namespace ArnoldVinkCode
             }
             catch (Exception ex)
             {
-                SocketServerException(ex);
+                await SocketServerException(ex);
             }
         }
     }

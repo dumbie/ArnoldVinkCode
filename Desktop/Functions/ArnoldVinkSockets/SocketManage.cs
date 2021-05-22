@@ -1,8 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
-using System.Net.Sockets;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace ArnoldVinkCode
 {
@@ -17,19 +16,18 @@ namespace ArnoldVinkCode
                 vSocketServerPort = serverPort;
                 vTcpServerEnabled = tcpServer;
                 vUdpServerEnabled = udpServer;
-                SocketServerEnable();
             }
             catch { }
         }
 
         //Enable the socket server
-        public void SocketServerEnable()
+        public async Task SocketServerEnable()
         {
             try
             {
                 Debug.WriteLine("Enabling the socket server (S)");
-                if (vTcpServerEnabled) { TcpServerStart(); }
-                if (vUdpServerEnabled) { UdpServerStart(); }
+                if (vTcpServerEnabled) { await TcpServerStart(); }
+                if (vUdpServerEnabled) { await UdpServerStart(); }
             }
             catch (Exception ex)
             {
@@ -73,7 +71,7 @@ namespace ArnoldVinkCode
             {
                 Debug.WriteLine("Restarting the socket server (S)");
                 await SocketServerDisable();
-                SocketServerEnable();
+                await SocketServerEnable();
             }
             catch (Exception ex)
             {
@@ -82,25 +80,20 @@ namespace ArnoldVinkCode
         }
 
         //Socket server exception
-        void SocketServerException(Exception ex)
+        async Task SocketServerException(Exception ex)
         {
             try
             {
-                if (ex.GetType() == typeof(SocketException))
+                Debug.WriteLine("Socket server error (S): " + ex.Message);
+
+                List<string> messageAnswers = new List<string>();
+                messageAnswers.Add("Restart server");
+                messageAnswers.Add("Cancel");
+
+                string messageResult = await new AVMessageBox().Popup(null, "Socket server error", ex.Message, messageAnswers);
+                if (messageResult == "Restart server")
                 {
-                    SocketException socketException = (SocketException)ex;
-                    if (socketException.SocketErrorCode == SocketError.AddressAlreadyInUse)
-                    {
-                        Debug.WriteLine("Socket server port is in use (S): " + ex.Message);
-                        MessageBox.Show("Failed to start socket server, please make sure that the used server port is not already in use.", "Socket Server");
-                        //await SocketServerDisable();
-                    }
-                    else
-                    {
-                        Debug.WriteLine("Socket server has crashed (S): " + ex.Message);
-                        MessageBox.Show("Socket server has crashed, please make sure that the used server port is not already in use.", "Socket Server");
-                        //await SocketServerRestart();
-                    }
+                    await SocketServerRestart();
                 }
             }
             catch { }

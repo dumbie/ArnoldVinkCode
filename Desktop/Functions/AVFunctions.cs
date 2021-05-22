@@ -225,6 +225,11 @@ namespace ArnoldVinkCode
             if (Inclusive) { return (NowNumber >= StartNumber) && (NowNumber <= EndNumber); }
             else { return (NowNumber > StartNumber) && (NowNumber < EndNumber); }
         }
+        public static bool BetweenNumbersOr(int NowNumber, int StartNumber, int EndNumber, bool Inclusive)
+        {
+            if (Inclusive) { return (NowNumber >= StartNumber) || (NowNumber <= EndNumber); }
+            else { return (NowNumber > StartNumber) || (NowNumber < EndNumber); }
+        }
 
         //Reset dispatch timer tick estimate
         public static void TimerReset(DispatcherTimer dispatchTimer)

@@ -30,8 +30,7 @@ namespace ArnoldVinkCode
             DISPLAYCONFIG_TOPOLOGY_INTERNAL = 0x00000001,
             DISPLAYCONFIG_TOPOLOGY_CLONE = 0x00000002,
             DISPLAYCONFIG_TOPOLOGY_EXTEND = 0x00000004,
-            DISPLAYCONFIG_TOPOLOGY_EXTERNAL = 0x00000008,
-            DISPLAYCONFIG_TOPOLOGY_FORCE_UINT32 = 0xFFFFFFFF
+            DISPLAYCONFIG_TOPOLOGY_EXTERNAL = 0x00000008
         }
 
         private enum DISPLAYCONFIG_PATH_FLAGS : uint
@@ -61,8 +60,7 @@ namespace ArnoldVinkCode
         {
             DISPLAYCONFIG_MODE_INFO_TYPE_SOURCE = 1,
             DISPLAYCONFIG_MODE_INFO_TYPE_TARGET = 2,
-            DISPLAYCONFIG_MODE_INFO_TYPE_DESKTOP_IMAGE = 3,
-            DISPLAYCONFIG_MODE_INFO_TYPE_FORCE_UINT32 = 0xFFFFFFFF
+            DISPLAYCONFIG_MODE_INFO_TYPE_DESKTOP_IMAGE = 3
         }
 
         private enum DISPLAYCONFIG_VIDEO_OUTPUT_TECHNOLOGY : uint
@@ -84,8 +82,17 @@ namespace ArnoldVinkCode
             DISPLAYCONFIG_OUTPUT_TECHNOLOGY_SDTVDONGLE = 14,
             DISPLAYCONFIG_OUTPUT_TECHNOLOGY_MIRACAST = 15,
             DISPLAYCONFIG_OUTPUT_TECHNOLOGY_INDIRECT_WIRED = 16,
-            DISPLAYCONFIG_OUTPUT_TECHNOLOGY_INTERNAL = 0x80000000,
-            DISPLAYCONFIG_OUTPUT_TECHNOLOGY_FORCE_UINT32 = 0xFFFFFFFF
+            DISPLAYCONFIG_OUTPUT_TECHNOLOGY_INDIRECT_VIRTUAL = 17,
+            DISPLAYCONFIG_OUTPUT_TECHNOLOGY_INTERNAL = 0x80000000
+        }
+
+        private enum DISPLAYCONFIG_COLOR_ENCODING : uint
+        {
+            DISPLAYCONFIG_COLOR_ENCODING_RGB = 0,
+            DISPLAYCONFIG_COLOR_ENCODING_YCBCR444 = 1,
+            DISPLAYCONFIG_COLOR_ENCODING_YCBCR422 = 2,
+            DISPLAYCONFIG_COLOR_ENCODING_YCBCR420 = 3,
+            DISPLAYCONFIG_COLOR_ENCODING_INTENSITY = 4
         }
 
         private enum DISPLAYCONFIG_SCALING : uint
@@ -95,8 +102,7 @@ namespace ArnoldVinkCode
             DISPLAYCONFIG_SCALING_STRETCHED = 3,
             DISPLAYCONFIG_SCALING_ASPECTRATIOCENTEREDMAX = 4,
             DISPLAYCONFIG_SCALING_CUSTOM = 5,
-            DISPLAYCONFIG_SCALING_PREFERRED = 128,
-            DISPLAYCONFIG_SCALING_FORCE_UINT32 = 0xFFFFFFFF
+            DISPLAYCONFIG_SCALING_PREFERRED = 128
         }
 
         private enum DISPLAYCONFIG_ROTATION : uint
@@ -104,8 +110,7 @@ namespace ArnoldVinkCode
             DISPLAYCONFIG_ROTATION_IDENTITY = 1,
             DISPLAYCONFIG_ROTATION_ROTATE90 = 2,
             DISPLAYCONFIG_ROTATION_ROTATE180 = 3,
-            DISPLAYCONFIG_ROTATION_ROTATE270 = 4,
-            DISPLAYCONFIG_ROTATION_FORCE_UINT32 = 0xFFFFFFFF
+            DISPLAYCONFIG_ROTATION_ROTATE270 = 4
         }
 
         private enum DISPLAYCONFIG_SCANLINE_ORDERING : uint
@@ -114,8 +119,17 @@ namespace ArnoldVinkCode
             DISPLAYCONFIG_SCANLINE_ORDERING_PROGRESSIVE = 1,
             DISPLAYCONFIG_SCANLINE_ORDERING_INTERLACED = 2,
             DISPLAYCONFIG_SCANLINE_ORDERING_INTERLACED_UPPERFIELDFIRST = DISPLAYCONFIG_SCANLINE_ORDERING_INTERLACED,
-            DISPLAYCONFIG_SCANLINE_ORDERING_INTERLACED_LOWERFIELDFIRST = 3,
-            DISPLAYCONFIG_SCANLINE_ORDERING_FORCE_UINT32 = 0xFFFFFFFF
+            DISPLAYCONFIG_SCANLINE_ORDERING_INTERLACED_LOWERFIELDFIRST = 3
+        }
+
+        private enum DISPLAYCONFIG_TARGET_FLAGS : uint
+        {
+            DISPLAYCONFIG_TARGET_IN_USE = 0x00000001,
+            DISPLAYCONFIG_TARGET_FORCIBLE = 0x00000002,
+            DISPLAYCONFIG_TARGET_FORCED_AVAILABILITY_BOOT = 0x00000004,
+            DISPLAYCONFIG_TARGET_FORCED_AVAILABILITY_PATH = 0x00000008,
+            DISPLAYCONFIG_TARGET_FORCED_AVAILABILITY_SYSTEM = 0x00000010,
+            DISPLAYCONFIG_TARGET_IS_HMD = 0x00000020
         }
 
         private enum DISPLAYCONFIG_PIXELFORMAT : uint
@@ -124,8 +138,7 @@ namespace ArnoldVinkCode
             DISPLAYCONFIG_PIXELFORMAT_16BPP = 2,
             DISPLAYCONFIG_PIXELFORMAT_24BPP = 3,
             DISPLAYCONFIG_PIXELFORMAT_32BPP = 4,
-            DISPLAYCONFIG_PIXELFORMAT_NONGDI = 5,
-            DISPLAYCONFIG_PIXELFORMAT_FORCE_UINT32 = 0xFFFFFFFF
+            DISPLAYCONFIG_PIXELFORMAT_NONGDI = 5
         }
 
         private enum DISPLAYCONFIG_DEVICE_INFO_TYPE : uint
@@ -140,7 +153,7 @@ namespace ArnoldVinkCode
             DISPLAYCONFIG_DEVICE_INFO_SET_SUPPORT_VIRTUAL_RESOLUTION = 8,
             DISPLAYCONFIG_DEVICE_INFO_GET_ADVANCED_COLOR_INFO = 9,
             DISPLAYCONFIG_DEVICE_INFO_SET_ADVANCED_COLOR_STATE = 10,
-            DISPLAYCONFIG_DEVICE_INFO_FORCE_UINT32 = 0xFFFFFFFF
+            DISPLAYCONFIG_DEVICE_INFO_GET_SDR_WHITE_LEVEL = 11
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -155,7 +168,7 @@ namespace ArnoldVinkCode
         {
             public DISPLAYCONFIG_PATH_SOURCE_INFO sourceInfo;
             public DISPLAYCONFIG_PATH_TARGET_INFO targetInfo;
-            public uint flags;
+            public DISPLAYCONFIG_PATH_FLAGS flags;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -179,7 +192,7 @@ namespace ArnoldVinkCode
             public DISPLAYCONFIG_RATIONAL refreshRate;
             public DISPLAYCONFIG_SCANLINE_ORDERING scanLineOrdering;
             public bool targetAvailable;
-            public uint statusFlags;
+            public DISPLAYCONFIG_TARGET_FLAGS statusFlags;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -278,8 +291,25 @@ namespace ArnoldVinkCode
             public uint value;
         }
 
+        [StructLayout(LayoutKind.Sequential)]
+        private struct DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO
+        {
+            public DISPLAYCONFIG_DEVICE_INFO_HEADER header;
+            public uint value;
+            public DISPLAYCONFIG_COLOR_ENCODING colorEncoding;
+            public int bitsPerColorChannel;
+
+            public bool advancedColorSupported => (value & 0x1) == 0x1;
+            public bool advancedColorEnabled => (value & 0x2) == 0x2;
+            public bool wideColorEnforced => (value & 0x4) == 0x4;
+            public bool advancedColorForceDisabled => (value & 0x8) == 0x8;
+        }
+
         [DllImport("user32.dll")]
         private static extern int DisplayConfigGetDeviceInfo(ref DISPLAYCONFIG_TARGET_DEVICE_NAME requestPacket);
+
+        [DllImport("user32.dll")]
+        private static extern int DisplayConfigGetDeviceInfo(ref DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO requestPacket);
 
         [DllImport("user32.dll")]
         private static extern int GetDisplayConfigBufferSizes(QUERY_DEVICE_CONFIG_FLAGS flags, out uint numPathArrayElements, out uint numModeInfoArrayElements);

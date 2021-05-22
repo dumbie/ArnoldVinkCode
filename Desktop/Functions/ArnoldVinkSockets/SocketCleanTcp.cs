@@ -76,7 +76,7 @@ namespace ArnoldVinkCode
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to remove tcp client from list: " + ex.Message);
+                Debug.WriteLine("Failed removing tcp client from list (L): " + ex.Message);
             }
         }
     }

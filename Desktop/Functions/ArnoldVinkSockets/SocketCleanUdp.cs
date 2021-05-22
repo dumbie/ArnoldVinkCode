@@ -64,7 +64,7 @@ namespace ArnoldVinkCode
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to remove udp client from list: " + ex.Message);
+                Debug.WriteLine("Failed removing udp client from list (L): " + ex.Message);
             }
         }
     }

@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading.Tasks;
 
 namespace ArnoldVinkCode
 {
@@ -28,7 +29,7 @@ namespace ArnoldVinkCode
         }
 
         //Start the tcp server
-        private void TcpServerStart()
+        private async Task TcpServerStart()
         {
             try
             {
@@ -52,7 +53,7 @@ namespace ArnoldVinkCode
             }
             catch (Exception ex)
             {
-                SocketServerException(ex);
+                await SocketServerException(ex);
             }
         }
     }

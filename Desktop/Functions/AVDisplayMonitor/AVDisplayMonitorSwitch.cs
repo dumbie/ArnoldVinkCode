@@ -121,6 +121,32 @@ namespace ArnoldVinkCode
             }
         }
 
+        private static bool MonitorHdrStatus(LUID adapterId, uint targetId)
+        {
+            try
+            {
+                DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO deviceColor = new DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO();
+                deviceColor.header.size = (uint)Marshal.SizeOf(typeof(DISPLAYCONFIG_TARGET_DEVICE_NAME));
+                deviceColor.header.adapterId = adapterId;
+                deviceColor.header.id = targetId;
+                deviceColor.header.type = DISPLAYCONFIG_DEVICE_INFO_TYPE.DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_NAME;
+
+                int error = DisplayConfigGetDeviceInfo(ref deviceColor);
+                if (error != 0)
+                {
+                    Debug.WriteLine("Failed MonitorHdrStatus: " + error);
+                    return false;
+                }
+
+                return deviceColor.advancedColorEnabled;
+            }
+            catch
+            {
+                Debug.WriteLine("Failed reading the monitor hdr status.");
+                return false;
+            }
+        }
+
         //List all the connected display monitors
         public static List<DisplayMonitorSwitch> ListDisplayMonitors()
         {
@@ -234,11 +260,11 @@ namespace ArnoldVinkCode
                                 {
                                     if (pathInfo.targetInfo.id == switchMonitorId)
                                     {
-                                        displayPaths[pathInfoIndex].flags = (uint)DISPLAYCONFIG_PATH_FLAGS.DISPLAYCONFIG_PATH_ACTIVE;
+                                        displayPaths[pathInfoIndex].flags = DISPLAYCONFIG_PATH_FLAGS.DISPLAYCONFIG_PATH_ACTIVE;
                                     }
                                     else
                                     {
-                                        displayPaths[pathInfoIndex].flags = (uint)DISPLAYCONFIG_PATH_FLAGS.DISPLAYCONFIG_PATH_DISABLE;
+                                        displayPaths[pathInfoIndex].flags = DISPLAYCONFIG_PATH_FLAGS.DISPLAYCONFIG_PATH_DISABLE;
                                     }
                                 }
                             }
