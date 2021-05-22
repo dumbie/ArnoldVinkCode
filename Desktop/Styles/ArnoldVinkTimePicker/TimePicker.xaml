@@ -1,0 +1,33 @@
+﻿<UserControl x:Class="ArnoldVinkTimePicker.TimePicker"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d">
+
+    <Border Name="border_TimePicker" BorderBrush="Black" BorderThickness="1" Margin="1">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBox x:Name="textbox_Hours" Margin="10,0,0,0" BorderThickness="0" Background="Transparent" MaxLength="2" TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" Text="12" MouseWheel="textbox_MouseWheel" PreviewKeyUp="textbox_PreviewKeyUp" PreviewKeyDown="textbox_PreviewKeyDown"/>
+            <TextBlock Text=":" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <TextBox x:Name="textbox_Minutes" BorderThickness="0" Background="Transparent" MaxLength="2" TextAlignment="Center" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Text="00" MouseWheel="textbox_MouseWheel" PreviewKeyUp="textbox_PreviewKeyUp" PreviewKeyDown="textbox_PreviewKeyDown"/>
+            <TextBox x:Name="textbox_AmPm" BorderThickness="0" Background="Transparent" MaxLength="2" TextAlignment="Center" Grid.Column="3" HorizontalAlignment="Left" VerticalAlignment="Center" Text="AM" MouseWheel="textbox_MouseWheel" PreviewKeyDown="textbox_AmPm_PreviewKeyDown"/>
+
+            <StackPanel Grid.Column="4" Margin="10,0,0,0">
+                <Button x:Name="button_Up" Focusable="False" Click="button_Up_Click">
+                    <TextBlock Text="🡅" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Button>
+                <Button x:Name="button_Down" Focusable="False" Click="button_Down_Click">
+                    <TextBlock Text="🡇" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Button>
+            </StackPanel>
+        </Grid>
+    </Border>
+</UserControl>

@@ -189,6 +189,7 @@
     <!--TextBox and PasswordBox Styles-->
     <Style x:Key="TextBoxWhite" TargetType="TextBox">
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ApplicationAccentLightBrush}"/>
         <Setter Property="Foreground" Value="{DynamicResource ApplicationWhiteBrush}"/>
         <Setter Property="CaretBrush" Value="{DynamicResource ApplicationWhiteBrush}"/>
         <Setter Property="Template" Value="{StaticResource TextBoxTemplateWhite}"/>
@@ -197,6 +198,7 @@
     </Style>
     <Style x:Key="TextBoxBlack" TargetType="TextBox">
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ApplicationAccentLightBrush}"/>
         <Setter Property="Foreground" Value="{DynamicResource ApplicationBlackBrush}"/>
         <Setter Property="CaretBrush" Value="{DynamicResource ApplicationBlackBrush}"/>
         <Setter Property="Template" Value="{StaticResource TextBoxTemplateBlack}"/>
@@ -223,6 +225,7 @@
     </Style>
     <Style x:Key="PasswordBoxWhite" TargetType="PasswordBox">
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ApplicationAccentLightBrush}"/>
         <Setter Property="Foreground" Value="{DynamicResource ApplicationWhiteBrush}"/>
         <Setter Property="CaretBrush" Value="{DynamicResource ApplicationWhiteBrush}"/>
         <Setter Property="Template" Value="{StaticResource PasswordBoxTemplateWhite}"/>
@@ -231,6 +234,7 @@
     </Style>
     <Style x:Key="PasswordBoxBlack" TargetType="PasswordBox">
         <Setter Property="FontSize" Value="{DynamicResource TextSizeInterface}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ApplicationAccentLightBrush}"/>
         <Setter Property="Foreground" Value="{DynamicResource ApplicationBlackBrush}"/>
         <Setter Property="CaretBrush" Value="{DynamicResource ApplicationBlackBrush}"/>
         <Setter Property="Template" Value="{StaticResource PasswordBoxTemplateBlack}"/>
