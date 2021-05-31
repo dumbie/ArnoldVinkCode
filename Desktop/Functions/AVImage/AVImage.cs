@@ -94,6 +94,29 @@ namespace ArnoldVinkCode
             return null;
         }
 
+        //Convert BitmapImage to png file
+        public static bool BitmapImageToFile(BitmapImage sourceImage, string targetPath, bool overwrite)
+        {
+            try
+            {
+                if (overwrite || !File.Exists(targetPath))
+                {
+                    BitmapFrame bitmapFrame = BitmapFrame.Create(sourceImage);
+                    PngBitmapEncoder bitmapEncoder = new PngBitmapEncoder();
+                    bitmapEncoder.Frames.Add(bitmapFrame);
+
+                    using (FileStream fileStream = new FileStream(targetPath, FileMode.Create))
+                    {
+                        bitmapEncoder.Save(fileStream);
+                    }
+
+                    return true;
+                }
+            }
+            catch { }
+            return false;
+        }
+
         //Convert file to a BitmapImage
         public static BitmapImage FileToBitmapImage(string[] sourceImages, ImageSourceFolders[] sourceFolders, string sourceBackup, IntPtr windowHandle, int pixelWidth, int iconIndex)
         {

@@ -379,7 +379,7 @@
 
     <!--ListBoxItem Styles-->
     <Style x:Key="ListBoxItemBlack" TargetType="ListBoxItem">
-        <Setter Property="Padding" Value="0,0,0,0"/>
+        <Setter Property="Padding" Value="0"/>
         <Setter Property="BorderThickness" Value="2"/>
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         <Setter Property="VerticalContentAlignment" Value="Stretch"/>
@@ -388,7 +388,7 @@
     </Style>
 
     <Style x:Key="ListBoxItemWhite" TargetType="ListBoxItem">
-        <Setter Property="Padding" Value="0,0,0,0"/>
+        <Setter Property="Padding" Value="0"/>
         <Setter Property="BorderThickness" Value="2"/>
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         <Setter Property="VerticalContentAlignment" Value="Stretch"/>
@@ -398,7 +398,7 @@
 
     <Style x:Key="ListBoxItemColor" TargetType="ListBoxItem">
         <Setter Property="Background" Value="{Binding Path=Background, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
-        <Setter Property="Padding" Value="0,0,0,0"/>
+        <Setter Property="Padding" Value="0"/>
         <Setter Property="BorderThickness" Value="2"/>
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         <Setter Property="VerticalContentAlignment" Value="Stretch"/>
@@ -406,8 +406,20 @@
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidWhite}"/>
     </Style>
 
+    <Style x:Key="ListBoxItemNone" TargetType="ListBoxItem">
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+        <Setter Property="Template" Value="{StaticResource ListBoxItemTemplateNone}"/>
+    </Style>
+
     <Style x:Key="ListBoxItemDisabled" TargetType="ListBoxItem">
         <Setter Property="IsEnabled" Value="False"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="VerticalContentAlignment" Value="Stretch"/>
     </Style>
 
     <!--StackPanel Styles-->

@@ -190,4 +190,9 @@
             </MultiTrigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
+
+    <!--ListBoxItem Template None-->
+    <ControlTemplate x:Key="ListBoxItemTemplateNone" TargetType="{x:Type ListBoxItem}">
+        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+    </ControlTemplate>
 </ResourceDictionary>

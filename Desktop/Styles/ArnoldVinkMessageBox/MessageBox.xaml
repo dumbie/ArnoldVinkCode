@@ -13,24 +13,31 @@
         ResizeMode="NoResize"
         SizeToContent="WidthAndHeight"
         MouseDown="Window_MouseDown"
-        Background="Transparent">
+        Background="Transparent"
+        MaxHeight="400">
 
-    <!-- ListboxItemString -->
+    <!-- ListBoxItemButton -->
     <Window.Resources>
-        <DataTemplate x:Key="ListBoxItemString">
-            <Border CornerRadius="2" Background="{DynamicResource ApplicationAccentLightBrush}" Cursor="Hand">
-                <TextBlock Text="{Binding}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,5,0,5" Style="{StaticResource TextBlockWhite}" FontSize="{DynamicResource TextSizeSmall}"/>
-            </Border>
+        <DataTemplate x:Key="ListBoxItemButton">
+            <Button Content="{Binding}" Margin="0,5,0,5" Style="{StaticResource ButtonAccentBlack}"/>
         </DataTemplate>
     </Window.Resources>
 
     <!-- Grid - MessageBox -->
     <Border CornerRadius="2" BorderThickness="2" BorderBrush="{DynamicResource ApplicationAccentLightBrush}" Background="{DynamicResource ApplicationWhiteBrush}" MaxWidth="600">
-        <StackPanel Margin="10,5,10,10">
-            <TextBlock Name="grid_MessageBox_Question" Style="{StaticResource TextBlockBlackLight}" FontSize="{DynamicResource TextSizeHuge}" TextWrapping="Wrap" Text="Question"/>
-            <Border Name="grid_MessageBox_Border" HorizontalAlignment="Stretch" Style="{StaticResource BorderHorizontalAccentLight}" Margin="0,5,0,5"/>
-            <TextBlock Name="grid_MessageBox_Description" Style="{StaticResource TextBlockGray}" TextWrapping="Wrap" Text="Description"/>
-            <ListBox Name="listbox_MessageBox" Margin="0,5,0,0" SelectionMode="Single" ItemContainerStyle="{StaticResource ListBoxItemBlack}" ItemTemplate="{StaticResource ListBoxItemString}" Style="{StaticResource ListBoxVertical}" PreviewKeyUp="ListBox_MessageBox_PreviewKeyUp" PreviewMouseUp="ListBox_MessageBox_PreviewMouseUp"/>
-        </StackPanel>
+        <Grid Margin="10,5,10,10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0">
+                <TextBlock Name="grid_MessageBox_Question" Style="{StaticResource TextBlockBlackLight}" FontSize="{DynamicResource TextSizeHuge}" TextWrapping="Wrap" Text="Question"/>
+                <Border Name="grid_MessageBox_Border" HorizontalAlignment="Stretch" Style="{StaticResource BorderHorizontalAccentLight}" Margin="0,5,0,5"/>
+                <TextBlock Name="grid_MessageBox_Description" Style="{StaticResource TextBlockGray}" TextWrapping="Wrap" Text="Description"/>
+            </StackPanel>
+
+            <ListBox Grid.Row="1" Name="listbox_MessageBox" Margin="0,5,0,-5" SelectionMode="Single" ItemContainerStyle="{StaticResource ListBoxItemNone}" ItemTemplate="{StaticResource ListBoxItemButton}" Style="{StaticResource ListBoxVertical}" ButtonBase.Click="listbox_MessageBox_Click"/>
+        </Grid>
     </Border>
 </Window>

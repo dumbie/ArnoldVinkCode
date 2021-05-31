@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace ArnoldVinkCode
@@ -89,27 +90,14 @@ namespace ArnoldVinkCode
         }
 
         //Set the popup result
-        private void ListBox_MessageBox_PreviewKeyUp(object sender, KeyEventArgs e)
+        private void listbox_MessageBox_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                if (e.Key == Key.Space)
-                {
-                    ListBox_MessageBox_PreviewMouseUp(null, null);
-                }
-            }
-            catch { }
-        }
-        private void ListBox_MessageBox_PreviewMouseUp(object sender, MouseButtonEventArgs e)
-        {
-            try
-            {
-                if (listbox_MessageBox.SelectedItems.Count > 0 && listbox_MessageBox.SelectedIndex != -1)
-                {
-                    vPopupResult = (string)listbox_MessageBox.SelectedItem;
-                    vPopupDone = true;
-                    Debug.WriteLine("Selected answer: " + vPopupResult.ToString());
-                }
+                Button originalSource = (Button)e.OriginalSource;
+                vPopupResult = originalSource.Content.ToString();
+                vPopupDone = true;
+                Debug.WriteLine("Selected messagebox answer: " + vPopupResult);
             }
             catch { }
         }
