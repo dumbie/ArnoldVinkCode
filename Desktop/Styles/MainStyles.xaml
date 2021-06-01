@@ -379,6 +379,7 @@
 
     <!--ListBoxItem Styles-->
     <Style x:Key="ListBoxItemBlack" TargetType="ListBoxItem">
+        <Setter Property="Margin" Value="{Binding Path=Tag, TargetNullValue=0, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
         <Setter Property="Padding" Value="0"/>
         <Setter Property="BorderThickness" Value="2"/>
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -388,6 +389,7 @@
     </Style>
 
     <Style x:Key="ListBoxItemWhite" TargetType="ListBoxItem">
+        <Setter Property="Margin" Value="{Binding Path=Tag, TargetNullValue=0, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
         <Setter Property="Padding" Value="0"/>
         <Setter Property="BorderThickness" Value="2"/>
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -398,6 +400,7 @@
 
     <Style x:Key="ListBoxItemColor" TargetType="ListBoxItem">
         <Setter Property="Background" Value="{Binding Path=Background, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
+        <Setter Property="Margin" Value="{Binding Path=Tag, TargetNullValue=0, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
         <Setter Property="Padding" Value="0"/>
         <Setter Property="BorderThickness" Value="2"/>
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -406,16 +409,30 @@
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidWhite}"/>
     </Style>
 
-    <Style x:Key="ListBoxItemNone" TargetType="ListBoxItem">
+    <Style x:Key="ListBoxItemNoneWhite" TargetType="ListBoxItem">
+        <Setter Property="Margin" Value="{Binding Path=Tag, TargetNullValue=0, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
         <Setter Property="Padding" Value="0"/>
         <Setter Property="BorderThickness" Value="2"/>
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         <Setter Property="VerticalContentAlignment" Value="Stretch"/>
         <Setter Property="Template" Value="{StaticResource ListBoxItemTemplateNone}"/>
+        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidWhite}"/>
+    </Style>
+
+    <Style x:Key="ListBoxItemNoneBlack" TargetType="ListBoxItem">
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="Margin" Value="{Binding Path=Tag, TargetNullValue=0, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+        <Setter Property="Template" Value="{StaticResource ListBoxItemTemplateNone}"/>
+        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidBlack}"/>
     </Style>
 
     <Style x:Key="ListBoxItemDisabled" TargetType="ListBoxItem">
         <Setter Property="IsEnabled" Value="False"/>
+        <Setter Property="Margin" Value="{Binding Path=Tag, TargetNullValue=0, RelativeSource={RelativeSource AncestorType=ItemsControl}}"/>
         <Setter Property="Padding" Value="0"/>
         <Setter Property="BorderThickness" Value="2"/>
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>

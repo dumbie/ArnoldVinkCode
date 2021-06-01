@@ -65,6 +65,7 @@ namespace ArnoldVinkCode
 
                 //Set the messagebox answers
                 listbox_MessageBox.ItemsSource = Answers;
+                listbox_MessageBox.SelectedIndex = 0;
 
                 //Reset popup variables
                 vPopupResult = string.Empty;

@@ -19,7 +19,7 @@
     <!-- ListBoxItemButton -->
     <Window.Resources>
         <DataTemplate x:Key="ListBoxItemButton">
-            <Button Content="{Binding}" Margin="0,5,0,5" Style="{StaticResource ButtonAccentBlack}"/>
+            <Button Content="{Binding}" Style="{StaticResource ButtonAccentBlack}"/>
         </DataTemplate>
     </Window.Resources>
 
@@ -37,7 +37,7 @@
                 <TextBlock Name="grid_MessageBox_Description" Style="{StaticResource TextBlockGray}" TextWrapping="Wrap" Text="Description"/>
             </StackPanel>
 
-            <ListBox Grid.Row="1" Name="listbox_MessageBox" Margin="0,5,0,-5" SelectionMode="Single" ItemContainerStyle="{StaticResource ListBoxItemNone}" ItemTemplate="{StaticResource ListBoxItemButton}" Style="{StaticResource ListBoxVertical}" ButtonBase.Click="listbox_MessageBox_Click"/>
+            <ListBox Grid.Row="1" Name="listbox_MessageBox" Tag="0,5,0,0" Margin="0,5,0,0" SelectionMode="Single" ItemContainerStyle="{StaticResource ListBoxItemNoneBlack}" ItemTemplate="{StaticResource ListBoxItemButton}" Style="{StaticResource ListBoxVertical}" ButtonBase.Click="listbox_MessageBox_Click"/>
         </Grid>
     </Border>
 </Window>
