@@ -117,7 +117,7 @@ namespace ArnoldVinkCode
                 if (ProcessWindowHandle != IntPtr.Zero)
                 {
                     //Show the process
-                    await FocusProcessWindow(appName, ProcessId, ProcessWindowHandle, 0, false, false);
+                    await FocusProcessWindow(appName, ProcessId, ProcessWindowHandle, WindowShowCommand.None, false, false);
                     await Task.Delay(500);
 
                     //Close the process or app

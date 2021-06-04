@@ -73,7 +73,7 @@ namespace ArnoldVinkCode
         }
 
         //Focus on a process window
-        public static async Task<bool> FocusProcessWindow(string processTitle, int processId, IntPtr processWindowHandle, int windowStateCommand, bool setWindowState, bool setTempTopMost)
+        public static async Task<bool> FocusProcessWindow(string processTitle, int processId, IntPtr processWindowHandle, WindowShowCommand windowShowCommand, bool setWindowState, bool setTempTopMost)
         {
             try
             {
@@ -95,28 +95,28 @@ namespace ArnoldVinkCode
                         await CloseOpenWindowsSystemMenu(foregroundProcess);
 
                         //Detect the previous window state
-                        if (windowStateCommand == 0 && setWindowState)
+                        if (windowShowCommand == WindowShowCommand.None && setWindowState)
                         {
                             WindowPlacement processWindowState = new WindowPlacement();
                             GetWindowPlacement(processWindowHandle, ref processWindowState);
                             Debug.WriteLine("Detected the previous window state: " + processWindowState.windowFlags);
                             if (processWindowState.windowFlags == WindowFlags.RestoreToMaximized)
                             {
-                                windowStateCommand = (int)WindowShowCommand.ShowMaximized;
+                                windowShowCommand = WindowShowCommand.ShowMaximized;
                             }
                             else
                             {
-                                windowStateCommand = (int)WindowShowCommand.Restore;
+                                windowShowCommand = WindowShowCommand.Restore;
                             }
                         }
 
                         //Change the window state command
                         if (setWindowState)
                         {
-                            ShowWindowAsync(processWindowHandle, windowStateCommand);
+                            ShowWindowAsync(processWindowHandle, windowShowCommand);
                             await Task.Delay(10);
 
-                            ShowWindow(processWindowHandle, windowStateCommand);
+                            ShowWindow(processWindowHandle, windowShowCommand);
                             await Task.Delay(10);
                         }
 
@@ -162,7 +162,7 @@ namespace ArnoldVinkCode
                         }
 
                         //Return bool
-                        Debug.WriteLine("Focused process window: " + processTitle + " WindowHandle: " + processWindowHandle + " ShowCmd: " + windowStateCommand);
+                        Debug.WriteLine("Focused process window: " + processTitle + " WindowHandle: " + processWindowHandle + " ShowCmd: " + windowShowCommand);
                         return true;
                     }
                     catch { }

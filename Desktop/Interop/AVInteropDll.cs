@@ -15,24 +15,6 @@ namespace ArnoldVinkCode
         [DllImport("kernel32.dll")]
         public static extern bool Wow64DisableWow64FsRedirection(IntPtr ptr);
         [DllImport("user32.dll")]
-        public static extern bool ShowWindowAsync(IntPtr hWnd, int nCmdShow);
-        [DllImport("user32.dll")]
-        public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-        [DllImport("user32.dll")]
-        public static extern bool UpdateWindow(IntPtr hWnd);
-        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-        public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
-        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-        public static extern IntPtr FindWindowEx(IntPtr hWndParent, IntPtr hwndChildAfter, string lpszClass, string lpszWindow);
-        [DllImport("user32.dll")]
-        public static extern void SwitchToThisWindow(IntPtr hWnd, bool fAltTab);
-        [DllImport("user32.dll")]
-        public static extern bool AllowSetForegroundWindow(int dwProcessId);
-        [DllImport("user32.dll")]
-        public static extern bool SetForegroundWindow(IntPtr hWnd);
-        [DllImport("user32.dll")]
-        public static extern IntPtr GetForegroundWindow();
-        [DllImport("user32.dll")]
         public static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         public static extern int GetWindowText(IntPtr handle, [MarshalAs(UnmanagedType.LPWStr)] StringBuilder caption, int count);
@@ -42,10 +24,6 @@ namespace ArnoldVinkCode
         public static extern uint GetCurrentThreadId();
         [DllImport("user32.dll")]
         public static extern bool AttachThreadInput(uint idAttach, uint idAttachTo, bool fAttach);
-        [DllImport("user32.dll")]
-        public static extern bool BringWindowToTop(IntPtr hWnd);
-        [DllImport("user32.dll")]
-        public static extern IntPtr SetActiveWindow(IntPtr hWnd);
         [DllImport("user32.dll")]
         public static extern uint GetDoubleClickTime();
         [DllImport("user32.dll")]
@@ -66,6 +44,70 @@ namespace ArnoldVinkCode
         public static extern int SHGetPropertyStoreForWindow(IntPtr hwnd, ref Guid iid, [Out(), MarshalAs(UnmanagedType.Interface)] out IPropertyStore propertyStore);
         [DllImport("kernel32.dll")]
         public static extern bool CloseHandle(IntPtr hHandle);
+
+        //Window show
+        [DllImport("user32.dll")]
+        public static extern bool ShowWindowAsync(IntPtr hWnd, WindowShowCommand nCmdShow);
+        [DllImport("user32.dll")]
+        public static extern bool ShowWindow(IntPtr hWnd, WindowShowCommand nCmdShow);
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        public static extern IntPtr FindWindowEx(IntPtr hWndParent, IntPtr hwndChildAfter, string lpszClass, string lpszWindow);
+        [DllImport("user32.dll")]
+        public static extern void SwitchToThisWindow(IntPtr hWnd, bool fAltTab);
+        [DllImport("user32.dll")]
+        public static extern bool AllowSetForegroundWindow(int dwProcessId);
+        [DllImport("user32.dll")]
+        public static extern bool SetForegroundWindow(IntPtr hWnd);
+        [DllImport("user32.dll")]
+        public static extern IntPtr GetForegroundWindow();
+        [DllImport("user32.dll")]
+        public static extern bool BringWindowToTop(IntPtr hWnd);
+        [DllImport("user32.dll")]
+        public static extern IntPtr SetActiveWindow(IntPtr hWnd);
+
+        //Window create
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        public static extern ushort RegisterClassEx(ref WNDCLASSEX windowClassEx);
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        public static extern IntPtr CreateWindowEx(WindowStylesEx dwExStyle, string lpClassName, string lpWindowName, WindowStyles dwStyle, int x, int y, int nWidth, int nHeight, IntPtr hWndParent, IntPtr hMenu, IntPtr hInstance, IntPtr lpParam);
+        [DllImport("user32.dll")]
+        public static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndParent);
+        [DllImport("user32.dll")]
+        public static extern bool UpdateWindow(IntPtr hWnd);
+        [DllImport("user32.dll")]
+        public static extern bool DestroyWindow(IntPtr hWnd);
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        public static extern IntPtr DefWindowProc(IntPtr hWnd, uint uMsg, IntPtr wParam, IntPtr lParam);
+        [DllImport("user32.dll")]
+        public static extern bool SetLayeredWindowAttributes(IntPtr hWnd, uint crKey, byte bAlpha, LayeredWindowAttributes dwFlags);
+
+        public enum LayeredWindowAttributes : uint
+        {
+            LWA_NONE = 0x0,
+            LWA_COLORKEY = 0x1,
+            LWA_ALPHA = 0x2,
+            LWA_OPAQUE = 0x4
+        }
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        public struct WNDCLASSEX
+        {
+            public static readonly uint classSize = (uint)Marshal.SizeOf(typeof(WNDCLASSEX));
+            public uint cbSize;
+            public int style;
+            public IntPtr lpfnWndProc;
+            public int cbClsExtra;
+            public int cbWndExtra;
+            public IntPtr hInstance;
+            public IntPtr hIcon;
+            public IntPtr hCursor;
+            public IntPtr hbrBackground;
+            public string lpszMenuName;
+            public string lpszClassName;
+            public IntPtr hIconSm;
+        }
 
         //Window event hook
         [DllImport("user32.dll")]
@@ -255,6 +297,7 @@ namespace ArnoldVinkCode
 
         public enum WindowStyles : uint
         {
+            WS_NONE = 0x00000000,
             WS_BORDER = 0x800000,
             WS_CAPTION = 0xc00000,
             WS_CHILD = 0x40000000,
@@ -281,6 +324,7 @@ namespace ArnoldVinkCode
 
         public enum WindowStylesEx : uint
         {
+            WS_EX_NONE = 0x00000000,
             WS_EX_ACCEPTFILES = 0x00000010,
             WS_EX_APPWINDOW = 0x00040000,
             WS_EX_CLIENTEDGE = 0x00000200,
@@ -540,8 +584,6 @@ namespace ArnoldVinkCode
 
         //Window Placement
         [DllImport("user32.dll")]
-        public static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
-        [DllImport("user32.dll")]
         public static extern bool SetWindowPlacement(IntPtr hWnd, [In] ref WindowPlacement lpwndpl);
         [DllImport("user32.dll")]
         public static extern bool GetWindowPlacement(IntPtr hWnd, ref WindowPlacement lpwndpl);
@@ -563,6 +605,7 @@ namespace ArnoldVinkCode
         }
         public enum WindowShowCommand : int
         {
+            None = -1,
             Hide = 0,
             Normal = 1,
             Minimized = 2,
