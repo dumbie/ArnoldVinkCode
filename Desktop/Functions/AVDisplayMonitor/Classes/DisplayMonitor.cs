@@ -1,13 +1,12 @@
-﻿using System;
-
-namespace ArnoldVinkCode
+﻿namespace ArnoldVinkCode
 {
     public partial class AVDisplayMonitor
     {
-        public class DisplayMonitorSettings
+        public class DisplayMonitor
         {
-            public IntPtr Handle { get; set; } = IntPtr.Zero;
+            public int Identifier { get; set; } = -1;
             public string Name { get; set; } = string.Empty;
+            public string DevicePath { get; set; } = string.Empty;
             public int WidthNative { get; set; } = -1;
             public int WidthDpi { get; set; } = -1;
             public int HeightNative { get; set; } = -1;
@@ -20,6 +19,8 @@ namespace ArnoldVinkCode
             public int BoundsTop { get; set; } = -1;
             public int BoundsRight { get; set; } = -1;
             public int BoundsBottom { get; set; } = -1;
+            public bool HdrEnabled { get; set; } = false;
+            public int HdrWhiteLevel { get; set; } = -1;
         }
     }
 }

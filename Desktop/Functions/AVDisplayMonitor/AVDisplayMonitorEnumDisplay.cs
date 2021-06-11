@@ -1,59 +1,59 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 
 namespace ArnoldVinkCode
 {
     public partial class AVDisplayMonitor
     {
-        private static List<DisplayMonitorSettings> GetScreenHandles()
+        //Query all monitors
+        private static List<IntPtr> QueryMonitorsEnumDisplay()
         {
-            List<DisplayMonitorSettings> screenSettingsList = new List<DisplayMonitorSettings>();
+            List<IntPtr> monitorHandles = new List<IntPtr>();
             try
             {
                 EnumDisplayMonitors(IntPtr.Zero, IntPtr.Zero,
                 delegate (IntPtr hMonitor, IntPtr hdcMonitor, ref RECT lprcMonitor, IntPtr dwData)
                 {
-                    DisplayMonitorSettings displayMonitorSettings = new DisplayMonitorSettings();
-                    displayMonitorSettings.Handle = hMonitor;
-                    screenSettingsList.Add(displayMonitorSettings);
+                    monitorHandles.Add(hMonitor);
                     return true;
                 },
                 IntPtr.Zero);
             }
             catch { }
-            return screenSettingsList;
+            return monitorHandles;
         }
 
-        //Requires app manifest dpiawareness permonitor
-        public static DisplayMonitorSettings GetScreenSettings(int screenNumber)
+        //Get monitor information
+        public static DisplayMonitor MonitorEnumDisplay(int screenNumber)
         {
-            DisplayMonitorSettings displayMonitorSettings = null;
+
             try
             {
-                //Get the screen handle
+                //Check screen number
                 if (screenNumber <= 0) { screenNumber = 1; }
-                List<DisplayMonitorSettings> screenHandles = GetScreenHandles();
-                try
-                {
-                    displayMonitorSettings = screenHandles[screenNumber - 1];
-                }
-                catch
-                {
-                    displayMonitorSettings = screenHandles.FirstOrDefault();
-                }
+
+                //Query all monitors
+                List<IntPtr> screenHandles = QueryMonitorsEnumDisplay();
+                IntPtr screenHandle = screenHandles[screenNumber - 1];
+
+                //Create display monitor
+                DisplayMonitor displayMonitorSettings = new DisplayMonitor();
+                displayMonitorSettings.Identifier = screenNumber;
 
                 //Get the screen dpi scale
-                GetDpiForMonitor(displayMonitorSettings.Handle, DPITYPE.Effective, out int dpiHorizontal, out int dpiVertical);
+                GetDpiForMonitor(screenHandle, DPITYPE.Effective, out int dpiHorizontal, out int dpiVertical);
                 displayMonitorSettings.DpiScaleHorizontal = (float)dpiHorizontal / (float)96;
                 displayMonitorSettings.DpiScaleVertical = (float)dpiVertical / (float)96;
 
                 MONITORINFOEX monitorInfoEx = new MONITORINFOEX();
-                GetMonitorInfo(displayMonitorSettings.Handle, monitorInfoEx);
+                GetMonitorInfo(screenHandle, monitorInfoEx);
 
                 //Get the screen name
                 displayMonitorSettings.Name = new string(monitorInfoEx.szDevice).TrimEnd((char)0);
+
+                //Get the device path
+                displayMonitorSettings.DevicePath = @"\\.\DISPLAY" + screenNumber;
 
                 //Get the screen resolution
                 displayMonitorSettings.WidthNative = monitorInfoEx.rcMonitor.Width;
@@ -76,12 +76,13 @@ namespace ArnoldVinkCode
                 displayMonitorSettings.BitDepth = GetDeviceCaps(createDC, DEVICECAP.BITSPIXEL);
 
                 ReleaseDC(IntPtr.Zero, createDC);
+                return displayMonitorSettings;
             }
             catch
             {
-                Debug.WriteLine("Failed getting monitor settings.");
+                Debug.WriteLine("Failed getting enumdisplay monitor information.");
+                return null;
             }
-            return displayMonitorSettings;
         }
     }
 }

@@ -56,11 +56,12 @@ namespace ArnoldVinkCode
             QDC_INCLUDE_HMD = 0x00000020
         }
 
-        private enum DISPLAYCONFIG_MODE_INFO_TYPE : uint
+        private enum DISPLAYCONFIG_MODE_INFO_TYPE : int
         {
             DISPLAYCONFIG_MODE_INFO_TYPE_SOURCE = 1,
             DISPLAYCONFIG_MODE_INFO_TYPE_TARGET = 2,
-            DISPLAYCONFIG_MODE_INFO_TYPE_DESKTOP_IMAGE = 3
+            DISPLAYCONFIG_MODE_INFO_TYPE_DESKTOP_IMAGE = 3,
+            DISPLAYCONFIG_MODE_INFO_TYPE_FORCE_UINT32 = -1
         }
 
         private enum DISPLAYCONFIG_VIDEO_OUTPUT_TECHNOLOGY : uint
@@ -122,7 +123,7 @@ namespace ArnoldVinkCode
             DISPLAYCONFIG_SCANLINE_ORDERING_INTERLACED_LOWERFIELDFIRST = 3
         }
 
-        private enum DISPLAYCONFIG_TARGET_FLAGS : uint
+        private enum DISPLAYCONFIG_PATH_TARGET_INFO_FLAGS : uint
         {
             DISPLAYCONFIG_TARGET_IN_USE = 0x00000001,
             DISPLAYCONFIG_TARGET_FORCIBLE = 0x00000002,
@@ -156,11 +157,10 @@ namespace ArnoldVinkCode
             DISPLAYCONFIG_DEVICE_INFO_GET_SDR_WHITE_LEVEL = 11
         }
 
-        [StructLayout(LayoutKind.Sequential)]
         private struct LUID
         {
             public uint LowPart;
-            public uint HighPart;
+            public int HighPart;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -192,7 +192,7 @@ namespace ArnoldVinkCode
             public DISPLAYCONFIG_RATIONAL refreshRate;
             public DISPLAYCONFIG_SCANLINE_ORDERING scanLineOrdering;
             public bool targetAvailable;
-            public DISPLAYCONFIG_TARGET_FLAGS statusFlags;
+            public DISPLAYCONFIG_PATH_TARGET_INFO_FLAGS statusFlags;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -208,19 +208,19 @@ namespace ArnoldVinkCode
             public DISPLAYCONFIG_MODE_INFO_TYPE infoType;
             public uint id;
             public LUID adapterId;
-            public DISPLAYCONFIG_MODE_INFO_UNION modeInfo;
-        }
-
-        [StructLayout(LayoutKind.Explicit)]
-        private struct DISPLAYCONFIG_MODE_INFO_UNION
-        {
-            [FieldOffset(0)]
             public DISPLAYCONFIG_TARGET_MODE targetMode;
-            [FieldOffset(0)]
             public DISPLAYCONFIG_SOURCE_MODE sourceMode;
+            public DISPLAYCONFIG_DESKTOP_IMAGE_INFO desktopImageInfo;
         }
 
         [StructLayout(LayoutKind.Sequential)]
+        private struct DISPLAYCONFIG_DESKTOP_IMAGE_INFO
+        {
+            public POINT PathSourceSize;
+            public RECT DesktopImageRegion;
+            public RECT DesktopImageClip;
+        }
+
         private struct DISPLAYCONFIG_TARGET_MODE
         {
             public DISPLAYCONFIG_VIDEO_SIGNAL_INFO targetVideoSignalInfo;
@@ -232,7 +232,7 @@ namespace ArnoldVinkCode
             public uint width;
             public uint height;
             public DISPLAYCONFIG_PIXELFORMAT pixelFormat;
-            public POINTL position;
+            public POINT position;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -252,13 +252,6 @@ namespace ArnoldVinkCode
         {
             public uint cx;
             public uint cy;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        private struct POINTL
-        {
-            int x;
-            int y;
         }
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
@@ -305,11 +298,21 @@ namespace ArnoldVinkCode
             public bool advancedColorForceDisabled => (value & 0x8) == 0x8;
         }
 
+        [StructLayout(LayoutKind.Sequential)]
+        private struct DISPLAYCONFIG_SDR_WHITE_LEVEL
+        {
+            public DISPLAYCONFIG_DEVICE_INFO_HEADER header;
+            public int SDRWhiteLevel;
+        }
+
         [DllImport("user32.dll")]
         private static extern int DisplayConfigGetDeviceInfo(ref DISPLAYCONFIG_TARGET_DEVICE_NAME requestPacket);
 
         [DllImport("user32.dll")]
         private static extern int DisplayConfigGetDeviceInfo(ref DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO requestPacket);
+
+        [DllImport("user32.dll")]
+        private static extern int DisplayConfigGetDeviceInfo(ref DISPLAYCONFIG_SDR_WHITE_LEVEL requestPacket);
 
         [DllImport("user32.dll")]
         private static extern int GetDisplayConfigBufferSizes(QUERY_DEVICE_CONFIG_FLAGS flags, out uint numPathArrayElements, out uint numModeInfoArrayElements);

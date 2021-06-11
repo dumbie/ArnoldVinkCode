@@ -27,6 +27,13 @@ namespace ArnoldVinkCode
         }
 
         [StructLayout(LayoutKind.Sequential)]
+        private struct POINT
+        {
+            public int x;
+            public int y;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
         private class MONITORINFOEX
         {
             internal int cbSize = Marshal.SizeOf(typeof(MONITORINFOEX));
