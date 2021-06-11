@@ -221,6 +221,7 @@ namespace ArnoldVinkCode
             public RECT DesktopImageClip;
         }
 
+        [StructLayout(LayoutKind.Sequential)]
         private struct DISPLAYCONFIG_TARGET_MODE
         {
             public DISPLAYCONFIG_VIDEO_SIGNAL_INFO targetVideoSignalInfo;
