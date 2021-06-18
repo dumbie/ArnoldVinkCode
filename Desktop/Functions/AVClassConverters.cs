@@ -9,6 +9,22 @@ namespace ArnoldVinkCode
 {
     public partial class AVClassConverters
     {
+        //Clone byte array
+        public static byte[] CloneByteArray(byte[] cloneArray)
+        {
+            try
+            {
+                byte[] newArray = new byte[cloneArray.Length];
+                Buffer.BlockCopy(cloneArray, 0, newArray, 0, cloneArray.Length);
+                return newArray;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to clone byte array: " + ex.Message);
+                return null;
+            }
+        }
+
         //Shallow clone object
         public static bool CloneObjectShallow<T>(T cloneObject, out T outObject)
         {
