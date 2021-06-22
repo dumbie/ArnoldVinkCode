@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Linq;
 
 namespace ArnoldVinkCode
 {
@@ -8,7 +9,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                int error = SetDisplayConfig(0, null, 0, null, (uint)SetDisplayConfig_Flags.SDC_APPLY | (uint)SetDisplayConfig_Flags.SDC_TOPOLOGY_INTERNAL);
+                int error = SetDisplayConfig(0, null, 0, null, (uint)DISPLAYCONFIG_FLAGS.SDC_APPLY | (uint)DISPLAYCONFIG_FLAGS.SDC_TOPOLOGY_INTERNAL);
                 if (error != 0)
                 {
                     Debug.WriteLine("Failed SetDisplayConfig: " + error);
@@ -28,7 +29,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                int error = SetDisplayConfig(0, null, 0, null, (uint)SetDisplayConfig_Flags.SDC_APPLY | (uint)SetDisplayConfig_Flags.SDC_TOPOLOGY_EXTERNAL);
+                int error = SetDisplayConfig(0, null, 0, null, (uint)DISPLAYCONFIG_FLAGS.SDC_APPLY | (uint)DISPLAYCONFIG_FLAGS.SDC_TOPOLOGY_EXTERNAL);
                 if (error != 0)
                 {
                     Debug.WriteLine("Failed SetDisplayConfig: " + error);
@@ -48,7 +49,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                int error = SetDisplayConfig(0, null, 0, null, (uint)SetDisplayConfig_Flags.SDC_APPLY | (uint)SetDisplayConfig_Flags.SDC_TOPOLOGY_CLONE);
+                int error = SetDisplayConfig(0, null, 0, null, (uint)DISPLAYCONFIG_FLAGS.SDC_APPLY | (uint)DISPLAYCONFIG_FLAGS.SDC_TOPOLOGY_CLONE);
                 if (error != 0)
                 {
                     Debug.WriteLine("Failed SetDisplayConfig: " + error);
@@ -68,7 +69,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                int error = SetDisplayConfig(0, null, 0, null, (uint)SetDisplayConfig_Flags.SDC_APPLY | (uint)SetDisplayConfig_Flags.SDC_TOPOLOGY_EXTEND);
+                int error = SetDisplayConfig(0, null, 0, null, (uint)DISPLAYCONFIG_FLAGS.SDC_APPLY | (uint)DISPLAYCONFIG_FLAGS.SDC_TOPOLOGY_EXTEND);
                 if (error != 0)
                 {
                     Debug.WriteLine("Failed SetDisplayConfig: " + error);
@@ -91,30 +92,34 @@ namespace ArnoldVinkCode
             {
                 Debug.WriteLine("Switching to display monitor: " + switchMonitorId);
 
+                //Set topology mode
+                int error = SetDisplayConfig(0, null, 0, null, (uint)DISPLAYCONFIG_FLAGS.SDC_APPLY | (uint)DISPLAYCONFIG_FLAGS.SDC_TOPOLOGY_INTERNAL);
+                if (error != 0)
+                {
+                    Debug.WriteLine("Failed SetDisplayConfig Topology: " + error);
+                    return false;
+                }
+
                 //Query all monitors
                 QueryMonitorsDisplayConfig(out uint displayPathCount, out uint displayModeCount, out DISPLAYCONFIG_PATH_INFO[] displayPaths, out DISPLAYCONFIG_MODE_INFO[] displayModes);
 
+                //Check all monitors
                 int pathInfoIndex = 0;
-                int validationId = 100000;
                 foreach (DISPLAYCONFIG_PATH_INFO pathInfo in displayPaths)
                 {
                     try
                     {
-                        if (pathInfo.targetInfo.targetAvailable)
+                        //Validate monitor
+                        if (pathInfo.targetInfo.targetAvailable && pathInfo.sourceInfo.modeInfoIdx >= 0 && pathInfo.sourceInfo.modeInfoIdx < displayModeCount)
                         {
-                            if (pathInfo.sourceInfo.modeInfoIdx < validationId || pathInfo.sourceInfo.modeInfoIdx == 0)
+                            //Enable or disable monitor
+                            if (pathInfo.targetInfo.id == switchMonitorId)
                             {
-                                if (pathInfo.targetInfo.modeInfoIdx > validationId || pathInfo.targetInfo.modeInfoIdx == 0)
-                                {
-                                    if (pathInfo.targetInfo.id == switchMonitorId)
-                                    {
-                                        displayPaths[pathInfoIndex].flags = DISPLAYCONFIG_PATH_FLAGS.DISPLAYCONFIG_PATH_ACTIVE;
-                                    }
-                                    else
-                                    {
-                                        displayPaths[pathInfoIndex].flags = DISPLAYCONFIG_PATH_FLAGS.DISPLAYCONFIG_PATH_DISABLE;
-                                    }
-                                }
+                                displayPaths[pathInfoIndex].flags = DISPLAYCONFIG_PATH_FLAGS.DISPLAYCONFIG_PATH_ACTIVE;
+                            }
+                            else
+                            {
+                                displayPaths[pathInfoIndex].flags = DISPLAYCONFIG_PATH_FLAGS.DISPLAYCONFIG_PATH_DISABLE;
                             }
                         }
                     }
@@ -123,7 +128,7 @@ namespace ArnoldVinkCode
                 }
 
                 //Set display information
-                int error = SetDisplayConfig(displayPathCount, displayPaths, displayModeCount, displayModes, (uint)SetDisplayConfig_Flags.SDC_APPLY | (uint)SetDisplayConfig_Flags.SDC_USE_SUPPLIED_DISPLAY_CONFIG | (uint)SetDisplayConfig_Flags.SDC_SAVE_TO_DATABASE | (uint)SetDisplayConfig_Flags.SDC_ALLOW_CHANGES);
+                error = SetDisplayConfig(displayPathCount, displayPaths, displayModeCount, displayModes, (uint)DISPLAYCONFIG_FLAGS.SDC_APPLY | (uint)DISPLAYCONFIG_FLAGS.SDC_USE_SUPPLIED_DISPLAY_CONFIG | (uint)DISPLAYCONFIG_FLAGS.SDC_SAVE_TO_DATABASE | (uint)DISPLAYCONFIG_FLAGS.SDC_ALLOW_CHANGES);
                 if (error != 0)
                 {
                     Debug.WriteLine("Failed SetDisplayConfig: " + error);
@@ -131,7 +136,7 @@ namespace ArnoldVinkCode
                 }
                 else
                 {
-                    Debug.WriteLine("Adjusted SetDisplayConfig: " + error);
+                    Debug.WriteLine("Adjusted SetDisplayConfig.");
                     return true;
                 }
             }

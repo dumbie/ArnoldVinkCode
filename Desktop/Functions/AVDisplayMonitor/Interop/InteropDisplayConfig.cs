@@ -4,8 +4,9 @@ namespace ArnoldVinkCode
 {
     public partial class AVDisplayMonitor
     {
-        private enum SetDisplayConfig_Flags : uint
+        private enum DISPLAYCONFIG_FLAGS : uint
         {
+            SDC_TOPOLOGY_NONE = 0x00000000,
             SDC_TOPOLOGY_INTERNAL = 0x00000001,
             SDC_TOPOLOGY_CLONE = 0x00000002,
             SDC_TOPOLOGY_EXTEND = 0x00000004,
@@ -22,15 +23,6 @@ namespace ArnoldVinkCode
             SDC_FORCE_MODE_ENUMERATION = 0x00001000,
             SDC_ALLOW_PATH_ORDER_CHANGES = 0x00002000,
             SDC_VIRTUAL_MODE_AWARE = 0x00008000
-        }
-
-        private enum DISPLAYCONFIG_TOPOLOGY_ID : uint
-        {
-            DISPLAYCONFIG_TOPOLOGY_NONE = 0x00000000,
-            DISPLAYCONFIG_TOPOLOGY_INTERNAL = 0x00000001,
-            DISPLAYCONFIG_TOPOLOGY_CLONE = 0x00000002,
-            DISPLAYCONFIG_TOPOLOGY_EXTEND = 0x00000004,
-            DISPLAYCONFIG_TOPOLOGY_EXTERNAL = 0x00000008
         }
 
         private enum DISPLAYCONFIG_PATH_FLAGS : uint
@@ -319,7 +311,7 @@ namespace ArnoldVinkCode
         private static extern int GetDisplayConfigBufferSizes(QUERY_DEVICE_CONFIG_FLAGS flags, out uint numPathArrayElements, out uint numModeInfoArrayElements);
 
         [DllImport("user32.dll")]
-        private static extern int QueryDisplayConfig(QUERY_DEVICE_CONFIG_FLAGS flags, ref uint numPathArrayElements, [Out] DISPLAYCONFIG_PATH_INFO[] pathArray, ref uint numModeInfoArrayElements, [Out] DISPLAYCONFIG_MODE_INFO[] modeInfoArray, DISPLAYCONFIG_TOPOLOGY_ID currentTopologyId);
+        private static extern int QueryDisplayConfig(QUERY_DEVICE_CONFIG_FLAGS flags, ref uint numPathArrayElements, [Out] DISPLAYCONFIG_PATH_INFO[] pathArray, ref uint numModeInfoArrayElements, [Out] DISPLAYCONFIG_MODE_INFO[] modeInfoArray, DISPLAYCONFIG_FLAGS currentTopologyId);
 
         [DllImport("User32.dll")]
         private static extern int SetDisplayConfig(uint numPathArrayElements, [In] DISPLAYCONFIG_PATH_INFO[] pathArray, uint numModeInfoArrayElements, [In] DISPLAYCONFIG_MODE_INFO[] modeInfoArray, uint flags);

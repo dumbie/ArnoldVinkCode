@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace ArnoldVinkCode
@@ -24,7 +26,7 @@ namespace ArnoldVinkCode
 
                 displayPaths = new DISPLAYCONFIG_PATH_INFO[displayPathCount];
                 displayModes = new DISPLAYCONFIG_MODE_INFO[displayModeCount];
-                error = QueryDisplayConfig(QUERY_DEVICE_CONFIG_FLAGS.QDC_ALL_PATHS, ref displayPathCount, displayPaths, ref displayModeCount, displayModes, DISPLAYCONFIG_TOPOLOGY_ID.DISPLAYCONFIG_TOPOLOGY_NONE);
+                error = QueryDisplayConfig(QUERY_DEVICE_CONFIG_FLAGS.QDC_ALL_PATHS, ref displayPathCount, displayPaths, ref displayModeCount, displayModes, DISPLAYCONFIG_FLAGS.SDC_TOPOLOGY_NONE);
                 if (error != 0)
                 {
                     Debug.WriteLine("Failed QueryDisplayConfig: " + error);
@@ -50,6 +52,51 @@ namespace ArnoldVinkCode
             }
         }
 
+        //List all the connected display monitors
+        public static List<DisplayMonitor> ListMonitorsDisplayConfig()
+        {
+            try
+            {
+                //Query all monitors
+                QueryMonitorsDisplayConfig(out uint displayPathCount, out uint displayModeCount, out DISPLAYCONFIG_PATH_INFO[] displayPaths, out DISPLAYCONFIG_MODE_INFO[] displayModes);
+
+                //Check all monitors
+                List<DisplayMonitor> monitorListSummary = new List<DisplayMonitor>();
+                foreach (DISPLAYCONFIG_PATH_INFO pathInfo in displayPaths)
+                {
+                    try
+                    {
+                        //Validate monitor
+                        if (pathInfo.targetInfo.targetAvailable && pathInfo.sourceInfo.modeInfoIdx >= 0 && pathInfo.sourceInfo.modeInfoIdx < displayModeCount)
+                        {
+                            if (!monitorListSummary.Any(x => x.Identifier == pathInfo.targetInfo.id))
+                            {
+                                //Get the monitor friendly name
+                                string monitorName = GetMonitorFriendlyName(pathInfo.targetInfo.adapterId, pathInfo.targetInfo.id);
+
+                                //Check the monitor friendly name
+                                if (monitorName != "Unknown")
+                                {
+                                    monitorName = monitorName + " (" + pathInfo.targetInfo.id + ")";
+
+                                    //Add monitor to summary list
+                                    monitorListSummary.Add(new DisplayMonitor() { Identifier = (int)pathInfo.targetInfo.id, Name = monitorName });
+                                }
+                            }
+                        }
+                    }
+                    catch { }
+                }
+
+                return monitorListSummary;
+            }
+            catch
+            {
+                Debug.WriteLine("Failed loading the displays list.");
+                return null;
+            }
+        }
+
         //Get monitor information
         public static DisplayMonitor MonitorDisplayConfig(int screenNumber)
         {
@@ -61,33 +108,35 @@ namespace ArnoldVinkCode
                 //Query all monitors
                 QueryMonitorsDisplayConfig(out uint displayPathCount, out uint displayModeCount, out DISPLAYCONFIG_PATH_INFO[] displayPaths, out DISPLAYCONFIG_MODE_INFO[] displayModes);
 
-                //Create display monitor
-                DisplayMonitor displayMonitorSettings = new DisplayMonitor();
-                displayMonitorSettings.Identifier = screenNumber;
-
-                //Check the monitor
-                int monitorCheckId = 0;
+                //Check all monitors
+                int monitorIndex = 0;
+                int pathInfoIndex = 0;
                 DISPLAYCONFIG_PATH_INFO pathInfoTarget = new DISPLAYCONFIG_PATH_INFO();
                 DISPLAYCONFIG_MODE_INFO modeInfoTarget = new DISPLAYCONFIG_MODE_INFO();
                 foreach (DISPLAYCONFIG_PATH_INFO pathInfo in displayPaths)
                 {
                     try
                     {
-                        //Validate the monitor
-                        if (!pathInfo.targetInfo.targetAvailable) { continue; }
-                        if (pathInfo.targetInfo.refreshRate.Numerator == 0) { continue; }
-
-                        //Check the monitor id
-                        if (screenNumber == monitorCheckId)
+                        //Validate monitor
+                        if (pathInfo.targetInfo.targetAvailable && pathInfo.sourceInfo.modeInfoIdx >= 0 && pathInfo.sourceInfo.modeInfoIdx < displayModeCount)
                         {
-                            pathInfoTarget = displayPaths[monitorCheckId];
-                            modeInfoTarget = displayModes[monitorCheckId];
-                            break;
+                            //Check the monitor id
+                            if (screenNumber == monitorIndex)
+                            {
+                                pathInfoTarget = displayPaths[pathInfoIndex];
+                                modeInfoTarget = displayModes[pathInfoIndex];
+                                break;
+                            }
+                            monitorIndex++;
                         }
                     }
                     catch { }
-                    monitorCheckId++;
+                    pathInfoIndex++;
                 }
+
+                //Create display monitor
+                DisplayMonitor displayMonitorSettings = new DisplayMonitor();
+                displayMonitorSettings.Identifier = screenNumber;
 
                 //Get the screen name
                 string monitorName = GetMonitorFriendlyName(pathInfoTarget.targetInfo.adapterId, pathInfoTarget.targetInfo.id);
@@ -105,7 +154,14 @@ namespace ArnoldVinkCode
                 displayMonitorSettings.HeightNative = (int)modeInfoTarget.targetMode.targetVideoSignalInfo.activeSize.cy;
 
                 //Get the screen refresh rate
-                displayMonitorSettings.RefreshRate = (int)(pathInfoTarget.targetInfo.refreshRate.Numerator / pathInfoTarget.targetInfo.refreshRate.Denominator);
+                if (pathInfoTarget.targetInfo.refreshRate.Numerator != 0)
+                {
+                    displayMonitorSettings.RefreshRate = (int)(pathInfoTarget.targetInfo.refreshRate.Numerator / pathInfoTarget.targetInfo.refreshRate.Denominator);
+                }
+                else
+                {
+                    displayMonitorSettings.RefreshRate = 0;
+                }
 
                 //Get the screen hdr status
                 displayMonitorSettings.HdrEnabled = GetMonitorHdrStatus(pathInfoTarget.targetInfo.adapterId, pathInfoTarget.targetInfo.id);
