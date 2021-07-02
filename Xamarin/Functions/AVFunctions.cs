@@ -24,23 +24,103 @@ namespace ArnoldVinkCode
             return StringText.Substring(0, Position) + ReplaceWith + StringText.Substring(Position + SearchFor.Length);
         }
 
+        //Remove starting text occurence in string
+        internal static string StringRemoveStart(string String, string toRemove)
+        {
+            try
+            {
+                while (String.StartsWith(toRemove))
+                {
+                    String = String.Substring(toRemove.Length);
+                }
+            }
+            catch { }
+            return String;
+        }
+
+        //Remove multiple starting text occurence in string
+        internal static string StringRemoveMultiStart(string String, string[] toRemove)
+        {
+            try
+            {
+                while (toRemove.Any(String.StartsWith))
+                {
+                    foreach (string Remove in toRemove)
+                    {
+                        if (String.StartsWith(Remove)) { String = String.Substring(Remove.Length); }
+                    }
+                }
+            }
+            catch { }
+            return String;
+        }
+
+        //Remove ending text occurence in string
+        internal static string StringRemoveEnd(string String, string toRemove)
+        {
+            try
+            {
+                while (String.EndsWith(toRemove))
+                {
+                    String = String.Substring(0, String.Length - toRemove.Length);
+                }
+            }
+            catch { }
+            return String;
+        }
+
+        //Remove multiple ending text occurence in string
+        internal static string StringRemoveMultiEnd(string String, string[] toRemove)
+        {
+            try
+            {
+                while (toRemove.Any(String.EndsWith))
+                {
+                    foreach (string Remove in toRemove)
+                    {
+                        if (String.EndsWith(Remove)) { String = String.Substring(0, String.Length - Remove.Length); }
+                    }
+                }
+            }
+            catch { }
+            return String;
+        }
+
         //Replace last text occurence in string
-        internal static string StringReplaceLast(string String, string ReplaceWith) { try { return String.Remove(String.Length - 1, 1) + ReplaceWith; } catch { return ""; } }
+        internal static string StringReplaceLast(string String, string ReplaceWith)
+        {
+            try
+            {
+                return String.Remove(String.Length - 1, 1) + ReplaceWith;
+            }
+            catch { return String; }
+        }
 
         //Add string to string with character
         internal static string StringAdd(string OldString, string AddString, string Character)
         {
             try
             {
-                if (!String.IsNullOrEmpty(OldString)) { OldString = OldString + Character + " " + AddString; }
+                if (!string.IsNullOrWhiteSpace(OldString)) { OldString = OldString + Character + " " + AddString; }
                 else { OldString = AddString; }
                 return OldString;
             }
-            catch { return ""; }
+            catch { return OldString; }
+        }
+
+        //Remove text after certain character
+        internal static string StringRemoveAfter(string String, string RemoveCharacter, int RemoveAfter)
+        {
+            try
+            {
+                String = String.Substring(0, String.IndexOf(RemoveCharacter) + RemoveAfter);
+            }
+            catch { }
+            return String;
         }
 
         //Convert String To Cutted String
-        internal static string CutString(string CutString, int CutAt, string AddString)
+        internal static string StringCut(string CutString, int CutAt, string AddString)
         {
             if (CutString.Length > CutAt) { return CutString.Substring(0, CutAt) + AddString; }
             else { return CutString; }
@@ -74,7 +154,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                if(Device.Idiom == TargetIdiom.Phone) { return true; }
+                if (Device.Idiom == TargetIdiom.Phone) { return true; }
                 else { return false; }
             }
             catch { return false; }
@@ -88,7 +168,7 @@ namespace ArnoldVinkCode
                 if (Device.RuntimePlatform == Device.iOS) { return "iOS"; }
                 else if (Device.RuntimePlatform == Device.Android) { return "Android"; }
                 else if (Device.RuntimePlatform == Device.UWP) { return "Windows"; }
-                else{ return "Unknown";}
+                else { return "Unknown"; }
             }
             catch { return "NoConnection"; }
         }
@@ -131,7 +211,7 @@ namespace ArnoldVinkCode
                 //        return phoneLine.NetworkName;
                 //    }
 
-                    return "Unknown";
+                return "Unknown";
                 //}
             }
             catch { return "Unknown"; }
