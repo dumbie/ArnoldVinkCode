@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
+using System.Timers;
 using Xamarin.Forms;
 
 namespace ArnoldVinkCode
@@ -8,7 +12,7 @@ namespace ArnoldVinkCode
     class AVFunctions
     {
         //Convert String To Title Case
-        internal static string ToTitleCase(string ToTitleCase)
+        public static string ToTitleCase(string ToTitleCase)
         {
             char[] TitleCase = ToTitleCase.ToLower().ToCharArray();
             for (int i = 0; i < TitleCase.Count(); i++) { TitleCase[i] = i == 0 || TitleCase[i - 1] == ' ' ? char.ToUpper(TitleCase[i]) : TitleCase[i]; }
@@ -16,7 +20,7 @@ namespace ArnoldVinkCode
         }
 
         //Replace first text occurence in string
-        internal static string StringReplaceFirst(string StringText, string SearchFor, string ReplaceWith, bool StartsWith)
+        public static string StringReplaceFirst(string StringText, string SearchFor, string ReplaceWith, bool StartsWith)
         {
             if (StartsWith) { if (!StringText.ToLower().StartsWith(SearchFor.ToLower())) { return StringText; } }
             int Position = StringText.IndexOf(SearchFor, StringComparison.CurrentCultureIgnoreCase);
@@ -25,7 +29,7 @@ namespace ArnoldVinkCode
         }
 
         //Remove starting text occurence in string
-        internal static string StringRemoveStart(string String, string toRemove)
+        public static string StringRemoveStart(string String, string toRemove)
         {
             try
             {
@@ -39,7 +43,7 @@ namespace ArnoldVinkCode
         }
 
         //Remove multiple starting text occurence in string
-        internal static string StringRemoveMultiStart(string String, string[] toRemove)
+        public static string StringRemoveMultiStart(string String, string[] toRemove)
         {
             try
             {
@@ -56,7 +60,7 @@ namespace ArnoldVinkCode
         }
 
         //Remove ending text occurence in string
-        internal static string StringRemoveEnd(string String, string toRemove)
+        public static string StringRemoveEnd(string String, string toRemove)
         {
             try
             {
@@ -70,7 +74,7 @@ namespace ArnoldVinkCode
         }
 
         //Remove multiple ending text occurence in string
-        internal static string StringRemoveMultiEnd(string String, string[] toRemove)
+        public static string StringRemoveMultiEnd(string String, string[] toRemove)
         {
             try
             {
@@ -87,7 +91,7 @@ namespace ArnoldVinkCode
         }
 
         //Replace last text occurence in string
-        internal static string StringReplaceLast(string String, string ReplaceWith)
+        public static string StringReplaceLast(string String, string ReplaceWith)
         {
             try
             {
@@ -97,7 +101,7 @@ namespace ArnoldVinkCode
         }
 
         //Add string to string with character
-        internal static string StringAdd(string OldString, string AddString, string Character)
+        public static string StringAdd(string OldString, string AddString, string Character)
         {
             try
             {
@@ -109,7 +113,7 @@ namespace ArnoldVinkCode
         }
 
         //Remove text after certain character
-        internal static string StringRemoveAfter(string String, string RemoveCharacter, int RemoveAfter)
+        public static string StringRemoveAfter(string String, string RemoveCharacter, int RemoveAfter)
         {
             try
             {
@@ -120,14 +124,14 @@ namespace ArnoldVinkCode
         }
 
         //Convert String To Cutted String
-        internal static string StringCut(string CutString, int CutAt, string AddString)
+        public static string StringCut(string CutString, int CutAt, string AddString)
         {
             if (CutString.Length > CutAt) { return CutString.Substring(0, CutAt) + AddString; }
             else { return CutString; }
         }
 
         //Convert Number To Text
-        internal static string NumberToText(string StrNumber)
+        public static string NumberToText(string StrNumber)
         {
             try
             {
@@ -150,7 +154,7 @@ namespace ArnoldVinkCode
         }
 
         //Check if device is mobile
-        internal static bool DevMobile()
+        public static bool DevMobile()
         {
             try
             {
@@ -161,7 +165,7 @@ namespace ArnoldVinkCode
         }
 
         //Get device os type
-        internal static string GetOsType()
+        public static string GetOsType()
         {
             try
             {
@@ -174,7 +178,7 @@ namespace ArnoldVinkCode
         }
 
         //Get network connection type
-        internal static string GetNetworkType()
+        public static string GetNetworkType()
         {
             try
             {
@@ -190,7 +194,7 @@ namespace ArnoldVinkCode
         }
 
         //Get network connection name
-        internal static async Task<string> GetNetworkName()
+        public static async Task<string> GetNetworkName()
         {
             try
             {
@@ -218,22 +222,53 @@ namespace ArnoldVinkCode
         }
 
         //Check if datetime is between dates
-        internal static bool TimeBetween(DateTime NowTime, DateTime StartTime, DateTime EndTime, bool Inclusive)
+        public static bool TimeBetween(DateTime NowTime, DateTime StartTime, DateTime EndTime, bool Inclusive)
         {
             if (Inclusive) { return (NowTime >= StartTime) && (NowTime <= EndTime); }
             else { return (NowTime > StartTime) && (NowTime < EndTime); }
         }
 
-        ////Reset a timer tick estimate
-        //internal static void ResetTimer(Timer ResetTimer)
-        //{
-        //    try
-        //    {
-        //        ResetTimer.Stop();
-        //        ResetTimer.Start();
-        //    }
-        //    catch { }
-        //}
+        //Reset a timer tick estimate
+        public static void ResetTimer(Timer ResetTimer)
+        {
+            try
+            {
+                ResetTimer.Stop();
+                ResetTimer.Start();
+            }
+            catch { }
+        }
+
+        //Find all visual children of object
+        public static List<T> FindVisualChildren<T>(Element searchElement)
+        {
+            List<T> resultList = new List<T>();
+            try
+            {
+                //Get properties
+                IEnumerable<PropertyInfo> propertyInfo = searchElement.GetType().GetRuntimeProperties();
+
+                //Check children
+                PropertyInfo contProp = propertyInfo.Where(x => x.Name == "Content" || x.Name == "Children" || x.Name == "TemplatedItems").FirstOrDefault();
+                if (contProp != null)
+                {
+                    IEnumerable children = contProp.GetValue(searchElement) as IEnumerable;
+                    foreach (object child in children)
+                    {
+                        if (child is T)
+                        {
+                            resultList.Add((T)child);
+                        }
+                        else if (child is Element)
+                        {
+                            FindVisualChildren<T>((Element)child);
+                        }
+                    }
+                }
+            }
+            catch { }
+            return resultList;
+        }
 
         //Scroll to certain ui element
         public static void ScrollViewToElement(ScrollView ScrollViewer, Element UIElement, bool VertScrolling, bool InstantScroll)
@@ -251,7 +286,7 @@ namespace ArnoldVinkCode
         }
 
         //Convert Degrees to Cardinal string
-        internal static string DegreesToCardinal(double degrees)
+        public static string DegreesToCardinal(double degrees)
         {
             try
             {

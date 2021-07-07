@@ -16,7 +16,10 @@ namespace ArnoldVinkCode
             {
                 using (HttpClient httpClient = new HttpClient())
                 {
-                    httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
+                    if (UserAgent != null && !string.IsNullOrWhiteSpace(UserAgent))
+                    {
+                        httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
+                    }
                     httpClient.DefaultRequestHeaders.Add("Cache-Control", "no-cache, no-store");
                     if (Header != null)
                     {
@@ -49,7 +52,10 @@ namespace ArnoldVinkCode
             {
                 using (HttpClient httpClient = new HttpClient())
                 {
-                    httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
+                    if (UserAgent != null && !string.IsNullOrWhiteSpace(UserAgent))
+                    {
+                        httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
+                    }
                     httpClient.DefaultRequestHeaders.Add("Cache-Control", "no-cache, no-store");
                     if (Header != null)
                     {
@@ -82,7 +88,10 @@ namespace ArnoldVinkCode
             {
                 using (HttpClient httpClient = new HttpClient())
                 {
-                    httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
+                    if (UserAgent != null && !string.IsNullOrWhiteSpace(UserAgent))
+                    {
+                        httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
+                    }
                     httpClient.DefaultRequestHeaders.Add("Cache-Control", "no-cache, no-store");
                     if (Header != null)
                     {
@@ -115,7 +124,10 @@ namespace ArnoldVinkCode
             {
                 using (HttpClient httpClient = new HttpClient())
                 {
-                    httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
+                    if (UserAgent != null && !string.IsNullOrWhiteSpace(UserAgent))
+                    {
+                        httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
+                    }
                     httpClient.DefaultRequestHeaders.Add("Cache-Control", "no-cache, no-store");
                     if (Header != null)
                     {
@@ -148,7 +160,10 @@ namespace ArnoldVinkCode
             {
                 using (HttpClient httpClient = new HttpClient())
                 {
-                    httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
+                    if (UserAgent != null && !string.IsNullOrWhiteSpace(UserAgent))
+                    {
+                        httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
+                    }
                     httpClient.DefaultRequestHeaders.Add("Cache-Control", "no-cache, no-store");
                     if (Header != null)
                     {
@@ -181,7 +196,10 @@ namespace ArnoldVinkCode
             {
                 using (HttpClient httpClient = new HttpClient())
                 {
-                    httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
+                    if (UserAgent != null && !string.IsNullOrWhiteSpace(UserAgent))
+                    {
+                        httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
+                    }
                     httpClient.DefaultRequestHeaders.Add("Cache-Control", "no-cache, no-store");
                     if (Header != null)
                     {
