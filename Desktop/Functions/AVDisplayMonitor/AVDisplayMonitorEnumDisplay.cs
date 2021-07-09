@@ -7,7 +7,7 @@ namespace ArnoldVinkCode
     public partial class AVDisplayMonitor
     {
         //Query all monitors
-        private static List<IntPtr> QueryMonitorsEnumDisplay()
+        private static List<IntPtr> QueryAllMonitorEnumDisplay()
         {
             List<IntPtr> monitorHandles = new List<IntPtr>();
             try
@@ -24,8 +24,8 @@ namespace ArnoldVinkCode
             return monitorHandles;
         }
 
-        //Get monitor information
-        public static DisplayMonitor MonitorEnumDisplay(int screenNumber)
+        //Get single monitor information
+        public static DisplayMonitor GetSingleMonitorEnumDisplay(int screenNumber)
         {
 
             try
@@ -34,7 +34,7 @@ namespace ArnoldVinkCode
                 if (screenNumber <= 0) { screenNumber = 1; }
 
                 //Query all monitors
-                List<IntPtr> screenHandles = QueryMonitorsEnumDisplay();
+                List<IntPtr> screenHandles = QueryAllMonitorEnumDisplay();
                 IntPtr screenHandle = screenHandles[screenNumber - 1];
 
                 //Create display monitor

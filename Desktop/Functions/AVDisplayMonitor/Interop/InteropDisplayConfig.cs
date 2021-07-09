@@ -284,11 +284,17 @@ namespace ArnoldVinkCode
             public uint value;
             public DISPLAYCONFIG_COLOR_ENCODING colorEncoding;
             public int bitsPerColorChannel;
-
             public bool advancedColorSupported => (value & 0x1) == 0x1;
             public bool advancedColorEnabled => (value & 0x2) == 0x2;
             public bool wideColorEnforced => (value & 0x4) == 0x4;
             public bool advancedColorForceDisabled => (value & 0x8) == 0x8;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct DISPLAYCONFIG_SET_ADVANCED_COLOR_STATE
+        {
+            public DISPLAYCONFIG_DEVICE_INFO_HEADER header;
+            public bool advancedColorEnabled;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -306,6 +312,9 @@ namespace ArnoldVinkCode
 
         [DllImport("user32.dll")]
         private static extern int DisplayConfigGetDeviceInfo(ref DISPLAYCONFIG_SDR_WHITE_LEVEL requestPacket);
+
+        [DllImport("user32.dll")]
+        private static extern int DisplayConfigSetDeviceInfo(ref DISPLAYCONFIG_SET_ADVANCED_COLOR_STATE requestPacket);
 
         [DllImport("user32.dll")]
         private static extern int GetDisplayConfigBufferSizes(QUERY_DEVICE_CONFIG_FLAGS flags, out uint numPathArrayElements, out uint numModeInfoArrayElements);

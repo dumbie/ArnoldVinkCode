@@ -9,7 +9,7 @@ namespace ArnoldVinkCode
     public partial class AVDisplayMonitor
     {
         //Query all monitors
-        private static bool QueryMonitorsDisplayConfig(out uint displayPathCount, out uint displayModeCount, out DISPLAYCONFIG_PATH_INFO[] displayPaths, out DISPLAYCONFIG_MODE_INFO[] displayModes)
+        private static bool QueryAllMonitorDisplayConfig(out uint displayPathCount, out uint displayModeCount, out DISPLAYCONFIG_PATH_INFO[] displayPaths, out DISPLAYCONFIG_MODE_INFO[] displayModes)
         {
             try
             {
@@ -43,7 +43,7 @@ namespace ArnoldVinkCode
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to query monitors: " + ex.Message);
+                Debug.WriteLine("Failed to query all monitor: " + ex.Message);
                 displayPathCount = 0;
                 displayModeCount = 0;
                 displayPaths = null;
@@ -52,13 +52,60 @@ namespace ArnoldVinkCode
             }
         }
 
-        //List all the connected display monitors
-        public static List<DisplayMonitor> ListMonitorsDisplayConfig()
+        //Query single monitor
+        private static bool QuerySingleMonitorDisplayConfig(int screenNumber, out DISPLAYCONFIG_PATH_INFO pathInfoTarget, out DISPLAYCONFIG_MODE_INFO modeInfoTarget)
+        {
+            try
+            {
+                //Check screen number
+                if (screenNumber < 0) { screenNumber = 0; }
+
+                //Query all monitors
+                QueryAllMonitorDisplayConfig(out uint displayPathCount, out uint displayModeCount, out DISPLAYCONFIG_PATH_INFO[] displayPaths, out DISPLAYCONFIG_MODE_INFO[] displayModes);
+
+                //Check all monitors
+                int monitorIndex = 0;
+                int pathInfoIndex = 0;
+                pathInfoTarget = new DISPLAYCONFIG_PATH_INFO();
+                modeInfoTarget = new DISPLAYCONFIG_MODE_INFO();
+                foreach (DISPLAYCONFIG_PATH_INFO pathInfo in displayPaths)
+                {
+                    try
+                    {
+                        //Validate monitor
+                        if (pathInfo.targetInfo.targetAvailable && pathInfo.sourceInfo.modeInfoIdx >= 0 && pathInfo.sourceInfo.modeInfoIdx < displayModeCount)
+                        {
+                            //Check the monitor id
+                            if (screenNumber == monitorIndex)
+                            {
+                                pathInfoTarget = displayPaths[pathInfoIndex];
+                                modeInfoTarget = displayModes[pathInfoIndex];
+                                break;
+                            }
+                            monitorIndex++;
+                        }
+                    }
+                    catch { }
+                    pathInfoIndex++;
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to query single monitor: " + ex.Message);
+                pathInfoTarget = new DISPLAYCONFIG_PATH_INFO();
+                modeInfoTarget = new DISPLAYCONFIG_MODE_INFO();
+                return false;
+            }
+        }
+
+        //Get all monitor information
+        public static List<DisplayMonitor> GetAllMonitorDisplayConfig()
         {
             try
             {
                 //Query all monitors
-                QueryMonitorsDisplayConfig(out uint displayPathCount, out uint displayModeCount, out DISPLAYCONFIG_PATH_INFO[] displayPaths, out DISPLAYCONFIG_MODE_INFO[] displayModes);
+                QueryAllMonitorDisplayConfig(out uint displayPathCount, out uint displayModeCount, out DISPLAYCONFIG_PATH_INFO[] displayPaths, out DISPLAYCONFIG_MODE_INFO[] displayModes);
 
                 //Check all monitors
                 List<DisplayMonitor> monitorListSummary = new List<DisplayMonitor>();
@@ -97,41 +144,17 @@ namespace ArnoldVinkCode
             }
         }
 
-        //Get monitor information
-        public static DisplayMonitor MonitorDisplayConfig(int screenNumber)
+        //Get single monitor information
+        public static DisplayMonitor GetSingleMonitorDisplayConfig(int screenNumber)
         {
             try
             {
-                //Check screen number
-                if (screenNumber < 0) { screenNumber = 0; }
-
-                //Query all monitors
-                QueryMonitorsDisplayConfig(out uint displayPathCount, out uint displayModeCount, out DISPLAYCONFIG_PATH_INFO[] displayPaths, out DISPLAYCONFIG_MODE_INFO[] displayModes);
-
-                //Check all monitors
-                int monitorIndex = 0;
-                int pathInfoIndex = 0;
-                DISPLAYCONFIG_PATH_INFO pathInfoTarget = new DISPLAYCONFIG_PATH_INFO();
-                DISPLAYCONFIG_MODE_INFO modeInfoTarget = new DISPLAYCONFIG_MODE_INFO();
-                foreach (DISPLAYCONFIG_PATH_INFO pathInfo in displayPaths)
+                //Query single monitor
+                bool querySingleCheck = QuerySingleMonitorDisplayConfig(screenNumber, out DISPLAYCONFIG_PATH_INFO pathInfoTarget, out DISPLAYCONFIG_MODE_INFO modeInfoTarget);
+                if (!querySingleCheck)
                 {
-                    try
-                    {
-                        //Validate monitor
-                        if (pathInfo.targetInfo.targetAvailable && pathInfo.sourceInfo.modeInfoIdx >= 0 && pathInfo.sourceInfo.modeInfoIdx < displayModeCount)
-                        {
-                            //Check the monitor id
-                            if (screenNumber == monitorIndex)
-                            {
-                                pathInfoTarget = displayPaths[pathInfoIndex];
-                                modeInfoTarget = displayModes[pathInfoIndex];
-                                break;
-                            }
-                            monitorIndex++;
-                        }
-                    }
-                    catch { }
-                    pathInfoIndex++;
+                    Debug.WriteLine("Failed getting displayconfig monitor information.");
+                    return null;
                 }
 
                 //Create display monitor
@@ -258,6 +281,33 @@ namespace ArnoldVinkCode
             catch
             {
                 Debug.WriteLine("Failed GetMonitorHdrStatus.");
+                return false;
+            }
+        }
+
+        private static bool SetMonitorHdrStatus(LUID adapterId, uint targetId, bool hdrEnabled)
+        {
+            try
+            {
+                DISPLAYCONFIG_SET_ADVANCED_COLOR_STATE deviceInfo = new DISPLAYCONFIG_SET_ADVANCED_COLOR_STATE();
+                deviceInfo.header.size = (uint)Marshal.SizeOf(typeof(DISPLAYCONFIG_SET_ADVANCED_COLOR_STATE));
+                deviceInfo.header.adapterId = adapterId;
+                deviceInfo.header.id = targetId;
+                deviceInfo.header.type = DISPLAYCONFIG_DEVICE_INFO_TYPE.DISPLAYCONFIG_DEVICE_INFO_SET_ADVANCED_COLOR_STATE;
+                deviceInfo.advancedColorEnabled = hdrEnabled;
+
+                int error = DisplayConfigSetDeviceInfo(ref deviceInfo);
+                if (error != 0)
+                {
+                    Debug.WriteLine("Failed SetMonitorHdrStatus: " + error);
+                    return false;
+                }
+
+                return true;
+            }
+            catch
+            {
+                Debug.WriteLine("Failed SetMonitorHdrStatus.");
                 return false;
             }
         }

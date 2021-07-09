@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Linq;
 
 namespace ArnoldVinkCode
 {
@@ -101,7 +100,7 @@ namespace ArnoldVinkCode
                 }
 
                 //Query all monitors
-                QueryMonitorsDisplayConfig(out uint displayPathCount, out uint displayModeCount, out DISPLAYCONFIG_PATH_INFO[] displayPaths, out DISPLAYCONFIG_MODE_INFO[] displayModes);
+                QueryAllMonitorDisplayConfig(out uint displayPathCount, out uint displayModeCount, out DISPLAYCONFIG_PATH_INFO[] displayPaths, out DISPLAYCONFIG_MODE_INFO[] displayModes);
 
                 //Check all monitors
                 int pathInfoIndex = 0;
@@ -143,6 +142,28 @@ namespace ArnoldVinkCode
             catch
             {
                 Debug.WriteLine("Failed setting the primary monitor.");
+                return false;
+            }
+        }
+
+        //Set monitor HDR status
+        public static bool SetMonitorHDR(int screenNumber, bool enableHDR)
+        {
+            try
+            {
+                //Query single monitor
+                bool querySingleCheck = QuerySingleMonitorDisplayConfig(screenNumber, out DISPLAYCONFIG_PATH_INFO pathInfoTarget, out DISPLAYCONFIG_MODE_INFO modeInfoTarget);
+                if (!querySingleCheck)
+                {
+                    Debug.WriteLine("Failed getting displayconfig monitor information.");
+                    return false;
+                }
+
+                //Set HDR status
+                return SetMonitorHdrStatus(pathInfoTarget.targetInfo.adapterId, pathInfoTarget.targetInfo.id, enableHDR);
+            }
+            catch
+            {
                 return false;
             }
         }
