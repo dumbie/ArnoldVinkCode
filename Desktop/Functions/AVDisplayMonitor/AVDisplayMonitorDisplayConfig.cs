@@ -172,9 +172,15 @@ namespace ArnoldVinkCode
                 //Get the device path
                 displayMonitorSettings.DevicePath = GetMonitorDevicePath(pathInfoTarget.targetInfo.adapterId, pathInfoTarget.targetInfo.id);
 
+                //Get the screen dpi scale
+                displayMonitorSettings.DpiScaleHorizontal = (float)GetMonitorDpiScale(pathInfoTarget.targetInfo.adapterId, pathInfoTarget.sourceInfo.id) / (float)100;
+                displayMonitorSettings.DpiScaleVertical = displayMonitorSettings.DpiScaleHorizontal;
+
                 //Get the screen resolution
-                displayMonitorSettings.WidthNative = (int)modeInfoTarget.targetMode.targetVideoSignalInfo.activeSize.cx;
-                displayMonitorSettings.HeightNative = (int)modeInfoTarget.targetMode.targetVideoSignalInfo.activeSize.cy;
+                displayMonitorSettings.WidthNative = modeInfoTarget.sourceMode.position.y;
+                displayMonitorSettings.HeightNative = modeInfoTarget.desktopImageInfo.PathSourceSize.x;
+                displayMonitorSettings.WidthDpi = (int)(displayMonitorSettings.WidthNative / displayMonitorSettings.DpiScaleHorizontal);
+                displayMonitorSettings.HeightDpi = (int)(displayMonitorSettings.HeightNative / displayMonitorSettings.DpiScaleVertical);
 
                 //Get the screen refresh rate
                 if (pathInfoTarget.targetInfo.refreshRate.Numerator != 0)
@@ -334,6 +340,46 @@ namespace ArnoldVinkCode
             catch
             {
                 Debug.WriteLine("Failed GetMonitorHdrWhiteLevel.");
+                return 0;
+            }
+        }
+
+        private static int GetMonitorDpiScale(LUID adapterId, uint targetId)
+        {
+            try
+            {
+                DISPLAYCONFIG_SOURCE_DPI_SCALE_GET deviceInfo = new DISPLAYCONFIG_SOURCE_DPI_SCALE_GET();
+                deviceInfo.header.size = (uint)Marshal.SizeOf(typeof(DISPLAYCONFIG_SOURCE_DPI_SCALE_GET));
+                deviceInfo.header.adapterId = adapterId;
+                deviceInfo.header.id = targetId;
+                deviceInfo.header.type = DISPLAYCONFIG_DEVICE_INFO_TYPE.DISPLAYCONFIG_DEVICE_INFO_GET_DPI_SCALE;
+
+                int error = DisplayConfigGetDeviceInfo(ref deviceInfo);
+                if (error != 0)
+                {
+                    Debug.WriteLine("Failed GetMonitorDpiScale: " + error);
+                    return 0;
+                }
+
+                //Check minimum and maximum scale
+                if (deviceInfo.curScale < deviceInfo.minScale)
+                {
+                    deviceInfo.curScale = deviceInfo.minScale;
+                }
+                else if (deviceInfo.curScale > deviceInfo.maxScale)
+                {
+                    deviceInfo.curScale = deviceInfo.maxScale;
+                }
+
+                //Does not return custom set dpi values
+                int[] defaultDpiValues = { 100, 125, 150, 175, 200, 225, 250, 300, 350, 400, 450, 500, 550, 600 };
+                int minScaleAbs = Math.Abs(deviceInfo.minScale);
+                int curScaleAbs = Math.Abs(deviceInfo.curScale);
+                return defaultDpiValues[minScaleAbs - curScaleAbs];
+            }
+            catch
+            {
+                Debug.WriteLine("Failed GetMonitorDpiScale.");
                 return 0;
             }
         }

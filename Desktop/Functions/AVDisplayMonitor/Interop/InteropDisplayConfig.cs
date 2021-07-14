@@ -134,7 +134,7 @@ namespace ArnoldVinkCode
             DISPLAYCONFIG_PIXELFORMAT_NONGDI = 5
         }
 
-        private enum DISPLAYCONFIG_DEVICE_INFO_TYPE : uint
+        private enum DISPLAYCONFIG_DEVICE_INFO_TYPE : int
         {
             DISPLAYCONFIG_DEVICE_INFO_GET_SOURCE_NAME = 1,
             DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_NAME = 2,
@@ -146,7 +146,10 @@ namespace ArnoldVinkCode
             DISPLAYCONFIG_DEVICE_INFO_SET_SUPPORT_VIRTUAL_RESOLUTION = 8,
             DISPLAYCONFIG_DEVICE_INFO_GET_ADVANCED_COLOR_INFO = 9,
             DISPLAYCONFIG_DEVICE_INFO_SET_ADVANCED_COLOR_STATE = 10,
-            DISPLAYCONFIG_DEVICE_INFO_GET_SDR_WHITE_LEVEL = 11
+            DISPLAYCONFIG_DEVICE_INFO_GET_SDR_WHITE_LEVEL = 11,
+            //Undocumented device info types
+            DISPLAYCONFIG_DEVICE_INFO_GET_DPI_SCALE = -3,
+            DISPLAYCONFIG_DEVICE_INFO_SET_DPI_SCALE = -4
         }
 
         private struct LUID
@@ -222,8 +225,8 @@ namespace ArnoldVinkCode
         [StructLayout(LayoutKind.Sequential)]
         private struct DISPLAYCONFIG_SOURCE_MODE
         {
-            public uint width;
-            public uint height;
+            public int width;
+            public int height;
             public DISPLAYCONFIG_PIXELFORMAT pixelFormat;
             public POINT position;
         }
@@ -304,6 +307,22 @@ namespace ArnoldVinkCode
             public int SDRWhiteLevel;
         }
 
+        [StructLayout(LayoutKind.Sequential)]
+        private struct DISPLAYCONFIG_SOURCE_DPI_SCALE_GET
+        {
+            public DISPLAYCONFIG_DEVICE_INFO_HEADER header;
+            public int minScale;
+            public int curScale;
+            public int maxScale;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct DISPLAYCONFIG_SOURCE_DPI_SCALE_SET
+        {
+            public DISPLAYCONFIG_DEVICE_INFO_HEADER header;
+            public int scale;
+        }
+
         [DllImport("user32.dll")]
         private static extern int DisplayConfigGetDeviceInfo(ref DISPLAYCONFIG_TARGET_DEVICE_NAME requestPacket);
 
@@ -312,6 +331,9 @@ namespace ArnoldVinkCode
 
         [DllImport("user32.dll")]
         private static extern int DisplayConfigGetDeviceInfo(ref DISPLAYCONFIG_SDR_WHITE_LEVEL requestPacket);
+
+        [DllImport("user32.dll")]
+        private static extern int DisplayConfigGetDeviceInfo(ref DISPLAYCONFIG_SOURCE_DPI_SCALE_GET requestPacket);
 
         [DllImport("user32.dll")]
         private static extern int DisplayConfigSetDeviceInfo(ref DISPLAYCONFIG_SET_ADVANCED_COLOR_STATE requestPacket);
