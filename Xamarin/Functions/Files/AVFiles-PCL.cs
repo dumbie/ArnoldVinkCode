@@ -235,9 +235,45 @@ namespace ArnoldVinkCode
                     return false;
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                Debug.WriteLine("Failed writing text to file.");
+                Debug.WriteLine("Failed writing text to file: " + ex.Message);
+                return false;
+            }
+        }
+
+        //File save stream
+        public static bool File_SaveStream(string fileName, Stream fileStream, bool overWrite, bool localData)
+        {
+            try
+            {
+                if (localData)
+                {
+                    string localFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                    fileName = Path.Combine(localFolder, fileName);
+                }
+
+                if (overWrite || !File.Exists(fileName))
+                {
+                    Debug.WriteLine("Writing stream to: " + fileName);
+                    using (MemoryStream memoryStream = new MemoryStream())
+                    {
+                        if (fileStream.CanSeek) { fileStream.Position = 0; }
+                        fileStream.CopyTo(memoryStream);
+                        byte[] imageBytes = memoryStream.ToArray();
+                        File.WriteAllBytes(fileName, imageBytes);
+                        return true;
+                    }
+                }
+                else
+                {
+                    Debug.WriteLine("Failed writing stream to: " + fileName + " file already exists.");
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed writing stream to file: " + ex.Message);
                 return false;
             }
         }
@@ -265,9 +301,9 @@ namespace ArnoldVinkCode
                     return false;
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                Debug.WriteLine("Failed writing bytes to file.");
+                Debug.WriteLine("Failed writing bytes to file: " + ex.Message);
                 return false;
             }
         }
@@ -284,12 +320,15 @@ namespace ArnoldVinkCode
                 }
 
                 Debug.WriteLine("Loading image file: " + fileName);
-                return ImageSource.FromFile(fileName);
+                byte[] fileBytes = File.ReadAllBytes(fileName);
+                MemoryStream imageStream = new MemoryStream(fileBytes);
+                if (imageStream.CanSeek) { imageStream.Position = 0; }
+                return ImageSource.FromStream(() => imageStream);
             }
-            catch
+            catch (Exception ex)
             {
-                Debug.WriteLine("Failed loading image file.");
-                return string.Empty;
+                Debug.WriteLine("Failed loading image file: " + ex.Message);
+                return null;
             }
         }
 
@@ -311,6 +350,31 @@ namespace ArnoldVinkCode
             {
                 Debug.WriteLine("Failed loading text from file.");
                 return string.Empty;
+            }
+        }
+
+        //File load stream
+        public static Stream File_LoadStream(string fileName, bool localData)
+        {
+            try
+            {
+                if (localData)
+                {
+                    string localFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                    fileName = Path.Combine(localFolder, fileName);
+                }
+
+                Debug.WriteLine("Loading stream from: " + fileName);
+                byte[] fileBytes = File.ReadAllBytes(fileName);
+
+                MemoryStream imageStream = new MemoryStream(fileBytes);
+                if (imageStream.CanSeek) { imageStream.Position = 0; }
+                return imageStream;
+            }
+            catch
+            {
+                Debug.WriteLine("Failed loading stream from file.");
+                return null;
             }
         }
 
@@ -353,6 +417,27 @@ namespace ArnoldVinkCode
             {
                 Debug.WriteLine("Failed loading bytes from file.");
                 return -1;
+            }
+        }
+
+        //File check creation time
+        public static DateTime File_CreationTime(string fileName, bool localData)
+        {
+            try
+            {
+                if (localData)
+                {
+                    string localFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                    fileName = Path.Combine(localFolder, fileName);
+                }
+
+                FileInfo fileInfo = new FileInfo(fileName);
+                return fileInfo.CreationTime;
+            }
+            catch
+            {
+                Debug.WriteLine("Failed loading creation time from file.");
+                return DateTime.Now;
             }
         }
     }

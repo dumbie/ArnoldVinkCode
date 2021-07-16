@@ -16,11 +16,29 @@ namespace ArnoldVinkCode
         {
             try
             {
-                //Download image
-                Stream imageStream = await AVDownloader.DownloadStreamAsync(8000, null, null, downloadUri);
-                Debug.WriteLine("Android image length: " + imageStream.Length);
+                //Check local cache
+                Stream imageStream = null;
+                string cacheFile = System.IO.Path.Combine("Cache", AVFunctions.StringToHash(downloadUri.ToString()));
+                if (AVFiles.File_Exists(cacheFile, true))
+                {
+                    //Load cached image
+                    imageStream = AVFiles.File_LoadStream(cacheFile, true);
+
+                    Debug.WriteLine("Android cache image length: " + imageStream.Length);
+                }
+                else
+                {
+                    //Download image
+                    imageStream = await AVDownloader.DownloadStreamAsync(8000, null, null, downloadUri);
+
+                    //Save cache image
+                    AVFiles.File_SaveStream(cacheFile, imageStream, true, true);
+
+                    Debug.WriteLine("Android download image length: " + imageStream.Length);
+                }
 
                 //Decode image
+                if (imageStream.CanSeek) { imageStream.Position = 0; }
                 Bitmap originalImage = await BitmapFactory.DecodeStreamAsync(imageStream);
 
                 //Calculate size
@@ -50,6 +68,7 @@ namespace ArnoldVinkCode
                 Bitmap resizeImage = Bitmap.CreateScaledBitmap(originalImage, (int)resizeWidth, (int)resizeHeight, true);
                 MemoryStream memoryStream = new MemoryStream();
                 resizeImage.Compress(Bitmap.CompressFormat.Png, 100, memoryStream);
+                if (memoryStream.CanSeek) { memoryStream.Position = 0; }
 
                 //Dispose resources
                 imageStream.Dispose();
@@ -57,7 +76,6 @@ namespace ArnoldVinkCode
                 resizeImage.Dispose();
 
                 //Return stream
-                memoryStream.Position = 0;
                 return memoryStream;
             }
             catch (Exception ex)

@@ -3,7 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
+using System.Security.Cryptography;
+using System.Text;
 using System.Timers;
 using Xamarin.Forms;
 
@@ -130,6 +131,19 @@ namespace ArnoldVinkCode
             else { return CutString; }
         }
 
+        //Convert String To Hash
+        public static string StringToHash(string hashString)
+        {
+            try
+            {
+                MD5 md5Hash = MD5.Create();
+                byte[] md5Hashed = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(hashString));
+                return BitConverter.ToString(md5Hashed, 0);
+            }
+            catch { }
+            return string.Empty;
+        }
+
         //Convert Number To Text
         public static string NumberToText(string StrNumber)
         {
@@ -175,50 +189,6 @@ namespace ArnoldVinkCode
                 else { return "Unknown"; }
             }
             catch { return "NoConnection"; }
-        }
-
-        //Get network connection type
-        public static string GetNetworkType()
-        {
-            try
-            {
-                //ConnectionProfile ConnectionProfile = System.Net.NetworkInformation.GetInternetConnectionProfile();
-                //if (ConnectionProfile == null) { return "NoConnection"; }
-                //else if (ConnectionProfile.IsWlanConnectionProfile) { return "Wireless"; }
-                //else if (ConnectionProfile.IsWwanConnectionProfile) { return "Mobile"; }
-                //else { return "Wired"; }
-                //Fix return network type
-                return "Unknown";
-            }
-            catch { return "NoConnection"; }
-        }
-
-        //Get network connection name
-        public static async Task<string> GetNetworkName()
-        {
-            try
-            {
-                ////Check connection
-                //ConnectionProfile ConnectionProfile = NetworkInformation.GetInternetConnectionProfile();
-                //if (ConnectionProfile == null) { return "No connection"; }
-                //else
-                //{
-                //    //Get Wi-Fi / Ethernet name
-                //    string FirstNetwork = ConnectionProfile.GetNetworkNames().First();
-                //    if (!String.IsNullOrEmpty(FirstNetwork)) { return FirstNetwork; }
-
-                //    //Get Cellular name
-                //    if (ConnectionProfile.IsWwanConnectionProfile)
-                //    {
-                //        PhoneCallStore phoneCallStore = await PhoneCallManager.RequestStoreAsync();
-                //        PhoneLine phoneLine = await PhoneLine.FromIdAsync(await phoneCallStore.GetDefaultLineAsync());
-                //        return phoneLine.NetworkName;
-                //    }
-
-                return "Unknown";
-                //}
-            }
-            catch { return "Unknown"; }
         }
 
         //Check if datetime is between dates

@@ -31,7 +31,7 @@ namespace ArnoldVinkCode
                         CancelToken.CancelAfter(TimeOut);
 
                         HttpResponseMessage HttpConnectAsync = await httpClient.GetAsync(DownloadUrl, CancelToken.Token);
-                        string ConnectTask = HttpConnectAsync.Content.ReadAsStringAsync().Result;
+                        string ConnectTask = await HttpConnectAsync.Content.ReadAsStringAsync();
 
                         Debug.WriteLine("DownloadStringAsync succeeded for url: " + DownloadUrl + " / " + ConnectTask.Length + "bytes");
                         return ConnectTask;
@@ -67,7 +67,7 @@ namespace ArnoldVinkCode
                         CancelToken.CancelAfter(TimeOut);
 
                         HttpResponseMessage HttpConnectAsync = await httpClient.GetAsync(DownloadUrl, CancelToken.Token);
-                        byte[] ConnectTask = HttpConnectAsync.Content.ReadAsByteArrayAsync().Result;
+                        byte[] ConnectTask = await HttpConnectAsync.Content.ReadAsByteArrayAsync();
 
                         Debug.WriteLine("DownloadByteAsync succeeded for url: " + DownloadUrl + " / " + ConnectTask.Length + "bytes");
                         return ConnectTask;
@@ -103,7 +103,7 @@ namespace ArnoldVinkCode
                         CancelToken.CancelAfter(TimeOut);
 
                         HttpResponseMessage HttpConnectAsync = await httpClient.GetAsync(DownloadUrl, CancelToken.Token);
-                        Stream ConnectTask = HttpConnectAsync.Content.ReadAsStreamAsync().Result;
+                        Stream ConnectTask = await HttpConnectAsync.Content.ReadAsStreamAsync();
 
                         Debug.WriteLine("DownloadStreamAsync succeeded for url: " + DownloadUrl);
                         return ConnectTask;
@@ -175,7 +175,7 @@ namespace ArnoldVinkCode
                         CancelToken.CancelAfter(TimeOut);
 
                         HttpResponseMessage HttpConnectAsync = await httpClient.PostAsync(PostUrl, PostContent, CancelToken.Token);
-                        string ConnectTask = HttpConnectAsync.Content.ReadAsStringAsync().Result;
+                        string ConnectTask = await HttpConnectAsync.Content.ReadAsStringAsync();
 
                         Debug.WriteLine("SendPostRequestAsync succeeded for url: " + PostUrl + " / " + ConnectTask.Length + "bytes");
                         return ConnectTask;
@@ -211,7 +211,7 @@ namespace ArnoldVinkCode
                         CancelToken.CancelAfter(TimeOut);
 
                         HttpResponseMessage HttpConnectAsync = await httpClient.DeleteAsync(PostUrl, CancelToken.Token);
-                        string ConnectTask = HttpConnectAsync.Content.ReadAsStringAsync().Result;
+                        string ConnectTask = await HttpConnectAsync.Content.ReadAsStringAsync();
 
                         Debug.WriteLine("SendDeleteRequestAsync succeeded for url: " + PostUrl + " / " + ConnectTask.Length + "bytes");
                         return ConnectTask;

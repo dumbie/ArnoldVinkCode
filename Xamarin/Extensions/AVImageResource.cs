@@ -34,6 +34,9 @@ namespace ArnoldVinkExtensions
             {
                 if (Source == null) { return null; }
 
+                //Replace separators with dots
+                Source = Source.Replace('/', '.');
+
                 //Set the pcl assembly and asset name
                 Assembly imageAssembly = typeof(ImageResourceExtension).GetTypeInfo().Assembly;
                 string assemblyName = imageAssembly.GetName().Name;

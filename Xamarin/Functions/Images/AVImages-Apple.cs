@@ -18,11 +18,29 @@ namespace ArnoldVinkCode
         {
             try
             {
-                //Download image
-                Stream imageStream = await AVDownloader.DownloadStreamAsync(8000, null, null, downloadUri);
-                Debug.WriteLine("Apple image length: " + imageStream.Length);
+                //Check local cache
+                Stream imageStream = null;
+                string cacheFile = Path.Combine("Cache", AVFunctions.StringToHash(downloadUri.ToString()));
+                if (AVFiles.File_Exists(cacheFile, true))
+                {
+                    //Load cached image
+                    imageStream = AVFiles.File_LoadStream(cacheFile, true);
+
+                    Debug.WriteLine("Apple cache image length: " + imageStream.Length);
+                }
+                else
+                {
+                    //Download image
+                    imageStream = await AVDownloader.DownloadStreamAsync(8000, null, null, downloadUri);
+
+                    //Save cache image
+                    AVFiles.File_SaveStream(cacheFile, imageStream, true, true);
+
+                    Debug.WriteLine("Apple download image length: " + imageStream.Length);
+                }
 
                 //Decode image
+                if (imageStream.CanSeek) { imageStream.Position = 0; }
                 NSData imageNsData = NSData.FromStream(imageStream);
                 UIImage originalImage = UIImage.LoadFromData(imageNsData);
 
