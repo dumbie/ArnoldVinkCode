@@ -17,9 +17,13 @@ namespace ArnoldVinkCode
         [DllImport("user32.dll")]
         public static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-        public static extern int GetWindowText(IntPtr handle, [MarshalAs(UnmanagedType.LPWStr)] StringBuilder caption, int count);
+        public static extern int GetWindowText(IntPtr hWnd, [MarshalAs(UnmanagedType.LPWStr)] StringBuilder caption, int count);
         [DllImport("user32.dll")]
-        public static extern int GetWindowTextLength(IntPtr handle);
+        public static extern int GetWindowTextLength(IntPtr hWnd);
+        [DllImport("user32.dll")]
+        public static extern IntPtr GetParent(IntPtr hWnd);
+        [DllImport("user32.dll")]
+        public static extern IntPtr WindowFromPoint(PointWin p);
         [DllImport("kernel32.dll")]
         public static extern uint GetCurrentThreadId();
         [DllImport("user32.dll")]
@@ -32,6 +36,8 @@ namespace ArnoldVinkCode
         public static extern IntPtr GetProcessHandleFromHwnd(IntPtr hWnd);
         [DllImport("kernel32.dll")]
         public static extern int GetProcessId(IntPtr processHandle);
+        [DllImport("kernel32.dll")]
+        public static extern IntPtr GetCurrentProcess();
         [DllImport("user32.dll")]
         public static extern bool IsWindowVisible(IntPtr hWnd);
         [DllImport("user32.dll")]
@@ -44,6 +50,29 @@ namespace ArnoldVinkCode
         public static extern int SHGetPropertyStoreForWindow(IntPtr hwnd, ref Guid iid, [Out(), MarshalAs(UnmanagedType.Interface)] out IPropertyStore propertyStore);
         [DllImport("kernel32.dll")]
         public static extern bool CloseHandle(IntPtr hHandle);
+
+        //Get window
+        public enum GetWindowFlags : int
+        {
+            GW_HWNDFIRST = 0,
+            GW_HWNDLAST = 1,
+            GW_HWNDNEXT = 2,
+            GW_HWNDPREV = 3,
+            GW_OWNER = 4,
+            GW_CHILD = 5
+        }
+        [DllImport("user32.dll")]
+        public static extern IntPtr GetWindow(IntPtr hWnd, GetWindowFlags flags);
+
+        //Get ancestor
+        public enum GetAncestorFlags : int
+        {
+            GetParent = 1,
+            GetRoot = 2,
+            GetRootOwner = 3
+        }
+        [DllImport("user32.dll")]
+        static extern IntPtr GetAncestor(IntPtr hWnd, GetAncestorFlags flags);
 
         //Window show
         [DllImport("user32.dll")]
@@ -235,6 +264,8 @@ namespace ArnoldVinkCode
         //Enumerate windows
         [DllImport("user32.dll")]
         public static extern bool EnumWindows(EnumWindowsDelegate lpEnumFunc, IntPtr lParam);
+        [DllImport("user32.dll")]
+        public static extern bool EnumChildWindows(IntPtr hWndParent, EnumWindowsDelegate lpEnumFunc, IntPtr lParam);
         public delegate bool EnumWindowsDelegate(IntPtr hWnd, IntPtr lParam);
 
         //Get process details
