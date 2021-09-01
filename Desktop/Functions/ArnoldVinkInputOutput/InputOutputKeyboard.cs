@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using static ArnoldVinkCode.AVInputOutputClass;
 using static ArnoldVinkCode.AVInteropDll;
 
@@ -11,12 +10,12 @@ namespace ArnoldVinkCode
     public partial class AVInputOutputKeyboard
     {
         //Send single key press
-        public static async Task KeySendSingle(KeysVirtual virtualKey, IntPtr windowHandle)
+        public static void KeySendSingle(KeysVirtual virtualKey, IntPtr windowHandle)
         {
             try
             {
                 PostMessage(windowHandle, (int)WindowMessages.WM_KEYDOWN, (byte)virtualKey, 0); //Key Press
-                await Task.Delay(10);
+                AVActions.TaskDelayMs(10);
                 PostMessage(windowHandle, (int)WindowMessages.WM_KEYUP, (byte)virtualKey, 0); //Key Release
             }
             catch { }
@@ -47,7 +46,7 @@ namespace ArnoldVinkCode
         }
 
         //Keyboard type string Event
-        public static async Task KeyTypeStringEvent(string typeString)
+        public static void KeyTypeStringEvent(string typeString)
         {
             try
             {
@@ -58,11 +57,11 @@ namespace ArnoldVinkCode
                     bool shiftPressed = (scanVirtualKey & (short)VkKeyScanModifiers.SHIFT) > 0;
                     if (shiftPressed)
                     {
-                        await KeyPressComboAuto(KeysVirtual.Shift, usedVirtualKey);
+                        KeyPressReleaseCombo(KeysVirtual.Shift, usedVirtualKey);
                     }
                     else
                     {
-                        await KeyPressSingleAuto(usedVirtualKey);
+                        KeyPressReleaseSingle(usedVirtualKey);
                     }
                 }
             }
@@ -72,24 +71,15 @@ namespace ArnoldVinkCode
             }
         }
 
-        //Simulate single key press
-        public static async Task KeyPressSingleAuto(KeysVirtual virtualKey)
-        {
-            try
-            {
-                bool keyExtendedPressVk = KeysVirtualExtended.Contains(virtualKey);
-                await KeyPressSingle(virtualKey, keyExtendedPressVk);
-            }
-            catch { }
-        }
-        public static async Task KeyPressSingle(KeysVirtual virtualKey, bool extendedKey)
+        //Simulate single key press and release
+        public static bool KeyPressReleaseSingle(KeysVirtual virtualKey)
         {
             try
             {
                 uint scanByte = 0;
                 KeyboardEventFlags KeyFlagsDown = 0;
                 KeyboardEventFlags KeyFlagsUp = 0;
-                if (extendedKey)
+                if (KeysVirtualExtended.Contains(virtualKey))
                 {
                     scanByte = MapVirtualKey(virtualKey, MapVirtualKeyMapTypes.MAPVK_VK_TO_VSC_EX);
                     KeyFlagsDown = KeyboardEventFlags.KEYEVENTF_EXTENDEDKEY | KeyboardEventFlags.KEYEVENTF_NONE;
@@ -103,30 +93,26 @@ namespace ArnoldVinkCode
                 }
 
                 keybd_event(virtualKey, scanByte, KeyFlagsDown, 0); //Key Press
-                await Task.Delay(10);
+                AVActions.TaskDelayMs(10);
                 keybd_event(virtualKey, scanByte, KeyFlagsUp, 0); //Key Release
+                return true;
             }
-            catch { }
+            catch
+            {
+                Debug.WriteLine("Failed to press and release single key.");
+                return false;
+            }
         }
 
-        //Simulate single key up or down
-        public static void KeyToggleSingleAuto(KeysVirtual virtualKey, bool toggleDown)
-        {
-            try
-            {
-                bool keyExtendedPressVk = KeysVirtualExtended.Contains(virtualKey);
-                KeyToggleSingle(virtualKey, keyExtendedPressVk, toggleDown);
-            }
-            catch { }
-        }
-        public static void KeyToggleSingle(KeysVirtual virtualKey, bool extendedKey, bool toggleDown)
+        //Simulate single key press or release
+        public static bool KeyToggleSingle(KeysVirtual virtualKey, bool pressKey)
         {
             try
             {
                 uint scanByte = 0;
                 KeyboardEventFlags KeyFlagsDown = 0;
                 KeyboardEventFlags KeyFlagsUp = 0;
-                if (extendedKey)
+                if (KeysVirtualExtended.Contains(virtualKey))
                 {
                     scanByte = MapVirtualKey(virtualKey, MapVirtualKeyMapTypes.MAPVK_VK_TO_VSC_EX);
                     KeyFlagsDown = KeyboardEventFlags.KEYEVENTF_EXTENDEDKEY | KeyboardEventFlags.KEYEVENTF_NONE;
@@ -139,7 +125,7 @@ namespace ArnoldVinkCode
                     KeyFlagsUp = KeyboardEventFlags.KEYEVENTF_KEYUP;
                 }
 
-                if (toggleDown)
+                if (pressKey)
                 {
                     keybd_event(virtualKey, scanByte, KeyFlagsDown, 0); //Key Press
                 }
@@ -147,29 +133,24 @@ namespace ArnoldVinkCode
                 {
                     keybd_event(virtualKey, scanByte, KeyFlagsUp, 0); //Key Release
                 }
+                return true;
             }
-            catch { }
+            catch
+            {
+                Debug.WriteLine("Failed to toggle single key.");
+                return false;
+            }
         }
 
-        //Simulate combo key press
-        public static async Task KeyPressComboAuto(KeysVirtual modifierKey, KeysVirtual virtualKey)
-        {
-            try
-            {
-                bool keyExtendedPressMod = KeysVirtualExtended.Contains(modifierKey);
-                bool keyExtendedPressVk = KeysVirtualExtended.Contains(virtualKey);
-                await KeyPressCombo(modifierKey, keyExtendedPressMod, virtualKey, keyExtendedPressVk);
-            }
-            catch { }
-        }
-        public static async Task KeyPressCombo(KeysVirtual modifierKey, bool extendedModifier, KeysVirtual virtualKey, bool extendedVirtual)
+        //Simulate combo key press and release
+        public static bool KeyPressReleaseCombo(KeysVirtual modifierKey, KeysVirtual virtualKey)
         {
             try
             {
                 uint scanByteMod = 0;
                 KeyboardEventFlags KeyFlagsDownMod = 0;
                 KeyboardEventFlags KeyFlagsUpMod = 0;
-                if (extendedModifier)
+                if (KeysVirtualExtended.Contains(modifierKey))
                 {
                     scanByteMod = MapVirtualKey(modifierKey, MapVirtualKeyMapTypes.MAPVK_VK_TO_VSC_EX);
                     KeyFlagsDownMod = KeyboardEventFlags.KEYEVENTF_EXTENDEDKEY | KeyboardEventFlags.KEYEVENTF_NONE;
@@ -185,7 +166,7 @@ namespace ArnoldVinkCode
                 uint scanByteVk = 0;
                 KeyboardEventFlags KeyFlagsDownVk = 0;
                 KeyboardEventFlags KeyFlagsUpVk = 0;
-                if (extendedVirtual)
+                if (KeysVirtualExtended.Contains(virtualKey))
                 {
                     scanByteVk = MapVirtualKey(virtualKey, MapVirtualKeyMapTypes.MAPVK_VK_TO_VSC_EX);
                     KeyFlagsDownVk = KeyboardEventFlags.KEYEVENTF_EXTENDEDKEY | KeyboardEventFlags.KEYEVENTF_NONE;
@@ -200,32 +181,27 @@ namespace ArnoldVinkCode
 
                 keybd_event(modifierKey, scanByteMod, KeyFlagsDownMod, 0); //Modifier Press
                 keybd_event(virtualKey, scanByteVk, KeyFlagsDownVk, 0); //Key Press
-                await Task.Delay(10);
+                AVActions.TaskDelayMs(10);
                 keybd_event(virtualKey, scanByteVk, KeyFlagsUpVk, 0); //Key Release
                 keybd_event(modifierKey, scanByteMod, KeyFlagsUpMod, 0); //Modifier Release
+                return true;
             }
-            catch { }
+            catch
+            {
+                Debug.WriteLine("Failed to press and release combo keys.");
+                return false;
+            }
         }
 
-        //Simulate combo key up or down
-        public static void KeyToggleComboAuto(KeysVirtual modifierKey, KeysVirtual virtualKey, bool toggleDown)
-        {
-            try
-            {
-                bool keyExtendedPressMod = KeysVirtualExtended.Contains(modifierKey);
-                bool keyExtendedPressVk = KeysVirtualExtended.Contains(virtualKey);
-                KeyToggleCombo(modifierKey, keyExtendedPressMod, virtualKey, keyExtendedPressVk, toggleDown);
-            }
-            catch { }
-        }
-        public static void KeyToggleCombo(KeysVirtual modifierKey, bool extendedModifier, KeysVirtual virtualKey, bool extendedVirtual, bool toggleDown)
+        //Simulate combo key press or release
+        public static bool KeyToggleCombo(KeysVirtual modifierKey, KeysVirtual virtualKey, bool pressKey)
         {
             try
             {
                 uint scanByteMod = 0;
                 KeyboardEventFlags KeyFlagsDownMod = 0;
                 KeyboardEventFlags KeyFlagsUpMod = 0;
-                if (extendedModifier)
+                if (KeysVirtualExtended.Contains(modifierKey))
                 {
                     scanByteMod = MapVirtualKey(modifierKey, MapVirtualKeyMapTypes.MAPVK_VK_TO_VSC_EX);
                     KeyFlagsDownMod = KeyboardEventFlags.KEYEVENTF_EXTENDEDKEY | KeyboardEventFlags.KEYEVENTF_NONE;
@@ -241,7 +217,7 @@ namespace ArnoldVinkCode
                 uint scanByteVk = 0;
                 KeyboardEventFlags KeyFlagsDownVk = 0;
                 KeyboardEventFlags KeyFlagsUpVk = 0;
-                if (extendedVirtual)
+                if (KeysVirtualExtended.Contains(virtualKey))
                 {
                     scanByteVk = MapVirtualKey(virtualKey, MapVirtualKeyMapTypes.MAPVK_VK_TO_VSC_EX);
                     KeyFlagsDownVk = KeyboardEventFlags.KEYEVENTF_EXTENDEDKEY | KeyboardEventFlags.KEYEVENTF_NONE;
@@ -254,7 +230,7 @@ namespace ArnoldVinkCode
                     KeyFlagsUpVk = KeyboardEventFlags.KEYEVENTF_KEYUP;
                 }
 
-                if (toggleDown)
+                if (pressKey)
                 {
                     keybd_event(modifierKey, scanByteMod, KeyFlagsDownMod, 0); //Modifier Press
                     keybd_event(virtualKey, scanByteVk, KeyFlagsDownVk, 0); //Key Press
@@ -264,8 +240,13 @@ namespace ArnoldVinkCode
                     keybd_event(virtualKey, scanByteVk, KeyFlagsUpVk, 0); //Key Release
                     keybd_event(modifierKey, scanByteMod, KeyFlagsUpMod, 0); //Modifier Release
                 }
+                return true;
             }
-            catch { }
+            catch
+            {
+                Debug.WriteLine("Failed to toggle combo keys.");
+                return false;
+            }
         }
     }
 }

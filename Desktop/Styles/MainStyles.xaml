@@ -468,4 +468,10 @@
             </Trigger>
         </Style.Triggers>
     </Style>
+
+    <Style x:Key="ScrollViewerHidden" TargetType="ScrollViewer">
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="HorizontalScrollBarVisibility" Value="Hidden"/>
+        <Setter Property="VerticalScrollBarVisibility" Value="Hidden"/>
+    </Style>
 </ResourceDictionary>

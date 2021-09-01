@@ -209,8 +209,8 @@ namespace ArnoldVinkCode
             OEMQuestion = 0xBF,
             OEMTilde = 0xC0,
             OEMOpenBracket = 0xDB,
-            OEMPipe = 0xDC,
             OEMCloseBracket = 0xDD,
+            OEMPipe = 0xDC,
             OEMQuote = 0xDE,
             OEMMisc = 0xDF,
             OEMAx = 0xE1,
@@ -431,23 +431,17 @@ namespace ArnoldVinkCode
                     case KeysVirtual.Enter:
                         return "Enter";
                     case KeysVirtual.Shift:
-                        return "Shift";
                     case KeysVirtual.LeftShift:
-                        if (shortName) { return "LShift"; } else { return "Shift (Left)"; }
                     case KeysVirtual.RightShift:
-                        if (shortName) { return "RShift"; } else { return "Shift (Right)"; }
+                        return "Shift";
                     case KeysVirtual.Control:
-                        if (shortName) { return "Ctrl"; } else { return "Control"; }
                     case KeysVirtual.LeftControl:
-                        if (shortName) { return "LCtrl"; } else { return "Control (Left)"; }
                     case KeysVirtual.RightControl:
-                        if (shortName) { return "RCtrl"; } else { return "Control (Right)"; }
+                        if (shortName) { return "Ctrl"; } else { return "Control"; }
                     case KeysVirtual.Alt:
-                        return "Alt";
                     case KeysVirtual.LeftAlt:
-                        if (shortName) { return "LAlt"; } else { return "Alt (Left)"; }
                     case KeysVirtual.RightAlt:
-                        if (shortName) { return "RAlt"; } else { return "Alt (Right)"; }
+                        return "Alt";
                     case KeysVirtual.Pause:
                         return "Pause";
                     case KeysVirtual.CapsLock:
@@ -460,9 +454,8 @@ namespace ArnoldVinkCode
                     case KeysVirtual.PrintScreen:
                         if (shortName) { return "PrtSc"; } else { return "Print Screen"; }
                     case KeysVirtual.LeftWindows:
-                        if (shortName) { return "LWin"; } else { return "Windows (Left)"; }
                     case KeysVirtual.RightWindows:
-                        if (shortName) { return "RWin"; } else { return "Windows (Right)"; }
+                        if (shortName) { return "Win"; } else { return "Windows"; }
                     case KeysVirtual.Insert:
                         return "Insert";
                     case KeysVirtual.Delete:

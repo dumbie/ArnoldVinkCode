@@ -72,7 +72,7 @@ namespace ArnoldVinkCode
             GetRootOwner = 3
         }
         [DllImport("user32.dll")]
-        static extern IntPtr GetAncestor(IntPtr hWnd, GetAncestorFlags flags);
+        public static extern IntPtr GetAncestor(IntPtr hWnd, GetAncestorFlags flags);
 
         //Window show
         [DllImport("user32.dll")]
@@ -232,6 +232,16 @@ namespace ArnoldVinkCode
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
         public static extern int GetPackageFullName(IntPtr hProcess, ref int packageFullNameLength, [MarshalAs(UnmanagedType.LPWStr)] StringBuilder sbPackageFullName);
 
+        //Load library
+        [DllImport("Kernel32")]
+        public static extern IntPtr LoadLibrary(string lpFileName);
+
+        [DllImport("Kernel32")]
+        public static extern IntPtr GetProcAddress(IntPtr hModule, string lpProcName);
+
+        [DllImport("kernel32.dll")]
+        public static extern bool FreeLibrary(IntPtr hModule);
+
         //Open and close process
         [DllImport("Advapi32.dll")]
         public static extern bool OpenProcessToken(IntPtr ProcessHandle, DesiredAccessFlags desiredAccess, out IntPtr TokenHandle);
@@ -300,14 +310,19 @@ namespace ArnoldVinkCode
         private static extern IntPtr GetWindowLongPtr64(IntPtr hWnd, int nIndex);
         public static IntPtr GetWindowLongAuto(IntPtr hWnd, int nIndex)
         {
-            if (IntPtr.Size > 4)
+            try
             {
-                return GetWindowLongPtr64(hWnd, nIndex);
+                if (IntPtr.Size > 4)
+                {
+                    return GetWindowLongPtr64(hWnd, nIndex);
+                }
+                else
+                {
+                    return new IntPtr(GetWindowLong32(hWnd, nIndex));
+                }
             }
-            else
-            {
-                return new IntPtr(GetWindowLong32(hWnd, nIndex));
-            }
+            catch { }
+            return IntPtr.Zero;
         }
 
         [DllImport("user32.dll", EntryPoint = "SetWindowLong")]
@@ -316,14 +331,19 @@ namespace ArnoldVinkCode
         private static extern IntPtr SetWindowLongPtr64(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
         public static IntPtr SetWindowLongAuto(IntPtr hWnd, int nIndex, IntPtr dwNewLong)
         {
-            if (IntPtr.Size > 4)
+            try
             {
-                return SetWindowLongPtr64(hWnd, nIndex, dwNewLong);
+                if (IntPtr.Size > 4)
+                {
+                    return SetWindowLongPtr64(hWnd, nIndex, dwNewLong);
+                }
+                else
+                {
+                    return new IntPtr(SetWindowLong32(hWnd, nIndex, dwNewLong.ToInt32()));
+                }
             }
-            else
-            {
-                return new IntPtr(SetWindowLong32(hWnd, nIndex, dwNewLong.ToInt32()));
-            }
+            catch { }
+            return IntPtr.Zero;
         }
 
         public enum WindowStyles : uint
