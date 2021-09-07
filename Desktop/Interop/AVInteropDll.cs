@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Shapes;
 using static ArnoldVinkCode.AVInputOutputClass;
@@ -321,15 +323,18 @@ namespace ArnoldVinkCode
                     return new IntPtr(GetWindowLong32(hWnd, nIndex));
                 }
             }
-            catch { }
-            return IntPtr.Zero;
+            catch
+            {
+                Debug.WriteLine("Failed to get window long.");
+                return IntPtr.Zero;
+            }
         }
 
         [DllImport("user32.dll", EntryPoint = "SetWindowLong")]
         private static extern int SetWindowLong32(IntPtr hWnd, int nIndex, int dwNewLong);
         [DllImport("user32.dll", EntryPoint = "SetWindowLongPtr")]
         private static extern IntPtr SetWindowLongPtr64(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
-        public static IntPtr SetWindowLongAuto(IntPtr hWnd, int nIndex, IntPtr dwNewLong)
+        public static async Task<IntPtr> SetWindowLongAuto(IntPtr hWnd, int nIndex, IntPtr dwNewLong)
         {
             try
             {
@@ -342,8 +347,16 @@ namespace ArnoldVinkCode
                     return new IntPtr(SetWindowLong32(hWnd, nIndex, dwNewLong.ToInt32()));
                 }
             }
-            catch { }
-            return IntPtr.Zero;
+            catch
+            {
+                Debug.WriteLine("Failed to set window long.");
+                return IntPtr.Zero;
+            }
+            finally
+            {
+                //Wait for SetWindowLong to complete
+                await Task.Delay(100);
+            }
         }
 
         public enum WindowStyles : uint

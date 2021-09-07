@@ -15,7 +15,7 @@ namespace ArnoldVinkCode
             try
             {
                 PostMessage(windowHandle, (int)WindowMessages.WM_KEYDOWN, (byte)virtualKey, 0); //Key Press
-                AVActions.TaskDelayMs(10);
+                AVActions.TaskDelayMs(50);
                 PostMessage(windowHandle, (int)WindowMessages.WM_KEYUP, (byte)virtualKey, 0); //Key Release
             }
             catch { }
@@ -93,7 +93,7 @@ namespace ArnoldVinkCode
                 }
 
                 keybd_event(virtualKey, scanByte, KeyFlagsDown, 0); //Key Press
-                AVActions.TaskDelayMs(10);
+                AVActions.TaskDelayMs(50);
                 keybd_event(virtualKey, scanByte, KeyFlagsUp, 0); //Key Release
                 return true;
             }
@@ -181,7 +181,7 @@ namespace ArnoldVinkCode
 
                 keybd_event(modifierKey, scanByteMod, KeyFlagsDownMod, 0); //Modifier Press
                 keybd_event(virtualKey, scanByteVk, KeyFlagsDownVk, 0); //Key Press
-                AVActions.TaskDelayMs(10);
+                AVActions.TaskDelayMs(50);
                 keybd_event(virtualKey, scanByteVk, KeyFlagsUpVk, 0); //Key Release
                 keybd_event(modifierKey, scanByteMod, KeyFlagsUpMod, 0); //Modifier Release
                 return true;
