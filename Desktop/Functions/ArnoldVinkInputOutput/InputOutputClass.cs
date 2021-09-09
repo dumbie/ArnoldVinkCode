@@ -57,8 +57,14 @@ namespace ArnoldVinkCode
             Clear = 0x0C,
             Enter = 0x0D,
             Shift = 0x10,
+            ShiftLeft = 0xA0,
+            ShiftRight = 0xA1,
             Control = 0x11,
+            ControlLeft = 0xA2,
+            ControlRight = 0xA3,
             Alt = 0x12,
+            AltLeft = 0xA4,
+            AltRight = 0xA5,
             Pause = 0x13,
             CapsLock = 0x14,
             Kana = 0x15,
@@ -125,8 +131,8 @@ namespace ArnoldVinkCode
             X = 0x58,
             Y = 0x59,
             Z = 0x5A,
-            LeftWindows = 0x5B,
-            RightWindows = 0x5C,
+            WindowsLeft = 0x5B,
+            WindowsRight = 0x5C,
             ContextMenu = 0x5D,
             Sleep = 0x5F,
             Numpad0 = 0x60,
@@ -177,12 +183,6 @@ namespace ArnoldVinkCode
             Fujitsu_Touroku = 0x94,
             Fujitsu_Loya = 0x95,
             Fujitsu_Roya = 0x96,
-            LeftShift = 0xA0,
-            RightShift = 0xA1,
-            LeftControl = 0xA2,
-            RightControl = 0xA3,
-            LeftAlt = 0xA4,
-            RightAlt = 0xA5,
             BrowserBack = 0xA6,
             BrowserForward = 0xA7,
             BrowserRefresh = 0xA8,
@@ -431,16 +431,16 @@ namespace ArnoldVinkCode
                     case KeysVirtual.Enter:
                         return "Enter";
                     case KeysVirtual.Shift:
-                    case KeysVirtual.LeftShift:
-                    case KeysVirtual.RightShift:
+                    case KeysVirtual.ShiftLeft:
+                    case KeysVirtual.ShiftRight:
                         return "Shift";
                     case KeysVirtual.Control:
-                    case KeysVirtual.LeftControl:
-                    case KeysVirtual.RightControl:
+                    case KeysVirtual.ControlLeft:
+                    case KeysVirtual.ControlRight:
                         if (shortName) { return "Ctrl"; } else { return "Control"; }
                     case KeysVirtual.Alt:
-                    case KeysVirtual.LeftAlt:
-                    case KeysVirtual.RightAlt:
+                    case KeysVirtual.AltLeft:
+                    case KeysVirtual.AltRight:
                         return "Alt";
                     case KeysVirtual.Pause:
                         return "Pause";
@@ -453,8 +453,8 @@ namespace ArnoldVinkCode
                     case KeysVirtual.Snapshot:
                     case KeysVirtual.PrintScreen:
                         if (shortName) { return "PrtSc"; } else { return "Print Screen"; }
-                    case KeysVirtual.LeftWindows:
-                    case KeysVirtual.RightWindows:
+                    case KeysVirtual.WindowsLeft:
+                    case KeysVirtual.WindowsRight:
                         if (shortName) { return "Win"; } else { return "Windows"; }
                     case KeysVirtual.Insert:
                         return "Insert";
