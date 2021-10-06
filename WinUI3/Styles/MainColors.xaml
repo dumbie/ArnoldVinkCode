@@ -1,0 +1,27 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Accent Color -->
+    <Color x:Key="ApplicationAccentLightColor">#00C7FF</Color>
+    <SolidColorBrush x:Key="ApplicationAccentLightBrush">#00C7FF</SolidColorBrush>
+    <Color x:Key="ApplicationAccentDimColor">#009FCC</Color>
+    <SolidColorBrush x:Key="ApplicationAccentDimBrush">#009FCC</SolidColorBrush>
+    <Color x:Key="ApplicationAccentDarkColor">#00637F</Color>
+    <SolidColorBrush x:Key="ApplicationAccentDarkBrush">#00637F</SolidColorBrush>
+
+    <!-- Basic Color -->
+    <Color x:Key="ApplicationLightColor">#F1F1F1</Color>
+    <SolidColorBrush x:Key="ApplicationLightBrush">#F1F1F1</SolidColorBrush>
+    <Color x:Key="ApplicationDarkColor">#000000</Color>
+    <SolidColorBrush x:Key="ApplicationDarkBrush">#000000</SolidColorBrush>
+    <Color x:Key="ApplicationGrayColor">#787878</Color>
+    <SolidColorBrush x:Key="ApplicationGrayBrush">#787878</SolidColorBrush>
+    <Color x:Key="ApplicationLightGrayColor">#DBDBDB</Color>
+    <SolidColorBrush x:Key="ApplicationLightGrayBrush">#DBDBDB</SolidColorBrush>
+    <Color x:Key="ApplicationDarkGrayColor">#505050</Color>
+    <SolidColorBrush x:Key="ApplicationDarkGrayBrush">#505050</SolidColorBrush>
+
+    <!-- Other Color -->
+    <Color x:Key="ApplicationValidColor">#1EB955</Color>
+    <SolidColorBrush x:Key="ApplicationValidBrush">#1EB955</SolidColorBrush>
+    <Color x:Key="ApplicationInvalidColor">#CD1928</Color>
+    <SolidColorBrush x:Key="ApplicationInvalidBrush">#CD1928</SolidColorBrush>
+</ResourceDictionary>
