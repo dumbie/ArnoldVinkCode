@@ -104,8 +104,8 @@ namespace ArnoldVinkCode
             }
         }
 
-        //Send sockets bytes
-        public async Task<bool> TcpClientSendBytes(TcpClient tcpClient, byte[] targetBytes, int timeOut, bool disconnectClient)
+        //Send sockets bytes to server
+        public async Task<bool> TcpClientSendBytesServer(TcpClient tcpClient, byte[] targetBytes, int timeOut, bool disconnectClient)
         {
             try
             {
@@ -149,8 +149,48 @@ namespace ArnoldVinkCode
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed sending tcp bytes (C): " + ex.Message);
+                Debug.WriteLine("Failed sending tcp bytes server (C): " + ex.Message);
                 TcpClientDisconnect(tcpClient);
+                return false;
+            }
+        }
+
+        //Send sockets bytes to other
+        public async Task<bool> TcpClientSendBytesOther(string targetIp, int targetPort, byte[] targetBytes, int timeOut)
+        {
+            try
+            {
+                Task timeTask = Task.Run(async delegate
+                {
+                    try
+                    {
+                        using (TcpClient tcpClient = new TcpClient(targetIp, targetPort))
+                        {
+                            using (NetworkStream networkStream = tcpClient.GetStream())
+                            {
+                                await networkStream.WriteAsync(targetBytes, 0, targetBytes.Length);
+                            }
+                        }
+                    }
+                    catch { }
+                });
+
+                Task delayTask = Task.Delay(timeOut);
+                Task timeoutTask = await Task.WhenAny(timeTask, delayTask);
+                if (timeoutTask == timeTask)
+                {
+                    //Debug.WriteLine("Sended bytes to tcp other (C): " + targetIp + ":" + targetPort + " / " + targetBytes.Length);
+                    return true;
+                }
+                else
+                {
+                    //Debug.WriteLine("Failed sending bytes to tcp other (C): " + targetIp + ":" + targetPort + " / " + targetBytes.Length);
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed sending udp bytes other (C): " + ex.Message);
                 return false;
             }
         }
