@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using static ArnoldVinkCode.AVInputOutputClass;
+using static ArnoldVinkCode.AVInputOutputInterop;
 using static ArnoldVinkCode.AVInteropDll;
 
 namespace ArnoldVinkCode

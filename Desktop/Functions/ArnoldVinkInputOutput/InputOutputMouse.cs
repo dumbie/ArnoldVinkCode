@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using static ArnoldVinkCode.AVInputOutputClass;
-using static ArnoldVinkCode.AVInteropDll;
+using static ArnoldVinkCode.AVInputOutputInterop;
 
 namespace ArnoldVinkCode
 {
