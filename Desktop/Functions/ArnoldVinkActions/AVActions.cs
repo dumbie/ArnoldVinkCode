@@ -41,7 +41,7 @@ namespace ArnoldVinkCode
             }
         }
 
-        ///<param name="actionRun">async Task TaskAction() { while (!AVTask.TaskStopRequest) { void(); await TaskDelayLoop(1000, AVTask); } }</param>
+        ///<param name="actionRun">async Task TaskAction() { while (TaskCheckLoop(AVTask)) { void(); await TaskDelayLoop(1000, AVTask); } }</param>
         ///<example>AVActions.TaskStartLoop(TaskAction, AVTask);</example>
         ///<summary>Don't forget to use try and catch to improve stability</summary>
         public static void TaskStartLoop(Func<Task> actionRun, AVTaskDetails avTask)
@@ -68,7 +68,7 @@ namespace ArnoldVinkCode
             }
         }
 
-        ///<param name="actionRun">async Task TaskAction() { while (!AVTask.TaskStopRequest) { void(); await TaskDelayLoop(1000, AVTask); } }</param>
+        ///<param name="actionRun">async Task TaskAction() { while (TaskCheckLoop(AVTask)) { void(); await TaskDelayLoop(1000, AVTask); } }</param>
         ///<example>AVActions.TaskStartLoop(TaskAction, AVTask);</example>
         ///<summary>Don't forget to use try and catch to improve stability</summary>
         public static void TaskStartLoop(Action actionRun, AVTaskDetails avTask)
@@ -95,15 +95,40 @@ namespace ArnoldVinkCode
             }
         }
 
+        ///<example>AVActions.TaskCheckLoop(AVTask);</example>
+        ///<summary>Returns true if loop is still allowed to continue</summary>
+        public static bool TaskCheckLoop(AVTaskDetails avTask)
+        {
+            try
+            {
+                if (avTask.TaskStopRequest)
+                {
+                    Debug.WriteLine("Loop task is requested to stop.");
+                    return false;
+                }
+                else if (avTask.TaskCompleted)
+                {
+                    Debug.WriteLine("Loop task has completed.");
+                    return false;
+                }
+                else if (!avTask.TaskRunning)
+                {
+                    Debug.WriteLine("Loop task is not running.");
+                    return false;
+                }
+            }
+            catch { }
+            return true;
+        }
+
         ///<example>AVActions.TaskStopLoop(AVTask);</example>
         public static async Task TaskStopLoop(AVTaskDetails avTask)
         {
             try
             {
                 //Check if the task is stopped
-                if (avTask.TaskStopRequest || avTask.TaskCompleted || !avTask.TaskRunning)
+                if (!TaskCheckLoop(avTask))
                 {
-                    Debug.WriteLine("Loop task is stopping or not running.");
                     return;
                 }
 

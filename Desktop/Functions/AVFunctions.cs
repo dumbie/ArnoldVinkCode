@@ -180,6 +180,32 @@ namespace ArnoldVinkCode
             catch { return "Unknown"; }
         }
 
+        //Convert Seconds To Hour:Minute:Second
+        public static string SecondsToHms(int secondsInt)
+        {
+            try
+            {
+                TimeSpan timeSpan = TimeSpan.FromSeconds(secondsInt);
+                string hmsString = string.Empty;
+                if (timeSpan.Hours != 0)
+                {
+                    hmsString += timeSpan.Hours + ":";
+                    hmsString += timeSpan.Minutes.ToString("00") + ":";
+                }
+                else
+                {
+                    hmsString += timeSpan.Minutes + ":";
+                }
+
+                hmsString += timeSpan.Seconds.ToString("00");
+                return hmsString;
+            }
+            catch
+            {
+                return secondsInt.ToString();
+            }
+        }
+
         //Check if device is mobile
         public static bool DevMobile()
         {

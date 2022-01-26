@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using static ArnoldVinkCode.AVActions;
 
 namespace ArnoldVinkCode
 {
@@ -12,7 +13,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                while (!vTask_TcpReceiveLoop.TaskStopRequest)
+                while (TaskCheckLoop(vTask_TcpReceiveLoop))
                 {
                     try
                     {

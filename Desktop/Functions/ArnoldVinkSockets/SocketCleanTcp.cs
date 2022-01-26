@@ -16,7 +16,7 @@ namespace ArnoldVinkCode
                 Debug.WriteLine("Tcp client cleaner is now running (L)");
 
                 //Tcp cleaner loop
-                while (!vTask_TcpCleanLoop.TaskStopRequest)
+                while (TaskCheckLoop(vTask_TcpCleanLoop))
                 {
                     try
                     {

@@ -16,7 +16,7 @@ namespace ArnoldVinkCode
                 Debug.WriteLine("Udp client cleaner is now running (L)");
 
                 //Udp cleaner loop
-                while (!vTask_UdpCleanLoop.TaskStopRequest)
+                while (TaskCheckLoop(vTask_UdpCleanLoop))
                 {
                     try
                     {
