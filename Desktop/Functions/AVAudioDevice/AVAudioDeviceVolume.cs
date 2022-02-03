@@ -45,7 +45,7 @@ namespace ArnoldVinkCode
         }
 
         //Up default audio device volume (0-100)
-        public static bool AudioVolumeUp(int targetStep, bool inputDevice)
+        public static int AudioVolumeUp(int targetStep, bool inputDevice)
         {
             try
             {
@@ -76,17 +76,17 @@ namespace ArnoldVinkCode
                 audioEndPointVolume.SetMasterVolumeLevelScalar(volumeLevelFloat, Guid.Empty);
 
                 Debug.WriteLine("Up volume: " + targetStep + "% / " + volumeLevelFloat);
-                return true;
+                return Convert.ToInt32(volumeLevelFloat * 100);
             }
             catch
             {
                 Debug.WriteLine("Failed to up default audio device volume.");
-                return false;
+                return -1;
             }
         }
 
         //Down default audio device volume (0-100)
-        public static bool AudioVolumeDown(int targetStep, bool inputDevice)
+        public static int AudioVolumeDown(int targetStep, bool inputDevice)
         {
             try
             {
@@ -117,12 +117,12 @@ namespace ArnoldVinkCode
                 audioEndPointVolume.SetMasterVolumeLevelScalar(volumeLevelFloat, Guid.Empty);
 
                 Debug.WriteLine("Down volume: " + targetStep + "% / " + volumeLevelFloat);
-                return true;
+                return Convert.ToInt32(volumeLevelFloat * 100);
             }
             catch
             {
                 Debug.WriteLine("Failed to down default audio device volume.");
-                return false;
+                return -1;
             }
         }
 
@@ -161,7 +161,7 @@ namespace ArnoldVinkCode
         }
 
         //Switch default audio device mute status
-        public static void AudioMuteSwitch(bool inputDevice)
+        public static bool AudioMuteSwitch(bool inputDevice)
         {
             try
             {
@@ -186,10 +186,12 @@ namespace ArnoldVinkCode
                 //Set the switched mute status
                 audioEndPointVolume.SetMute(!muteStatus, Guid.Empty);
                 Debug.WriteLine("Switched the mute status: " + !muteStatus);
+                return !muteStatus;
             }
             catch
             {
                 Debug.WriteLine("Failed to switch mute status.");
+                return false;
             }
         }
 
