@@ -181,7 +181,7 @@ namespace ArnoldVinkCode
         }
 
         //Convert Seconds To Hour:Minute:Second
-        public static string SecondsToHms(int secondsInt)
+        public static string SecondsToHms(int secondsInt, bool useChar)
         {
             try
             {
@@ -189,20 +189,20 @@ namespace ArnoldVinkCode
                 string hmsString = string.Empty;
                 if (timeSpan.Hours != 0)
                 {
-                    hmsString += timeSpan.Hours + ":";
-                    hmsString += timeSpan.Minutes.ToString("00") + ":";
+                    hmsString += timeSpan.Hours + (useChar ? "h " : ":");
+                    hmsString += timeSpan.Minutes.ToString("00") + (useChar ? "m " : ":");
                 }
-                else
+                else if (timeSpan.Minutes != 0)
                 {
-                    hmsString += timeSpan.Minutes + ":";
+                    hmsString += timeSpan.Minutes + (useChar ? "m " : ":");
                 }
 
-                hmsString += timeSpan.Seconds.ToString("00");
+                hmsString += timeSpan.Seconds.ToString("00") + (useChar ? "s" : "");
                 return hmsString;
             }
             catch
             {
-                return secondsInt.ToString();
+                return secondsInt.ToString() + (useChar ? "s" : "");
             }
         }
 
