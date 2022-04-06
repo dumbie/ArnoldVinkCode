@@ -194,7 +194,7 @@ namespace ArnoldVinkCode
 
                 //Get the screen hdr status
                 displayMonitorSettings.HdrEnabled = GetMonitorHdrStatus(pathInfoTarget.targetInfo.adapterId, pathInfoTarget.targetInfo.id);
-                displayMonitorSettings.HdrWhiteLevel = GetMonitorHdrWhiteLevel(pathInfoTarget.targetInfo.adapterId, pathInfoTarget.targetInfo.id);
+                displayMonitorSettings.SdrWhiteLevel = GetMonitorSdrWhiteLevel(pathInfoTarget.targetInfo.adapterId, pathInfoTarget.targetInfo.id);
 
                 return displayMonitorSettings;
             }
@@ -318,7 +318,7 @@ namespace ArnoldVinkCode
             }
         }
 
-        private static int GetMonitorHdrWhiteLevel(LUID adapterId, uint targetId)
+        private static int GetMonitorSdrWhiteLevel(LUID adapterId, uint targetId)
         {
             try
             {
@@ -331,7 +331,7 @@ namespace ArnoldVinkCode
                 int error = DisplayConfigGetDeviceInfo(ref deviceInfo);
                 if (error != 0)
                 {
-                    Debug.WriteLine("Failed GetMonitorHdrWhiteLevel: " + error);
+                    Debug.WriteLine("Failed GetMonitorSdrWhiteLevel: " + error);
                     return 0;
                 }
 
@@ -339,7 +339,7 @@ namespace ArnoldVinkCode
             }
             catch
             {
-                Debug.WriteLine("Failed GetMonitorHdrWhiteLevel.");
+                Debug.WriteLine("Failed GetMonitorSdrWhiteLevel.");
                 return 0;
             }
         }

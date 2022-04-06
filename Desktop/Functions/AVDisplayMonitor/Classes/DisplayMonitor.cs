@@ -20,7 +20,7 @@
             public int BoundsRight { get; set; } = -1;
             public int BoundsBottom { get; set; } = -1;
             public bool HdrEnabled { get; set; } = false;
-            public int HdrWhiteLevel { get; set; } = -1;
+            public int SdrWhiteLevel { get; set; } = -1;
         }
     }
 }
