@@ -422,12 +422,12 @@ namespace ArnoldVinkCode
                 }
                 else
                 {
-                    return "?:?";
+                    return ScreenWidth + ":" + ScreenHeight;
                 }
             }
             catch
             {
-                return "?:?";
+                return ScreenWidth + ":" + ScreenHeight;
             }
         }
 
