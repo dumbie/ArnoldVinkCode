@@ -416,10 +416,19 @@ namespace ArnoldVinkCode
                     Common = Remainder;
                 }
 
-                if (Greatest != 0) { return ScreenWidth / Greatest + ":" + ScreenHeight / Greatest; }
-                else { return string.Empty; }
+                if (Greatest != 0)
+                {
+                    return ScreenWidth / Greatest + ":" + ScreenHeight / Greatest;
+                }
+                else
+                {
+                    return "?:?";
+                }
             }
-            catch { return string.Empty; }
+            catch
+            {
+                return "?:?";
+            }
         }
 
         //Move byte in a byte array to left
