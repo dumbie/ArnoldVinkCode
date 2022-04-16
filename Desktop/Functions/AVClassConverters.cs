@@ -15,7 +15,7 @@ namespace ArnoldVinkCode
             try
             {
                 byte[] newArray = new byte[cloneArray.Length];
-                Buffer.BlockCopy(cloneArray, 0, newArray, 0, cloneArray.Length);
+                Array.Copy(cloneArray, 0, newArray, 0, cloneArray.Length);
                 return newArray;
             }
             catch (Exception ex)
