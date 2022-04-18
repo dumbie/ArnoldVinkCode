@@ -28,6 +28,7 @@ namespace ArnoldVinkCode
         {
             try
             {
+                if (config == null) { config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None); }
                 if (config.AppSettings.Settings[settingName] == null) { return false; } else { return true; }
             }
             catch (Exception ex)
@@ -43,6 +44,7 @@ namespace ArnoldVinkCode
         {
             try
             {
+                if (config == null) { config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None); }
                 return Convert.ChangeType(config.AppSettings.Settings[settingName].Value, settingType, CultureInfo.InvariantCulture);
             }
             catch (Exception ex)
@@ -57,6 +59,7 @@ namespace ArnoldVinkCode
         {
             try
             {
+                if (config == null) { config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None); }
                 config.AppSettings.Settings.Remove(settingName);
                 config.AppSettings.Settings.Add(settingName, Convert.ToString(settingValue, CultureInfo.InvariantCulture));
                 config.Save();
