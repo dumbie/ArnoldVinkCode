@@ -487,5 +487,12 @@ namespace ArnoldVinkCode
             catch { }
             return "Unknown";
         }
+
+        //Linear Interpolation Math
+        public static float MathLerp(float aFloat, float bFloat, float amountFloat)
+        {
+            //return aFloat * (1.0F - amountFloat) + bFloat * amountFloat;
+            return aFloat + (bFloat - aFloat) * amountFloat;
+        }
     }
 }
