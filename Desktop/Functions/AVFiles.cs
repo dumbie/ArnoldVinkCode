@@ -185,5 +185,11 @@ namespace ArnoldVinkCode
             catch { }
             return string.Empty;
         }
+
+        //Replace invalid file characters
+        public static string FileNameReplaceInvalidChars(string fileName, string replaceWith)
+        {
+            return string.Join(replaceWith, fileName.Split(Path.GetInvalidFileNameChars()));
+        }
     }
 }
