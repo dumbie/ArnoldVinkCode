@@ -51,12 +51,12 @@ namespace ArnoldVinkCode
                 UdpClientDisconnectAll();
 
                 //Stop the server loops
-                await AVActions.TaskStopLoop(vTask_TcpReceiveLoop);
-                await AVActions.TaskStopLoop(vTask_UdpReceiveLoop);
+                await AVActions.TaskStopLoop(vTask_TcpReceiveLoop, 5000);
+                await AVActions.TaskStopLoop(vTask_UdpReceiveLoop, 5000);
 
                 //Stop the clean loops
-                await AVActions.TaskStopLoop(vTask_TcpCleanLoop);
-                await AVActions.TaskStopLoop(vTask_UdpCleanLoop);
+                await AVActions.TaskStopLoop(vTask_TcpCleanLoop, 5000);
+                await AVActions.TaskStopLoop(vTask_UdpCleanLoop, 5000);
             }
             catch (Exception ex)
             {

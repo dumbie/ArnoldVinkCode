@@ -122,7 +122,7 @@ namespace ArnoldVinkCode
         }
 
         ///<example>AVActions.TaskStopLoop(AVTask);</example>
-        public static async Task TaskStopLoop(AVTaskDetails avTask)
+        public static async Task TaskStopLoop(AVTaskDetails avTask, int taskTimeout)
         {
             try
             {
@@ -140,7 +140,7 @@ namespace ArnoldVinkCode
                 long stopTimeout = GetSystemTicksMs();
                 while (!avTask.TaskCompleted)
                 {
-                    if ((GetSystemTicksMs() - stopTimeout) >= 8000)
+                    if (taskTimeout > 0 && (GetSystemTicksMs() - stopTimeout) >= taskTimeout)
                     {
                         Debug.WriteLine("Stopping the task has timed out...");
                         break;
