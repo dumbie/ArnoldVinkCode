@@ -554,6 +554,12 @@ namespace ArnoldVinkCode
             public IntPtr lpData;
         }
 
+        //Register Hotkeys
+        [DllImport("user32.dll")]
+        public static extern bool RegisterHotKey(IntPtr hWnd, int id, uint keysModifier, uint keysVirtual);
+        [DllImport("user32.dll")]
+        public static extern bool UnregisterHotKey(IntPtr hWnd, int id);
+
         //Window Placement
         [DllImport("user32.dll")]
         public static extern bool SetWindowPlacement(IntPtr hWnd, [In] ref WindowPlacement lpwndpl);
