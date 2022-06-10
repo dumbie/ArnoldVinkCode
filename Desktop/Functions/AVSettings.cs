@@ -2,6 +2,8 @@ using System;
 using System.Configuration;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
+using System.Reflection;
 
 namespace ArnoldVinkCode
 {
@@ -70,6 +72,41 @@ namespace ArnoldVinkCode
             {
                 Debug.WriteLine("Failed to save setting: " + settingName + " / " + ex.Message);
                 return false;
+            }
+        }
+
+        //Create or remove startup shortcut
+        public static void ManageStartupShortcut()
+        {
+            try
+            {
+                //Set application shortcut paths
+                string targetFilePath = Assembly.GetEntryAssembly().CodeBase.Replace("file:///", string.Empty);
+                string targetName = Assembly.GetEntryAssembly().GetName().Name;
+                string targetFileShortcut = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), targetName + ".url");
+
+                //Check if the shortcut already exists
+                if (!File.Exists(targetFileShortcut))
+                {
+                    Debug.WriteLine("Adding application to Windows startup.");
+                    using (StreamWriter StreamWriter = new StreamWriter(targetFileShortcut))
+                    {
+                        StreamWriter.WriteLine("[InternetShortcut]");
+                        StreamWriter.WriteLine("URL=" + targetFilePath);
+                        StreamWriter.WriteLine("IconFile=" + targetFilePath);
+                        StreamWriter.WriteLine("IconIndex=0");
+                        StreamWriter.Flush();
+                    }
+                }
+                else
+                {
+                    Debug.WriteLine("Removing application from Windows startup.");
+                    File.Delete(targetFileShortcut);
+                }
+            }
+            catch
+            {
+                Debug.WriteLine("Failed creating startup shortcut.");
             }
         }
     }
