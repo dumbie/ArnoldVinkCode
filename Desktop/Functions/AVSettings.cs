@@ -76,12 +76,19 @@ namespace ArnoldVinkCode
         }
 
         //Create or remove startup shortcut
-        public static void ManageStartupShortcut()
+        public static void ManageStartupShortcut(string executableName)
         {
             try
             {
                 //Set application shortcut paths
                 string targetFilePath = Assembly.GetEntryAssembly().CodeBase.Replace("file:///", string.Empty);
+                if (!string.IsNullOrWhiteSpace(executableName))
+                {
+                    string originalExecutable = Path.GetFileName(targetFilePath);
+                    targetFilePath = targetFilePath.Replace(originalExecutable, executableName);
+                    Debug.WriteLine("Replaced executable: " + targetFilePath);
+                }
+
                 string targetName = Assembly.GetEntryAssembly().GetName().Name;
                 string targetFileShortcut = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), targetName + ".url");
 
