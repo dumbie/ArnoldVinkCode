@@ -7,11 +7,11 @@ namespace ArnoldVinkCode
 {
     public partial class ApiGitHub
     {
-        public static async Task<string> ApiGitHub_GetLatestVersion(string userName, string projectName)
+        public static async Task<string> ApiGitHub_GetLatestVersion(string userName, string repoName)
         {
             try
             {
-                string currentVersion = await AVDownloader.DownloadStringAsync(5000, "CtrlUI", null, new Uri("https://api.github.com/repos/" + userName + "/" + projectName + "/releases/latest"));
+                string currentVersion = await AVDownloader.DownloadStringAsync(5000, repoName, null, GetPathLatestReleases(userName, repoName));
                 if (string.IsNullOrWhiteSpace(currentVersion))
                 {
                     Debug.WriteLine("Failed to get latest GitHub version, empty string.");

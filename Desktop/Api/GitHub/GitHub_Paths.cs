@@ -5,16 +5,29 @@ namespace ArnoldVinkCode
 {
     public partial class ApiGitHub
     {
-        public static string ApiGitHub_GetDownloadPath(string userName, string projectName, string fileName)
+        public static Uri GetPathLatestReleases(string userName, string repoName)
         {
             try
             {
-                return "https://github.com/" + userName + "/" + projectName + "/releases/latest/download/" + fileName;
+                return new Uri("https://api.github.com/repos/" + userName + "/" + repoName + "/releases/latest", UriKind.RelativeOrAbsolute);
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to get GitHub download path: " + ex.Message);
-                return string.Empty;
+                Debug.WriteLine("Failed to get GitHub latest releases path: " + ex.Message);
+                return null;
+            }
+        }
+
+        public static Uri GetPathLatestDownload(string userName, string repoName, string fileName)
+        {
+            try
+            {
+                return new Uri("https://github.com/" + userName + "/" + repoName + "/releases/latest/download/" + fileName, UriKind.RelativeOrAbsolute);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to get GitHub latest download path: " + ex.Message);
+                return null;
             }
         }
     }
