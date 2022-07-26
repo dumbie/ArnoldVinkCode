@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -50,10 +51,10 @@ namespace ArnoldVinkCode
             try
             {
                 //Windows administrator consent prompt
-                if (GetProcessByNameOrTitle("consent", false) != null)
+                if (GetProcessByNameOrTitle("consent", false, true) != null)
                 {
                     Debug.WriteLine("Windows administrator consent prompt is open, killing the process.");
-                    bool closedProcess = CloseProcessesByNameOrTitle("consent", false);
+                    bool closedProcess = CloseProcessesByNameOrTitle("consent", false, true);
                     await Task.Delay(500);
                     if (closedProcess)
                     {
@@ -63,10 +64,10 @@ namespace ArnoldVinkCode
                 }
 
                 //Windows feature installation prompt
-                if (GetProcessByNameOrTitle("fondue", false) != null)
+                if (GetProcessByNameOrTitle("fondue", false, true) != null)
                 {
                     Debug.WriteLine("Windows feature installation prompt is open, killing the process.");
-                    CloseProcessesByNameOrTitle("fondue", false);
+                    CloseProcessesByNameOrTitle("fondue", false, true);
                 }
             }
             catch { }
@@ -230,7 +231,7 @@ namespace ArnoldVinkCode
         }
 
         //Check if a specific process is running by name
-        public static bool CheckRunningProcessByNameOrTitle(string processName, bool windowTitle)
+        public static bool CheckRunningProcessByNameOrTitle(string processName, bool windowTitle, bool exactName)
         {
             try
             {
@@ -240,7 +241,15 @@ namespace ArnoldVinkCode
                 }
                 else
                 {
-                    return Process.GetProcessesByName(processName).Any();
+                    processName = Path.GetFileNameWithoutExtension(processName);
+                    if (exactName)
+                    {
+                        return Process.GetProcessesByName(processName).Any();
+                    }
+                    else
+                    {
+                        return Process.GetProcesses().Where(x => x.ProcessName.ToLower().Contains(processName.ToLower())).Any();
+                    }
                 }
             }
             catch (Exception ex)
@@ -257,8 +266,14 @@ namespace ArnoldVinkCode
             try
             {
                 ProcessTitle = targetProcess.MainWindowTitle;
-                if (string.IsNullOrWhiteSpace(ProcessTitle)) { ProcessTitle = GetWindowTitleFromWindowHandle(targetProcess.MainWindowHandle); }
-                if (string.IsNullOrWhiteSpace(ProcessTitle) || ProcessTitle == "Unknown") { ProcessTitle = targetProcess.ProcessName; }
+                if (string.IsNullOrWhiteSpace(ProcessTitle))
+                {
+                    ProcessTitle = GetWindowTitleFromWindowHandle(targetProcess.MainWindowHandle);
+                }
+                if (string.IsNullOrWhiteSpace(ProcessTitle) || ProcessTitle == "Unknown")
+                {
+                    ProcessTitle = targetProcess.ProcessName;
+                }
                 if (!string.IsNullOrWhiteSpace(ProcessTitle))
                 {
                     ProcessTitle = AVFunctions.StringRemoveStart(ProcessTitle, " ");
@@ -404,25 +419,26 @@ namespace ArnoldVinkCode
         }
 
         //Get a single specific process by name or title
-        public static Process GetProcessByNameOrTitle(string processName, bool windowTitle)
+        public static Process GetProcessByNameOrTitle(string processName, bool windowTitle, bool exactName)
         {
             try
             {
                 if (windowTitle)
                 {
-                    foreach (Process AllProcess in Process.GetProcesses().Where(x => x.MainWindowTitle.ToLower().Contains(processName.ToLower())))
-                    {
-                        return AllProcess;
-                    }
+                    return Process.GetProcesses().Where(x => x.MainWindowTitle.ToLower().Contains(processName.ToLower())).FirstOrDefault();
                 }
                 else
                 {
-                    foreach (Process AllProcess in Process.GetProcessesByName(processName))
+                    processName = Path.GetFileNameWithoutExtension(processName);
+                    if (exactName)
                     {
-                        return AllProcess;
+                        return Process.GetProcessesByName(processName).FirstOrDefault();
+                    }
+                    else
+                    {
+                        return Process.GetProcesses().Where(x => x.ProcessName.ToLower().Contains(processName.ToLower())).FirstOrDefault();
                     }
                 }
-                return null;
             }
             catch (Exception ex)
             {
@@ -442,8 +458,15 @@ namespace ArnoldVinkCode
                 }
                 else
                 {
-                    if (exactName) { return Process.GetProcessesByName(processName); }
-                    else { return Process.GetProcesses().Where(x => x.ProcessName.ToLower().Contains(processName.ToLower())).ToArray(); }
+                    processName = Path.GetFileNameWithoutExtension(processName);
+                    if (exactName)
+                    {
+                        return Process.GetProcessesByName(processName);
+                    }
+                    else
+                    {
+                        return Process.GetProcesses().Where(x => x.ProcessName.ToLower().Contains(processName.ToLower())).ToArray();
+                    }
                 }
             }
             catch (Exception ex)
@@ -454,25 +477,40 @@ namespace ArnoldVinkCode
         }
 
         //Close processes by name or window title
-        public static bool CloseProcessesByNameOrTitle(string processName, bool windowTitle)
+        public static bool CloseProcessesByNameOrTitle(string processName, bool windowTitle, bool exactName)
         {
             try
             {
+                bool processClosed = false;
                 if (windowTitle)
                 {
                     foreach (Process AllProcess in Process.GetProcesses().Where(x => x.MainWindowTitle.ToLower().Contains(processName.ToLower())))
                     {
                         AllProcess.Kill();
+                        processClosed = true;
                     }
                 }
                 else
                 {
-                    foreach (Process AllProcess in Process.GetProcessesByName(processName))
+                    processName = Path.GetFileNameWithoutExtension(processName);
+                    if (exactName)
                     {
-                        AllProcess.Kill();
+                        foreach (Process AllProcess in Process.GetProcessesByName(processName))
+                        {
+                            AllProcess.Kill();
+                            processClosed = true;
+                        }
+                    }
+                    else
+                    {
+                        foreach (Process AllProcess in Process.GetProcesses().Where(x => x.ProcessName.ToLower().Contains(processName.ToLower())))
+                        {
+                            AllProcess.Kill();
+                            processClosed = true;
+                        }
                     }
                 }
-                return true;
+                return processClosed;
             }
             catch (Exception ex)
             {

@@ -169,7 +169,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                Process AllProcess = GetProcessByNameOrTitle("ApplicationFrameHost", false);
+                Process AllProcess = GetProcessByNameOrTitle("ApplicationFrameHost", false, true);
                 if (AllProcess != null)
                 {
                     foreach (ProcessThread ThreadProcess in AllProcess.Threads)

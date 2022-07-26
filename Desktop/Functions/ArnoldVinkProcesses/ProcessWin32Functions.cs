@@ -83,7 +83,7 @@ namespace ArnoldVinkCode
                 }
                 else
                 {
-                    CloseProcessesByNameOrTitle(Path.GetFileNameWithoutExtension(PathExe), false);
+                    CloseProcessesByNameOrTitle(PathExe, false, true);
                 }
                 await Task.Delay(1000);
 
