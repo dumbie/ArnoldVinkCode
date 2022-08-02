@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 namespace ArnoldVinkCode
@@ -78,6 +80,35 @@ namespace ArnoldVinkCode
             {
                 Debug.WriteLine("Failed moving directory: " + oldDirPath + " to" + newDirPath);
                 return false;
+            }
+        }
+
+        //Get files from directory with depth level
+        public static List<string> GetFilesLevel(string directory, string searchPattern, int depthLevel)
+        {
+            try
+            {
+                List<string> fileList = new List<string>();
+
+                foreach (string fileInfo in Directory.GetFiles(directory, searchPattern, SearchOption.TopDirectoryOnly))
+                {
+                    fileList.Add(fileInfo);
+                }
+
+                foreach (string directoryInfo in Directory.GetDirectories(directory, "*", SearchOption.TopDirectoryOnly))
+                {
+                    if (depthLevel > 0)
+                    {
+                        GetFilesLevel(directoryInfo, searchPattern, depthLevel--);
+                    }
+                }
+
+                return fileList;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed getting files with level: " + ex.Message);
+                return null;
             }
         }
 

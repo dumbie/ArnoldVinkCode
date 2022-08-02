@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -335,8 +336,7 @@ namespace ArnoldVinkCode
                     {
                         if (!string.IsNullOrWhiteSpace(appxDetails.SquareLargestLogoPath))
                         {
-                            FileStream fileStream = File.OpenRead(appxDetails.SquareLargestLogoPath);
-                            fileStream.Dispose();
+                            using (new FileStream(appxDetails.SquareLargestLogoPath, FileMode.Open, FileAccess.Read)) { }
                         }
                         else
                         {
@@ -362,8 +362,7 @@ namespace ArnoldVinkCode
                     {
                         if (!string.IsNullOrWhiteSpace(appxDetails.WideLargestLogoPath))
                         {
-                            FileStream fileStream = File.OpenRead(appxDetails.WideLargestLogoPath);
-                            fileStream.Dispose();
+                            using (new FileStream(appxDetails.WideLargestLogoPath, FileMode.Open, FileAccess.Read)) { }
                         }
                         else
                         {
@@ -381,9 +380,11 @@ namespace ArnoldVinkCode
             {
                 Debug.WriteLine("Failed reading details from uwp manifest: " + appPackage.Id.FamilyName + "/" + ex.Message);
             }
-
-            Marshal.ReleaseComObject(inputStream);
-            Marshal.ReleaseComObject(appxFactory);
+            finally
+            {
+                Marshal.ReleaseComObject(inputStream);
+                Marshal.ReleaseComObject(appxFactory);
+            }
             return appxDetails;
         }
 
@@ -436,7 +437,7 @@ namespace ArnoldVinkCode
                 string searchContrastBlack = "contrast-black";
                 string searchContrastWhite = "contrast-white";
 
-                string[] imageFilesAllSizes = Directory.GetFiles(fileDirectory, fileName + "*" + fileExtension, SearchOption.AllDirectories);
+                List<string> imageFilesAllSizes = AVFiles.GetFilesLevel(fileDirectory, fileName + "*" + fileExtension, 2);
                 string[] imageFilesContrastNone = imageFilesAllSizes.Where(x => !x.Contains(searchContrastBlack) && !x.Contains(searchContrastWhite)).ToArray();
                 string[] imageFilesContrastBlack = imageFilesAllSizes.Where(x => x.Contains(searchContrastBlack)).ToArray();
                 if (imageFilesContrastNone.Count() > 0)
