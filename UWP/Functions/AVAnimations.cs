@@ -6,10 +6,10 @@ using Windows.UI.Xaml.Media.Imaging;
 
 namespace ArnoldVinkCode
 {
-    class AVAnimations
+    public class AVAnimations
     {
         //Storyboard - Show menu swipe hint animation vertical
-        internal static void Ani_SwipeHintVertical(FrameworkElement ObjFrameworkElement, double Offset)
+        public static void Ani_SwipeHintVertical(FrameworkElement ObjFrameworkElement, double Offset)
         {
             try
             {
@@ -25,7 +25,7 @@ namespace ArnoldVinkCode
         }
 
         //Storyboard - Show menu swipe hint animation horizontal
-        internal static void Ani_SwipeHintHorizontal(FrameworkElement ObjFrameworkElement, double Offset)
+        public static void Ani_SwipeHintHorizontal(FrameworkElement ObjFrameworkElement, double Offset)
         {
             try
             {
@@ -41,7 +41,7 @@ namespace ArnoldVinkCode
         }
 
         //Storyboard - Image fade in and fade out animation
-        internal static void Ani_ImageFadeInandOut(FrameworkElement FadeOut, FrameworkElement FadeIn, BitmapImage ImageIn)
+        public static void Ani_ImageFadeInandOut(FrameworkElement FadeOut, FrameworkElement FadeIn, BitmapImage ImageIn)
         {
             try
             {
@@ -69,7 +69,7 @@ namespace ArnoldVinkCode
         }
 
         //Storyboard - Text fade in and fade out animation
-        internal static void Ani_TextFadeInandOut(FrameworkElement FadeElement, string FadeText)
+        public static void Ani_TextFadeInandOut(FrameworkElement FadeElement, string FadeText)
         {
             try
             {
@@ -95,7 +95,7 @@ namespace ArnoldVinkCode
         }
 
         //Storyboard - Change the Visibilty and Hittest
-        internal static void Ani_Visibility(FrameworkElement ObjFrameworkElement, bool Visible, bool HitTest, double Speed)
+        public static void Ani_Visibility(FrameworkElement ObjFrameworkElement, bool Visible, bool HitTest, double Speed)
         {
             try
             {
@@ -132,7 +132,7 @@ namespace ArnoldVinkCode
         }
 
         //Storyboard - Change the Opacity and Hittest
-        internal static void Ani_Opacity(FrameworkElement ObjFrameworkElement, double Opacity, bool Visible, bool HitTest, double Speed)
+        public static void Ani_Opacity(FrameworkElement ObjFrameworkElement, double Opacity, bool Visible, bool HitTest, double Speed)
         {
             try
             {
@@ -169,7 +169,7 @@ namespace ArnoldVinkCode
         }
 
         //Storyboard - Change the Width
-        internal static void Ani_Width(FrameworkElement ObjFrameworkElement, Int32 ToWidth, bool Visible, bool HitTest, double Speed)
+        public static void Ani_Width(FrameworkElement ObjFrameworkElement, Int32 ToWidth, bool Visible, bool HitTest, double Speed)
         {
             try
             {
@@ -206,7 +206,7 @@ namespace ArnoldVinkCode
         }
 
         //Storyboard - Change the Height
-        internal static void Ani_Height(FrameworkElement ObjFrameworkElement, Int32 ToHeight, bool HitTest, double Speed)
+        public static void Ani_Height(FrameworkElement ObjFrameworkElement, Int32 ToHeight, bool HitTest, double Speed)
         {
             try
             {

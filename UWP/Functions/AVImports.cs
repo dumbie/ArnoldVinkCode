@@ -3,9 +3,9 @@ using System.Runtime.InteropServices;
 
 namespace ArnoldVinkCode
 {
-    class AVImports
+    public class AVImports
     {
         [DllImport("api-ms-win-core-sysinfo-l1-2-1.dll")]
-        internal static extern UInt64 GetTickCount64();
+        public static extern UInt64 GetTickCount64();
     }
 }

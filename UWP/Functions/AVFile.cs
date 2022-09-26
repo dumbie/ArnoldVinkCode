@@ -7,10 +7,10 @@ using Windows.Storage.Streams;
 
 namespace ArnoldVinkCode
 {
-    class AVFile
+    public class AVFile
     {
         //Save Text to file
-        internal static async Task<StorageFile> SaveText(string FileName, string FileText)
+        public static async Task<StorageFile> SaveText(string FileName, string FileText)
         {
             try
             {
@@ -26,7 +26,7 @@ namespace ArnoldVinkCode
         }
 
         //Save Buffer to file
-        internal static async Task<StorageFile> SaveBuffer(string FileName, IBuffer FileBuffer)
+        public static async Task<StorageFile> SaveBuffer(string FileName, IBuffer FileBuffer)
         {
             try
             {
@@ -42,7 +42,7 @@ namespace ArnoldVinkCode
         }
 
         //Save Bytes to file
-        internal static async Task<StorageFile> SaveBytes(string FileName, byte[] FileBytes)
+        public static async Task<StorageFile> SaveBytes(string FileName, byte[] FileBytes)
         {
             try
             {

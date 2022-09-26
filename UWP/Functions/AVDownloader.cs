@@ -10,9 +10,9 @@ using Windows.Web.Http.Filters;
 
 namespace ArnoldVinkCode
 {
-    class AVDownloader
+    public class AVDownloader
     {
-        internal static async Task<string> DownloadStringAsyncCookie(Int32 TimeOut, string UserAgent, string[][] RequestHeader, Uri DownloadUrl, string cookieString)
+        public static async Task<string> DownloadStringAsyncCookie(Int32 TimeOut, string UserAgent, string[][] RequestHeader, Uri DownloadUrl, string cookieString)
         {
             try
             {
@@ -56,7 +56,7 @@ namespace ArnoldVinkCode
         }
 
         //Download string async with timeout
-        internal static async Task<string> DownloadStringAsync(Int32 TimeOut, string UserAgent, string[][] RequestHeader, Uri DownloadUrl)
+        public static async Task<string> DownloadStringAsync(Int32 TimeOut, string UserAgent, string[][] RequestHeader, Uri DownloadUrl)
         {
             try
             {
@@ -92,7 +92,7 @@ namespace ArnoldVinkCode
         }
 
         //Download buffer async with timeout
-        internal async static Task<IBuffer> DownloadBufferAsync(Int32 TimeOut, string UserAgent, Uri DownloadUrl)
+        public static async Task<IBuffer> DownloadBufferAsync(Int32 TimeOut, string UserAgent, Uri DownloadUrl)
         {
             try
             {
@@ -124,7 +124,7 @@ namespace ArnoldVinkCode
         }
 
         //Download input stream async with timeout
-        internal async static Task<IInputStream> DownloadInputStreamAsync(Int32 TimeOut, string UserAgent, Uri DownloadUrl)
+        public static async Task<IInputStream> DownloadInputStreamAsync(Int32 TimeOut, string UserAgent, Uri DownloadUrl)
         {
             try
             {
@@ -156,7 +156,7 @@ namespace ArnoldVinkCode
         }
 
         //Send options request with timeout
-        internal async static Task<HttpResponseMessage> SendOptionsRequestAsync(Int32 TimeOut, string UserAgent, Uri OptionsUrl)
+        public static async Task<HttpResponseMessage> SendOptionsRequestAsync(Int32 TimeOut, string UserAgent, Uri OptionsUrl)
         {
             try
             {
@@ -190,7 +190,7 @@ namespace ArnoldVinkCode
         }
 
         //Send head request with timeout
-        internal async static Task<HttpResponseMessage> SendHeadRequestAsync(Int32 TimeOut, string UserAgent, Uri RequestUrl)
+        public static async Task<HttpResponseMessage> SendHeadRequestAsync(Int32 TimeOut, string UserAgent, Uri RequestUrl)
         {
             try
             {
@@ -224,7 +224,7 @@ namespace ArnoldVinkCode
         }
 
         //Send post request with timeout
-        internal static async Task<HttpResponseMessage> SendPostRequestAsync(Int32 TimeOut, string UserAgent, string[][] RequestHeader, Uri PostUrl, IHttpContent PostContent)
+        public static async Task<HttpResponseMessage> SendPostRequestAsync(Int32 TimeOut, string UserAgent, string[][] RequestHeader, Uri PostUrl, IHttpContent PostContent)
         {
             try
             {
