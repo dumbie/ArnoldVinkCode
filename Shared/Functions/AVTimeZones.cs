@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace ArnoldVinkCode
 {
-    class AVTimeZones
+    public class AVTimeZones
     {
         [DllImport("api-ms-win-core-timezone-l1-1-0.dll")]
         static extern int EnumDynamicTimeZoneInformation(int dwIndex, out DynamicTimeZoneInformation lpTimeZoneInformation);
@@ -14,7 +14,7 @@ namespace ArnoldVinkCode
         [DllImport("api-ms-win-core-timezone-l1-1-0.dll")]
         static extern bool GetTimeZoneInformationForYear(short wYear, ref DynamicTimeZoneInformation pdtzi, out TimeZoneInformation ptzi);
 
-        internal static DateTime GetTimeZoneTime(string TimeZone)
+        public static DateTime GetTimeZoneTime(string TimeZone)
         {
             try
             {
