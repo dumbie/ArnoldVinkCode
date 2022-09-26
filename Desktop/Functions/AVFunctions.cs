@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -207,6 +208,34 @@ namespace ArnoldVinkCode
             catch
             {
                 return secondsInt.ToString() + (useChar ? "s" : "");
+            }
+        }
+
+        //Get filename without extension with space check
+        public static string GetFileNameNoExtension(string path)
+        {
+            try
+            {
+                if (!Path.HasExtension(path))
+                {
+                    //Debug.WriteLine("File has no extension: " + Path.GetFileName(path));
+                    return Path.GetFileName(path);
+                }
+                else if (Path.GetExtension(path).Length > 1 && Path.GetExtension(path)[1] == ' ')
+                {
+                    //Debug.WriteLine("File has space extension: " + Path.GetFileName(path));
+                    return Path.GetFileName(path);
+                }
+                else
+                {
+                    //Debug.WriteLine("File has proper extension: " + Path.GetFileNameWithoutExtension(path));
+                    return Path.GetFileNameWithoutExtension(path);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to get filename no extension: " + ex.Message);
+                return path;
             }
         }
 
