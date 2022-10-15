@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Management;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -486,7 +487,7 @@ namespace ArnoldVinkCode
                 {
                     foreach (Process AllProcess in Process.GetProcesses().Where(x => x.MainWindowTitle.ToLower().Contains(processName.ToLower())))
                     {
-                        AllProcess.Kill();
+                        KillProcessTreeById(AllProcess.Id, true);
                         processClosed = true;
                     }
                 }
@@ -497,7 +498,7 @@ namespace ArnoldVinkCode
                     {
                         foreach (Process AllProcess in Process.GetProcessesByName(processName))
                         {
-                            AllProcess.Kill();
+                            KillProcessTreeById(AllProcess.Id, true);
                             processClosed = true;
                         }
                     }
@@ -505,7 +506,7 @@ namespace ArnoldVinkCode
                     {
                         foreach (Process AllProcess in Process.GetProcesses().Where(x => x.ProcessName.ToLower().Contains(processName.ToLower())))
                         {
-                            AllProcess.Kill();
+                            KillProcessTreeById(AllProcess.Id, true);
                             processClosed = true;
                         }
                     }
@@ -515,21 +516,6 @@ namespace ArnoldVinkCode
             catch (Exception ex)
             {
                 Debug.WriteLine("Failed to close processes by name: " + ex.Message);
-                return false;
-            }
-        }
-
-        //Close process by id
-        public static bool CloseProcessById(int processId)
-        {
-            try
-            {
-                GetProcessById(processId).Kill();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("Failed to close process by id: " + ex.Message);
                 return false;
             }
         }
@@ -789,6 +775,39 @@ namespace ArnoldVinkCode
             }
             catch { }
             return convertedProcess;
+        }
+
+        //Kill process and tree by id
+        public static bool KillProcessTreeById(int processId, bool killTree)
+        {
+            try
+            {
+                //Kill tree processes
+                if (killTree)
+                {
+                    using (ManagementObjectSearcher objSearcher = new ManagementObjectSearcher("Select * From Win32_Process Where ParentProcessID=" + processId))
+                    {
+                        using (ManagementObjectCollection objCollection = objSearcher.Get())
+                        {
+                            foreach (ManagementObject objProcess in objCollection)
+                            {
+                                KillProcessTreeById(Convert.ToInt32(objProcess["ProcessID"]), killTree);
+                            }
+                        }
+                    }
+                }
+
+                //Kill parent process
+                Process.GetProcessById(processId).Kill();
+
+                Debug.WriteLine("Killed process tree: " + processId);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to kill process tree: " + ex.Message);
+                return false;
+            }
         }
     }
 }

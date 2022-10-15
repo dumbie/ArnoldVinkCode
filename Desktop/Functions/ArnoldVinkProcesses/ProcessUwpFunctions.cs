@@ -127,7 +127,7 @@ namespace ArnoldVinkCode
                 else if (ProcessId > 0)
                 {
                     //Close the process or app
-                    return CloseProcessById(ProcessId);
+                    return KillProcessTreeById(ProcessId, true);
                 }
             }
             catch { }

@@ -14,7 +14,6 @@ namespace ArnoldVinkCode
             {
                 if (overWrite && Directory.Exists(createDirectoryPath))
                 {
-                    Debug.WriteLine("Deleting: " + createDirectoryPath);
                     Directory_Delete(createDirectoryPath);
                 }
                 else if (!overWrite && Directory.Exists(createDirectoryPath))
@@ -23,7 +22,7 @@ namespace ArnoldVinkCode
                     return true;
                 }
 
-                Debug.WriteLine("Creating: " + createDirectoryPath);
+                Debug.WriteLine("Creating directory: " + createDirectoryPath);
                 Directory.CreateDirectory(createDirectoryPath);
                 return true;
             }
@@ -41,7 +40,7 @@ namespace ArnoldVinkCode
             {
                 if (Directory.Exists(deleteDirectoryPath))
                 {
-                    Debug.WriteLine("Deleting: " + deleteDirectoryPath);
+                    Debug.WriteLine("Deleting directory: " + deleteDirectoryPath);
                     Directory.Delete(deleteDirectoryPath, true);
                     return true;
                 }
@@ -63,6 +62,12 @@ namespace ArnoldVinkCode
         {
             try
             {
+                if (oldDirPath == newDirPath)
+                {
+                    Debug.WriteLine("Failed moving directory: targeting the same path.");
+                    return false;
+                }
+
                 if (Directory.Exists(oldDirPath))
                 {
                     Debug.WriteLine("Moving: " + oldDirPath + " to " + newDirPath);
@@ -79,6 +84,59 @@ namespace ArnoldVinkCode
             catch
             {
                 Debug.WriteLine("Failed moving directory: " + oldDirPath + " to" + newDirPath);
+                return false;
+            }
+        }
+
+        //Directory copy
+        public static bool Directory_Copy(string oldDirPath, string newDirPath, bool overWrite)
+        {
+            try
+            {
+                if (oldDirPath == newDirPath)
+                {
+                    Debug.WriteLine("Failed copying directory: targeting the same path.");
+                    return false;
+                }
+
+                if (Directory.Exists(oldDirPath))
+                {
+                    Debug.WriteLine("Copying: " + oldDirPath + " to " + newDirPath);
+
+                    //Get old directory info
+                    DirectoryInfo dirInfo = new DirectoryInfo(oldDirPath);
+                    DirectoryInfo[] directories = dirInfo.GetDirectories();
+
+                    //Create new directory
+                    if (!Directory_Create(newDirPath, overWrite))
+                    {
+                        Debug.WriteLine("Failed copying directory: failed to create new directory.");
+                        return false;
+                    }
+
+                    //Get old directory files (root)
+                    foreach (FileInfo file in dirInfo.GetFiles())
+                    {
+                        file.CopyTo(Path.Combine(newDirPath, file.Name), overWrite);
+                    }
+
+                    //Get old directory files (subdir)
+                    foreach (DirectoryInfo subDir in directories)
+                    {
+                        Directory_Copy(subDir.FullName, Path.Combine(newDirPath, subDir.Name), overWrite);
+                    }
+
+                    return true;
+                }
+                else
+                {
+                    Debug.WriteLine("Failed copying directory: " + oldDirPath + " does not exist");
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed copying directory: " + oldDirPath + " to " + newDirPath + " (" + ex.Message + ")");
                 return false;
             }
         }
@@ -119,7 +177,7 @@ namespace ArnoldVinkCode
             {
                 if (File.Exists(deleteFilePath))
                 {
-                    Debug.WriteLine("Deleting: " + deleteFilePath);
+                    Debug.WriteLine("Deleting file: " + deleteFilePath);
                     File.Delete(deleteFilePath);
                     return true;
                 }
@@ -141,6 +199,12 @@ namespace ArnoldVinkCode
         {
             try
             {
+                if (oldFilePath == newFilePath)
+                {
+                    Debug.WriteLine("Failed moving file: targeting the same path.");
+                    return false;
+                }
+
                 if (File.Exists(oldFilePath))
                 {
                     Debug.WriteLine("Moving: " + oldFilePath + " to " + newFilePath);
@@ -166,6 +230,12 @@ namespace ArnoldVinkCode
         {
             try
             {
+                if (oldFilePath == newFilePath)
+                {
+                    Debug.WriteLine("Failed copying file: targeting the same path.");
+                    return false;
+                }
+
                 if (File.Exists(oldFilePath))
                 {
                     Debug.WriteLine("Copying: " + oldFilePath + " to " + newFilePath);
