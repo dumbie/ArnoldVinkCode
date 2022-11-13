@@ -479,6 +479,20 @@ namespace ArnoldVinkCode
             }
         }
 
+        public static void MoveByteInArrayLeft(int totalByteSize, byte[] serialBytes, int MoveIndex, int NewIndex)
+        {
+            try
+            {
+                byte MoveValue = serialBytes[MoveIndex];
+                Array.Copy(serialBytes, MoveIndex + 1, serialBytes, MoveIndex, totalByteSize - 1 - MoveIndex);
+                serialBytes[NewIndex] = MoveValue;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to move byte left: " + ex.Message);
+            }
+        }
+
         //Move byte in a byte array to right
         public static void MoveByteInArrayRight(byte[] SerialBytes, int MoveIndex, int NewIndex)
         {
@@ -487,6 +501,20 @@ namespace ArnoldVinkCode
                 byte MoveValue = SerialBytes[MoveIndex];
                 Array.Copy(SerialBytes, NewIndex, SerialBytes, NewIndex + 1, SerialBytes.Length - 1 - NewIndex);
                 SerialBytes[NewIndex] = MoveValue;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to move byte right: " + ex.Message);
+            }
+        }
+
+        public static void MoveByteInArrayRight(int totalByteSize, byte[] serialBytes, int MoveIndex, int NewIndex)
+        {
+            try
+            {
+                byte MoveValue = serialBytes[MoveIndex];
+                Array.Copy(serialBytes, NewIndex, serialBytes, NewIndex + 1, totalByteSize - 1 - NewIndex);
+                serialBytes[NewIndex] = MoveValue;
             }
             catch (Exception ex)
             {
