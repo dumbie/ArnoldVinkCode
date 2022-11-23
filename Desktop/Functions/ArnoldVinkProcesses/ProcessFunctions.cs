@@ -389,6 +389,9 @@ namespace ArnoldVinkCode
                     processMulti.Path = GetExecutablePathFromProcess(focusedProcess);
                 }
 
+                //Set the process executable name
+                processMulti.ExecutableName = Path.GetFileName(processMulti.Path);
+
                 //Get the window title
                 processMulti.Title = GetWindowTitleFromWindowHandle(processMulti.WindowHandle);
                 if (processMulti.Title == "Unknown")
@@ -419,7 +422,12 @@ namespace ArnoldVinkCode
             }
         }
 
-        //Get a single specific process by name or title
+        /// <summary>
+        /// Get single process by name or window title
+        /// </summary>
+        /// <param name="processName">Process name without extension</param>
+        /// <param name="windowTitle">Search for window title?</param>
+        /// <param name="exactName">Search for exact process or contain?</param>
         public static Process GetProcessByNameOrTitle(string processName, bool windowTitle, bool exactName)
         {
             try
@@ -430,7 +438,6 @@ namespace ArnoldVinkCode
                 }
                 else
                 {
-                    processName = Path.GetFileNameWithoutExtension(processName);
                     if (exactName)
                     {
                         return Process.GetProcessesByName(processName).FirstOrDefault();
@@ -448,7 +455,12 @@ namespace ArnoldVinkCode
             }
         }
 
-        //Get multiple specific processes by name or title
+        /// <summary>
+        /// Get multiple processes by name or window title
+        /// </summary>
+        /// <param name="processName">Process name without extension</param>
+        /// <param name="windowTitle">Search for window title?</param>
+        /// <param name="exactName">Search for exact process or contain?</param>
         public static Process[] GetProcessesByNameOrTitle(string processName, bool windowTitle, bool exactName)
         {
             try
@@ -459,7 +471,6 @@ namespace ArnoldVinkCode
                 }
                 else
                 {
-                    processName = Path.GetFileNameWithoutExtension(processName);
                     if (exactName)
                     {
                         return Process.GetProcessesByName(processName);

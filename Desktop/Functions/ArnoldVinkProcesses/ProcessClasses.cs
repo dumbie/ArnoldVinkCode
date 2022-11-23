@@ -16,6 +16,7 @@ namespace ArnoldVinkCode
         {
             public string Title { get; set; } = "Unknown";
             public string Name { get; set; } = string.Empty;
+            public string ExecutableName { get; set; } = string.Empty;
             public string Path { get; set; } = string.Empty;
             public int Identifier { get; set; } = -1;
             public string Argument { get; set; } = string.Empty;
