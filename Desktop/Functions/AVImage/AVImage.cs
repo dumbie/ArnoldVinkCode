@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Media.Imaging;
+using static ArnoldVinkCode.AVSearch;
 
 namespace ArnoldVinkCode
 {
@@ -118,7 +118,7 @@ namespace ArnoldVinkCode
         }
 
         //Convert file to a BitmapImage
-        public static BitmapImage FileToBitmapImage(string[] sourceImages, ImageSourceFolders[] sourceFolders, string sourceBackup, IntPtr windowHandle, int pixelWidth, int iconIndex)
+        public static BitmapImage FileToBitmapImage(string[] fileNames, SearchSource[] searchSources, string sourceBackup, IntPtr windowHandle, int pixelWidth, int iconIndex)
         {
             try
             {
@@ -127,22 +127,16 @@ namespace ArnoldVinkCode
                 MemoryStream imageMemoryStream = new MemoryStream();
 
                 //Load application bitmap image
-                foreach (string loadFile in sourceImages)
+                foreach (string fileName in fileNames)
                 {
                     try
                     {
-                        //Validate the load path
-                        if (string.IsNullOrWhiteSpace(loadFile)) { continue; }
+                        //Validate the file name
+                        if (string.IsNullOrWhiteSpace(fileName)) { continue; }
 
-                        //Adjust the load path
-                        string loadFileLower = loadFile.ToLower();
-                        loadFileLower = AVFunctions.StringRemoveStart(loadFileLower, " ");
-                        loadFileLower = AVFunctions.StringRemoveEnd(loadFileLower, " ");
-                        if (!loadFileLower.Contains("/") && !loadFileLower.Contains("\\"))
-                        {
-                            loadFileLower = string.Join(string.Empty, loadFileLower.Split(Path.GetInvalidFileNameChars()));
-                        }
-                        //Debug.WriteLine("Loading image: " + loadFileLower);
+                        //Adjust the file name
+                        string loadFileLower = fileName.ToLower();
+                        Debug.WriteLine("Loading image: " + loadFileLower);
 
                         if (loadFileLower.StartsWith("pack://"))
                         {
@@ -160,27 +154,14 @@ namespace ArnoldVinkCode
                         {
                             imageToBitmapImage.StreamSource = GetIconMemoryStreamFromExeFile(loadFileLower, iconIndex, ref imageMemoryStream);
                         }
-                        else if (sourceFolders != null)
+                        else if (searchSources != null)
                         {
-                            foreach (ImageSourceFolders sourceFolder in sourceFolders)
+                            try
                             {
-                                try
-                                {
-                                    if (Directory.Exists(sourceFolder.SourcePath))
-                                    {
-                                        string[] pngImages = Directory.GetFiles(sourceFolder.SourcePath, "*.png", sourceFolder.SearchOption);
-                                        string[] jpgImages = Directory.GetFiles(sourceFolder.SourcePath, "*.jpg", sourceFolder.SearchOption);
-                                        IEnumerable<string> foundImages = pngImages.Concat(jpgImages);
-                                        string foundImage = foundImages.FirstOrDefault(x => Path.GetFileNameWithoutExtension(x).ToLower() == loadFileLower);
-                                        if (!string.IsNullOrWhiteSpace(foundImage))
-                                        {
-                                            imageToBitmapImage.UriSource = new Uri(foundImage, UriKind.RelativeOrAbsolute);
-                                            break;
-                                        }
-                                    }
-                                }
-                                catch { }
+                                string[] foundImages = Search_Files(new string[] { fileName }, searchSources, false);
+                                imageToBitmapImage.UriSource = new Uri(foundImages.FirstOrDefault(), UriKind.RelativeOrAbsolute);
                             }
+                            catch { }
                         }
 
                         //Return application bitmap image
@@ -195,7 +176,7 @@ namespace ArnoldVinkCode
                     }
                     catch (Exception ex)
                     {
-                        Debug.WriteLine("Failed loading image: " + loadFile + "/" + ex.Message);
+                        Debug.WriteLine("Failed loading image: " + fileName + "/" + ex.Message);
                     }
                 }
 
