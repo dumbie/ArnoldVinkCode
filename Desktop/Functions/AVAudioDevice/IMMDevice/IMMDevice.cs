@@ -24,22 +24,20 @@ namespace IMMDevice
     {
         eRender = 0,
         eCapture = 1,
-        eAll = 2,
-        EDataFlow_enum_count = 3
+        eAll = 2
     }
 
     public enum ERole
     {
         eConsole = 0,
         eMultimedia = 1,
-        eCommunications = 2,
-        ERole_enum_count = 3
+        eCommunications = 2
     }
 
     [Guid("D666063F-1587-4E43-81F1-B948E807363F"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public interface IMMDevice
     {
-        void Activate(Guid id, uint dwClsCtx, IntPtr pActivationParams, [MarshalAs(UnmanagedType.Interface)] out object ppInterface);
+        void Activate([MarshalAs(UnmanagedType.LPStruct)] Guid id, uint dwClsCtx, IntPtr pActivationParams, [MarshalAs(UnmanagedType.Interface)] out IAudioEndpointVolume ppInterface);
         [return: MarshalAs(UnmanagedType.Interface)]
         IPropertyStore OpenPropertyStore(STGM stgmAccess);
         [return: MarshalAs(UnmanagedType.LPWStr)]

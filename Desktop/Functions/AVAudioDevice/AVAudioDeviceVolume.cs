@@ -23,8 +23,7 @@ namespace ArnoldVinkCode
                 }
 
                 //Get the audio device volume endpoint
-                deviceItem.Activate(typeof(IAudioEndpointVolume).GUID, 0, IntPtr.Zero, out object deviceActivated);
-                IAudioEndpointVolume audioEndPointVolume = (IAudioEndpointVolume)deviceActivated;
+                deviceItem.Activate(typeof(IAudioEndpointVolume).GUID, 0, IntPtr.Zero, out IAudioEndpointVolume audioEndPointVolume);
 
                 //Check the target volume
                 if (targetVolume > 100) { targetVolume = 100; }
@@ -61,8 +60,7 @@ namespace ArnoldVinkCode
                 }
 
                 //Get the audio device volume endpoint
-                deviceItem.Activate(typeof(IAudioEndpointVolume).GUID, 0, IntPtr.Zero, out object deviceActivated);
-                IAudioEndpointVolume audioEndPointVolume = (IAudioEndpointVolume)deviceActivated;
+                deviceItem.Activate(typeof(IAudioEndpointVolume).GUID, 0, IntPtr.Zero, out IAudioEndpointVolume audioEndPointVolume);
 
                 //Get the audio device volume
                 audioEndPointVolume.GetMasterVolumeLevelScalar(out float volumeLevelCurrentFloat);
@@ -102,8 +100,7 @@ namespace ArnoldVinkCode
                 }
 
                 //Get the audio device volume endpoint
-                deviceItem.Activate(typeof(IAudioEndpointVolume).GUID, 0, IntPtr.Zero, out object deviceActivated);
-                IAudioEndpointVolume audioEndPointVolume = (IAudioEndpointVolume)deviceActivated;
+                deviceItem.Activate(typeof(IAudioEndpointVolume).GUID, 0, IntPtr.Zero, out IAudioEndpointVolume audioEndPointVolume);
 
                 //Get the audio device volume
                 audioEndPointVolume.GetMasterVolumeLevelScalar(out float volumeLevelCurrentFloat);
@@ -143,8 +140,7 @@ namespace ArnoldVinkCode
                 }
 
                 //Get the audio device volume endpoint
-                deviceItem.Activate(typeof(IAudioEndpointVolume).GUID, 0, IntPtr.Zero, out object deviceActivated);
-                IAudioEndpointVolume audioEndPointVolume = (IAudioEndpointVolume)deviceActivated;
+                deviceItem.Activate(typeof(IAudioEndpointVolume).GUID, 0, IntPtr.Zero, out IAudioEndpointVolume audioEndPointVolume);
 
                 //Get the audio device volume
                 audioEndPointVolume.GetMasterVolumeLevelScalar(out float volumeLevelCurrentFloat);
@@ -177,8 +173,7 @@ namespace ArnoldVinkCode
                 }
 
                 //Get the audio device volume endpoint
-                deviceItem.Activate(typeof(IAudioEndpointVolume).GUID, 0, IntPtr.Zero, out object deviceActivated);
-                IAudioEndpointVolume audioEndPointVolume = (IAudioEndpointVolume)deviceActivated;
+                deviceItem.Activate(typeof(IAudioEndpointVolume).GUID, 0, IntPtr.Zero, out IAudioEndpointVolume audioEndPointVolume);
 
                 //Get the current mute status
                 audioEndPointVolume.GetMute(out bool muteStatus);
@@ -212,8 +207,7 @@ namespace ArnoldVinkCode
                 }
 
                 //Get the audio device volume endpoint
-                deviceItem.Activate(typeof(IAudioEndpointVolume).GUID, 0, IntPtr.Zero, out object deviceActivated);
-                IAudioEndpointVolume audioEndPointVolume = (IAudioEndpointVolume)deviceActivated;
+                deviceItem.Activate(typeof(IAudioEndpointVolume).GUID, 0, IntPtr.Zero, out IAudioEndpointVolume audioEndPointVolume);
 
                 //Set the switched mute status
                 audioEndPointVolume.SetMute(true, Guid.Empty);
@@ -242,8 +236,7 @@ namespace ArnoldVinkCode
                 }
 
                 //Get the audio device volume endpoint
-                deviceItem.Activate(typeof(IAudioEndpointVolume).GUID, 0, IntPtr.Zero, out object deviceActivated);
-                IAudioEndpointVolume audioEndPointVolume = (IAudioEndpointVolume)deviceActivated;
+                deviceItem.Activate(typeof(IAudioEndpointVolume).GUID, 0, IntPtr.Zero, out IAudioEndpointVolume audioEndPointVolume);
 
                 //Set the switched mute status
                 audioEndPointVolume.SetMute(false, Guid.Empty);
@@ -272,8 +265,7 @@ namespace ArnoldVinkCode
                 }
 
                 //Get the audio device volume endpoint
-                deviceItem.Activate(typeof(IAudioEndpointVolume).GUID, 0, IntPtr.Zero, out object deviceActivated);
-                IAudioEndpointVolume audioEndPointVolume = (IAudioEndpointVolume)deviceActivated;
+                deviceItem.Activate(typeof(IAudioEndpointVolume).GUID, 0, IntPtr.Zero, out IAudioEndpointVolume audioEndPointVolume);
 
                 //Get the current mute status
                 audioEndPointVolume.GetMute(out bool muteStatus);
