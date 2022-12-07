@@ -434,17 +434,17 @@ namespace ArnoldVinkCode
             {
                 if (windowTitle)
                 {
-                    return Process.GetProcesses().Where(x => x.MainWindowTitle.ToLower().Contains(processName.ToLower())).FirstOrDefault();
+                    return Process.GetProcesses().Where(x => x.MainWindowTitle.ToLower().Contains(processName.ToLower())).OrderByDescending(x => x.MainWindowHandle != IntPtr.Zero).FirstOrDefault();
                 }
                 else
                 {
                     if (exactName)
                     {
-                        return Process.GetProcessesByName(processName).FirstOrDefault();
+                        return Process.GetProcessesByName(processName).OrderByDescending(x => x.MainWindowHandle != IntPtr.Zero).FirstOrDefault();
                     }
                     else
                     {
-                        return Process.GetProcesses().Where(x => x.ProcessName.ToLower().Contains(processName.ToLower())).FirstOrDefault();
+                        return Process.GetProcesses().Where(x => x.ProcessName.ToLower().Contains(processName.ToLower())).OrderByDescending(x => x.MainWindowHandle != IntPtr.Zero).FirstOrDefault();
                     }
                 }
             }
@@ -467,17 +467,17 @@ namespace ArnoldVinkCode
             {
                 if (windowTitle)
                 {
-                    return Process.GetProcesses().Where(x => x.MainWindowTitle.ToLower().Contains(processName.ToLower())).ToArray();
+                    return Process.GetProcesses().Where(x => x.MainWindowTitle.ToLower().Contains(processName.ToLower())).OrderByDescending(x => x.MainWindowHandle != IntPtr.Zero).ToArray();
                 }
                 else
                 {
                     if (exactName)
                     {
-                        return Process.GetProcessesByName(processName);
+                        return Process.GetProcessesByName(processName).OrderByDescending(x => x.MainWindowHandle != IntPtr.Zero).ToArray();
                     }
                     else
                     {
-                        return Process.GetProcesses().Where(x => x.ProcessName.ToLower().Contains(processName.ToLower())).ToArray();
+                        return Process.GetProcesses().Where(x => x.ProcessName.ToLower().Contains(processName.ToLower())).OrderByDescending(x => x.MainWindowHandle != IntPtr.Zero).ToArray();
                     }
                 }
             }
