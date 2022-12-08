@@ -28,7 +28,7 @@ namespace ArnoldVinkCode
                         //Get detailed application information
                         Package appPackage = GetUwpAppPackageByAppUserModelId(appUserModelId);
                         AppxDetails appxDetails = GetUwpAppxDetailsFromAppPackage(appPackage);
-                        appUserModelId = appxDetails.FamilyNameId;
+                        appUserModelId = appxDetails.AppUserModelId;
 
                         //Start the process
                         UWPActivationManager UWPActivationManager = new UWPActivationManager();

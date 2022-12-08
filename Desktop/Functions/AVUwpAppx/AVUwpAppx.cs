@@ -22,8 +22,6 @@ namespace ArnoldVinkCode
             try
             {
                 //Get detailed information from app package
-                string appFamilyName = appPackage.Id.FamilyName;
-                appxDetails.FullPackageName = appPackage.Id.FullName;
                 appxDetails.InstallPath = appPackage.InstalledLocation.Path;
                 string manifestPath = appxDetails.InstallPath + "\\AppXManifest.xml";
                 //Debug.WriteLine("Reading uwp app manifest file: " + manifestPath);
@@ -53,8 +51,11 @@ namespace ArnoldVinkCode
                 }
                 if (string.IsNullOrWhiteSpace(appxDetails.ExecutableAliasName)) { appxDetails.ExecutableAliasName = appxDetails.ExecutableName; }
 
-                //Get and set family name identifier
-                appxDetails.FamilyNameId = appFamilyName + "!" + appxApplication.Id;
+                //Get and set application names
+                appxDetails.AppIdentifier = appxApplication.Id;
+                appxDetails.AppUserModelId = appPackage.Id.FamilyName + "!" + appxApplication.Id;
+                appxDetails.FamilyName = appPackage.Id.FamilyName;
+                appxDetails.FullPackageName = appPackage.Id.FullName;
 
                 //Get and set application display name
                 appxDetails.DisplayName = GetUwpMsResourceString(appxApplication.Id, appxDetails.FullPackageName, appxManifest.Properties.DisplayName);
@@ -156,7 +157,10 @@ namespace ArnoldVinkCode
             return appxDetails;
         }
 
-        //Get uwp application package by FamilyName
+        /// <summary>
+        /// Get uwp application package by FamilyName
+        /// </summary>
+        /// <param name="familyName">Example: Microsoft.WindowsCalculator_8wekyb3d8bbwe</param>
         public static Package GetUwpAppPackageByFamilyName(string familyName)
         {
             try
@@ -172,20 +176,41 @@ namespace ArnoldVinkCode
             return null;
         }
 
-        //Get uwp application package by AppUserModelId
+        /// <summary>
+        /// Get uwp application package by AppUserModelId
+        /// </summary>
+        /// <param name="appUserModelId">Example: Microsoft.WindowsCalculator_8wekyb3d8bbwe!App</param>
         public static Package GetUwpAppPackageByAppUserModelId(string appUserModelId)
         {
             try
             {
-                //Debug.WriteLine("Loading app package: " + targetAppUserModelId);
-
                 //Extract the family name from AppUserModelId
                 string appFamilyName = appUserModelId.Split('!')[0];
+                //Debug.WriteLine("Loading app package: " + appFamilyName);
 
                 //Find the application package
                 PackageManager deployPackageManager = new PackageManager();
                 string currentUserIdentity = WindowsIdentity.GetCurrent().User.Value;
                 return deployPackageManager.FindPackagesForUser(currentUserIdentity, appFamilyName).FirstOrDefault();
+            }
+            catch { }
+            return null;
+        }
+
+        /// <summary>
+        /// Get uwp application package by FullPackageName
+        /// </summary>
+        /// <param name="fullPackageName">Example: Microsoft.WindowsCalculator_11.2209.0.0_x64__8wekyb3d8bbwe</param>
+        public static Package GetUwpAppPackageByFullPackageName(string fullPackageName)
+        {
+            try
+            {
+                Debug.WriteLine("Loading app package: " + fullPackageName);
+
+                //Find the application package
+                PackageManager deployPackageManager = new PackageManager();
+                string currentUserIdentity = WindowsIdentity.GetCurrent().User.Value;
+                return deployPackageManager.FindPackageForUser(currentUserIdentity, fullPackageName);
             }
             catch { }
             return null;
@@ -225,7 +250,7 @@ namespace ArnoldVinkCode
             return false;
         }
 
-        //Get ms uwp resources string from package
+        //Get Microsoft uwp resource string from package
         public static string GetUwpMsResourceString(string appIdentifier, string packageFullName, string resourceString)
         {
             string convertedString = string.Empty;
