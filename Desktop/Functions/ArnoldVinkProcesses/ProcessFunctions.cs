@@ -353,71 +353,20 @@ namespace ArnoldVinkCode
         {
             try
             {
-                ProcessMulti processMulti = new ProcessMulti();
-
-                //Set window handle
-                processMulti.WindowHandle = targetWindowHandle;
-
-                //Get window classname
-                processMulti.ClassName = GetClassNameFromWindowHandle(processMulti.WindowHandle);
-
-                //Get window process
-                Process focusedProcess = null;
-                if (processMulti.ClassName == "ApplicationFrameWindow")
+                if (CheckProcessIsUwp(targetWindowHandle))
                 {
-                    focusedProcess = GetUwpProcessByWindowHandle(processMulti.WindowHandle);
+                    return GetUwpProcessMultiByWindowHandle(targetWindowHandle);
                 }
                 else
                 {
-                    focusedProcess = GetProcessById(GetProcessIdFromWindowHandle(processMulti.WindowHandle));
+                    int processId = GetProcessIdFromWindowHandle(targetWindowHandle);
+                    Process process = Process.GetProcessById(processId);
+                    return ConvertProcessToProcessMulti(process);
                 }
-
-                //Set the identifier
-                processMulti.Identifier = focusedProcess.Id;
-
-                //Set the process name
-                processMulti.Name = focusedProcess.ProcessName;
-
-                //Get and set the process path
-                string processAppUserModelId = GetAppUserModelIdFromProcess(focusedProcess);
-                if (!string.IsNullOrWhiteSpace(processAppUserModelId))
-                {
-                    processMulti.Path = processAppUserModelId;
-                }
-                else
-                {
-                    processMulti.Path = GetExecutablePathFromProcess(focusedProcess);
-                }
-
-                //Set the process executable name
-                processMulti.ExecutableName = Path.GetFileName(processMulti.Path);
-
-                //Get the window title
-                processMulti.Title = GetWindowTitleFromWindowHandle(processMulti.WindowHandle);
-                if (processMulti.Title == "Unknown")
-                {
-                    processMulti.Title = GetWindowTitleFromProcess(focusedProcess);
-                }
-
-                return processMulti;
             }
             catch (Exception ex)
             {
                 Debug.WriteLine("Failed to get multi process: " + ex.Message);
-                return null;
-            }
-        }
-
-        //Get a process by id safe return null
-        public static Process GetProcessById(int processId)
-        {
-            try
-            {
-                return Process.GetProcessById(processId);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("Failed to get process by id: " + ex.Message);
                 return null;
             }
         }
@@ -552,7 +501,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                return GetProcessById(processMulti.Identifier).Threads;
+                return processMulti.Process.Threads;
             }
             catch { }
             return null;
@@ -771,20 +720,82 @@ namespace ArnoldVinkCode
         }
 
         //Convert Process to a ProcessMulti
-        public static ProcessMulti ConvertProcessToProcessMulti(ProcessType processType, Process convertProcess)
+        public static ProcessMulti ConvertProcessToProcessMulti(Process convertProcess)
         {
             ProcessMulti convertedProcess = new ProcessMulti();
             try
             {
-                convertedProcess.Type = processType;
+                //Set process
+                convertedProcess.Process = convertProcess;
+
+                //Set identifier
                 convertedProcess.Identifier = convertProcess.Id;
+
+                //Set process name
+                convertedProcess.Name = convertProcess.ProcessName;
+
+                //Set window handle
                 convertedProcess.WindowHandle = convertProcess.MainWindowHandle;
 
-                //Get the process launch argument
-                string processExecutablePath = GetExecutablePathFromProcess(convertProcess);
-                convertedProcess.Argument = GetLaunchArgumentsFromProcess(convertProcess, processExecutablePath);
+                //Get window title
+                convertedProcess.WindowTitle = GetWindowTitleFromWindowHandle(convertProcess.MainWindowHandle);
+                if (convertedProcess.WindowTitle == "Unknown")
+                {
+                    convertedProcess.WindowTitle = GetWindowTitleFromProcess(convertProcess);
+                }
+
+                //Get class name
+                convertedProcess.ClassName = GetClassNameFromWindowHandle(convertProcess.MainWindowHandle);
+
+                //Get executable path
+                string executablePath = GetExecutablePathFromProcess(convertProcess);
+
+                //Set executable name
+                convertedProcess.ExecutableName = Path.GetFileName(executablePath);
+
+                //Set launch argument
+                convertedProcess.Argument = GetLaunchArgumentsFromProcess(convertProcess, executablePath);
+
+                //Set type and path
+                string processAppUserModelId = GetAppUserModelIdFromProcess(convertProcess);
+                if (!string.IsNullOrWhiteSpace(processAppUserModelId))
+                {
+                    convertedProcess.Type = ProcessType.UWP;
+                    convertedProcess.Path = processAppUserModelId;
+                }
+                else
+                {
+                    convertedProcess.Type = ProcessType.Win32;
+                    convertedProcess.Path = executablePath;
+                }
+
+                //Check if application is Win32Store
+                if (convertedProcess.Type == ProcessType.UWP)
+                {
+                    if (CheckProcessIsUwp(convertedProcess.ClassName))
+                    {
+                        convertedProcess.WindowHandle = GetUwpWindowFromAppUserModelId(processAppUserModelId);
+                    }
+                    else
+                    {
+                        convertedProcess.Type = ProcessType.Win32Store;
+                    }
+                }
+
+                //Debug.WriteLine("Identifier: " + convertedProcess.Identifier);
+                //Debug.WriteLine("Type: " + convertedProcess.Type);
+                //Debug.WriteLine("Name: " + convertedProcess.Name);
+                //Debug.WriteLine("ExecutableName: " + convertedProcess.ExecutableName);
+                //Debug.WriteLine("Path: " + convertedProcess.Path);
+                //Debug.WriteLine("Argument: " + convertedProcess.Argument);
+                //Debug.WriteLine("ClassName: " + convertedProcess.ClassName);
+                //Debug.WriteLine("WindowTitle: " + convertedProcess.WindowTitle);
+                //Debug.WriteLine("WindowHandle: " + convertedProcess.WindowHandle);
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to convert Process to ProcessMulti: " + ex.Message);
+            }
             return convertedProcess;
         }
 

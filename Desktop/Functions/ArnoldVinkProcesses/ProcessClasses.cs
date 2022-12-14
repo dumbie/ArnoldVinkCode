@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace ArnoldVinkCode
 {
@@ -14,15 +15,16 @@ namespace ArnoldVinkCode
 
         public class ProcessMulti
         {
-            public string Title { get; set; } = "Unknown";
+            public int Identifier { get; set; } = -1;
+            public ProcessType Type { get; set; } = ProcessType.Unknown;
             public string Name { get; set; } = string.Empty;
             public string ExecutableName { get; set; } = string.Empty;
             public string Path { get; set; } = string.Empty;
-            public int Identifier { get; set; } = -1;
             public string Argument { get; set; } = string.Empty;
-            public ProcessType Type { get; set; } = ProcessType.Unknown;
-            public IntPtr WindowHandle { get; set; } = IntPtr.Zero;
             public string ClassName { get; set; } = string.Empty;
+            public string WindowTitle { get; set; } = "Unknown";
+            public IntPtr WindowHandle { get; set; } = IntPtr.Zero;
+            public Process Process { get; set; } = null;
             public string Action { get; set; } = string.Empty;
         }
     }
