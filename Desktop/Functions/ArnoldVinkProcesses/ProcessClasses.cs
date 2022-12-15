@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
+using Windows.ApplicationModel;
+using static ArnoldVinkCode.AVUwpAppx;
 
 namespace ArnoldVinkCode
 {
@@ -25,6 +27,12 @@ namespace ArnoldVinkCode
             public string WindowTitle { get; set; } = "Unknown";
             public IntPtr WindowHandle { get; set; } = IntPtr.Zero;
             public DateTime StartTime { get; set; } = DateTime.MinValue;
+
+            //UWP store apps
+            public Package AppPackage { get; set; } = null;
+            public AppxDetails AppxDetails { get; set; } = null;
+
+            //List action
             public string Action { get; set; } = string.Empty;
 
             public ProcessThreadCollection ProcessThreads()

@@ -7,10 +7,12 @@ using System.Management;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel;
 using static ArnoldVinkCode.AVInputOutputClass;
 using static ArnoldVinkCode.AVInputOutputKeyboard;
 using static ArnoldVinkCode.AVInteropCom;
 using static ArnoldVinkCode.AVInteropDll;
+using static ArnoldVinkCode.AVUwpAppx;
 using static ArnoldVinkCode.ProcessClasses;
 using static ArnoldVinkCode.ProcessNtQueryInformation;
 using static ArnoldVinkCode.ProcessUwpFunctions;
@@ -361,7 +363,7 @@ namespace ArnoldVinkCode
                 {
                     int processId = GetProcessIdFromWindowHandle(targetWindowHandle);
                     Process process = Process.GetProcessById(processId);
-                    return ConvertProcessToProcessMulti(process);
+                    return ConvertProcessToProcessMulti(process, null, null);
                 }
             }
             catch (Exception ex)
@@ -709,12 +711,12 @@ namespace ArnoldVinkCode
         }
 
         //Convert Process to a ProcessMulti
-        public static ProcessMulti ConvertProcessToProcessMulti(Process convertProcess)
+        public static ProcessMulti ConvertProcessToProcessMulti(Process convertProcess, Package uwpAppPackage, AppxDetails uwpAppxDetails)
         {
             ProcessMulti convertedProcess = new ProcessMulti();
             try
             {
-                //Set identifier
+                //Set process identifier
                 convertedProcess.Identifier = convertProcess.Id;
 
                 //Set process name
@@ -727,11 +729,7 @@ namespace ArnoldVinkCode
                 convertedProcess.WindowHandle = convertProcess.MainWindowHandle;
 
                 //Get window title
-                convertedProcess.WindowTitle = GetWindowTitleFromWindowHandle(convertProcess.MainWindowHandle);
-                if (convertedProcess.WindowTitle == "Unknown")
-                {
-                    convertedProcess.WindowTitle = GetWindowTitleFromProcess(convertProcess);
-                }
+                convertedProcess.WindowTitle = GetWindowTitleFromProcess(convertProcess);
 
                 //Get class name
                 convertedProcess.ClassName = GetClassNameFromWindowHandle(convertProcess.MainWindowHandle);
@@ -758,11 +756,25 @@ namespace ArnoldVinkCode
                     convertedProcess.Path = executablePath;
                 }
 
-                //Check if application is Win32Store
+                //Check if application is UWP
                 if (convertedProcess.Type == ProcessType.UWP)
                 {
-                    if (CheckProcessIsUwp(convertedProcess.ClassName))
+                    //Check if AppPackage is provided
+                    if (uwpAppPackage == null || uwpAppxDetails == null)
                     {
+                        convertedProcess.AppPackage = GetUwpAppPackageByAppUserModelId(processAppUserModelId);
+                        convertedProcess.AppxDetails = GetUwpAppxDetailsFromAppPackage(convertedProcess.AppPackage);
+                    }
+                    else
+                    {
+                        convertedProcess.AppPackage = uwpAppPackage;
+                        convertedProcess.AppxDetails = uwpAppxDetails;
+                    }
+
+                    //Check if application is Win32Store
+                    if (CheckClassNameIsUwp(convertedProcess.ClassName))
+                    {
+                        convertedProcess.WindowTitle = convertedProcess.AppxDetails.DisplayName;
                         convertedProcess.WindowHandle = GetUwpWindowFromAppUserModelId(processAppUserModelId);
                     }
                     else

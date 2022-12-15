@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
@@ -25,11 +26,6 @@ namespace ArnoldVinkCode
                     {
                         //Show launching message
                         Debug.WriteLine("Launching UWP or Win32Store: " + appUserModelId + " / " + runArgument);
-
-                        //Get detailed application information
-                        Package appPackage = GetUwpAppPackageByAppUserModelId(appUserModelId);
-                        AppxDetails appxDetails = GetUwpAppxDetailsFromAppPackage(appPackage);
-                        appUserModelId = appxDetails.AppUserModelId;
 
                         //Start the process
                         UWPActivationManager UWPActivationManager = new UWPActivationManager();
@@ -66,15 +62,13 @@ namespace ArnoldVinkCode
                     if (processId > 0)
                     {
                         Process uwpProcess = Process.GetProcessById(processId);
-                        return ConvertProcessToProcessMulti(uwpProcess);
+                        return ConvertProcessToProcessMulti(uwpProcess, null, null);
                     }
                 }
 
                 //Get process from the appx package
                 string appUserModelId = GetAppUserModelIdFromWindowHandle(targetWindowHandle);
-                Package appPackage = GetUwpAppPackageByAppUserModelId(appUserModelId);
-                AppxDetails appxDetails = GetUwpAppxDetailsFromAppPackage(appPackage);
-                return GetUwpProcessMultiByProcessNameAndAppUserModelId(Path.GetFileNameWithoutExtension(appxDetails.ExecutableAliasName), appUserModelId);
+                return GetUwpProcessMultiByAppUserModelId(appUserModelId);
             }
             catch { }
             return null;
@@ -87,17 +81,20 @@ namespace ArnoldVinkCode
             {
                 Package appPackage = GetUwpAppPackageByAppUserModelId(targetAppUserModelId);
                 AppxDetails appxDetails = GetUwpAppxDetailsFromAppPackage(appPackage);
-                return GetUwpProcessMultiByProcessNameAndAppUserModelId(Path.GetFileNameWithoutExtension(appxDetails.ExecutableAliasName), targetAppUserModelId);
+                return GetUwpProcessMultiByPackageAndAppxDetails(appPackage, appxDetails);
             }
             catch { }
             return null;
         }
 
-        //Get uwp ProcessMulti by ProcessName and AppUserModelId
-        public static ProcessMulti GetUwpProcessMultiByProcessNameAndAppUserModelId(string targetProcessName, string targetAppUserModelId)
+        //Get uwp ProcessMulti by Package and AppxDetails
+        public static ProcessMulti GetUwpProcessMultiByPackageAndAppxDetails(Package appPackage, AppxDetails appxDetails)
         {
             try
             {
+                string targetAppUserModelId = appxDetails.AppUserModelId;
+                string targetProcessName = Path.GetFileNameWithoutExtension(appxDetails.ExecutableAliasName);
+
                 Process[] uwpProcesses = GetProcessesByNameOrTitle(targetProcessName, false, true);
                 foreach (Process uwpProcess in uwpProcesses)
                 {
@@ -107,7 +104,7 @@ namespace ArnoldVinkCode
                         if (processAppUserModelId == targetAppUserModelId)
                         {
                             //Debug.WriteLine(targetProcessName + "/Id" + uwpProcess.Id + "/App" + processAppUserModelId + "vs" + targetAppUserModelId);
-                            return ConvertProcessToProcessMulti(uwpProcess);
+                            return ConvertProcessToProcessMulti(uwpProcess, appPackage, appxDetails);
                         }
                     }
                     catch { }
@@ -163,17 +160,14 @@ namespace ArnoldVinkCode
             try
             {
                 string classNamestring = GetClassNameFromWindowHandle(targetWindowHandle);
-                if (string.IsNullOrWhiteSpace(classNamestring) || classNamestring == "ApplicationFrameWindow" || classNamestring == "Windows.UI.Core.CoreWindow")
-                {
-                    return true;
-                }
+                return CheckClassNameIsUwp(classNamestring);
             }
             catch { }
             return false;
         }
 
         //Check if window is an uwp application
-        public static bool CheckProcessIsUwp(string classNamestring)
+        public static bool CheckClassNameIsUwp(string classNamestring)
         {
             try
             {
@@ -184,6 +178,63 @@ namespace ArnoldVinkCode
             }
             catch { }
             return false;
+        }
+
+        //Get all uwp application processes
+        public static List<ProcessMulti> GetUwpAppProcesses()
+        {
+            List<ProcessMulti> processList = new List<ProcessMulti>();
+            try
+            {
+                Process frameHostProcess = GetProcessByNameOrTitle("ApplicationFrameHost", false, true);
+                if (frameHostProcess != null)
+                {
+                    foreach (ProcessThread threadProcess in frameHostProcess.Threads)
+                    {
+                        try
+                        {
+                            //Process variables
+                            IntPtr processWindowHandle = IntPtr.Zero;
+                            bool processInterfaceChecked = false;
+
+                            foreach (IntPtr threadWindowHandle in EnumThreadWindows(threadProcess.Id))
+                            {
+                                try
+                                {
+                                    //Get window class name
+                                    string classNameString = GetClassNameFromWindowHandle(threadWindowHandle);
+
+                                    //Get application process
+                                    if (classNameString == "ApplicationFrameWindow")
+                                    {
+                                        processWindowHandle = threadWindowHandle;
+                                    }
+
+                                    //Check if process has interface
+                                    if (classNameString == "MSCTFIME UI")
+                                    {
+                                        processInterfaceChecked = true;
+                                    }
+                                }
+                                catch { }
+                            }
+
+                            //Add process
+                            if (processInterfaceChecked)
+                            {
+                                ProcessMulti processMulti = GetUwpProcessMultiByWindowHandle(processWindowHandle);
+                                if (processMulti != null)
+                                {
+                                    processList.Add(processMulti);
+                                }
+                            }
+                        }
+                        catch { }
+                    }
+                }
+            }
+            catch { }
+            return processList;
         }
 
         //Get uwp application window from AppUserModelId
@@ -196,20 +247,24 @@ namespace ArnoldVinkCode
                 {
                     foreach (ProcessThread threadProcess in frameHostProcess.Threads)
                     {
-                        foreach (IntPtr threadWindowHandle in EnumThreadWindows(threadProcess.Id))
+                        try
                         {
-                            try
+                            foreach (IntPtr threadWindowHandle in EnumThreadWindows(threadProcess.Id))
                             {
-                                if (CheckProcessIsUwp(threadWindowHandle))
+                                try
                                 {
-                                    if (targetAppUserModelId == GetAppUserModelIdFromWindowHandle(threadWindowHandle))
+                                    if (CheckProcessIsUwp(threadWindowHandle))
                                     {
-                                        return threadWindowHandle;
+                                        if (targetAppUserModelId == GetAppUserModelIdFromWindowHandle(threadWindowHandle))
+                                        {
+                                            return threadWindowHandle;
+                                        }
                                     }
                                 }
+                                catch { }
                             }
-                            catch { }
                         }
+                        catch { }
                     }
                 }
             }
