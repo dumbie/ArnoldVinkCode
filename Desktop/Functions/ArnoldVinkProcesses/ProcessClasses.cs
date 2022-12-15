@@ -24,8 +24,28 @@ namespace ArnoldVinkCode
             public string ClassName { get; set; } = string.Empty;
             public string WindowTitle { get; set; } = "Unknown";
             public IntPtr WindowHandle { get; set; } = IntPtr.Zero;
-            public Process Process { get; set; } = null;
+            public DateTime StartTime { get; set; } = DateTime.MinValue;
             public string Action { get; set; } = string.Empty;
+
+            public ProcessThreadCollection ProcessThreads()
+            {
+                try
+                {
+                    return Process.GetProcessById(Identifier).Threads;
+                }
+                catch { }
+                return null;
+            }
+
+            public TimeSpan ProcessRuntime()
+            {
+                try
+                {
+                    return DateTime.Now.Subtract(StartTime);
+                }
+                catch { }
+                return TimeSpan.Zero;
+            }
         }
     }
 }

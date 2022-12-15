@@ -496,17 +496,6 @@ namespace ArnoldVinkCode
             }
         }
 
-        //Get threads from ProcessMulti
-        public static ProcessThreadCollection GetProcessThreads(ProcessMulti processMulti)
-        {
-            try
-            {
-                return processMulti.Process.Threads;
-            }
-            catch { }
-            return null;
-        }
-
         //Get the full exe path from process
         public static string GetExecutablePathFromProcess(Process targetProcess)
         {
@@ -536,7 +525,7 @@ namespace ArnoldVinkCode
             {
                 int stringLength = 1024;
                 StringBuilder stringBuilder = new StringBuilder(stringLength);
-                int Succes = AVInteropDll.GetPackageFullName(targetProcess.Handle, ref stringLength, stringBuilder);
+                int Succes = GetPackageFullName(targetProcess.Handle, ref stringLength, stringBuilder);
                 if (Succes == 0)
                 {
                     return stringBuilder.ToString();
@@ -697,7 +686,7 @@ namespace ArnoldVinkCode
             return false;
         }
 
-        //Check if a procress is running as administrator
+        //Check if process is running as administrator
         public static bool IsProcessRunningAsAdmin(Process targetProcess)
         {
             try
@@ -725,14 +714,14 @@ namespace ArnoldVinkCode
             ProcessMulti convertedProcess = new ProcessMulti();
             try
             {
-                //Set process
-                convertedProcess.Process = convertProcess;
-
                 //Set identifier
                 convertedProcess.Identifier = convertProcess.Id;
 
                 //Set process name
                 convertedProcess.Name = convertProcess.ProcessName;
+
+                //Set process starttime
+                convertedProcess.StartTime = convertProcess.StartTime;
 
                 //Set window handle
                 convertedProcess.WindowHandle = convertProcess.MainWindowHandle;
