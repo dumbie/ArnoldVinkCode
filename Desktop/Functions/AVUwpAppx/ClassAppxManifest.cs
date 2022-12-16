@@ -100,6 +100,8 @@ namespace ArnoldVinkCode
         public class VisualElements
         {
             public DefaultTile DefaultTile { get; set; } = new DefaultTile();
+            [XmlAttribute(AttributeName = "DisplayName")]
+            public string DisplayName { get; set; }
             [XmlAttribute(AttributeName = "BackgroundColor")]
             public string BackgroundColor { get; set; }
             [XmlAttribute(AttributeName = "Square44x44Logo")]

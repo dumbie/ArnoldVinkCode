@@ -58,7 +58,12 @@ namespace ArnoldVinkCode
                 appxDetails.FullPackageName = appPackage.Id.FullName;
 
                 //Get and set application display name
-                appxDetails.DisplayName = GetUwpMsResourceString(appxApplication.Id, appxDetails.FullPackageName, appxManifest.Properties.DisplayName);
+                string displayNameResource = appxApplication.VisualElements.DisplayName;
+                if (string.IsNullOrWhiteSpace(displayNameResource))
+                {
+                    displayNameResource = appxManifest.Properties.DisplayName;
+                }
+                appxDetails.DisplayName = GetUwpMsResourceString(appxApplication.Id, appxDetails.FullPackageName, displayNameResource);
 
                 //Check the largest available square logo
                 if (!string.IsNullOrWhiteSpace(appxApplication.VisualElements.Square310x310Logo))

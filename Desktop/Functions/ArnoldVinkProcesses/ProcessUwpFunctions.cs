@@ -194,8 +194,8 @@ namespace ArnoldVinkCode
                         try
                         {
                             //Process variables
-                            IntPtr processWindowHandle = IntPtr.Zero;
                             bool processInterfaceChecked = false;
+                            IntPtr processWindowHandle = IntPtr.Zero;
 
                             foreach (IntPtr threadWindowHandle in EnumThreadWindows(threadProcess.Id))
                             {
@@ -220,7 +220,7 @@ namespace ArnoldVinkCode
                             }
 
                             //Add process
-                            if (processInterfaceChecked)
+                            if (processInterfaceChecked && processWindowHandle != IntPtr.Zero)
                             {
                                 ProcessMulti processMulti = GetUwpProcessMultiByWindowHandle(processWindowHandle);
                                 if (processMulti != null)
