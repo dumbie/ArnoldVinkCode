@@ -41,6 +41,32 @@ namespace ArnoldVinkCode
             }
         }
 
+        ///<param name="actionRun">async Task<string> TaskAction() { return ""; }</param>
+        ///<param name="actionRun">Task<string> TaskAction() { return Task.FromResult(""); }</param>
+        ///<example>await AVActions.TaskStartReturnTimeout(Task, 3000);</example>
+        ///<summary>Don't forget to use try and catch to improve stability</summary>
+        public static async Task<T> TaskStartReturnTimeout<T>(Task<T> actionRun, int timeoutMs) where T : class
+        {
+            try
+            {
+                Task delayTask = Task.Delay(timeoutMs);
+                Task timeoutTask = await Task.WhenAny(actionRun, delayTask);
+                if (timeoutTask == actionRun)
+                {
+                    return actionRun.Result;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to start return timeout task: " + ex.Message);
+                return null;
+            }
+        }
+
         ///<param name="actionRun">async Task TaskAction() { while (TaskCheckLoop(AVTask)) { void(); await TaskDelayLoop(1000, AVTask); } }</param>
         ///<example>AVActions.TaskStartLoop(TaskAction, AVTask);</example>
         ///<summary>Don't forget to use try and catch to improve stability</summary>
