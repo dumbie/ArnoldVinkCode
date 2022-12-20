@@ -160,7 +160,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                Task timeTask = Task.Run(async delegate
+                async void TaskAction()
                 {
                     try
                     {
@@ -173,11 +173,10 @@ namespace ArnoldVinkCode
                         }
                     }
                     catch { }
-                });
+                }
 
-                Task delayTask = Task.Delay(timeOut);
-                Task timeoutTask = await Task.WhenAny(timeTask, delayTask);
-                if (timeoutTask == timeTask)
+                bool taskRun = await AVActions.TaskStartTimeout(TaskAction, timeOut);
+                if (taskRun)
                 {
                     //Debug.WriteLine("Sended bytes to tcp other (C): " + targetIp + ":" + targetPort + " / " + targetBytes.Length);
                     return true;
@@ -190,7 +189,7 @@ namespace ArnoldVinkCode
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed sending udp bytes other (C): " + ex.Message);
+                Debug.WriteLine("Failed sending tcp bytes other (C): " + ex.Message);
                 return false;
             }
         }
@@ -200,24 +199,22 @@ namespace ArnoldVinkCode
         {
             try
             {
-                Task timeTask = Task.Run(async delegate
+                async void TaskAction()
                 {
                     try
                     {
                         await tcpClient.ConnectAsync(targetIp, targetPort);
                     }
                     catch { }
-                });
-
-                Task delayTask = Task.Delay(timeOut);
-                Task timeoutTask = await Task.WhenAny(timeTask, delayTask);
-                if (timeoutTask == timeTask)
-                {
-                    return true;
                 }
+
+                return await AVActions.TaskStartTimeout(TaskAction, timeOut);
             }
-            catch { }
-            return false;
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to connect tcp client (C): " + ex.Message);
+                return false;
+            }
         }
 
         //Write network stream with timeout
@@ -225,24 +222,22 @@ namespace ArnoldVinkCode
         {
             try
             {
-                Task timeTask = Task.Run(async delegate
+                async void TaskAction()
                 {
                     try
                     {
                         await stream.WriteAsync(buffer, offset, count);
                     }
                     catch { }
-                });
-
-                Task delayTask = Task.Delay(timeOut);
-                Task timeoutTask = await Task.WhenAny(timeTask, delayTask);
-                if (timeoutTask == timeTask)
-                {
-                    return true;
                 }
+
+                return await AVActions.TaskStartTimeout(TaskAction, timeOut);
             }
-            catch { }
-            return false;
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to write network stream (C): " + ex.Message);
+                return false;
+            }
         }
     }
 }

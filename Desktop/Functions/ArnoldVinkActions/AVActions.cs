@@ -8,6 +8,7 @@ namespace ArnoldVinkCode
 {
     public partial class AVActions
     {
+        ///<param name="actionRun">void TaskAction() { void(); }</param>
         ///<param name="actionRun">async void TaskAction() { void(); }</param>
         ///<example>AVActions.TaskStart(TaskAction);</example>
         ///<summary>Don't forget to use try and catch to improve stability</summary>
@@ -41,9 +42,36 @@ namespace ArnoldVinkCode
             }
         }
 
+        ///<param name="actionRun">void TaskAction() { void(); }</param>
+        ///<param name="actionRun">async void TaskAction() { void(); }</param>
+        ///<example>await AVActions.TaskStartTimeout(TaskAction, 3000);</example>
+        ///<summary>Don't forget to use try and catch to improve stability</summary>
+        public static async Task<bool> TaskStartTimeout(Action actionRun, int timeoutMs)
+        {
+            try
+            {
+                Task runTask = Task.Run(actionRun);
+                Task delayTask = Task.Delay(timeoutMs);
+                Task timeoutTask = await Task.WhenAny(runTask, delayTask);
+                if (timeoutTask == runTask)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to start timeout task: " + ex.Message);
+                return false;
+            }
+        }
+
         ///<param name="actionRun">async Task<string> TaskAction() { return ""; }</param>
         ///<param name="actionRun">Task<string> TaskAction() { return Task.FromResult(""); }</param>
-        ///<example>await AVActions.TaskStartReturnTimeout(Task, 3000);</example>
+        ///<example>await AVActions.TaskStartReturnTimeout(TaskAction(), 3000);</example>
         ///<summary>Don't forget to use try and catch to improve stability</summary>
         public static async Task<T> TaskStartReturnTimeout<T>(Task<T> actionRun, int timeoutMs) where T : class
         {

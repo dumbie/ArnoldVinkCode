@@ -55,18 +55,17 @@ namespace ArnoldVinkCode
         {
             try
             {
-                Task timeTask = Task.Run(async delegate
+                async void TaskAction()
                 {
                     try
                     {
                         await vUdpServer.SendAsync(targetBytes, targetBytes.Length, endPoint);
                     }
                     catch { }
-                });
+                }
 
-                Task delayTask = Task.Delay(timeOut);
-                Task timeoutTask = await Task.WhenAny(timeTask, delayTask);
-                if (timeoutTask == timeTask)
+                bool taskRun = await AVActions.TaskStartTimeout(TaskAction, timeOut);
+                if (taskRun)
                 {
                     //Debug.WriteLine("Sended bytes to the udp server (C): " + endPoint.Address + ":" + endPoint.Port + " / " + targetBytes.Length);
                     return true;
@@ -89,7 +88,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                Task timeTask = Task.Run(async delegate
+                async void TaskAction()
                 {
                     try
                     {
@@ -99,11 +98,10 @@ namespace ArnoldVinkCode
                         }
                     }
                     catch { }
-                });
+                }
 
-                Task delayTask = Task.Delay(timeOut);
-                Task timeoutTask = await Task.WhenAny(timeTask, delayTask);
-                if (timeoutTask == timeTask)
+                bool taskRun = await AVActions.TaskStartTimeout(TaskAction, timeOut);
+                if (taskRun)
                 {
                     //Debug.WriteLine("Sended bytes to udp other (C): " + targetIp + ":" + targetPort + " / " + targetBytes.Length);
                     return true;
