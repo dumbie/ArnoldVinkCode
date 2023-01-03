@@ -15,6 +15,52 @@ namespace ArnoldVinkCode
 {
     public partial class AVFunctions
     {
+        //Check if string contains string
+        public static bool StringContains(string source, string check, bool ignoreCase)
+        {
+            bool containsResult = false;
+            try
+            {
+                if (ignoreCase)
+                {
+                    return source.IndexOf(check, StringComparison.InvariantCultureIgnoreCase) >= 0;
+                }
+                else
+                {
+                    return source.IndexOf(check) >= 0;
+                }
+            }
+            catch { }
+            return containsResult;
+        }
+
+        //Check if string matches part of other string
+        public static bool StringMatch(string source, string check, bool ignoreCase)
+        {
+            bool containsResult = false;
+            try
+            {
+                if (ignoreCase)
+                {
+                    containsResult = source.IndexOf(check, StringComparison.InvariantCultureIgnoreCase) >= 0;
+                    if (!containsResult)
+                    {
+                        containsResult = check.IndexOf(source, StringComparison.InvariantCultureIgnoreCase) >= 0;
+                    }
+                }
+                else
+                {
+                    containsResult = source.IndexOf(check) >= 0;
+                    if (!containsResult)
+                    {
+                        containsResult = check.IndexOf(source) >= 0;
+                    }
+                }
+            }
+            catch { }
+            return containsResult;
+        }
+
         //Convert string To Title Case
         public static string ToTitleCase(string ToTitleCase)
         {
@@ -27,7 +73,7 @@ namespace ArnoldVinkCode
         public static string StringReplaceFirst(string stringText, string SearchFor, string ReplaceWith, bool StartsWith)
         {
             if (StartsWith && !stringText.ToLower().StartsWith(SearchFor.ToLower())) { return stringText; }
-            int Position = stringText.IndexOf(SearchFor, StringComparison.CurrentCultureIgnoreCase);
+            int Position = stringText.IndexOf(SearchFor, StringComparison.InvariantCultureIgnoreCase);
             if (Position < 0) { return stringText; }
             return stringText.Substring(0, Position) + ReplaceWith + stringText.Substring(Position + SearchFor.Length);
         }
@@ -128,11 +174,12 @@ namespace ArnoldVinkCode
         }
 
         //Remove text after certain character
-        public static string StringRemoveAfter(string stringText, string RemoveCharacter, int RemoveAfter)
+        public static string StringRemoveAfter(string stringText, string removeCharacter, int removeAfter)
         {
             try
             {
-                stringText = stringText.Substring(0, stringText.IndexOf(RemoveCharacter) + RemoveAfter);
+                int position = stringText.IndexOf(removeCharacter, StringComparison.InvariantCultureIgnoreCase);
+                stringText = stringText.Substring(0, position + removeAfter);
             }
             catch { }
             return stringText;
@@ -146,16 +193,16 @@ namespace ArnoldVinkCode
         }
 
         //Get text after certain word in string
-        public static string StringShowAfter(string stringText, string SearchTerm, int ReturnLength)
+        public static string StringShowAfter(string stringText, string searchTerm, int returnLength)
         {
-            int posA = stringText.LastIndexOf(SearchTerm);
+            int posA = stringText.LastIndexOf(searchTerm, StringComparison.InvariantCultureIgnoreCase);
             if (posA == -1) { return string.Empty; }
 
-            int adjustedPosA = posA + SearchTerm.Length;
+            int adjustedPosA = posA + searchTerm.Length;
             if (adjustedPosA >= stringText.Length) { return string.Empty; }
 
-            if (ReturnLength == 0) { return stringText.Substring(adjustedPosA); }
-            else { return stringText.Substring(adjustedPosA, ReturnLength); }
+            if (returnLength == 0) { return stringText.Substring(adjustedPosA); }
+            else { return stringText.Substring(adjustedPosA, returnLength); }
         }
 
         //Convert Number To Text
