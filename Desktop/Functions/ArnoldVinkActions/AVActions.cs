@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using static ArnoldVinkCode.AVInteropDll;
@@ -112,13 +113,14 @@ namespace ArnoldVinkCode
                     avTask.DisposeReset();
 
                     //Create new loop task
+                    avTask.TokenSource = new CancellationTokenSource();
                     avTask.Task = Task.Run(actionRun);
                 }
-                Debug.WriteLine("Loop task has been started.");
+                Debug.WriteLine("Loop task has been started: " + avTask.Name);
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to start loop task: " + ex.Message);
+                Debug.WriteLine("Failed to start loop task: " + avTask.Name + " / " + ex.Message);
             }
         }
 
@@ -139,13 +141,14 @@ namespace ArnoldVinkCode
                     avTask.DisposeReset();
 
                     //Create new loop task
+                    avTask.TokenSource = new CancellationTokenSource();
                     avTask.Task = Task.Run(actionRun);
                 }
-                Debug.WriteLine("Loop task has been started.");
+                Debug.WriteLine("Loop task has been started: " + avTask.Name);
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to start loop task: " + ex.Message);
+                Debug.WriteLine("Failed to start loop task: " + avTask.Name + " / " + ex.Message);
             }
         }
 
@@ -157,17 +160,17 @@ namespace ArnoldVinkCode
             {
                 if (avTask.TaskStopRequest)
                 {
-                    Debug.WriteLine("Loop task is requested to stop.");
+                    Debug.WriteLine("Loop task is requested to stop: " + avTask.Name);
                     return false;
                 }
                 else if (avTask.TaskCompleted)
                 {
-                    Debug.WriteLine("Loop task has completed.");
+                    Debug.WriteLine("Loop task has completed: " + avTask.Name);
                     return false;
                 }
                 else if (!avTask.TaskRunning)
                 {
-                    Debug.WriteLine("Loop task is not running.");
+                    Debug.WriteLine("Loop task is not running: " + avTask.Name);
                     return false;
                 }
             }
@@ -190,13 +193,13 @@ namespace ArnoldVinkCode
                 avTask.TokenSource.Cancel();
 
                 //Wait for task to have stopped
-                Debug.WriteLine("Waiting for task to stop or timeout...");
+                Debug.WriteLine("Waiting for task " + avTask.Name + " to stop or timeout...");
                 long stopTimeout = GetSystemTicksMs();
                 while (!avTask.TaskCompleted)
                 {
                     if (taskTimeout > 0 && (GetSystemTicksMs() - stopTimeout) >= taskTimeout)
                     {
-                        Debug.WriteLine("Stopping the task has timed out...");
+                        Debug.WriteLine("Stopping task " + avTask.Name + "has timed out...");
                         break;
                     }
                     await Task.Delay(1);
@@ -205,11 +208,11 @@ namespace ArnoldVinkCode
                 //Dispose and reset task
                 avTask.DisposeReset();
 
-                Debug.WriteLine("Loop task has been stopped.");
+                Debug.WriteLine("Loop task " + avTask.Name + " has been stopped.");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to stop loop task: " + ex.Message);
+                Debug.WriteLine("Failed to stop loop task: " + avTask.Name + " / " + ex.Message);
             }
         }
 

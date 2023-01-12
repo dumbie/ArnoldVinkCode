@@ -57,6 +57,48 @@
         </Setter>
     </Style>
 
+    <ControlTemplate x:Key="ThumbGripTemplateAccent" TargetType="{x:Type Thumb}">
+        <Grid Background="Transparent">
+            <Path x:Name="path_Grip" Margin="2" Stretch="UniformToFill" Fill="{DynamicResource ApplicationAccentLightBrush}" Data="M400 50h80v80h-80zM400 150h80v80h-80zM400 250h80v80h-80zM400 350h80v80h-80zM300 350h80v80h-80zM200 350h80v80h-80zM100 350h80v80h-80zM300 250h80v80h-80zM300 150h80v80h-80zM200 250h80v80h-80z"/>
+        </Grid>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Fill" TargetName="path_Grip" Value="{DynamicResource ApplicationAccentDimBrush}"/>
+            </Trigger>
+            <Trigger Property="IsDragging" Value="True">
+                <Setter Property="Fill" TargetName="path_Grip" Value="{DynamicResource ApplicationAccentDarkBrush}"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="ThumbGripTemplateWhite" TargetType="{x:Type Thumb}">
+        <Grid Background="Transparent">
+            <Path x:Name="path_Grip" Margin="2" Stretch="UniformToFill" Fill="{DynamicResource ApplicationWhiteBrush}" Data="M400 50h80v80h-80zM400 150h80v80h-80zM400 250h80v80h-80zM400 350h80v80h-80zM300 350h80v80h-80zM200 350h80v80h-80zM100 350h80v80h-80zM300 250h80v80h-80zM300 150h80v80h-80zM200 250h80v80h-80z"/>
+        </Grid>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Fill" TargetName="path_Grip" Value="{DynamicResource ApplicationGrayBrush}"/>
+            </Trigger>
+            <Trigger Property="IsDragging" Value="True">
+                <Setter Property="Fill" TargetName="path_Grip" Value="{DynamicResource ApplicationDarkGrayBrush}"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="ThumbGripTemplateBlack" TargetType="{x:Type Thumb}">
+        <Grid Background="Transparent">
+            <Path x:Name="path_Grip" Margin="2" Stretch="UniformToFill" Fill="{DynamicResource ApplicationBlackBrush}" Data="M400 50h80v80h-80zM400 150h80v80h-80zM400 250h80v80h-80zM400 350h80v80h-80zM300 350h80v80h-80zM200 350h80v80h-80zM100 350h80v80h-80zM300 250h80v80h-80zM300 150h80v80h-80zM200 250h80v80h-80z"/>
+        </Grid>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Fill" TargetName="path_Grip" Value="{DynamicResource ApplicationGrayBrush}"/>
+            </Trigger>
+            <Trigger Property="IsDragging" Value="True">
+                <Setter Property="Fill" TargetName="path_Grip" Value="{DynamicResource ApplicationDarkGrayBrush}"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
     <ControlTemplate x:Key="SliderTemplateAccent" TargetType="{x:Type Slider}">
         <Track x:Name="PART_Track">
             <Track.DecreaseRepeatButton>

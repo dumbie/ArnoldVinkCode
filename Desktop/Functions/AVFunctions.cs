@@ -205,6 +205,32 @@ namespace ArnoldVinkCode
             else { return stringText.Substring(adjustedPosA, returnLength); }
         }
 
+        //Validate if string is valid link
+        public static bool StringLinkValidate(string stringLink)
+        {
+            try
+            {
+                return Uri.TryCreate(stringLink, UriKind.RelativeOrAbsolute, out Uri uriLink) && (uriLink.Scheme == Uri.UriSchemeHttp || uriLink.Scheme == Uri.UriSchemeHttps);
+            }
+            catch { }
+            return false;
+        }
+
+        //Fixup string to valid link
+        public static string StringLinkFixup(string stringLink)
+        {
+            try
+            {
+                stringLink = stringLink.Replace(",", ".");
+                if (!stringLink.Contains(":"))
+                {
+                    stringLink = "https://" + stringLink;
+                }
+            }
+            catch { }
+            return stringLink;
+        }
+
         //Convert Number To Text
         public static string NumberToText(string StrNumber)
         {
@@ -460,7 +486,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                SetWindowPos(windowHandle, IntPtr.Zero, horLeft, verTop, 0, 0, (int)WindowSWP.NOSIZE);
+                SetWindowPos(windowHandle, IntPtr.Zero, horLeft, verTop, 0, 0, (int)SWP_WindowFlags.NOSIZE);
             }
             catch { }
         }
@@ -470,7 +496,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                SetWindowPos(windowHandle, IntPtr.Zero, 0, 0, width, height, (int)WindowSWP.NOMOVE);
+                SetWindowPos(windowHandle, IntPtr.Zero, 0, 0, width, height, (int)SWP_WindowFlags.NOMOVE);
             }
             catch { }
         }

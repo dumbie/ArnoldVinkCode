@@ -11,11 +11,11 @@
             </Border.Background>
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <ScrollViewer Grid.Row="0" x:Name="PART_ContentHost" Focusable="False" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
-                <Border x:Name="bottomBorder" Grid.Row="1" HorizontalAlignment="Stretch" Height="3" CornerRadius="0,0,2,2" Background="{TemplateBinding BorderBrush}"/>
+                <Border Grid.Row="1" x:Name="bottomBorder" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Height="3" CornerRadius="0,0,2,2" Background="{TemplateBinding BorderBrush}"/>
             </Grid>
         </Border>
         <ControlTemplate.Triggers>
@@ -38,11 +38,11 @@
             </Border.Background>
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <ScrollViewer Grid.Row="0" x:Name="PART_ContentHost" Focusable="False" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
-                <Border x:Name="bottomBorder" Grid.Row="1" HorizontalAlignment="Stretch" Height="3" CornerRadius="0,0,2,2" Background="{TemplateBinding BorderBrush}"/>
+                <Border Grid.Row="1" x:Name="bottomBorder" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Height="3" CornerRadius="0,0,2,2" Background="{TemplateBinding BorderBrush}"/>
             </Grid>
         </Border>
         <ControlTemplate.Triggers>

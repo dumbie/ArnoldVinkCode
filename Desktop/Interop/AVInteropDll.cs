@@ -155,6 +155,25 @@ namespace ArnoldVinkCode
             EVENT_SYSTEM_FOREGROUND = 3
         }
 
+        //Window redraw
+        [DllImport("user32.dll")]
+        public static extern bool RedrawWindow(IntPtr hWnd, IntPtr lprcUpdate, IntPtr hrgnUpdate, RedrawWindowFlags flags);
+        public enum RedrawWindowFlags : uint
+        {
+            Invalidate = 0x1,
+            InternalPaint = 0x2,
+            Erase = 0x4,
+            Validate = 0x8,
+            NoInternalPaint = 0x10,
+            NoErase = 0x20,
+            NoChildren = 0x40,
+            AllChildren = 0x80,
+            UpdateNow = 0x100,
+            EraseNow = 0x200,
+            Frame = 0x400,
+            NoFrame = 0x800
+        }
+
         //SHLW Api
         [DllImport("shlwapi.dll", CharSet = CharSet.Unicode)]
         public static extern int SHLoadIndirectString(string pszSource, StringBuilder pszOutBuf, int cchOutBuf, IntPtr ppvReserved);
@@ -432,7 +451,7 @@ namespace ArnoldVinkCode
 
         //Get Window Position
         [DllImport("user32.dll")]
-        public static extern bool GetWindowRect(IntPtr hWnd, ref WindowRectangle rectangle);
+        public static extern bool GetWindowRect(IntPtr hWnd, out WindowRectangle rectangle);
         public struct WindowRectangle
         {
             public int Left { get; set; }
@@ -453,7 +472,7 @@ namespace ArnoldVinkCode
         [DllImport("user32.dll")]
         public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, int uFlags);
 
-        public enum WindowPosition
+        public enum SWP_WindowPosition
         {
             Top = 0,
             Bottom = 1,
@@ -461,7 +480,7 @@ namespace ArnoldVinkCode
             NoTopMost = -2
         }
 
-        public enum WindowSWP : int
+        public enum SWP_WindowFlags : int
         {
             NOSIZE = 0x0001,
             NOMOVE = 0x0002,

@@ -127,7 +127,7 @@ namespace ArnoldVinkCode
                         //Set the window as top most
                         if (setTempTopMost)
                         {
-                            SetWindowPos(processWindowHandle, (IntPtr)WindowPosition.TopMost, 0, 0, 0, 0, (int)WindowSWP.NOMOVE | (int)WindowSWP.NOSIZE);
+                            SetWindowPos(processWindowHandle, (IntPtr)SWP_WindowPosition.TopMost, 0, 0, 0, 0, (int)SWP_WindowFlags.NOMOVE | (int)SWP_WindowFlags.NOSIZE);
                             await Task.Delay(10);
                         }
 
@@ -161,7 +161,7 @@ namespace ArnoldVinkCode
                         //Disable the window as top most
                         if (setTempTopMost)
                         {
-                            SetWindowPos(processWindowHandle, (IntPtr)WindowPosition.NoTopMost, 0, 0, 0, 0, (int)WindowSWP.NOMOVE | (int)WindowSWP.NOSIZE);
+                            SetWindowPos(processWindowHandle, (IntPtr)SWP_WindowPosition.NoTopMost, 0, 0, 0, 0, (int)SWP_WindowFlags.NOMOVE | (int)SWP_WindowFlags.NOSIZE);
                             await Task.Delay(10);
                         }
 

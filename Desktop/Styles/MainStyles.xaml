@@ -330,6 +330,20 @@
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidBlack}"/>
     </Style>
 
+    <!--Thumb Styles-->
+    <Style x:Key="ThumbGripBlack" TargetType="Thumb">
+        <Setter Property="Template" Value="{StaticResource ThumbGripTemplateBlack}"/>
+        <Setter Property="Cursor" Value="SizeNWSE"/>
+    </Style>
+    <Style x:Key="ThumbGripWhite" TargetType="Thumb">
+        <Setter Property="Template" Value="{StaticResource ThumbGripTemplateWhite}"/>
+        <Setter Property="Cursor" Value="SizeNWSE"/>
+    </Style>
+    <Style x:Key="ThumbGripAccent" TargetType="Thumb">
+        <Setter Property="Template" Value="{StaticResource ThumbGripTemplateAccent}"/>
+        <Setter Property="Cursor" Value="SizeNWSE"/>
+    </Style>
+
     <!--ListBox Styles-->
     <Style x:Key="ListBoxWrapPanelVertical" TargetType="ListBox">
         <Setter Property="Template" Value="{StaticResource ListBoxWrapPanelTemplateVertical}"/>

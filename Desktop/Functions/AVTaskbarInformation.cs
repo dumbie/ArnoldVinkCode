@@ -63,8 +63,7 @@ namespace ArnoldVinkCode
                 IntPtr taskBarHandle = FindWindow("Shell_TrayWnd", null);
 
                 //Get window rectangle
-                WindowRectangle windowRectangle = new WindowRectangle();
-                GetWindowRect(taskBarHandle, ref windowRectangle);
+                GetWindowRect(taskBarHandle, out WindowRectangle windowRectangle);
 
                 //Create AppBarData
                 AppBarData taskBarData = new AppBarData();
