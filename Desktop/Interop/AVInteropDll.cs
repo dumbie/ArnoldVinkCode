@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Shapes;
 using static ArnoldVinkCode.AVInteropCom;
@@ -352,7 +351,7 @@ namespace ArnoldVinkCode
         private static extern int SetWindowLong32(IntPtr hWnd, int nIndex, int dwNewLong);
         [DllImport("user32.dll", EntryPoint = "SetWindowLongPtr")]
         private static extern IntPtr SetWindowLongPtr64(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
-        public static async Task<IntPtr> SetWindowLongAuto(IntPtr hWnd, int nIndex, IntPtr dwNewLong)
+        public static IntPtr SetWindowLongAuto(IntPtr hWnd, int nIndex, IntPtr dwNewLong)
         {
             try
             {
@@ -369,11 +368,6 @@ namespace ArnoldVinkCode
             {
                 Debug.WriteLine("Failed to set window long.");
                 return IntPtr.Zero;
-            }
-            finally
-            {
-                //Wait for SetWindowLong to complete
-                await Task.Delay(100);
             }
         }
 

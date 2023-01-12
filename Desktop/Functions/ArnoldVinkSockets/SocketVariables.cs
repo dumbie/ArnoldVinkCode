@@ -8,10 +8,10 @@ namespace ArnoldVinkCode
     public partial class ArnoldVinkSockets
     {
         //Tasks
-        public AVTaskDetails vTask_TcpCleanLoop = new AVTaskDetails();
-        public AVTaskDetails vTask_TcpReceiveLoop = new AVTaskDetails();
-        public AVTaskDetails vTask_UdpCleanLoop = new AVTaskDetails();
-        public AVTaskDetails vTask_UdpReceiveLoop = new AVTaskDetails();
+        public AVTaskDetails vTask_TcpCleanLoop = new AVTaskDetails("vTask_TcpCleanLoop");
+        public AVTaskDetails vTask_TcpReceiveLoop = new AVTaskDetails("vTask_TcpReceiveLoop");
+        public AVTaskDetails vTask_UdpCleanLoop = new AVTaskDetails("vTask_UdpCleanLoop");
+        public AVTaskDetails vTask_UdpReceiveLoop = new AVTaskDetails("vTask_UdpReceiveLoop");
 
         //Events
         public delegate Task DelegateBytesReceived(TcpClient tcpClient, UdpEndPointDetails endPoint, byte[] bytesReceived);

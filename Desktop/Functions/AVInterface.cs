@@ -58,7 +58,7 @@ namespace ArnoldVinkCode
                             if (Keyboard.FocusedElement == null)
                             {
                                 Debug.WriteLine("Failed focusing on the element after " + whileLoopCount + " times, pressing tab key.");
-                                await KeySendSingle(KeysVirtual.Tab, mainWindowHandle);
+                                KeySendSingle(KeysVirtual.Tab, mainWindowHandle);
                             }
                             return;
                         }
@@ -72,13 +72,13 @@ namespace ArnoldVinkCode
                 else
                 {
                     Debug.WriteLine("Focus element cannot be focused on, pressing tab key.");
-                    await KeySendSingle(KeysVirtual.Tab, mainWindowHandle);
+                    KeySendSingle(KeysVirtual.Tab, mainWindowHandle);
                 }
             }
             catch
             {
                 Debug.WriteLine("Failed focusing on the element, pressing tab key.");
-                await KeySendSingle(KeysVirtual.Tab, mainWindowHandle);
+                KeySendSingle(KeysVirtual.Tab, mainWindowHandle);
             }
         }
     }

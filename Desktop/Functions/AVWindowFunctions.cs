@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using static ArnoldVinkCode.AVDisplayMonitor;
 using static ArnoldVinkCode.AVFunctions;
@@ -17,22 +16,22 @@ namespace ArnoldVinkCode
             TopCenter = 1,
             TopRight = 2,
             MiddleLeft = 3,
-            MiddleRight = 4,
-            MiddleCenter = 5,
+            MiddleCenter = 4,
+            MiddleRight = 5,
             BottomLeft = 6,
-            BottomRight = 7,
-            BottomCenter = 8,
+            BottomCenter = 7,
+            BottomRight = 8,
             FullScreen = 9
         }
 
         //Update window style to visible
-        public static async Task WindowUpdateStyleVisible(IntPtr windowHandle, bool topMost, bool noActivate, bool clickThrough)
+        public static void WindowUpdateStyleVisible(IntPtr windowHandle, bool topMost, bool noActivate, bool clickThrough)
         {
             try
             {
                 //Set window style
                 IntPtr updatedStyle = new IntPtr((uint)WindowStyles.WS_VISIBLE);
-                await SetWindowLongAuto(windowHandle, (int)WindowLongFlags.GWL_STYLE, updatedStyle);
+                SetWindowLongAuto(windowHandle, (int)WindowLongFlags.GWL_STYLE, updatedStyle);
 
                 //Set window style ex
                 WindowStylesEx updatedExStyle = WindowStylesEx.WS_EX_NONE;
@@ -49,7 +48,7 @@ namespace ArnoldVinkCode
                     updatedExStyle |= WindowStylesEx.WS_EX_TRANSPARENT;
                 }
                 IntPtr updatedExStyleIntPtr = new IntPtr((uint)updatedExStyle);
-                await SetWindowLongAuto(windowHandle, (int)WindowLongFlags.GWL_EXSTYLE, updatedExStyleIntPtr);
+                SetWindowLongAuto(windowHandle, (int)WindowLongFlags.GWL_EXSTYLE, updatedExStyleIntPtr);
 
                 //Redraw the window
                 if (topMost)
@@ -65,17 +64,17 @@ namespace ArnoldVinkCode
         }
 
         //Update window style to hidden
-        public static async Task WindowUpdateStyleHidden(IntPtr windowHandle)
+        public static void WindowUpdateStyleHidden(IntPtr windowHandle)
         {
             try
             {
                 //Set window style
                 IntPtr updatedStyle = new IntPtr((uint)WindowStyles.WS_NONE);
-                await SetWindowLongAuto(windowHandle, (int)WindowLongFlags.GWL_STYLE, updatedStyle);
+                SetWindowLongAuto(windowHandle, (int)WindowLongFlags.GWL_STYLE, updatedStyle);
 
                 //Set window style ex
                 IntPtr updatedExStyleIntPtr = new IntPtr((uint)WindowStylesEx.WS_EX_NONE);
-                await SetWindowLongAuto(windowHandle, (int)WindowLongFlags.GWL_EXSTYLE, updatedExStyleIntPtr);
+                SetWindowLongAuto(windowHandle, (int)WindowLongFlags.GWL_EXSTYLE, updatedExStyleIntPtr);
 
                 //Redraw the window
                 SetWindowPos(windowHandle, IntPtr.Zero, 0, 0, 0, 0, (int)(SWP_WindowFlags.NOMOVE | SWP_WindowFlags.NOSIZE | SWP_WindowFlags.DRAWFRAME));
