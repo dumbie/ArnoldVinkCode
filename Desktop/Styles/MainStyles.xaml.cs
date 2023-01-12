@@ -7,7 +7,7 @@ namespace ArnoldVinkCode.Styles
     public partial class MainStyles : ResourceDictionary
     {
         //Handle horizontal scrollviewer scrolling
-        void ScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        private void ScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
             try
             {

@@ -146,9 +146,13 @@
     <Compile Include="Styles\ArnoldVinkTimePicker\TimePicker.xaml.cs">
       <DependentUpon>TimePicker.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Styles\AVColors.cs" />
     <Compile Include="Styles\AVAnimations.cs" />
     <Compile Include="Styles\AVGifPlayer.cs" />
     <Compile Include="Styles\ImageCustomCode.cs" />
+    <Compile Include="Styles\MainColors.xaml.cs">
+      <DependentUpon>MainColors.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Styles\MainStyles.xaml.cs">
       <DependentUpon>MainStyles.xaml</DependentUpon>
     </Compile>

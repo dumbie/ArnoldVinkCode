@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Animation;
 
-namespace ArnoldVinkCode
+namespace ArnoldVinkCode.Styles
 {
     public partial class AVAnimations
     {
