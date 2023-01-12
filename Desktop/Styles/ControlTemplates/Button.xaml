@@ -12,17 +12,17 @@
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="BorderThickness" TargetName="border" Value="2"/>
                 <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ApplicationWhiteBrush}"/>
-                <Setter Property="Background" TargetName="border" Value="{DynamicResource ApplicationAccentDarkBrush}"/>
+                <Setter Property="Background" TargetName="border" Value="{DynamicResource ApplicationAccentDimBrush}"/>
             </Trigger>
             <Trigger Property="IsFocused" Value="True">
                 <Setter Property="BorderThickness" TargetName="border" Value="2"/>
                 <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ApplicationWhiteBrush}"/>
-                <Setter Property="Background" TargetName="border" Value="{DynamicResource ApplicationAccentDarkBrush}"/>
+                <Setter Property="Background" TargetName="border" Value="{DynamicResource ApplicationAccentDimBrush}"/>
             </Trigger>
             <Trigger Property="IsPressed" Value="True">
                 <Setter Property="BorderThickness" TargetName="border" Value="2"/>
                 <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ApplicationWhiteBrush}"/>
-                <Setter Property="Background" TargetName="border" Value="{DynamicResource ApplicationAccentDimBrush}"/>
+                <Setter Property="Background" TargetName="border" Value="{DynamicResource ApplicationAccentDarkBrush}"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
                 <Setter Property="Opacity" Value="0.50"/>
@@ -39,17 +39,17 @@
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="BorderThickness" TargetName="border" Value="2"/>
                 <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ApplicationBlackBrush}"/>
-                <Setter Property="Background" TargetName="border" Value="{DynamicResource ApplicationAccentDarkBrush}"/>
+                <Setter Property="Background" TargetName="border" Value="{DynamicResource ApplicationAccentDimBrush}"/>
             </Trigger>
             <Trigger Property="IsFocused" Value="True">
                 <Setter Property="BorderThickness" TargetName="border" Value="2"/>
                 <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ApplicationBlackBrush}"/>
-                <Setter Property="Background" TargetName="border" Value="{DynamicResource ApplicationAccentDarkBrush}"/>
+                <Setter Property="Background" TargetName="border" Value="{DynamicResource ApplicationAccentDimBrush}"/>
             </Trigger>
             <Trigger Property="IsPressed" Value="True">
                 <Setter Property="BorderThickness" TargetName="border" Value="2"/>
                 <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ApplicationBlackBrush}"/>
-                <Setter Property="Background" TargetName="border" Value="{DynamicResource ApplicationAccentDimBrush}"/>
+                <Setter Property="Background" TargetName="border" Value="{DynamicResource ApplicationAccentDarkBrush}"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
                 <Setter Property="Opacity" Value="0.50"/>
@@ -74,7 +74,7 @@
             <Trigger Property="IsPressed" Value="True">
                 <Setter Property="BorderThickness" TargetName="border" Value="2"/>
                 <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ApplicationWhiteBrush}"/>
-                <Setter Property="Background" TargetName="border" Value="{DynamicResource ApplicationAccentDimBrush}"/>
+                <Setter Property="Background" TargetName="border" Value="{DynamicResource ApplicationAccentDarkBrush}"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
                 <Setter Property="Opacity" Value="0.50"/>
@@ -99,7 +99,7 @@
             <Trigger Property="IsPressed" Value="True">
                 <Setter Property="BorderThickness" TargetName="border" Value="2"/>
                 <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ApplicationBlackBrush}"/>
-                <Setter Property="Background" TargetName="border" Value="{DynamicResource ApplicationAccentDimBrush}"/>
+                <Setter Property="Background" TargetName="border" Value="{DynamicResource ApplicationAccentDarkBrush}"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
                 <Setter Property="Opacity" Value="0.50"/>

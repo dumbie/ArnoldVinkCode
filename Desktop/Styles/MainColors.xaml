@@ -16,8 +16,16 @@
     <SolidColorBrush x:Key="ApplicationWhiteBrush">#F1F1F1</SolidColorBrush>
     <Color x:Key="ApplicationBlackColor">#1D1D1D</Color>
     <SolidColorBrush x:Key="ApplicationBlackBrush">#1D1D1D</SolidColorBrush>
-    <Color x:Key="ApplicationGrayColor">#787878</Color>
-    <SolidColorBrush x:Key="ApplicationGrayBrush">#787878</SolidColorBrush>
+    <Color x:Key="ApplicationDimGrayColor">#787878</Color>
+    <SolidColorBrush x:Key="ApplicationDimGrayBrush">#787878</SolidColorBrush>
     <Color x:Key="ApplicationDarkGrayColor">#555555</Color>
     <SolidColorBrush x:Key="ApplicationDarkGrayBrush">#555555</SolidColorBrush>
+
+    <!-- Other Color -->
+    <Color x:Key="ApplicationValidColor">#1EB955</Color>
+    <SolidColorBrush x:Key="ApplicationValidBrush">#1EB955</SolidColorBrush>
+    <Color x:Key="ApplicationInvalidColor">#CD1928</Color>
+    <SolidColorBrush x:Key="ApplicationInvalidBrush">#CD1928</SolidColorBrush>
+    <Color x:Key="ApplicationIgnoredColor">#EE8F3F</Color>
+    <SolidColorBrush x:Key="ApplicationIgnoredBrush">#EE8F3F</SolidColorBrush>
 </ResourceDictionary>

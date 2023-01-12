@@ -9,7 +9,7 @@
         <Setter Property="IsTabStop" Value="False"/>
         <Setter Property="Focusable" Value="False"/>
         <Setter Property="Opacity" Value="0.80"/>
-        <Setter Property="Background" Value="{DynamicResource ApplicationGrayBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource ApplicationDimGrayBrush}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type RepeatButton}">
@@ -24,7 +24,7 @@
         <Setter Property="IsTabStop" Value="False"/>
         <Setter Property="Focusable" Value="False"/>
         <Setter Property="Opacity" Value="0.80"/>
-        <Setter Property="Background" Value="{DynamicResource ApplicationGrayBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource ApplicationDimGrayBrush}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type RepeatButton}">

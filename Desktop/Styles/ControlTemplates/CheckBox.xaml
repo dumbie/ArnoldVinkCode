@@ -20,6 +20,9 @@
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Background" TargetName="checkBoxBorder" Value="{DynamicResource ApplicationAccentDimBrush}"/>
             </Trigger>
+            <Trigger Property="IsFocused" Value="True">
+                <Setter Property="Background" TargetName="checkBoxBorder" Value="{DynamicResource ApplicationAccentDimBrush}"/>
+            </Trigger>
             <Trigger Property="IsPressed" Value="True">
                 <Setter Property="Background" TargetName="checkBoxBorder" Value="{DynamicResource ApplicationAccentDarkBrush}"/>
             </Trigger>
