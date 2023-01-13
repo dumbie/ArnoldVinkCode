@@ -13,7 +13,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type RepeatButton}">
-                    <Border CornerRadius="0,2,2,0" Background="{TemplateBinding Background}" Height="{TemplateBinding Height}" Width="{TemplateBinding Width}"/>
+                    <Border CornerRadius="0,4,4,0" Background="{TemplateBinding Background}" Height="{TemplateBinding Height}" Width="{TemplateBinding Width}"/>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -28,10 +28,19 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type RepeatButton}">
-                    <Border CornerRadius="2,0,0,2" Background="{TemplateBinding Background}" Height="{TemplateBinding Height}" Width="{TemplateBinding Width}"/>
+                    <Border CornerRadius="4,0,0,4" Background="{TemplateBinding Background}" Height="{TemplateBinding Height}" Width="{TemplateBinding Width}"/>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+
+    <Style x:Key="SliderThumb" TargetType="{x:Type Thumb}">
+        <Setter Property="Width" Value="10"/>
+        <Setter Property="MinHeight" Value="15"/>
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Setter Property="IsTabStop" Value="False"/>
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="Template" Value="{StaticResource ThumbBlockTemplateAccent}"/>
     </Style>
 
     <ControlTemplate x:Key="SliderTemplateAccent" TargetType="{x:Type Slider}">
@@ -43,7 +52,7 @@
                 <RepeatButton Style="{StaticResource SliderRepeatButtonIncrease}" Command="Slider.IncreaseLarge"/>
             </Track.IncreaseRepeatButton>
             <Track.Thumb>
-                <Thumb Style="{StaticResource ThumbSlider}"/>
+                <Thumb Style="{StaticResource SliderThumb}"/>
             </Track.Thumb>
         </Track>
         <ControlTemplate.Triggers>
@@ -53,6 +62,7 @@
         </ControlTemplate.Triggers>
     </ControlTemplate>
 
+    <!-- Overwrite Slider -->
     <Style x:Key="{x:Type Slider}" TargetType="{x:Type Slider}">
         <Setter Property="SnapsToDevicePixels" Value="True"/>
         <Setter Property="Template" Value="{StaticResource SliderTemplateAccent}"/>

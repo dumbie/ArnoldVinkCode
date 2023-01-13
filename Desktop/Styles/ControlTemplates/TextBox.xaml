@@ -7,7 +7,7 @@
     <ControlTemplate x:Key="TextBoxTemplateWhite" TargetType="{x:Type TextBox}">
         <Border x:Name="border" CornerRadius="2" BorderThickness="2" BorderBrush="Transparent" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
             <Border.Background>
-                <SolidColorBrush Opacity="0.05" Color="{DynamicResource ApplicationWhiteColor}"/>
+                <SolidColorBrush Opacity="0.10" Color="{DynamicResource ApplicationWhiteColor}"/>
             </Border.Background>
             <Grid>
                 <Grid.RowDefinitions>
@@ -34,7 +34,7 @@
     <ControlTemplate x:Key="TextBoxTemplateBlack" TargetType="{x:Type TextBox}">
         <Border x:Name="border" CornerRadius="2" BorderThickness="2" BorderBrush="Transparent" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
             <Border.Background>
-                <SolidColorBrush Opacity="0.05" Color="{DynamicResource ApplicationBlackColor}"/>
+                <SolidColorBrush Opacity="0.10" Color="{DynamicResource ApplicationBlackColor}"/>
             </Border.Background>
             <Grid>
                 <Grid.RowDefinitions>
