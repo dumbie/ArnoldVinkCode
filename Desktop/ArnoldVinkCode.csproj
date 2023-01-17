@@ -96,6 +96,10 @@
     <Compile Include="Functions\AVAudioDevice\IMMDevice\PolicyConfig.cs" />
     <Compile Include="Functions\AVClassConverters.cs" />
     <Compile Include="Functions\AVDebug.cs" />
+    <Compile Include="Functions\AVProcessLaunch\AVProcessToken.cs" />
+    <Compile Include="Functions\AVProcessLaunch\AVProcessLaunch.cs" />
+    <Compile Include="Functions\AVProcessLaunch\Interop\InteropProcessShell.cs" />
+    <Compile Include="Functions\AVProcessLaunch\Interop\InteropProcessCreate.cs" />
     <Compile Include="Functions\AVDisplayMonitor\AVDisplayMonitorDisplayConfig.cs" />
     <Compile Include="Functions\AVDisplayMonitor\AVDisplayMonitorEnumDisplay.cs" />
     <Compile Include="Functions\AVDisplayMonitor\AVDisplayMonitorSwitch.cs" />

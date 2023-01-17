@@ -688,28 +688,6 @@ namespace ArnoldVinkCode
             return false;
         }
 
-        //Check if process is running as administrator
-        public static bool IsProcessRunningAsAdmin(Process targetProcess)
-        {
-            try
-            {
-                IntPtr tokenHandle = IntPtr.Zero;
-                try
-                {
-                    OpenProcessToken(targetProcess.Handle, DesiredAccessFlags.TOKEN_ADJUST_DEFAULT, out tokenHandle);
-                    CloseHandle(tokenHandle);
-                    return false;
-                }
-                catch
-                {
-                    CloseHandle(tokenHandle);
-                    return true;
-                }
-            }
-            catch { }
-            return false;
-        }
-
         //Convert Process to a ProcessMulti
         public static ProcessMulti ConvertProcessToProcessMulti(Process convertProcess, Package uwpAppPackage, AppxDetails uwpAppxDetails)
         {

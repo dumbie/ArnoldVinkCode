@@ -49,7 +49,34 @@ namespace ArnoldVinkCode
         [DllImport("Shell32.dll", CharSet = CharSet.Unicode)]
         public static extern int SHGetPropertyStoreForWindow(IntPtr hwnd, ref Guid iid, [Out(), MarshalAs(UnmanagedType.Interface)] out IPropertyStore propertyStore);
         [DllImport("kernel32.dll")]
+
+        //Close Handle
         public static extern bool CloseHandle(IntPtr hHandle);
+        public static bool CloseHandleAuto(IntPtr hHandle)
+        {
+            try
+            {
+                if (hHandle != IntPtr.Zero)
+                {
+                    return CloseHandle(hHandle);
+                }
+            }
+            catch { }
+            return true;
+        }
+        public static bool CloseMarshalAuto(IntPtr hGlobal)
+        {
+            try
+            {
+                if (hGlobal != IntPtr.Zero)
+                {
+                    Marshal.FreeHGlobal(hGlobal);
+                    return true;
+                }
+            }
+            catch { }
+            return true;
+        }
 
         //Get window
         public enum GetWindowFlags : int
@@ -262,8 +289,6 @@ namespace ArnoldVinkCode
         public static extern bool FreeLibrary(IntPtr hModule);
 
         //Open and close process
-        [DllImport("Advapi32.dll")]
-        public static extern bool OpenProcessToken(IntPtr ProcessHandle, DesiredAccessFlags desiredAccess, out IntPtr TokenHandle);
         [DllImport("kernel32.dll")]
         public static extern IntPtr OpenProcess(ProcessAccessFlags processAccess, bool bInheritHandle, int processId);
         public enum ProcessAccessFlags : uint
@@ -282,13 +307,6 @@ namespace ArnoldVinkCode
             QueryLimitedInformation = 0x00001000,
             Synchronize = 0x00100000
         }
-        public enum DesiredAccessFlags : uint
-        {
-            STANDARD_RIGHTS_REQUIRED = 0x000F0000,
-            STANDARD_RIGHTS_READ = 0x00020000,
-            TOKEN_QUERY = 0x0008,
-            TOKEN_ADJUST_DEFAULT = 0x0080
-        }
 
         //Enumerate windows
         [DllImport("user32.dll")]
@@ -304,6 +322,10 @@ namespace ArnoldVinkCode
         public static extern bool QueryFullProcessImageName([In] IntPtr hProcess, [In] int dwFlags, [Out] StringBuilder lpExeName, ref int lpdwSize);
 
         //Get Class Long
+        [DllImport("user32.dll", EntryPoint = "GetClassLong")]
+        private static extern uint GetClassLong32(IntPtr hWnd, int nIndex);
+        [DllImport("user32.dll", EntryPoint = "GetClassLongPtr")]
+        private static extern IntPtr GetClassLongPtr64(IntPtr hWnd, int nIndex);
         public static IntPtr GetClassLongAuto(IntPtr hWnd, int nIndex)
         {
             if (IntPtr.Size > 4)
@@ -315,12 +337,6 @@ namespace ArnoldVinkCode
                 return new IntPtr(GetClassLong32(hWnd, nIndex));
             }
         }
-
-        [DllImport("user32.dll", EntryPoint = "GetClassLong")]
-        private static extern uint GetClassLong32(IntPtr hWnd, int nIndex);
-
-        [DllImport("user32.dll", EntryPoint = "GetClassLongPtr")]
-        private static extern IntPtr GetClassLongPtr64(IntPtr hWnd, int nIndex);
 
         //Get and Set Window Long
         [DllImport("user32.dll", EntryPoint = "GetWindowLong")]

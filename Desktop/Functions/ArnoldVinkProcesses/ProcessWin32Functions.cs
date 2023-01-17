@@ -48,6 +48,7 @@ namespace ArnoldVinkCode
                         }
                         if (runAsAdmin)
                         {
+                            launchProcess.StartInfo.UseShellExecute = true;
                             launchProcess.StartInfo.Verb = "runas";
                         }
 

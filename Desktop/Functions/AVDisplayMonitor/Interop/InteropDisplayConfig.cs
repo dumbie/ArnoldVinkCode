@@ -152,7 +152,8 @@ namespace ArnoldVinkCode
             DISPLAYCONFIG_DEVICE_INFO_SET_DPI_SCALE = -4
         }
 
-        private struct LUID
+        [StructLayout(LayoutKind.Sequential)]
+        public struct LUID
         {
             public uint LowPart;
             public int HighPart;

@@ -243,7 +243,7 @@ namespace ArnoldVinkCode
                 MultimediaTimerCallback callbackDone = delegate
                 {
                     SetEvent(createEvent);
-                    CloseHandle(createEvent);
+                    CloseHandleAuto(createEvent);
                 };
 
                 timeSetEvent(millisecondsDelay, 0, callbackDone, 0, 0);

@@ -210,18 +210,34 @@ namespace ArnoldVinkCode
                 //Check if window leaves right side
                 if (windowRectangle.Right > (displayMonitorSettings.BoundsRight - boundsMargin))
                 {
-                    //This does not work properly when minimum window size is set
                     int resizeTarget = windowRectangle.Width - (windowRectangle.Right - displayMonitorSettings.BoundsRight) - boundsMargin;
                     WindowResize(windowHandle, resizeTarget, windowRectangle.Height);
+                    GetWindowRect(windowHandle, out windowRectangle);
+                }
+
+                //Check if window still leaves right side and move left
+                if (windowRectangle.Right > (displayMonitorSettings.BoundsRight - boundsMargin))
+                {
+                    int difference = (windowRectangle.Right - displayMonitorSettings.BoundsRight) + boundsMargin;
+                    int moveTarget = windowRectangle.Left - difference;
+                    WindowMove(windowHandle, moveTarget, windowRectangle.Top);
                     GetWindowRect(windowHandle, out windowRectangle);
                 }
 
                 //Check if window leaves bottom side
                 if (windowRectangle.Bottom > (displayMonitorSettings.BoundsBottom - boundsMargin))
                 {
-                    //This does not work properly when minimum window size is set
                     int resizeTarget = windowRectangle.Height - (windowRectangle.Bottom - displayMonitorSettings.BoundsBottom) - boundsMargin;
                     WindowResize(windowHandle, windowRectangle.Width, resizeTarget);
+                    GetWindowRect(windowHandle, out windowRectangle);
+                }
+
+                //Check if window still leaves bottom side and move up
+                if (windowRectangle.Bottom > (displayMonitorSettings.BoundsBottom - boundsMargin))
+                {
+                    int difference = (windowRectangle.Bottom - displayMonitorSettings.BoundsBottom) + boundsMargin;
+                    int moveTarget = windowRectangle.Top - difference;
+                    WindowMove(windowHandle, windowRectangle.Left, moveTarget);
                 }
             }
             catch (Exception ex)
