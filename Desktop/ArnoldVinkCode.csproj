@@ -96,8 +96,12 @@
     <Compile Include="Functions\AVAudioDevice\IMMDevice\PolicyConfig.cs" />
     <Compile Include="Functions\AVClassConverters.cs" />
     <Compile Include="Functions\AVDebug.cs" />
-    <Compile Include="Functions\AVProcessLaunch\AVProcessToken.cs" />
+    <Compile Include="Functions\AVProcessLaunch\AVProcessTokenSid.cs" />
+    <Compile Include="Functions\AVProcessLaunch\AVProcessTokenAdjust.cs" />
+    <Compile Include="Functions\AVProcessLaunch\AVProcessTokenCreate.cs" />
     <Compile Include="Functions\AVProcessLaunch\AVProcessLaunch.cs" />
+    <Compile Include="Functions\AVProcessLaunch\AVProcessTokenPrivilege.cs" />
+    <Compile Include="Functions\AVProcessLaunch\Interop\InteropProcessSafer.cs" />
     <Compile Include="Functions\AVProcessLaunch\Interop\InteropProcessShell.cs" />
     <Compile Include="Functions\AVProcessLaunch\Interop\InteropProcessCreate.cs" />
     <Compile Include="Functions\AVDisplayMonitor\AVDisplayMonitorDisplayConfig.cs" />

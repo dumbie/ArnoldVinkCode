@@ -5,24 +5,29 @@ namespace ArnoldVinkCode
 {
     public partial class AVProcessLaunch
     {
+        //Constants
+        public const int SID_MAX_SUB_AUTHORITIES = 15;
+        public const int SECURITY_BUILTIN_DOMAIN_RID = 0x00000020;
+        public const int DOMAIN_ALIAS_RID_ADMINS = 0x00000220;
+
         //Structures
-        [StructLayout(LayoutKind.Sequential)]
-        public struct STARTUPINFO
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        public struct STARTUPINFOW
         {
-            public int cbSize;
-            [MarshalAs(UnmanagedType.LPWStr)] public string lpReserved;
-            [MarshalAs(UnmanagedType.LPWStr)] public string lpDesktop;
-            [MarshalAs(UnmanagedType.LPWStr)] public string lpTitle;
-            public int dwX;
-            public int dwY;
-            public int dwXSize;
-            public int dwYSize;
-            public int dwXCountChars;
-            public int dwYCountChars;
-            public int dwFillAttribute;
-            public int dwFlags;
-            public short wShowWindow;
-            public short cbReserved2;
+            public uint cbSize;
+            public string lpReserved;
+            public string lpDesktop;
+            public string lpTitle;
+            public uint dwX;
+            public uint dwY;
+            public uint dwXSize;
+            public uint dwYSize;
+            public uint dwXCountChars;
+            public uint dwYCountChars;
+            public uint dwFillAttribute;
+            public uint dwFlags;
+            public int wShowWindow;
+            public int cbReserved2;
             public IntPtr lpReserved2;
             public IntPtr hStdInput;
             public IntPtr hStdOutput;
@@ -34,14 +39,14 @@ namespace ArnoldVinkCode
         {
             public IntPtr hProcess;
             public IntPtr hThread;
-            public int dwProcessId;
-            public int dwThreadId;
+            public uint dwProcessId;
+            public uint dwThreadId;
         }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct SECURITY_ATTRIBUTES
         {
-            public int nLength;
+            public uint nLength;
             public IntPtr lpSecurityDescriptor;
             public bool bInheritHandle;
         }
@@ -65,6 +70,13 @@ namespace ArnoldVinkCode
         {
             public uint LowPart;
             public int HighPart;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct TOKEN_PRIVILEGES
+        {
+            public int PrivilegeCount;
+            public LUID_AND_ATTRIBUTES Privileges;
         }
 
         //Enumerations
@@ -146,16 +158,80 @@ namespace ArnoldVinkCode
             TokenRestrictedDeviceGroups = 38,
             TokenSecurityAttributes = 39,
             TokenIsRestricted = 40,
-            MaxTokenInfoClass = 41
+            TokenProcessTrustLevel = 41,
+            TokenPrivateNameSpace = 42,
+            TokenSingletonAttributes = 43,
+            TokenBnoIsolation = 44,
+            TokenChildProcessFlags = 45,
+            TokenIsLessPrivilegedAppContainer = 46,
+            TokenIsSandboxed = 47,
+            MaxTokenInfoClass = 48
         }
 
+        public enum CreateLogonFlags : uint
+        {
+            LOGON_NONE = 0x00000000,
+            LOGON_WITH_PROFILE = 0x00000001,
+            LOGON_NETCREDENTIALS_ONLY = 0x00000002
+        }
+
+        public enum CreateProcessFlags : uint
+        {
+            NONE = 0x00000000,
+            DEBUG_PROCESS = 0x00000001,
+            DEBUG_ONLY_THIS_PROCESS = 0x00000002,
+            CREATE_SUSPENDED = 0x00000004,
+            DETACHED_PROCESS = 0x00000008,
+            CREATE_NEW_CONSOLE = 0x00000010,
+            NORMAL_PRIORITY_CLASS = 0x00000020,
+            IDLE_PRIORITY_CLASS = 0x00000040,
+            HIGH_PRIORITY_CLASS = 0x00000080,
+            REALTIME_PRIORITY_CLASS = 0x00000100,
+            CREATE_NEW_PROCESS_GROUP = 0x00000200,
+            CREATE_UNICODE_ENVIRONMENT = 0x00000400,
+            CREATE_SEPARATE_WOW_VDM = 0x00000800,
+            CREATE_SHARED_WOW_VDM = 0x00001000,
+            CREATE_FORCEDOS = 0x00002000,
+            BELOW_NORMAL_PRIORITY_CLASS = 0x00004000,
+            ABOVE_NORMAL_PRIORITY_CLASS = 0x00008000,
+            INHERIT_PARENT_AFFINITY = 0x00010000,
+            INHERIT_CALLER_PRIORITY = 0x00020000,
+            CREATE_PROTECTED_PROCESS = 0x00040000,
+            EXTENDED_STARTUPINFO_PRESENT = 0x00080000,
+            PROCESS_MODE_BACKGROUND_BEGIN = 0x00100000,
+            PROCESS_MODE_BACKGROUND_END = 0x00200000,
+            CREATE_BREAKAWAY_FROM_JOB = 0x01000000,
+            CREATE_PRESERVE_CODE_AUTHZ_LEVEL = 0x02000000,
+            CREATE_DEFAULT_ERROR_MODE = 0x04000000,
+            CREATE_NO_WINDOW = 0x08000000,
+            PROFILE_USER = 0x10000000,
+            PROFILE_KERNEL = 0x20000000,
+            PROFILE_SERVER = 0x40000000,
+            CREATE_IGNORE_SYSTEM_DEFAULT = 0x80000000,
+        }
+
+        //https://learn.microsoft.com/en-us/windows/win32/secauthz/privilege-constants
+        public enum PrivilegeConstants //ToString()
+        {
+            SeTcbPrivilege,
+            SeDebugPrivilege,
+            SeCreateTokenPrivilege,
+            SeAssignPrimaryTokenPrivilege
+        }
+
+        //https://learn.microsoft.com/en-us/windows/win32/api/winnt/ne-winnt-well_known_sid_type
         public enum WELL_KNOWN_SID_TYPE : int
         {
+            WinAuthenticatedUserSid = 17,
+            BuiltinAdministratorsSid = 26,
+            AccountAdministratorSid = 38,
             WinUntrustedLabelSid = 65,
             WinLowLabelSid = 66,
             WinMediumLabelSid = 67,
             WinHighLabelSid = 68,
-            WinSystemLabelSid = 69
+            WinSystemLabelSid = 69,
+            WinLocalLogonSid = 80,
+            WinConsoleLogonSid = 81
         }
 
         public enum SID_ATTRIBUTES : uint
@@ -192,28 +268,25 @@ namespace ArnoldVinkCode
 
         //Imports
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern bool CreateProcessAsUserW(IntPtr hToken, string lpApplicationName, string lpCommandLine, ref SECURITY_ATTRIBUTES lpProcessAttributes, ref SECURITY_ATTRIBUTES lpThreadAttributes, bool bInheritHandle, uint dwCreationFlags, IntPtr lpEnvironment, string lpCurrentDirectory, ref STARTUPINFO lpStartupInfo, out PROCESS_INFORMATION lpProcessInformation);
+        public static extern bool CreateProcessAsUserW(IntPtr hToken, string lpApplicationName, string lpCommandLine, ref SECURITY_ATTRIBUTES lpProcessAttributes, ref SECURITY_ATTRIBUTES lpThreadAttributes, bool bInheritHandles, CreateProcessFlags dwCreationFlags, IntPtr lpEnvironment, string lpCurrentDirectory, ref STARTUPINFOW lpStartupInfo, out PROCESS_INFORMATION lpProcessInformation);
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        public static extern bool CreateProcessWithTokenW(IntPtr hToken, uint dwLogonFlags, string lpApplicationName, string lpCommandLine, uint dwCreationFlags, IntPtr lpEnvironment, string lpCurrentDirectory, ref STARTUPINFO lpStartupInfo, out PROCESS_INFORMATION lpProcessInformation);
+        public static extern bool CreateProcessWithTokenW(IntPtr hToken, CreateLogonFlags dwLogonFlags, string lpApplicationName, string lpCommandLine, CreateProcessFlags dwCreationFlags, IntPtr lpEnvironment, string lpCurrentDirectory, ref STARTUPINFOW lpStartupInfo, out PROCESS_INFORMATION lpProcessInformation);
 
         [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern bool GetTokenInformation(IntPtr TokenHandle, TOKEN_INFORMATION_CLASS TokenInformationClass, int TokenInformation, int TokenInformationLength, out int ReturnLength);
-
-        [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern bool SetTokenInformation(IntPtr TokenHandle, TOKEN_INFORMATION_CLASS TokenInformationClass, ref int TokenInformation, int TokenInformationLength);
-
-        [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern bool SetTokenInformation(IntPtr TokenHandle, TOKEN_INFORMATION_CLASS TokenInformationClass, SID_AND_ATTRIBUTES TokenInformation, int TokenInformationLength);
+        public static extern bool CreateRestrictedToken(IntPtr ExistingTokenHandle, CreateRestrictedTokenFlags Flags, int DisableSidCount, SID_AND_ATTRIBUTES[] SidsToDisable, int DeletePrivilegeCount, LUID_AND_ATTRIBUTES[] PrivilegesToDelete, int RestrictedSidCount, SID_AND_ATTRIBUTES[] SidsToRestrict, out IntPtr NewTokenHandle);
 
         [DllImport("advapi32.dll", SetLastError = true)]
         public static extern bool DuplicateTokenEx(IntPtr hExistingToken, TOKEN_DESIRED_ACCESS dwDesiredAccess, ref SECURITY_ATTRIBUTES lpTokenAttributes, TOKEN_IMPERSONATION_LEVEL ImpersonationLevel, TOKEN_TYPE TokenType, out IntPtr phNewToken);
 
         [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern bool OpenProcessToken(IntPtr ProcessHandle, TOKEN_DESIRED_ACCESS DesiredAccess, out IntPtr TokenHandle);
+        public static extern bool SetTokenInformation(IntPtr TokenHandle, TOKEN_INFORMATION_CLASS TokenInformationClass, ref uint TokenInformation, uint TokenInformationLength);
 
-        [DllImport("user32.dll", SetLastError = true)]
-        public static extern IntPtr GetShellWindow();
+        [DllImport("advapi32.dll", SetLastError = true)]
+        public static extern bool SetTokenInformation(IntPtr TokenHandle, TOKEN_INFORMATION_CLASS TokenInformationClass, SID_AND_ATTRIBUTES TokenInformation, int TokenInformationLength);
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        public extern static bool AllocateAndInitializeSid(byte[] pIdentifierAuthority, int nSubAuthorityCount, int dwSubAuthority0, int dwSubAuthority1, int dwSubAuthority2, int dwSubAuthority3, int dwSubAuthority4, int dwSubAuthority5, int dwSubAuthority6, int dwSubAuthority7, out IntPtr pSid);
 
         [DllImport("advapi32.dll", SetLastError = true)]
         public static extern bool CreateWellKnownSid(WELL_KNOWN_SID_TYPE WellKnownSidType, IntPtr DomainSid, IntPtr pSid, ref int cbSidSize);
@@ -221,7 +294,16 @@ namespace ArnoldVinkCode
         [DllImport("advapi32.dll", SetLastError = true)]
         public static extern int GetSidLengthRequired(int nSubAuthorityCount);
 
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern bool LookupPrivilegeValueW(string lpSystemName, string lpName, ref LUID lpLuid);
+
+        [DllImport("kernelbase.dll", SetLastError = true)]
+        public static extern bool AdjustTokenPrivileges(IntPtr TokenHandle, bool DisableAllPrivileges, ref TOKEN_PRIVILEGES NewState, int BufferLength, IntPtr PreviousState, out int ReturnLength);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        public static extern IntPtr GetShellWindow();
+
         [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern bool CreateRestrictedToken(IntPtr ExistingTokenHandle, CreateRestrictedTokenFlags Flags, int DisableSidCount, SID_AND_ATTRIBUTES[] SidsToDisable, int DeletePrivilegeCount, LUID_AND_ATTRIBUTES[] PrivilegesToDelete, int RestrictedSidCount, SID_AND_ATTRIBUTES[] SidsToRestrict, out IntPtr NewTokenHandle);
+        public static extern bool OpenProcessToken(IntPtr ProcessHandle, TOKEN_DESIRED_ACCESS DesiredAccess, out IntPtr TokenHandle);
     }
 }

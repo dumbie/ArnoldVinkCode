@@ -9,169 +9,142 @@ namespace ArnoldVinkCode
 {
     public partial class AVProcessLaunch
     {
-        public static void ProcessLaunch_NormalUser(string exePath, string launchArgs)
+        public static bool ProcessLaunch_User(string exePath, string workingPath, string launchArgs, bool disableAdminAccess, bool disableUiAccess)
         {
-            IntPtr hProcess = IntPtr.Zero;
-            IntPtr hToken = IntPtr.Zero;
-            IntPtr dToken = IntPtr.Zero;
-            PROCESS_INFORMATION processInfo = new PROCESS_INFORMATION();
             try
             {
-                //Only works as administrator
-                ////Check administrator permission
-                //bool adminPermission = new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
-                //if (!adminPermission)
+                Debug.WriteLine("Launching process: " + exePath);
+
+                //Get current process token (Elevation: Yes/Full / Depends on process)
+                if (!Token_CreateFromCurrentProcess(out IntPtr hToken, out bool tokenAdminAccess))
+                {
+                    return false;
+                }
+
+                ////Get unelevated process token (Elevation: No/Limited)
+                //if (!Token_CreateFromUnelevatedProcess(out IntPtr hToken, out bool tokenAdminAccess))
                 //{
-                //    ProcessLaunch_CurrentUser(exePath, launchArgs, true);
-                //    return;
+                //    return false;
                 //}
 
-                //Get unelevated process
-                IntPtr shellWindow = GetShellWindow();
-                GetWindowThreadProcessId(shellWindow, out int shellProcessId);
-                int tokenProcessId = Process.GetProcessById(shellProcessId).Id;
+                ////Get safer process token (Elevation: Yes/Full / Depends on process)
+                //if (!Token_CreateFromSaferApi(out IntPtr hToken, out bool tokenAdminAccess))
+                //{
+                //    return false;
+                //}
 
-                //Open unelevated process
-                hProcess = OpenProcess(ProcessAccessFlags.QueryInformation, false, tokenProcessId);
-                if (hProcess == IntPtr.Zero)
-                {
-                    Debug.WriteLine("Failed to OpenProcess: " + Marshal.GetLastWin32Error());
-                    return;
-                }
-
-                //Get unelevated process token
-                if (!OpenProcessToken(hProcess, TOKEN_DESIRED_ACCESS.TOKEN_ALL_ACCESS, out hToken))
-                {
-                    Debug.WriteLine("Failed to OpenProcessToken: " + Marshal.GetLastWin32Error());
-                    return;
-                }
-
-                //Duplicate unelevated process token
-                SECURITY_ATTRIBUTES securityAttributes = new SECURITY_ATTRIBUTES();
-                if (!DuplicateTokenEx(hToken, TOKEN_DESIRED_ACCESS.TOKEN_ALL_ACCESS, ref securityAttributes, TOKEN_IMPERSONATION_LEVEL.SecurityImpersonation, TOKEN_TYPE.TokenPrimary, out dToken))
-                {
-                    Debug.WriteLine("Failed to DuplicateTokenEx: " + Marshal.GetLastWin32Error());
-                    return;
-                }
-
-                //Set startup information
-                STARTUPINFO startupInfo = new STARTUPINFO();
-                startupInfo.lpDesktop = "WinSta0\\Default";
-
-                //Set launch information
-                uint logonFlags = 0;
-                uint creationFlags = 0;
-                string commandLine = exePath;
-                string currentDirectory = Path.GetDirectoryName(commandLine);
-                commandLine += " " + launchArgs;
-
-                //Create process
-                if (!CreateProcessWithTokenW(dToken, logonFlags, null, commandLine, creationFlags, IntPtr.Zero, currentDirectory, ref startupInfo, out processInfo))
-                {
-                    Debug.WriteLine("CreateProcessWithToken failed: " + Marshal.GetLastWin32Error());
-                }
-                else
-                {
-                    Debug.WriteLine("CreateProcessWithToken PID: " + processInfo.dwProcessId);
-                }
-            }
-            catch { }
-            finally
-            {
-                CloseHandleAuto(hProcess);
-                CloseHandleAuto(hToken);
-                CloseHandleAuto(dToken);
-                CloseHandleAuto(processInfo.hProcess);
-                CloseHandleAuto(processInfo.hThread);
-            }
-        }
-
-        public static void ProcessLaunch_CurrentUser(string exePath, string launchArgs, bool removeUIAccess, bool resetIntegrity)
-        {
-            PROCESS_INFORMATION processInfo = new PROCESS_INFORMATION();
-            try
-            {
-                //Get current token
-                IntPtr hToken = WindowsIdentity.GetCurrent().Token;
-                if (hToken == IntPtr.Zero)
-                {
-                    Debug.WriteLine("Failed to GetCurrentToken.");
-                    return;
-                }
+                //Adjust token privilege
+                Token_Set_Privilege(ref hToken, PrivilegeConstants.SeTcbPrivilege, true);
 
                 //Adjust token access
-                if (false)
+                if (disableAdminAccess && tokenAdminAccess)
                 {
-                    //Token_Disable_Elevation(ref hToken);
+                    Token_Disable_Elevation(ref hToken);
+                    Token_Adjust_Integrity(WELL_KNOWN_SID_TYPE.WinMediumLabelSid, ref hToken);
                 }
 
-                if (removeUIAccess)
+                if (disableUiAccess)
                 {
                     Token_Adjust_UIAccess(false, ref hToken);
                 }
 
-                if (resetIntegrity)
-                {
-                    Token_Adjust_Integrity(WELL_KNOWN_SID_TYPE.WinMediumLabelSid, ref hToken);
-                }
-
-                //Set startup information
-                STARTUPINFO startupInfo = new STARTUPINFO();
-                startupInfo.lpDesktop = "WinSta0\\Default";
-
                 //Set launch information
-                SECURITY_ATTRIBUTES saProcess = new SECURITY_ATTRIBUTES();
-                SECURITY_ATTRIBUTES saThread = new SECURITY_ATTRIBUTES();
-                uint creationFlags = 0;
-                string commandLine = exePath;
-                string currentDirectory = Path.GetDirectoryName(commandLine);
-                commandLine += " " + launchArgs;
-
-                //Create process
-                if (!CreateProcessAsUserW(hToken, null, commandLine, ref saProcess, ref saThread, false, creationFlags, IntPtr.Zero, currentDirectory, ref startupInfo, out processInfo))
+                string currentDirectory = string.Empty;
+                if (!string.IsNullOrWhiteSpace(workingPath) && Directory.Exists(workingPath))
                 {
-                    Debug.Write("CreateProcessAsUser failed: " + Marshal.GetLastWin32Error());
+                    currentDirectory = workingPath;
                 }
                 else
                 {
-                    Debug.Write("CreateProcessAsUser PID: " + processInfo.dwProcessId);
+                    currentDirectory = Path.GetDirectoryName(exePath);
+                }
+                string commandLine = exePath + " " + launchArgs;
+
+                //Check administrator access
+                WindowsIdentity windowsIdentity = WindowsIdentity.GetCurrent(TokenAccessLevels.AllAccess);
+                bool processAdminAccess = new WindowsPrincipal(windowsIdentity).IsInRole(WindowsBuiltInRole.Administrator);
+
+                //Create process
+                STARTUPINFOW startupInfo = new STARTUPINFOW();
+                PROCESS_INFORMATION processInfo = new PROCESS_INFORMATION();
+                CreateProcessFlags creationFlags = CreateProcessFlags.CREATE_NEW_CONSOLE | CreateProcessFlags.CREATE_NEW_PROCESS_GROUP;
+                if (processAdminAccess)
+                {
+                    if (!CreateProcessWithTokenW(hToken, CreateLogonFlags.LOGON_NONE, null, commandLine, creationFlags, IntPtr.Zero, currentDirectory, ref startupInfo, out processInfo))
+                    {
+                        Debug.Write("CreateProcessWithToken failed: " + Marshal.GetLastWin32Error());
+                        return false;
+                    }
+                    else
+                    {
+                        Debug.Write("CreateProcessWithToken launched: " + processInfo.dwProcessId);
+                        return true;
+                    }
+                }
+                else
+                {
+                    SECURITY_ATTRIBUTES saProcess = new SECURITY_ATTRIBUTES();
+                    SECURITY_ATTRIBUTES saThread = new SECURITY_ATTRIBUTES();
+                    if (!CreateProcessAsUserW(hToken, null, commandLine, ref saProcess, ref saThread, false, creationFlags, IntPtr.Zero, currentDirectory, ref startupInfo, out processInfo))
+                    {
+                        Debug.Write("CreateProcessAsUser failed: " + Marshal.GetLastWin32Error());
+                        return false;
+                    }
+                    else
+                    {
+                        Debug.Write("CreateProcessAsUser launched: " + processInfo.dwProcessId);
+                        return true;
+                    }
                 }
             }
-            catch { }
-            finally
+            catch (Exception ex)
             {
-                CloseHandleAuto(processInfo.hProcess);
-                CloseHandleAuto(processInfo.hThread);
+                Debug.Write("CreateProcess failed: " + ex.Message);
+                return false;
             }
         }
 
-        public static void ProcessLaunch_AdminUser(string exePath, string launchArgs)
+        public static bool ProcessLaunch_Admin(string exePath, string workingPath, string launchArgs)
         {
-            ShellExecuteInfo shellExecuteInfo = new ShellExecuteInfo();
+            //Does not reset integrity level from process.
+            //Does not remove elevation from process.
+            //Does not disable UIAccess from process.
             try
             {
-                shellExecuteInfo.nShow = (int)WindowShowCommand.ShowDefault;
-                shellExecuteInfo.lpFile = Marshal.StringToHGlobalAuto(exePath);
-                shellExecuteInfo.lpVerb = Marshal.StringToHGlobalAuto("runas");
-                shellExecuteInfo.lpParameters = Marshal.StringToHGlobalAuto(launchArgs);
-                shellExecuteInfo.lpDirectory = Marshal.StringToHGlobalAuto(Path.GetDirectoryName(exePath));
-
-                if (!ShellExecuteExW(shellExecuteInfo))
+                //Set shell execute info
+                ShellExecuteInfo shellExecuteInfo = new ShellExecuteInfo();
+                shellExecuteInfo.fMask = SHELL_EXECUTE_SEE_MASK.SEE_MASK_NOCLOSEPROCESS;
+                shellExecuteInfo.nShow = WindowShowCommand.Normal;
+                shellExecuteInfo.lpVerb = "runas";
+                shellExecuteInfo.lpFile = exePath;
+                shellExecuteInfo.lpParameters = launchArgs;
+                if (!string.IsNullOrWhiteSpace(workingPath) && Directory.Exists(workingPath))
                 {
-                    Debug.Write("ShellExecuteExW failed: " + Marshal.GetLastWin32Error());
+                    shellExecuteInfo.lpDirectory = workingPath;
                 }
                 else
                 {
-                    Debug.WriteLine("ShellExecuteExW launched process.");
+                    shellExecuteInfo.lpDirectory = Path.GetDirectoryName(exePath);
+                }
+
+                //Shell execute process
+                if (!ShellExecuteExW(shellExecuteInfo))
+                {
+                    Debug.Write("ShellExecuteEx failed: " + Marshal.GetLastWin32Error());
+                    return false;
+                }
+                else
+                {
+                    int processId = GetProcessId(shellExecuteInfo.hProcess);
+                    bool processLaunched = processId == 0 ? false : true;
+                    Debug.WriteLine("ShellExecuteEx launched: " + processId + "/" + processLaunched);
+                    return processLaunched;
                 }
             }
-            catch { }
-            finally
+            catch (Exception ex)
             {
-                CloseHandleAuto(shellExecuteInfo.lpFile);
-                CloseHandleAuto(shellExecuteInfo.lpVerb);
-                CloseHandleAuto(shellExecuteInfo.lpParameters);
-                CloseHandleAuto(shellExecuteInfo.lpDirectory);
+                Debug.Write("ShellExecuteEx failed: " + ex.Message);
+                return false;
             }
         }
     }
