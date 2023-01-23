@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Threading;
 
 namespace ArnoldVinkCode.Styles
@@ -11,9 +12,32 @@ namespace ArnoldVinkCode.Styles
 
     public class SliderDelay : Slider
     {
+        public double DelayTime { get; set; } = 500;
         public bool DelayIgnoreDrag { get; set; } = false;
+        public bool MouseWheelScrollEnabled { get; set; } = true;
         private bool SliderThumbDragging = false;
         private DispatcherTimer DispatcherTimerDelay = new DispatcherTimer();
+
+        protected override void OnInitialized(EventArgs e)
+        {
+            base.MouseWheel += SliderDelay_MouseWheel;
+            base.OnInitialized(e);
+        }
+
+        protected void SliderDelay_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (MouseWheelScrollEnabled)
+            {
+                if (e.Delta > 0)
+                {
+                    base.Value += base.LargeChange;
+                }
+                else
+                {
+                    base.Value -= base.LargeChange;
+                }
+            }
+        }
 
         protected override void OnThumbDragCompleted(System.Windows.Controls.Primitives.DragCompletedEventArgs e)
         {
@@ -30,7 +54,7 @@ namespace ArnoldVinkCode.Styles
         protected override void OnValueChanged(double oldValue, double newValue)
         {
             AVFunctions.TimerRenew(ref DispatcherTimerDelay);
-            DispatcherTimerDelay.Interval = TimeSpan.FromMilliseconds(500);
+            DispatcherTimerDelay.Interval = TimeSpan.FromMilliseconds(DelayTime);
             DispatcherTimerDelay.Tick += delegate
             {
                 if (DelayIgnoreDrag || !SliderThumbDragging)
