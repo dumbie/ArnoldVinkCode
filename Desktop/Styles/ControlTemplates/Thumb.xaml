@@ -4,13 +4,25 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <ControlTemplate x:Key="ThumbBlockTemplateAccent" TargetType="{x:Type Thumb}">
-        <Border x:Name="grip" Background="{DynamicResource ApplicationAccentLightBrush}"/>
+        <Border x:Name="grip" CornerRadius="4" Background="{DynamicResource ApplicationAccentLightBrush}"/>
         <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Background" TargetName="grip" Value="{DynamicResource ApplicationAccentDimBrush}"/>
             </Trigger>
             <Trigger Property="IsDragging" Value="True">
                 <Setter Property="Background" TargetName="grip" Value="{DynamicResource ApplicationAccentDarkBrush}"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="ThumbRoundTemplateAccent" TargetType="{x:Type Thumb}">
+        <Ellipse x:Name="grip" Fill="{DynamicResource ApplicationAccentLightBrush}"/>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Fill" TargetName="grip" Value="{DynamicResource ApplicationAccentDimBrush}"/>
+            </Trigger>
+            <Trigger Property="IsDragging" Value="True">
+                <Setter Property="Fill" TargetName="grip" Value="{DynamicResource ApplicationAccentDarkBrush}"/>
             </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
