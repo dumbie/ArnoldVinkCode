@@ -11,6 +11,7 @@ namespace ArnoldVinkCode.Styles
 
     public class SliderDelay : Slider
     {
+        public bool DelayIgnoreDrag { get; set; } = false;
         private bool SliderThumbDragging = false;
         private DispatcherTimer DispatcherTimerDelay = new DispatcherTimer();
 
@@ -29,10 +30,10 @@ namespace ArnoldVinkCode.Styles
         protected override void OnValueChanged(double oldValue, double newValue)
         {
             AVFunctions.TimerRenew(ref DispatcherTimerDelay);
-            DispatcherTimerDelay.Interval = TimeSpan.FromMilliseconds(250);
+            DispatcherTimerDelay.Interval = TimeSpan.FromMilliseconds(500);
             DispatcherTimerDelay.Tick += delegate
             {
-                if (!SliderThumbDragging)
+                if (DelayIgnoreDrag || !SliderThumbDragging)
                 {
                     //Debug.WriteLine("Slider value change delayed.");
                     DispatcherTimerDelay.Stop();
