@@ -11,10 +11,19 @@ namespace ArnoldVinkCode.Styles
 
     public class TextBoxDelay : TextBox
     {
+        private bool SkipChangedEvent = false;
         private DispatcherTimer DispatcherTimerDelay = new DispatcherTimer();
+
+        public void TextSkipEvent(dynamic newValue)
+        {
+            SkipChangedEvent = true;
+            base.Text = newValue;
+            SkipChangedEvent = false;
+        }
 
         protected override void OnTextChanged(TextChangedEventArgs e)
         {
+            if (SkipChangedEvent) { return; }
             AVFunctions.TimerRenew(ref DispatcherTimerDelay);
             DispatcherTimerDelay.Interval = TimeSpan.FromMilliseconds(1000);
             DispatcherTimerDelay.Tick += delegate

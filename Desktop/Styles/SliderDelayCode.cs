@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Threading;
 
@@ -14,9 +15,11 @@ namespace ArnoldVinkCode.Styles
     {
         public double DelayTime { get; set; } = 500;
         public bool DelayIgnoreDrag { get; set; } = false;
+        public bool SliderThumbDragging { get; protected set; } = false;
         public bool MouseWheelScrollEnabled { get; set; } = true;
-        private bool SliderThumbDragging = false;
+        public DateTime LastValueChange { get; protected set; } = DateTime.Now;
         private DispatcherTimer DispatcherTimerDelay = new DispatcherTimer();
+        private bool SkipChangedEvent = false;
 
         protected override void OnInitialized(EventArgs e)
         {
@@ -39,20 +42,29 @@ namespace ArnoldVinkCode.Styles
             }
         }
 
-        protected override void OnThumbDragCompleted(System.Windows.Controls.Primitives.DragCompletedEventArgs e)
+        protected override void OnThumbDragCompleted(DragCompletedEventArgs e)
         {
             SliderThumbDragging = false;
             base.OnThumbDragCompleted(e);
         }
 
-        protected override void OnThumbDragStarted(System.Windows.Controls.Primitives.DragStartedEventArgs e)
+        protected override void OnThumbDragStarted(DragStartedEventArgs e)
         {
             SliderThumbDragging = true;
             base.OnThumbDragStarted(e);
         }
 
+        public void ValueSkipEvent(dynamic newValue)
+        {
+            SkipChangedEvent = true;
+            base.Value = newValue;
+            SkipChangedEvent = false;
+        }
+
         protected override void OnValueChanged(double oldValue, double newValue)
         {
+            if (SkipChangedEvent) { return; }
+            LastValueChange = DateTime.Now;
             AVFunctions.TimerRenew(ref DispatcherTimerDelay);
             DispatcherTimerDelay.Interval = TimeSpan.FromMilliseconds(DelayTime);
             DispatcherTimerDelay.Tick += delegate
