@@ -158,7 +158,17 @@ namespace ArnoldVinkCode
         {
             try
             {
-                if (avTask.TaskStopRequest)
+                if (avTask == null)
+                {
+                    Debug.WriteLine("Loop task is null: " + avTask.Name);
+                    return false;
+                }
+                else if (avTask.TokenSource == null)
+                {
+                    Debug.WriteLine("Loop token is null: " + avTask.Name);
+                    return false;
+                }
+                else if (avTask.TaskStopRequest)
                 {
                     Debug.WriteLine("Loop task is requested to stop: " + avTask.Name);
                     return false;
