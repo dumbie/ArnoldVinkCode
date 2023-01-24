@@ -87,7 +87,7 @@ namespace ArnoldVinkCode
 
                 //Check directory
                 string directoryName = Path.GetDirectoryName(filePath);
-                if (!Directory.Exists(directoryName))
+                if (!string.IsNullOrWhiteSpace(directoryName) && !Directory.Exists(directoryName))
                 {
                     Directory.CreateDirectory(directoryName);
                     Debug.WriteLine("Created json file directory: " + directoryName);
