@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Threading;
 
@@ -15,11 +14,10 @@ namespace ArnoldVinkCode.Styles
         private bool SkipChangedEvent = false;
         private DispatcherTimer DispatcherTimerDelay = new DispatcherTimer();
 
-        public async void TextSkipEvent(dynamic newValue)
+        public void TextSkipEvent(dynamic newText)
         {
             SkipChangedEvent = true;
-            await Task.Delay(10);
-            base.Text = newValue;
+            base.Text = newText;
             SkipChangedEvent = false;
         }
 
