@@ -20,6 +20,18 @@ namespace ArnoldVinkCode.Styles
         public DateTime LastValueChange { get; protected set; } = DateTime.Now;
         private DispatcherTimer DispatcherTimerDelay = new DispatcherTimer();
         private bool SkipChangedEvent = false;
+        public bool RecentValueChange()
+        {
+            double changeDifference = (DateTime.Now - LastValueChange).TotalMilliseconds;
+            if (changeDifference > 2500 && !SliderThumbDragging)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
 
         protected override void OnInitialized(EventArgs e)
         {
@@ -54,8 +66,9 @@ namespace ArnoldVinkCode.Styles
             base.OnThumbDragStarted(e);
         }
 
-        public void ValueSkipEvent(dynamic newValue)
+        public void ValueSkipEvent(dynamic newValue, bool checkRecentChange)
         {
+            if (checkRecentChange && RecentValueChange()) { return; }
             SkipChangedEvent = true;
             base.Value = newValue;
             SkipChangedEvent = false;
