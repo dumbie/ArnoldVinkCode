@@ -343,6 +343,16 @@
         <Setter Property="Template" Value="{StaticResource SliderTemplateAccentRound}"/>
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidWhite}"/>
     </Style>
+    <Style x:Key="SliderRoundProgressBlack" TargetType="Slider">
+        <Setter Property="Height" Value="24"/>
+        <Setter Property="AutoToolTipPlacement" Value="TopLeft"/>
+        <Setter Property="Foreground" Value="{DynamicResource ApplicationAccentLightBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource ApplicationDimGrayBrush}"/>
+        <Setter Property="IsMoveToPointEnabled" Value="True"/>
+        <Setter Property="IsSnapToTickEnabled" Value="True"/>
+        <Setter Property="Template" Value="{StaticResource SliderTemplateAccentRoundProgress}"/>
+        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidWhite}"/>
+    </Style>
     <Style x:Key="SliderRoundWhite" TargetType="Slider">
         <Setter Property="Height" Value="24"/>
         <Setter Property="AutoToolTipPlacement" Value="TopLeft"/>
@@ -351,6 +361,16 @@
         <Setter Property="IsMoveToPointEnabled" Value="True"/>
         <Setter Property="IsSnapToTickEnabled" Value="True"/>
         <Setter Property="Template" Value="{StaticResource SliderTemplateAccentRound}"/>
+        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidBlack}"/>
+    </Style>
+    <Style x:Key="SliderRoundProgressWhite" TargetType="Slider">
+        <Setter Property="Height" Value="24"/>
+        <Setter Property="AutoToolTipPlacement" Value="TopLeft"/>
+        <Setter Property="Foreground" Value="{DynamicResource ApplicationAccentLightBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource ApplicationDimGrayBrush}"/>
+        <Setter Property="IsMoveToPointEnabled" Value="True"/>
+        <Setter Property="IsSnapToTickEnabled" Value="True"/>
+        <Setter Property="Template" Value="{StaticResource SliderTemplateAccentRoundProgress}"/>
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidBlack}"/>
     </Style>
 
