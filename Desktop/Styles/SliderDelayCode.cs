@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
@@ -66,10 +67,11 @@ namespace ArnoldVinkCode.Styles
             base.OnThumbDragStarted(e);
         }
 
-        public void ValueSkipEvent(dynamic newValue, bool checkRecentChange)
+        public async void ValueSkipEvent(dynamic newValue, bool checkRecentChange)
         {
             if (checkRecentChange && RecentValueChange()) { return; }
             SkipChangedEvent = true;
+            await Task.Delay(10);
             base.Value = newValue;
             SkipChangedEvent = false;
         }
