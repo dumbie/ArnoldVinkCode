@@ -10,7 +10,7 @@ namespace ArnoldVinkCode
     public partial class AVSettings
     {
         //Load - Application Config
-        public static Configuration LoadConfig(string configName)
+        public static Configuration SettingLoadConfig(string configName)
         {
             try
             {
@@ -26,7 +26,7 @@ namespace ArnoldVinkCode
         }
 
         //Check - Application Setting
-        public static bool Check(Configuration config, string settingName)
+        public static bool SettingCheck(Configuration config, string settingName)
         {
             try
             {
@@ -42,7 +42,7 @@ namespace ArnoldVinkCode
 
         //Load - Application Setting
         //AVSettings.Load(Configuration, "SettingName", typeof(Type));
-        public static dynamic Load(Configuration config, string settingName, Type settingType)
+        public static dynamic SettingLoad(Configuration config, string settingName, Type settingType)
         {
             try
             {
@@ -57,7 +57,7 @@ namespace ArnoldVinkCode
         }
 
         //Save - Application Setting
-        public static bool Save(Configuration config, string settingName, object settingValue)
+        public static bool SettingSave(Configuration config, string settingName, object settingValue)
         {
             try
             {
