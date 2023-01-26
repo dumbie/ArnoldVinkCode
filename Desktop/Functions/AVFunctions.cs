@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -627,6 +628,34 @@ namespace ArnoldVinkCode
         {
             //return aFloat * (1.0F - amountFloat) + bFloat * amountFloat;
             return aFloat + (bFloat - aFloat) * amountFloat;
+        }
+
+        //Count decimals in number
+        public static int DecimalGetLength(dynamic decimalValue, int decimalLimit)
+        {
+            try
+            {
+                string decimalConverted = decimalValue.ToString(CultureInfo.InvariantCulture);
+                int decimalIndex = decimalConverted.IndexOf(".") + 1;
+                if (decimalIndex == 0)
+                {
+                    return 0;
+                }
+                else
+                {
+                    int decimalLength = decimalConverted.Substring(decimalIndex).Length;
+                    if (decimalLimit > 0 && decimalLength > decimalLimit)
+                    {
+                        return decimalLimit;
+                    }
+                    else
+                    {
+                        return decimalLength;
+                    }
+                }
+            }
+            catch { }
+            return 0;
         }
     }
 }

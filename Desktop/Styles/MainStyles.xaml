@@ -322,6 +322,7 @@
         <Setter Property="IsSnapToTickEnabled" Value="True"/>
         <Setter Property="Template" Value="{StaticResource SliderTemplateAccentBlock}"/>
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidWhite}"/>
+        <EventSetter Event="PreviewMouseDown" Handler="Slider_PreviewMouseDown"/>
     </Style>
     <Style x:Key="SliderBlockWhite" TargetType="Slider">
         <Setter Property="Height" Value="24"/>
@@ -332,6 +333,7 @@
         <Setter Property="IsSnapToTickEnabled" Value="True"/>
         <Setter Property="Template" Value="{StaticResource SliderTemplateAccentBlock}"/>
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidBlack}"/>
+        <EventSetter Event="PreviewMouseDown" Handler="Slider_PreviewMouseDown"/>
     </Style>
     <Style x:Key="SliderRoundBlack" TargetType="Slider">
         <Setter Property="Height" Value="24"/>
@@ -342,6 +344,7 @@
         <Setter Property="IsSnapToTickEnabled" Value="True"/>
         <Setter Property="Template" Value="{StaticResource SliderTemplateAccentRound}"/>
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidWhite}"/>
+        <EventSetter Event="PreviewMouseDown" Handler="Slider_PreviewMouseDown"/>
     </Style>
     <Style x:Key="SliderRoundProgressBlack" TargetType="Slider">
         <Setter Property="Height" Value="24"/>
@@ -352,6 +355,7 @@
         <Setter Property="IsSnapToTickEnabled" Value="True"/>
         <Setter Property="Template" Value="{StaticResource SliderTemplateAccentRoundProgress}"/>
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidWhite}"/>
+        <EventSetter Event="PreviewMouseDown" Handler="Slider_PreviewMouseDown"/>
     </Style>
     <Style x:Key="SliderRoundWhite" TargetType="Slider">
         <Setter Property="Height" Value="24"/>
@@ -362,6 +366,7 @@
         <Setter Property="IsSnapToTickEnabled" Value="True"/>
         <Setter Property="Template" Value="{StaticResource SliderTemplateAccentRound}"/>
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidBlack}"/>
+        <EventSetter Event="PreviewMouseDown" Handler="Slider_PreviewMouseDown"/>
     </Style>
     <Style x:Key="SliderRoundProgressWhite" TargetType="Slider">
         <Setter Property="Height" Value="24"/>
@@ -372,6 +377,7 @@
         <Setter Property="IsSnapToTickEnabled" Value="True"/>
         <Setter Property="Template" Value="{StaticResource SliderTemplateAccentRoundProgress}"/>
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisualStyleSolidBlack}"/>
+        <EventSetter Event="PreviewMouseDown" Handler="Slider_PreviewMouseDown"/>
     </Style>
 
     <!--Thumb Styles-->

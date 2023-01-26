@@ -16,5 +16,15 @@ namespace ArnoldVinkCode.Styles
             }
             catch { }
         }
+
+        private void Slider_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                Slider slider = sender as Slider;
+                slider.AutoToolTipPrecision = AVFunctions.DecimalGetLength(slider.TickFrequency, 2);
+            }
+            catch { }
+        }
     }
 }

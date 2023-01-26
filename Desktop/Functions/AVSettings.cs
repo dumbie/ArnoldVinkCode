@@ -41,13 +41,20 @@ namespace ArnoldVinkCode
         }
 
         //Load - Application Setting
-        //AVSettings.Load(Configuration, "SettingName", typeof(Type));
+        //SettingLoad(Configuration, "SettingName", typeof(Type));
         public static dynamic SettingLoad(Configuration config, string settingName, Type settingType)
         {
             try
             {
                 if (config == null) { config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None); }
-                return Convert.ChangeType(config.AppSettings.Settings[settingName].Value, settingType, CultureInfo.InvariantCulture);
+
+                string loadValue = config.AppSettings.Settings[settingName].Value;
+                if (settingType == typeof(double) || settingType == typeof(float) || settingType == typeof(decimal))
+                {
+                    loadValue = loadValue.Replace(",", ".");
+                }
+
+                return Convert.ChangeType(loadValue, settingType, CultureInfo.InvariantCulture);
             }
             catch (Exception ex)
             {
@@ -57,13 +64,22 @@ namespace ArnoldVinkCode
         }
 
         //Save - Application Setting
-        public static bool SettingSave(Configuration config, string settingName, object settingValue)
+        public static bool SettingSave(Configuration config, string settingName, dynamic settingValue)
         {
             try
             {
                 if (config == null) { config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None); }
                 config.AppSettings.Settings.Remove(settingName);
-                config.AppSettings.Settings.Add(settingName, Convert.ToString(settingValue, CultureInfo.InvariantCulture));
+
+                if (settingValue.GetType() == typeof(string))
+                {
+                    config.AppSettings.Settings.Add(settingName, settingValue);
+                }
+                else
+                {
+                    config.AppSettings.Settings.Add(settingName, Convert.ToString(settingValue, CultureInfo.InvariantCulture));
+                }
+
                 config.Save();
                 ConfigurationManager.RefreshSection("appSettings");
                 return true;
@@ -71,6 +87,24 @@ namespace ArnoldVinkCode
             catch (Exception ex)
             {
                 Debug.WriteLine("Failed to save setting: " + settingName + " / " + ex.Message);
+                return false;
+            }
+        }
+
+        //Remove - Application Setting
+        public static bool SettingRemove(Configuration config, string settingName)
+        {
+            try
+            {
+                if (config == null) { config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None); }
+                config.AppSettings.Settings.Remove(settingName);
+                config.Save();
+                ConfigurationManager.RefreshSection("appSettings");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to remove setting: " + settingName + " / " + ex.Message);
                 return false;
             }
         }
