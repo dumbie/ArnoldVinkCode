@@ -41,15 +41,21 @@ namespace ArnoldVinkCode
                 appxDetails.ExecutableName = Path.GetFileName(appxApplication.Executable);
 
                 //Get and set executable alias name
-                foreach (ExtensionUAP3 extUAP3 in appxApplication.Extensions.ExtensionUAP3)
+                if (appxApplication.Extensions != null && appxApplication.Extensions.ExtensionUAP3 != null)
                 {
-                    try
+                    foreach (ExtensionUAP3 extUAP3 in appxApplication.Extensions.ExtensionUAP3)
                     {
-                        appxDetails.ExecutableAliasName = Path.GetFileName(extUAP3.AppExecutionAlias.ExecutionAlias.Alias);
+                        try
+                        {
+                            appxDetails.ExecutableAliasName = Path.GetFileName(extUAP3.AppExecutionAlias.ExecutionAlias.Alias);
+                        }
+                        catch { }
                     }
-                    catch { }
                 }
-                if (string.IsNullOrWhiteSpace(appxDetails.ExecutableAliasName)) { appxDetails.ExecutableAliasName = appxDetails.ExecutableName; }
+                if (string.IsNullOrWhiteSpace(appxDetails.ExecutableAliasName))
+                {
+                    appxDetails.ExecutableAliasName = appxDetails.ExecutableName;
+                }
 
                 //Get and set application names
                 appxDetails.AppIdentifier = appxApplication.Id;
