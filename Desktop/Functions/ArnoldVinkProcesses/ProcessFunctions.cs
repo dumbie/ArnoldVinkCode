@@ -1,208 +1,38 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Management;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
-using Windows.ApplicationModel;
-using static ArnoldVinkCode.AVInputOutputClass;
-using static ArnoldVinkCode.AVInputOutputKeyboard;
 using static ArnoldVinkCode.AVInteropCom;
 using static ArnoldVinkCode.AVInteropDll;
-using static ArnoldVinkCode.AVUwpAppx;
-using static ArnoldVinkCode.ProcessClasses;
-using static ArnoldVinkCode.ProcessNtQueryInformation;
-using static ArnoldVinkCode.ProcessUwpFunctions;
 
 namespace ArnoldVinkCode
 {
-    public partial class ProcessFunctions
+    public partial class AVProcess
     {
-        //Close open start menu, cortana or search
-        public static async Task CloseOpenWindowsStartMenu(ProcessMulti foregroundProcess)
+        //Check if path is uwp application
+        public static bool Check_PathUwpApplication(string targetPath)
         {
             try
             {
-                if (foregroundProcess.Name == "SearchUI")
-                {
-                    Debug.WriteLine("Start menu is currently open, pressing escape to close it.");
-                    KeyPressReleaseSingle(KeysVirtual.Escape);
-                    await Task.Delay(10);
-                }
+                return !targetPath.Contains("\\") && !targetPath.Contains("/") && targetPath.Contains("!") && targetPath.Contains("_");
             }
             catch { }
-        }
-
-        //Close open Windows system menu
-        public static async Task CloseOpenWindowsSystemMenu(ProcessMulti foregroundProcess)
-        {
-            try
-            {
-                Debug.WriteLine("Closing system menu for window: " + foregroundProcess.WindowHandle);
-                SendMessage(foregroundProcess.WindowHandle, (int)WindowMessages.WM_CANCELMODE, 0, 0);
-                await Task.Delay(10);
-            }
-            catch { }
-        }
-
-        //Close open Windows prompts
-        public static async Task CloseOpenWindowsPrompts()
-        {
-            try
-            {
-                //Windows administrator consent prompt
-                if (GetProcessByNameOrTitle("consent", false, true) != null)
-                {
-                    Debug.WriteLine("Windows administrator consent prompt is open, killing the process.");
-                    bool closedProcess = CloseProcessesByNameOrTitle("consent", false, true);
-                    await Task.Delay(500);
-                    if (closedProcess)
-                    {
-                        KeyPressReleaseSingle(KeysVirtual.Escape);
-                        await Task.Delay(10);
-                    }
-                }
-
-                //Windows feature installation prompt
-                if (GetProcessByNameOrTitle("fondue", false, true) != null)
-                {
-                    Debug.WriteLine("Windows feature installation prompt is open, killing the process.");
-                    CloseProcessesByNameOrTitle("fondue", false, true);
-                }
-            }
-            catch { }
-        }
-
-        //Focus on a process window
-        public static async Task<bool> FocusProcessWindow(string processTitle, int processId, IntPtr processWindowHandle, WindowShowCommand windowShowCommand, bool setWindowState, bool setTempTopMost)
-        {
-            try
-            {
-                //Prepare the process focus
-                async Task<bool> TaskAction()
-                {
-                    try
-                    {
-                        //Close open Windows prompts
-                        await CloseOpenWindowsPrompts();
-
-                        //Get the current focused application
-                        ProcessMulti foregroundProcess = GetProcessMultiFromWindowHandle(GetForegroundWindow());
-
-                        //Close open start menu, cortana or search
-                        await CloseOpenWindowsStartMenu(foregroundProcess);
-
-                        //Close open Windows system menu
-                        await CloseOpenWindowsSystemMenu(foregroundProcess);
-
-                        //Detect the previous window state
-                        if (windowShowCommand == WindowShowCommand.None && setWindowState)
-                        {
-                            WindowPlacement processWindowState = new WindowPlacement();
-                            GetWindowPlacement(processWindowHandle, ref processWindowState);
-                            Debug.WriteLine("Detected the previous window state: " + processWindowState.windowFlags);
-                            if (processWindowState.windowFlags == WindowFlags.RestoreToMaximized)
-                            {
-                                windowShowCommand = WindowShowCommand.ShowMaximized;
-                            }
-                            else
-                            {
-                                windowShowCommand = WindowShowCommand.Restore;
-                            }
-                        }
-
-                        //Change the window state command
-                        if (setWindowState)
-                        {
-                            ShowWindowAsync(processWindowHandle, windowShowCommand);
-                            await Task.Delay(10);
-
-                            ShowWindow(processWindowHandle, windowShowCommand);
-                            await Task.Delay(10);
-                        }
-
-                        //Set the window as top most
-                        if (setTempTopMost)
-                        {
-                            SetWindowPos(processWindowHandle, (IntPtr)SWP_WindowPosition.TopMost, 0, 0, 0, 0, (int)SWP_WindowFlags.NOMOVE | (int)SWP_WindowFlags.NOSIZE);
-                            await Task.Delay(10);
-                        }
-
-                        //Retry to show the window
-                        for (int i = 0; i < 2; i++)
-                        {
-                            try
-                            {
-                                //Allow changing window
-                                AllowSetForegroundWindow(processId);
-                                await Task.Delay(10);
-
-                                //Bring window to top
-                                BringWindowToTop(processWindowHandle);
-                                await Task.Delay(10);
-
-                                //Switch to the window
-                                SwitchToThisWindow(processWindowHandle, true);
-                                await Task.Delay(10);
-
-                                //Focus on the window
-                                UiaFocusWindowHandle(processWindowHandle);
-                                await Task.Delay(10);
-                            }
-                            catch (Exception ex)
-                            {
-                                Debug.WriteLine("Process focus error: " + ex.Message);
-                            }
-                        }
-
-                        //Disable the window as top most
-                        if (setTempTopMost)
-                        {
-                            SetWindowPos(processWindowHandle, (IntPtr)SWP_WindowPosition.NoTopMost, 0, 0, 0, 0, (int)SWP_WindowFlags.NOMOVE | (int)SWP_WindowFlags.NOSIZE);
-                            await Task.Delay(10);
-                        }
-
-                        //Return bool
-                        Debug.WriteLine("Focused process window: " + processTitle + " WindowHandle: " + processWindowHandle + " ShowCmd: " + windowShowCommand);
-                        return true;
-                    }
-                    catch { }
-                    Debug.WriteLine("Failed focusing process: " + processTitle);
-                    return false;
-                };
-
-                //Focus the process
-                return await AVActions.TaskStartReturn(TaskAction).Result;
-            }
-            catch { }
-            Debug.WriteLine("Failed focusing process: " + processTitle);
             return false;
         }
 
-        //Enumerate all thread windows including fullscreen
-        public static List<IntPtr> EnumThreadWindows(int threadId)
+        //Check if path is url protocol
+        public static bool Check_PathUrlProtocol(string targetPath)
         {
-            IntPtr childWindow = IntPtr.Zero;
-            List<IntPtr> listIntPtr = new List<IntPtr>();
             try
             {
-                while ((childWindow = FindWindowEx(IntPtr.Zero, childWindow, null, null)) != IntPtr.Zero)
-                {
-                    try
-                    {
-                        if (GetWindowThreadProcessId(childWindow, out int processId) == threadId)
-                        {
-                            listIntPtr.Add(childWindow);
-                        }
-                    }
-                    catch { }
-                }
+                bool dividerPosition = targetPath.IndexOf(":") > 1;
+                bool urlProtocol = targetPath.Contains(":/") || targetPath.Contains(":\\");
+                return urlProtocol && dividerPosition;
             }
             catch { }
-            return listIntPtr;
+            return false;
         }
 
         //Check if a specific process is running by id
@@ -297,7 +127,13 @@ namespace ArnoldVinkCode
             string ProcessTitle = "Unknown";
             try
             {
-                int WindowTextBuilderLength = GetWindowTextLength(targetWindowHandle) + 1;
+                int WindowTextBuilderLength = GetWindowTextLength(targetWindowHandle);
+                if (WindowTextBuilderLength <= 0)
+                {
+                    return ProcessTitle;
+                }
+
+                WindowTextBuilderLength += 1;
                 StringBuilder WindowTextBuilder = new StringBuilder(WindowTextBuilderLength);
                 GetWindowText(targetWindowHandle, WindowTextBuilder, WindowTextBuilder.Capacity);
                 string BuilderString = WindowTextBuilder.ToString();
@@ -321,7 +157,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                StringBuilder classNameBuilder = new StringBuilder(256);
+                StringBuilder classNameBuilder = new StringBuilder(1024);
                 GetClassName(targetWindowHandle, classNameBuilder, classNameBuilder.Capacity);
                 return classNameBuilder.ToString();
             }
@@ -340,7 +176,7 @@ namespace ArnoldVinkCode
             catch { }
             try
             {
-                if (processId == -1 || processId == 0)
+                if (processId <= 0)
                 {
                     //Debug.WriteLine("Process id 0, using GetProcessHandleFromHwnd as backup.");
                     processId = GetProcessId(GetProcessHandleFromHwnd(targetWindowHandle));
@@ -348,29 +184,6 @@ namespace ArnoldVinkCode
             }
             catch { }
             return processId;
-        }
-
-        //Get multi process from window handle
-        public static ProcessMulti GetProcessMultiFromWindowHandle(IntPtr targetWindowHandle)
-        {
-            try
-            {
-                if (CheckProcessIsUwp(targetWindowHandle))
-                {
-                    return GetUwpProcessMultiByWindowHandle(targetWindowHandle);
-                }
-                else
-                {
-                    int processId = GetProcessIdFromWindowHandle(targetWindowHandle);
-                    Process process = Process.GetProcessById(processId);
-                    return ConvertProcessToProcessMulti(process, null, null);
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("Failed to get multi process: " + ex.Message);
-                return null;
-            }
         }
 
         /// <summary>
@@ -436,65 +249,6 @@ namespace ArnoldVinkCode
             {
                 Debug.WriteLine("Failed to get processes by name: " + ex.Message);
                 return null;
-            }
-        }
-
-        //Close processes by name or window title
-        public static bool CloseProcessesByNameOrTitle(string processName, bool windowTitle, bool exactName)
-        {
-            try
-            {
-                bool processClosed = false;
-                if (windowTitle)
-                {
-                    foreach (Process AllProcess in Process.GetProcesses().Where(x => x.MainWindowTitle.ToLower().Contains(processName.ToLower())))
-                    {
-                        KillProcessTreeById(AllProcess.Id, true);
-                        processClosed = true;
-                    }
-                }
-                else
-                {
-                    processName = Path.GetFileNameWithoutExtension(processName);
-                    if (exactName)
-                    {
-                        foreach (Process AllProcess in Process.GetProcessesByName(processName))
-                        {
-                            KillProcessTreeById(AllProcess.Id, true);
-                            processClosed = true;
-                        }
-                    }
-                    else
-                    {
-                        foreach (Process AllProcess in Process.GetProcesses().Where(x => x.ProcessName.ToLower().Contains(processName.ToLower())))
-                        {
-                            KillProcessTreeById(AllProcess.Id, true);
-                            processClosed = true;
-                        }
-                    }
-                }
-                return processClosed;
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("Failed to close processes by name: " + ex.Message);
-                return false;
-            }
-        }
-
-        //Close process by window handle
-        public static bool CloseProcessByWindowHandle(IntPtr windowHandle)
-        {
-            try
-            {
-                SendMessage(windowHandle, (int)WindowMessages.WM_CLOSE, 0, 0);
-                SendMessage(windowHandle, (int)WindowMessages.WM_QUIT, 0, 0);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("Failed to close process by handle: " + ex.Message);
-                return false;
             }
         }
 
@@ -663,152 +417,10 @@ namespace ArnoldVinkCode
                     return false;
                 }
 
-                ////Check if the window size is not zero
-                //WindowRectangle PositionRect = new WindowRectangle();
-                //GetWindowRect(TargetWindowHandle, ref PositionRect);
-                //int WindowWidth = PositionRect.Right - PositionRect.Left;
-                //int WindowHeight = PositionRect.Bottom - PositionRect.Top;
-                //if (WindowWidth < 25 && WindowHeight < 25)
-                //{
-                //    Debug.WriteLine("Window is too small to be a proper window.");
-                //    return false;
-                //}
-
-                ////Check the process window style
-                //WindowStyles CurrentStyle = (WindowStyles)GetWindowLongAuto(TargetWindowHandle, (int)WindowLongFlags.GWL_STYLE).ToInt64();
-                //if (!CurrentStyle.HasFlag(WindowStyles.WS_VISIBLE))
-                //{
-                //    Debug.WriteLine("Handle is missing WS_VISIBLE and can't be shown.");
-                //    return false;
-                //}
-
                 return true;
             }
             catch { }
             return false;
-        }
-
-        //Convert Process to a ProcessMulti
-        public static ProcessMulti ConvertProcessToProcessMulti(Process convertProcess, Package uwpAppPackage, AppxDetails uwpAppxDetails)
-        {
-            ProcessMulti convertedProcess = new ProcessMulti();
-            try
-            {
-                //Set process identifier
-                convertedProcess.Identifier = convertProcess.Id;
-
-                //Set process name
-                convertedProcess.Name = convertProcess.ProcessName;
-
-                //Set process starttime
-                convertedProcess.StartTime = convertProcess.StartTime;
-
-                //Set window handle
-                convertedProcess.WindowHandle = convertProcess.MainWindowHandle;
-
-                //Get window title
-                convertedProcess.WindowTitle = GetWindowTitleFromProcess(convertProcess);
-
-                //Get class name
-                convertedProcess.ClassName = GetClassNameFromWindowHandle(convertProcess.MainWindowHandle);
-
-                //Get executable path
-                string executablePath = GetExecutablePathFromProcess(convertProcess);
-
-                //Set executable name
-                convertedProcess.ExecutableName = Path.GetFileName(executablePath);
-
-                //Set launch argument
-                convertedProcess.Argument = GetLaunchArgumentsFromProcess(convertProcess, executablePath);
-
-                //Set type and path
-                string processAppUserModelId = GetAppUserModelIdFromProcess(convertProcess);
-                if (!string.IsNullOrWhiteSpace(processAppUserModelId))
-                {
-                    convertedProcess.Type = ProcessType.UWP;
-                    convertedProcess.Path = processAppUserModelId;
-                }
-                else
-                {
-                    convertedProcess.Type = ProcessType.Win32;
-                    convertedProcess.Path = executablePath;
-                }
-
-                //Check if application is UWP
-                if (convertedProcess.Type == ProcessType.UWP)
-                {
-                    //Check if AppPackage is provided
-                    if (uwpAppPackage == null || uwpAppxDetails == null)
-                    {
-                        convertedProcess.AppPackage = GetUwpAppPackageByAppUserModelId(processAppUserModelId);
-                        convertedProcess.AppxDetails = GetUwpAppxDetailsFromAppPackage(convertedProcess.AppPackage);
-                    }
-                    else
-                    {
-                        convertedProcess.AppPackage = uwpAppPackage;
-                        convertedProcess.AppxDetails = uwpAppxDetails;
-                    }
-
-                    //Check if application is Win32Store
-                    if (CheckClassNameIsUwp(convertedProcess.ClassName))
-                    {
-                        convertedProcess.WindowTitle = convertedProcess.AppxDetails.DisplayName;
-                        convertedProcess.WindowHandle = GetUwpWindowFromAppUserModelId(processAppUserModelId);
-                    }
-                    else
-                    {
-                        convertedProcess.Type = ProcessType.Win32Store;
-                    }
-                }
-
-                //Debug.WriteLine("Identifier: " + convertedProcess.Identifier);
-                //Debug.WriteLine("Type: " + convertedProcess.Type);
-                //Debug.WriteLine("Name: " + convertedProcess.Name);
-                //Debug.WriteLine("ExecutableName: " + convertedProcess.ExecutableName);
-                //Debug.WriteLine("Path: " + convertedProcess.Path);
-                //Debug.WriteLine("Argument: " + convertedProcess.Argument);
-                //Debug.WriteLine("ClassName: " + convertedProcess.ClassName);
-                //Debug.WriteLine("WindowTitle: " + convertedProcess.WindowTitle);
-                //Debug.WriteLine("WindowHandle: " + convertedProcess.WindowHandle);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("Failed to convert Process to ProcessMulti: " + ex.Message);
-            }
-            return convertedProcess;
-        }
-
-        //Kill process and tree by id
-        public static bool KillProcessTreeById(int processId, bool killTree)
-        {
-            try
-            {
-                //Kill tree processes
-                if (killTree)
-                {
-                    using (ManagementObjectSearcher objSearcher = new ManagementObjectSearcher("Select * From Win32_Process Where ParentProcessID=" + processId))
-                    {
-                        using (ManagementObjectCollection objCollection = objSearcher.Get())
-                        {
-                            foreach (ManagementObject objProcess in objCollection)
-                            {
-                                KillProcessTreeById(Convert.ToInt32(objProcess["ProcessID"]), killTree);
-                            }
-                        }
-                    }
-                }
-
-                //Kill parent process
-                Process.GetProcessById(processId).Kill();
-
-                Debug.WriteLine("Killed process tree: " + processId);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("Failed to kill process tree: " + ex.Message);
-                return false;
-            }
         }
     }
 }

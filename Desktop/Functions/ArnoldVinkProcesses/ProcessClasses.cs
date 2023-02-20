@@ -5,8 +5,9 @@ using static ArnoldVinkCode.AVUwpAppx;
 
 namespace ArnoldVinkCode
 {
-    public partial class ProcessClasses
+    public partial class AVProcess
     {
+        //Enumerators
         public enum ProcessType : int
         {
             Unknown = -1,
@@ -15,6 +16,7 @@ namespace ArnoldVinkCode
             UWP = 2,
         }
 
+        //Classes
         public class ProcessMulti
         {
             public int Identifier { get; set; } = -1;
