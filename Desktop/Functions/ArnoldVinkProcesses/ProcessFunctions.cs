@@ -331,11 +331,8 @@ namespace ArnoldVinkCode
             string launchArguments = string.Empty;
             try
             {
-                string removeFromArgument = '"' + executablePath + '"';
                 USER_PROCESS_PARAMETERS processParameter = USER_PROCESS_PARAMETERS.CommandLine;
                 launchArguments = GetProcessParameterString(targetProcess.Id, processParameter);
-                launchArguments = AVFunctions.StringReplaceFirst(launchArguments, removeFromArgument, string.Empty, true);
-                launchArguments = AVFunctions.StringRemoveStart(launchArguments, " ");
             }
             catch { }
             return launchArguments;

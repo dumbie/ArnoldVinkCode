@@ -5,7 +5,7 @@ namespace ArnoldVinkCode
 {
     public partial class AVProcessTool
     {
-        public static int Restart_ProcessId(int processId, string arguments)
+        public static int Restart_ProcessId(int processId, string newArguments, bool withoutArguments)
         {
             try
             {
@@ -14,9 +14,14 @@ namespace ArnoldVinkCode
                 //Set process tool arguments
                 string toolArguments = "-restart -pid=" + processId;
 
-                if (!string.IsNullOrWhiteSpace(arguments))
+                if (withoutArguments)
                 {
-                    toolArguments += " -args=" + "\"" + arguments + "\"";
+                    toolArguments += " -withoutargs";
+                }
+
+                if (!string.IsNullOrWhiteSpace(newArguments))
+                {
+                    toolArguments += " -args=" + CommandLine_PrepareArgument(newArguments);
                 }
 
                 //Start the process tool

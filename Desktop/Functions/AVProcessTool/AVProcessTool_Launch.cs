@@ -9,7 +9,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                Debug.WriteLine("Process tool launching, exe: " + exePath);
+                Debug.WriteLine("Process tool launching, exe: " + exePath + " (" + arguments + ")");
 
                 //Check executable path
                 if (string.IsNullOrWhiteSpace(exePath))
@@ -19,16 +19,16 @@ namespace ArnoldVinkCode
                 }
 
                 //Set process tool arguments
-                string toolArguments = "-exePath=" + "\"" + exePath + "\"";
+                string toolArguments = "-exePath=" + CommandLine_PrepareArgument(exePath);
 
                 if (!string.IsNullOrWhiteSpace(workPath))
                 {
-                    toolArguments += " -workpath=" + "\"" + workPath + "\"";
+                    toolArguments += " -workPath=" + CommandLine_PrepareArgument(workPath);
                 }
 
                 if (!string.IsNullOrWhiteSpace(arguments))
                 {
-                    toolArguments += " -args=" + "\"" + arguments + "\"";
+                    toolArguments += " -args=" + CommandLine_PrepareArgument(arguments);
                 }
 
                 if (normalAccess)
@@ -69,7 +69,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                Debug.WriteLine("Process tool launching, uwp: " + appUserModelId);
+                Debug.WriteLine("Process tool launching, uwp: " + appUserModelId + " (" + arguments + ")");
 
                 //Check uwp application id
                 if (string.IsNullOrWhiteSpace(appUserModelId))
@@ -79,11 +79,11 @@ namespace ArnoldVinkCode
                 }
 
                 //Set process tool arguments
-                string toolArguments = "-uwp=" + "\"" + appUserModelId + "\"";
+                string toolArguments = "-uwp=" + CommandLine_PrepareArgument(appUserModelId);
 
                 if (!string.IsNullOrWhiteSpace(arguments))
                 {
-                    toolArguments += " -args=" + "\"" + arguments + "\"";
+                    toolArguments += " -args=" + CommandLine_PrepareArgument(arguments);
                 }
 
                 //Start the process tool

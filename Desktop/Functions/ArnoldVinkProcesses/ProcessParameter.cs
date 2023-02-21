@@ -7,9 +7,44 @@ namespace ArnoldVinkCode
 {
     public partial class AVProcess
     {
+        //Remove executable path from commandline
+        public static string CommandLine_RemoveExePath(string commandLine)
+        {
+            try
+            {
+                //Check command line
+                if (string.IsNullOrWhiteSpace(commandLine))
+                {
+                    return commandLine;
+                }
+
+                //Remove executable path
+                int endIndex = 0;
+                bool inQuotes = false;
+                foreach (char commandChar in commandLine)
+                {
+                    if (commandChar == '"')
+                    {
+                        inQuotes = !inQuotes;
+                    }
+                    else if (!inQuotes && commandChar == ' ')
+                    {
+                        break;
+                    }
+                    endIndex++;
+                }
+                commandLine = commandLine.Substring(endIndex);
+
+                //Trim command line
+                commandLine = commandLine.Trim();
+            }
+            catch { }
+            return commandLine;
+        }
+
         public static string GetProcessParameterString(int processId, USER_PROCESS_PARAMETERS requestedProcessParameter)
         {
-            string Parameterstring = string.Empty;
+            string parameterString = string.Empty;
             try
             {
                 //Open the process for reading
@@ -17,7 +52,7 @@ namespace ArnoldVinkCode
                 if (openProcessHandle == IntPtr.Zero)
                 {
                     //Debug.WriteLine("Failed to open the process: " + processId);
-                    return Parameterstring;
+                    return parameterString;
                 }
 
                 //Check if Windows is 64 bit
@@ -36,7 +71,7 @@ namespace ArnoldVinkCode
                 if (ntQuery != 0)
                 {
                     Debug.WriteLine("Failed to query information, from process: " + processId);
-                    return Parameterstring;
+                    return parameterString;
                 }
 
                 IntPtr process_parameter = new IntPtr();
@@ -44,28 +79,34 @@ namespace ArnoldVinkCode
                 if (!ReadProcessMemory(openProcessHandle, new IntPtr(pebBaseAddress + processParametersOffset), ref process_parameter, new IntPtr(Marshal.SizeOf(process_parameter)), IntPtr.Zero))
                 {
                     Debug.WriteLine("Failed to read parameter address, from process: " + processId);
-                    return Parameterstring;
+                    return parameterString;
                 }
 
                 UNICODE_string unicode_string = new UNICODE_string();
                 if (!ReadProcessMemory(openProcessHandle, new IntPtr(process_parameter.ToInt64() + userParameterOffset), ref unicode_string, new IntPtr(unicode_string.Size), IntPtr.Zero))
                 {
                     Debug.WriteLine("Failed to read parameter unicode, from process: " + processId);
-                    return Parameterstring;
+                    return parameterString;
                 }
 
-                string converted_string = new string(' ', unicode_string.Length / 2);
+                string converted_string = new string(' ', unicode_string.Length);
                 if (!ReadProcessMemory(openProcessHandle, unicode_string.Buffer, converted_string, new IntPtr(unicode_string.Length), IntPtr.Zero))
                 {
                     Debug.WriteLine("Failed to read parameter string, from process: " + processId);
-                    return Parameterstring;
+                    return parameterString;
+                }
+                parameterString = converted_string;
+
+                //Remove executable path from commandline
+                if (requestedProcessParameter == USER_PROCESS_PARAMETERS.CommandLine)
+                {
+                    parameterString = CommandLine_RemoveExePath(parameterString);
                 }
 
-                Parameterstring = converted_string;
                 CloseHandleAuto(openProcessHandle);
             }
             catch { }
-            return Parameterstring;
+            return parameterString;
         }
 
         //Enumerators

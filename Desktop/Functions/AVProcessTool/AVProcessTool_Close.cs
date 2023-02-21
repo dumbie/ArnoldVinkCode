@@ -45,7 +45,7 @@ namespace ArnoldVinkCode
 
                 if (!string.IsNullOrWhiteSpace(processName))
                 {
-                    toolArguments += " -pname=" + "\"" + processName + "\"";
+                    toolArguments += " -pname=" + CommandLine_PrepareArgument(processName);
                 }
 
                 //Start the process tool
