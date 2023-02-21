@@ -583,11 +583,53 @@ namespace ArnoldVinkCode
             public IntPtr lpData;
         }
 
-        //Register Hotkeys
+        //Windows Hook
         [DllImport("user32.dll")]
-        public static extern bool RegisterHotKey(IntPtr hWnd, int id, uint keysModifier, uint keysVirtual);
+        public static extern IntPtr SetWindowsHookEx(WindowHookTypes idHook, LowLevelKeyboardCallBack callBack, IntPtr hInstance, uint threadId);
+
         [DllImport("user32.dll")]
-        public static extern bool UnregisterHotKey(IntPtr hWnd, int id);
+        public static extern bool UnhookWindowsHookEx(IntPtr hInstance);
+
+        public delegate IntPtr LowLevelKeyboardCallBack(int nCode, IntPtr wParam, KBDLLHOOKSTRUCT lParam);
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct KBDLLHOOKSTRUCT
+        {
+            public int vkCode;
+            public int scanCode;
+            public KBDLLHOOKSTRUCTFLAGS flags;
+            public int time;
+            public IntPtr dwExtraInfo;
+        }
+
+        public enum KBDLLHOOKSTRUCTFLAGS : int
+        {
+            LLKHF_EXTENDED = 0x00000001,
+            LLKHF_LOWER_IL_INJECTED = 0x00000002,
+            LLKHF_INJECTED = 0x00000010,
+            LLKHF_ALTDOWN = 0x00000020,
+            LLKHF_UP = 0x00000080
+        }
+
+        public enum WindowHookTypes : int
+        {
+            WH_MSGFILTER = -1,
+            WH_JOURNALRECORD = 0,
+            WH_JOURNALPLAYBACK = 1,
+            WH_KEYBOARD = 2,
+            WH_GETMESSAGE = 3,
+            WH_CALLWNDPROC = 4,
+            WH_CBT = 5,
+            WH_SYSMSGFILTER = 6,
+            WH_MOUSE = 7,
+            WH_HARDWARE = 8,
+            WH_DEBUG = 9,
+            WH_SHELL = 10,
+            WH_FOREGROUNDIDLE = 11,
+            WH_CALLWNDPROCRET = 12,
+            WH_KEYBOARD_LL = 13,
+            WH_MOUSE_LL = 14
+        }
 
         //Window Placement
         [DllImport("user32.dll")]

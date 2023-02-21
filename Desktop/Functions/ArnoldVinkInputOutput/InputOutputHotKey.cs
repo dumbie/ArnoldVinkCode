@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
-using System.Windows.Interop;
 using static ArnoldVinkCode.AVInputOutputClass;
 using static ArnoldVinkCode.AVInteropDll;
 
@@ -9,93 +9,71 @@ namespace ArnoldVinkCode
     public partial class AVInputOutputHotKey
     {
         //Variables
-        private int vHotKeyIdentifierCount = 0;
+        private static IntPtr vWindowHookPointer = IntPtr.Zero;
+        private static LowLevelKeyboardCallBack vLowLevelKeyboardCallback = LowLevelKeyboardCallbackCode;
+
+        //Lists
+        private static List<KeysVirtual> vListKeysPressed = new List<KeysVirtual>();
 
         //Events
-        public delegate void HotKeyPressed(KeysModifier keysModifier, KeysVirtual keysVirtual);
-        public event HotKeyPressed EventHotKeyPressed;
+        public delegate void HotKeyPressed(List<KeysVirtual> keysPressed);
+        public static event HotKeyPressed EventHotKeyPressed;
 
-        //Register receiving messages
-        public AVInputOutputHotKey()
+        //Start receiving key input
+        public static void Start()
         {
             try
             {
-                ComponentDispatcher.ThreadFilterMessage += ReceivedFilterMessage;
+                vWindowHookPointer = SetWindowsHookEx(WindowHookTypes.WH_KEYBOARD_LL, vLowLevelKeyboardCallback, IntPtr.Zero, 0);
             }
             catch { }
         }
 
-        //Check received message
-        void ReceivedFilterMessage(ref MSG windowMessage, ref bool messageHandled)
+        //Stop receiving key input
+        public static void Stop()
         {
             try
             {
-                //Check window message identifier
-                if (windowMessage.message == (int)WindowMessages.WM_HOTKEY)
-                {
-                    //Get pressed keys
-                    KeysModifier keysModifier = (KeysModifier)((int)windowMessage.lParam & 0xFFFF);
-                    KeysVirtual keysVirtual = (KeysVirtual)(((int)windowMessage.lParam >> 16) & 0xFFFF);
-
-                    //Trigger event
-                    EventHotKeyPressed(keysModifier, keysVirtual);
-                }
+                UnhookWindowsHookEx(vWindowHookPointer);
+                vWindowHookPointer = IntPtr.Zero;
             }
             catch { }
         }
 
-        //Register hotkey
-        public int RegisterHotKey(KeysModifier keysModifier, KeysVirtual keysVirtual)
+        //Check received keyboard input
+        private static IntPtr LowLevelKeyboardCallbackCode(int nCode, IntPtr wParam, KBDLLHOOKSTRUCT lParam)
         {
             try
             {
-                int hotKeyIdentifier = vHotKeyIdentifierCount;
-                bool hotkeyRegistered = AVInteropDll.RegisterHotKey(IntPtr.Zero, hotKeyIdentifier, (uint)keysModifier, (uint)keysVirtual);
-                if (hotkeyRegistered)
+                if (nCode >= 0)
                 {
-                    Debug.WriteLine("Registered hotkey: " + keysModifier + "/" + keysVirtual + "/ID" + hotKeyIdentifier);
-                    vHotKeyIdentifierCount++;
-                    return hotKeyIdentifier;
+                    //Update keys pressed list
+                    bool triggerEvent = false;
+                    if (wParam == (IntPtr)WindowMessages.WM_KEYDOWN || wParam == (IntPtr)WindowMessages.WM_SYSKEYDOWN)
+                    {
+                        //Debug.WriteLine("Keyboard down: " + (KeysVirtual)lParam.vkCode);
+                        vListKeysPressed.Add((KeysVirtual)lParam.vkCode);
+                        triggerEvent = true;
+                    }
+                    else if (wParam == (IntPtr)WindowMessages.WM_KEYUP || wParam == (IntPtr)WindowMessages.WM_SYSKEYUP)
+                    {
+                        //Debug.WriteLine("Keyboard up: " + (KeysVirtual)lParam.vkCode);
+                        vListKeysPressed.RemoveAll(x => x == (KeysVirtual)lParam.vkCode);
+                        triggerEvent = true;
+                    }
+
+                    //Trigger hotkey event
+                    if (triggerEvent)
+                    {
+                        EventHotKeyPressed(vListKeysPressed);
+                    }
                 }
             }
-            catch { }
-            Debug.WriteLine("Failed registering hotkey: " + keysModifier + "/" + keysVirtual);
-            return -1;
-        }
-
-        //Unregister hotkey
-        public bool UnregisterHotKey(int identifier)
-        {
-            try
+            catch (Exception ex)
             {
-                bool hotkeyUnregistered = AVInteropDll.UnregisterHotKey(IntPtr.Zero, identifier);
-                Debug.WriteLine("Unregistered hotkey: ID" + identifier);
-                return hotkeyUnregistered;
+                Debug.WriteLine("LowLevelKeyboardCallback error: " + ex.Message);
             }
-            catch
-            {
-                Debug.WriteLine("Failed unregistering hotkey: ID" + identifier);
-                return false;
-            }
-        }
-
-        //Unregister all hotkeys
-        public bool UnregisterHotKeyAll()
-        {
-            try
-            {
-                for (int hkId = 0; hkId < vHotKeyIdentifierCount; hkId++)
-                {
-                    AVInteropDll.UnregisterHotKey(IntPtr.Zero, hkId);
-                }
-                Debug.WriteLine("Unregistered all hotkeys.");
-                return true;
-            }
-            catch
-            {
-                Debug.WriteLine("Failed unregistering all hotkeys.");
-                return false;
-            }
+            return IntPtr.Zero;
         }
     }
 }

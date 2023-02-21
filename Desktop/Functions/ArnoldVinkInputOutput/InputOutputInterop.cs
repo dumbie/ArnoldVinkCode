@@ -85,12 +85,5 @@ namespace ArnoldVinkCode
         public static extern bool SetCursorPos(int x, int y);
         [DllImport("user32.dll")]
         public static extern void mouse_event(MouseEventFlags dwFlags, int dx, int dy, int dwData, IntPtr dwExtraInfo);
-
-        //Register Hotkey
-        [DllImport("user32.dll")]
-        public static extern bool RegisterHotKey(IntPtr hWnd, int id, int fsModifiers, KeysVirtual bVk);
-        [DllImport("user32.dll")]
-        public static extern bool UnregisterHotKey(IntPtr hWnd, int id);
-        public static int HotKeyRegisterId = 0x9000;
     }
 }
