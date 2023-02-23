@@ -48,32 +48,34 @@ namespace ArnoldVinkCode
                 if (nCode >= 0)
                 {
                     //Update keys pressed list
-                    bool triggerEvent = false;
                     if (wParam == (IntPtr)WindowMessages.WM_KEYDOWN || wParam == (IntPtr)WindowMessages.WM_SYSKEYDOWN)
                     {
-                        //Debug.WriteLine("Keyboard down: " + (KeysVirtual)lParam.vkCode);
+                        //Add key press
                         vListKeysPressed.Add((KeysVirtual)lParam.vkCode);
-                        triggerEvent = true;
+
+                        //Trigger hotkey event
+                        EventHotKeyPressed(vListKeysPressed);
+
+                        //Debug.WriteLine("Keyboard down: " + (KeysVirtual)lParam.vkCode);
                     }
                     else if (wParam == (IntPtr)WindowMessages.WM_KEYUP || wParam == (IntPtr)WindowMessages.WM_SYSKEYUP)
                     {
-                        //Debug.WriteLine("Keyboard up: " + (KeysVirtual)lParam.vkCode);
+                        //Remove key press
                         vListKeysPressed.RemoveAll(x => x == (KeysVirtual)lParam.vkCode);
-                        triggerEvent = true;
-                    }
 
-                    //Trigger hotkey event
-                    if (triggerEvent)
-                    {
+                        //Trigger hotkey event
                         EventHotKeyPressed(vListKeysPressed);
+
+                        //Debug.WriteLine("Keyboard up: " + (KeysVirtual)lParam.vkCode);
                     }
                 }
+                return CallNextHookEx(vWindowHookPointer, nCode, wParam, lParam);
             }
             catch (Exception ex)
             {
                 Debug.WriteLine("LowLevelKeyboardCallback error: " + ex.Message);
+                return IntPtr.Zero;
             }
-            return IntPtr.Zero;
         }
     }
 }

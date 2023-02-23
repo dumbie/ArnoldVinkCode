@@ -588,6 +588,9 @@ namespace ArnoldVinkCode
         public static extern IntPtr SetWindowsHookEx(WindowHookTypes idHook, LowLevelKeyboardCallBack callBack, IntPtr hInstance, uint threadId);
 
         [DllImport("user32.dll")]
+        public static extern IntPtr CallNextHookEx(IntPtr idHook, int nCode, IntPtr wParam, KBDLLHOOKSTRUCT lParam);
+
+        [DllImport("user32.dll")]
         public static extern bool UnhookWindowsHookEx(IntPtr hInstance);
 
         public delegate IntPtr LowLevelKeyboardCallBack(int nCode, IntPtr wParam, KBDLLHOOKSTRUCT lParam);
