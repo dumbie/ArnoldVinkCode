@@ -8,16 +8,16 @@ namespace ArnoldVinkCode
     {
         //Imports
         [DllImport("ntdll.dll", EntryPoint = "NtQueryInformationProcess")]
-        private static extern int NtQueryInformationProcessWow64(IntPtr ProcessHandle, __PROCESS_INFO_CLASS ProcessInformationClass, ref ulong ProcessInformation, uint ProcessInformationLength, uint ReturnLength);
+        private static extern int NtQueryInformationProcessWow64(IntPtr ProcessHandle, __PROCESS_INFO_CLASS ProcessInformationClass, ref ulong ProcessInformation, uint ProcessInformationLength, out uint ReturnLength);
 
         [DllImport("ntdll.dll", EntryPoint = "NtReadVirtualMemory")]
-        private static extern int NtReadVirtualMemoryWow64(IntPtr ProcessHandle, ulong BaseAddress, ref __PEBWOW64 Buffer, ulong NumberOfBytesToRead, ulong NumberOfBytesRead);
+        private static extern int NtReadVirtualMemoryWow64(IntPtr ProcessHandle, ulong BaseAddress, ref __PEBWOW64 Buffer, ulong NumberOfBytesToRead, out ulong NumberOfBytesRead);
 
         [DllImport("ntdll.dll", EntryPoint = "NtReadVirtualMemory")]
-        private static extern int NtReadVirtualMemoryWow64(IntPtr ProcessHandle, ulong BaseAddress, ref __RTL_USER_PROCESS_PARAMETERSWOW64 Buffer, ulong NumberOfBytesToRead, ulong NumberOfBytesRead);
+        private static extern int NtReadVirtualMemoryWow64(IntPtr ProcessHandle, ulong BaseAddress, ref __RTL_USER_PROCESS_PARAMETERSWOW64 Buffer, ulong NumberOfBytesToRead, out ulong NumberOfBytesRead);
 
         [DllImport("ntdll.dll", EntryPoint = "NtReadVirtualMemory")]
-        private static extern int NtReadVirtualMemoryWow64(IntPtr ProcessHandle, ulong BaseAddress, [MarshalAs(UnmanagedType.LPWStr)] string Buffer, ulong NumberOfBytesToRead, ulong NumberOfBytesRead);
+        private static extern int NtReadVirtualMemoryWow64(IntPtr ProcessHandle, ulong BaseAddress, [MarshalAs(UnmanagedType.LPWStr)] string Buffer, ulong NumberOfBytesToRead, out ulong NumberOfBytesRead);
 
         //Structures
         [StructLayout(LayoutKind.Sequential)]
@@ -92,7 +92,7 @@ namespace ArnoldVinkCode
                 Debug.WriteLine("GetApplicationParameter architecture WOW64");
 
                 ulong pebBaseAddress = 0;
-                int readResult = NtQueryInformationProcessWow64(processHandle, __PROCESS_INFO_CLASS.ProcessWow64Information, ref pebBaseAddress, (uint)Marshal.SizeOf(pebBaseAddress), 0);
+                int readResult = NtQueryInformationProcessWow64(processHandle, __PROCESS_INFO_CLASS.ProcessWow64Information, ref pebBaseAddress, (uint)Marshal.SizeOf(pebBaseAddress), out _);
                 if (readResult != 0)
                 {
                     Debug.WriteLine("Failed to get ProcessBasicInformation for: " + processHandle);
@@ -100,7 +100,7 @@ namespace ArnoldVinkCode
                 }
 
                 __PEBWOW64 pebCopy = new __PEBWOW64();
-                readResult = NtReadVirtualMemoryWow64(processHandle, pebBaseAddress, ref pebCopy, (uint)Marshal.SizeOf(pebCopy), 0);
+                readResult = NtReadVirtualMemoryWow64(processHandle, pebBaseAddress, ref pebCopy, (uint)Marshal.SizeOf(pebCopy), out _);
                 if (readResult != 0)
                 {
                     Debug.WriteLine("Failed to get PebBaseAddress for: " + processHandle);
@@ -108,7 +108,7 @@ namespace ArnoldVinkCode
                 }
 
                 __RTL_USER_PROCESS_PARAMETERSWOW64 paramsCopy = new __RTL_USER_PROCESS_PARAMETERSWOW64();
-                readResult = NtReadVirtualMemoryWow64(processHandle, pebCopy.RtlUserProcessParameters, ref paramsCopy, (uint)Marshal.SizeOf(paramsCopy), 0);
+                readResult = NtReadVirtualMemoryWow64(processHandle, pebCopy.RtlUserProcessParameters, ref paramsCopy, (uint)Marshal.SizeOf(paramsCopy), out _);
                 if (readResult != 0)
                 {
                     Debug.WriteLine("Failed to get ProcessParameters for: " + processHandle);
@@ -150,7 +150,7 @@ namespace ArnoldVinkCode
                 }
 
                 string getString = new string(' ', stringLength);
-                readResult = NtReadVirtualMemoryWow64(processHandle, stringBuffer, getString, stringLength, 0);
+                readResult = NtReadVirtualMemoryWow64(processHandle, stringBuffer, getString, stringLength, out _);
                 if (readResult != 0)
                 {
                     Debug.WriteLine("Failed to get ParameterString for: " + processHandle);

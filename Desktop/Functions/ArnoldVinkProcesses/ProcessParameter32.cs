@@ -8,16 +8,16 @@ namespace ArnoldVinkCode
     {
         //Imports
         [DllImport("ntdll.dll", EntryPoint = "NtQueryInformationProcess")]
-        private static extern int NtQueryInformationProcess32(IntPtr ProcessHandle, __PROCESS_INFO_CLASS ProcessInformationClass, ref __PROCESS_BASIC_INFORMATION32 ProcessInformation, uint ProcessInformationLength, uint ReturnLength);
+        private static extern int NtQueryInformationProcess32(IntPtr ProcessHandle, __PROCESS_INFO_CLASS ProcessInformationClass, ref __PROCESS_BASIC_INFORMATION32 ProcessInformation, uint ProcessInformationLength, out uint ReturnLength);
 
         [DllImport("ntdll.dll", EntryPoint = "NtReadVirtualMemory")]
-        private static extern int NtReadVirtualMemory32(IntPtr ProcessHandle, IntPtr BaseAddress, ref __PEB32 Buffer, uint NumberOfBytesToRead, uint NumberOfBytesRead);
+        private static extern int NtReadVirtualMemory32(IntPtr ProcessHandle, IntPtr BaseAddress, ref __PEB32 Buffer, uint NumberOfBytesToRead, out uint NumberOfBytesRead);
 
         [DllImport("ntdll.dll", EntryPoint = "NtReadVirtualMemory")]
-        private static extern int NtReadVirtualMemory32(IntPtr ProcessHandle, IntPtr BaseAddress, ref __RTL_USER_PROCESS_PARAMETERS32 Buffer, uint NumberOfBytesToRead, uint NumberOfBytesRead);
+        private static extern int NtReadVirtualMemory32(IntPtr ProcessHandle, IntPtr BaseAddress, ref __RTL_USER_PROCESS_PARAMETERS32 Buffer, uint NumberOfBytesToRead, out uint NumberOfBytesRead);
 
         [DllImport("ntdll.dll", EntryPoint = "NtReadVirtualMemory")]
-        private static extern int NtReadVirtualMemory32(IntPtr ProcessHandle, IntPtr BaseAddress, [MarshalAs(UnmanagedType.LPWStr)] string Buffer, uint NumberOfBytesToRead, uint NumberOfBytesRead);
+        private static extern int NtReadVirtualMemory32(IntPtr ProcessHandle, IntPtr BaseAddress, [MarshalAs(UnmanagedType.LPWStr)] string Buffer, uint NumberOfBytesToRead, out uint NumberOfBytesRead);
 
         //Structures
         [StructLayout(LayoutKind.Sequential)]
@@ -103,7 +103,7 @@ namespace ArnoldVinkCode
                 Debug.WriteLine("GetApplicationParameter architecture 32");
 
                 __PROCESS_BASIC_INFORMATION32 basicInformation = new __PROCESS_BASIC_INFORMATION32();
-                int readResult = NtQueryInformationProcess32(processHandle, __PROCESS_INFO_CLASS.ProcessBasicInformation, ref basicInformation, (uint)Marshal.SizeOf(basicInformation), 0);
+                int readResult = NtQueryInformationProcess32(processHandle, __PROCESS_INFO_CLASS.ProcessBasicInformation, ref basicInformation, (uint)Marshal.SizeOf(basicInformation), out _);
                 if (readResult != 0)
                 {
                     Debug.WriteLine("Failed to get ProcessBasicInformation for: " + processHandle);
@@ -111,7 +111,7 @@ namespace ArnoldVinkCode
                 }
 
                 __PEB32 pebCopy = new __PEB32();
-                readResult = NtReadVirtualMemory32(processHandle, basicInformation.PebBaseAddress, ref pebCopy, (uint)Marshal.SizeOf(pebCopy), 0);
+                readResult = NtReadVirtualMemory32(processHandle, basicInformation.PebBaseAddress, ref pebCopy, (uint)Marshal.SizeOf(pebCopy), out _);
                 if (readResult != 0)
                 {
                     Debug.WriteLine("Failed to get PebBaseAddress for: " + processHandle);
@@ -119,7 +119,7 @@ namespace ArnoldVinkCode
                 }
 
                 __RTL_USER_PROCESS_PARAMETERS32 paramsCopy = new __RTL_USER_PROCESS_PARAMETERS32();
-                readResult = NtReadVirtualMemory32(processHandle, pebCopy.RtlUserProcessParameters, ref paramsCopy, (uint)Marshal.SizeOf(paramsCopy), 0);
+                readResult = NtReadVirtualMemory32(processHandle, pebCopy.RtlUserProcessParameters, ref paramsCopy, (uint)Marshal.SizeOf(paramsCopy), out _);
                 if (readResult != 0)
                 {
                     Debug.WriteLine("Failed to get ProcessParameters for: " + processHandle);
@@ -161,7 +161,7 @@ namespace ArnoldVinkCode
                 }
 
                 string getString = new string(' ', stringLength);
-                readResult = NtReadVirtualMemory32(processHandle, stringBuffer, getString, stringLength, 0);
+                readResult = NtReadVirtualMemory32(processHandle, stringBuffer, getString, stringLength, out _);
                 if (readResult != 0)
                 {
                     Debug.WriteLine("Failed to get ParameterString for: " + processHandle);
