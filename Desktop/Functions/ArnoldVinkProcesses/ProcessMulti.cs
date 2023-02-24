@@ -62,7 +62,7 @@ namespace ArnoldVinkCode
                 convertedProcess.ExecutableName = Path.GetFileName(executablePath);
 
                 //Set launch argument
-                convertedProcess.Argument = GetLaunchArgumentsFromProcess(convertProcess, executablePath);
+                convertedProcess.Argument = Process_GetApplicationParameter(convertProcess.Handle, __PROCESS_PARAMETER_OPTIONS.CurrentDirectoryPath);
 
                 //Set type and path
                 string processAppUserModelId = GetAppUserModelIdFromProcess(convertProcess);

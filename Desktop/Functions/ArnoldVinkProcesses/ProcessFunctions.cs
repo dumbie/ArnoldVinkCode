@@ -187,68 +187,69 @@ namespace ArnoldVinkCode
         }
 
         /// <summary>
-        /// Get single process by name or window title
+        /// Get process by identifier
         /// </summary>
-        /// <param name="processName">Process name without extension</param>
-        /// <param name="windowTitle">Search for window title?</param>
-        /// <param name="exactName">Search for exact process or contain?</param>
-        public static Process GetProcessByNameOrTitle(string processName, bool windowTitle, bool exactName)
+        /// <param name="processId">Process identifier</param>
+        public static Process GetProcessById(int processId)
         {
             try
             {
-                if (windowTitle)
-                {
-                    return Process.GetProcesses().Where(x => x.MainWindowTitle.ToLower().Contains(processName.ToLower())).OrderByDescending(x => x.MainWindowHandle != IntPtr.Zero).FirstOrDefault();
-                }
-                else
-                {
-                    if (exactName)
-                    {
-                        return Process.GetProcessesByName(processName).OrderByDescending(x => x.MainWindowHandle != IntPtr.Zero).FirstOrDefault();
-                    }
-                    else
-                    {
-                        return Process.GetProcesses().Where(x => x.ProcessName.ToLower().Contains(processName.ToLower())).OrderByDescending(x => x.MainWindowHandle != IntPtr.Zero).FirstOrDefault();
-                    }
-                }
+                return Process.GetProcessById(processId);
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to get process by name: " + ex.Message);
+                Debug.WriteLine("Failed to get process by id: " + ex.Message);
                 return null;
             }
         }
 
         /// <summary>
-        /// Get multiple processes by name or window title
+        /// Get processes by name
         /// </summary>
         /// <param name="processName">Process name without extension</param>
-        /// <param name="windowTitle">Search for window title?</param>
-        /// <param name="exactName">Search for exact process or contain?</param>
-        public static Process[] GetProcessesByNameOrTitle(string processName, bool windowTitle, bool exactName)
+        /// <param name="exactName">Search for exact process name</param>
+        public static Process[] GetProcessesByName(string processName, bool exactName)
         {
             try
             {
-                if (windowTitle)
+                if (exactName)
                 {
-                    return Process.GetProcesses().Where(x => x.MainWindowTitle.ToLower().Contains(processName.ToLower())).OrderByDescending(x => x.MainWindowHandle != IntPtr.Zero).ToArray();
+                    return Process.GetProcesses().Where(x => x.ProcessName.ToLower() == processName.ToLower()).OrderByDescending(x => x.MainWindowHandle != IntPtr.Zero).ToArray();
                 }
                 else
                 {
-                    if (exactName)
-                    {
-                        return Process.GetProcessesByName(processName).OrderByDescending(x => x.MainWindowHandle != IntPtr.Zero).ToArray();
-                    }
-                    else
-                    {
-                        return Process.GetProcesses().Where(x => x.ProcessName.ToLower().Contains(processName.ToLower())).OrderByDescending(x => x.MainWindowHandle != IntPtr.Zero).ToArray();
-                    }
+                    return Process.GetProcesses().Where(x => x.ProcessName.ToLower().Contains(processName.ToLower())).OrderByDescending(x => x.MainWindowHandle != IntPtr.Zero).ToArray();
                 }
             }
             catch (Exception ex)
             {
                 Debug.WriteLine("Failed to get processes by name: " + ex.Message);
-                return null;
+                return new Process[0];
+            }
+        }
+
+        /// <summary>
+        /// Get processes by window title
+        /// </summary>
+        /// <param name="windowTitle">Search for window title</param>
+        /// <param name="exactName">Search for exact window title</param>
+        public static Process[] GetProcessesByWindowTitle(string windowTitle, bool exactName)
+        {
+            try
+            {
+                if (exactName)
+                {
+                    return Process.GetProcesses().Where(x => x.MainWindowTitle.ToLower() == windowTitle.ToLower()).OrderByDescending(x => x.MainWindowHandle != IntPtr.Zero).ToArray();
+                }
+                else
+                {
+                    return Process.GetProcesses().Where(x => x.MainWindowTitle.ToLower().Contains(windowTitle.ToLower())).OrderByDescending(x => x.MainWindowHandle != IntPtr.Zero).ToArray();
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to get processes by window title: " + ex.Message);
+                return new Process[0];
             }
         }
 
@@ -323,19 +324,6 @@ namespace ArnoldVinkCode
             }
             catch { }
             return string.Empty;
-        }
-
-        //Get the launch arguments from process
-        public static string GetLaunchArgumentsFromProcess(Process targetProcess, string executablePath)
-        {
-            string launchArguments = string.Empty;
-            try
-            {
-                USER_PROCESS_PARAMETERS processParameter = USER_PROCESS_PARAMETERS.CommandLine;
-                launchArguments = GetProcessParameterString(targetProcess.Id, processParameter);
-            }
-            catch { }
-            return launchArguments;
         }
 
         //Check if process is in suspended state

@@ -72,6 +72,9 @@
     <Compile Include="Functions\ArnoldVinkInputOutput\InputOutputInterop.cs" />
     <Compile Include="Functions\ArnoldVinkInputOutput\InputOutputKeyboard.cs" />
     <Compile Include="Functions\ArnoldVinkInputOutput\InputOutputMouse.cs" />
+    <Compile Include="Functions\ArnoldVinkProcesses\ProcessParameter64.cs" />
+    <Compile Include="Functions\ArnoldVinkProcesses\ProcessParameterWOW64.cs" />
+    <Compile Include="Functions\ArnoldVinkProcesses\ProcessParameter32.cs" />
     <Compile Include="Functions\ArnoldVinkProcesses\ProcessClasses.cs" />
     <Compile Include="Functions\ArnoldVinkProcesses\ProcessWindow.cs" />
     <Compile Include="Functions\ArnoldVinkProcesses\ProcessThread.cs" />

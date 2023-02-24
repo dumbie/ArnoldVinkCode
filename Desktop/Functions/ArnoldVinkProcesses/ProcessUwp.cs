@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using Windows.ApplicationModel;
 using static ArnoldVinkCode.AVInteropDll;
 using static ArnoldVinkCode.AVUwpAppx;
@@ -59,7 +60,7 @@ namespace ArnoldVinkCode
                 string targetAppUserModelId = appxDetails.AppUserModelId;
                 string targetProcessName = Path.GetFileNameWithoutExtension(appxDetails.ExecutableAliasName);
 
-                Process[] uwpProcesses = GetProcessesByNameOrTitle(targetProcessName, false, true);
+                Process[] uwpProcesses = GetProcessesByName(targetProcessName, true);
                 foreach (Process uwpProcess in uwpProcesses)
                 {
                     try
@@ -110,7 +111,7 @@ namespace ArnoldVinkCode
             List<ProcessMulti> processList = new List<ProcessMulti>();
             try
             {
-                Process frameHostProcess = GetProcessByNameOrTitle("ApplicationFrameHost", false, true);
+                Process frameHostProcess = GetProcessesByName("ApplicationFrameHost", true).FirstOrDefault();
                 if (frameHostProcess != null)
                 {
                     foreach (ProcessThread threadProcess in frameHostProcess.Threads)
@@ -166,7 +167,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                Process frameHostProcess = GetProcessByNameOrTitle("ApplicationFrameHost", false, true);
+                Process frameHostProcess = GetProcessesByName("ApplicationFrameHost", true).FirstOrDefault();
                 if (frameHostProcess != null)
                 {
                     foreach (ProcessThread threadProcess in frameHostProcess.Threads)
