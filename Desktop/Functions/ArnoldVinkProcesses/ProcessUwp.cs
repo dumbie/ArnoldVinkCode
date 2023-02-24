@@ -25,7 +25,7 @@ namespace ArnoldVinkCode
                     if (processId > 0)
                     {
                         Process uwpProcess = Process.GetProcessById(processId);
-                        return ProcessMulti_GetFromProcess(uwpProcess, null, null);
+                        return ProcessMulti_GetByProcess(uwpProcess, null, null);
                     }
                 }
                 else
@@ -69,7 +69,7 @@ namespace ArnoldVinkCode
                         if (processAppUserModelId == targetAppUserModelId)
                         {
                             //Debug.WriteLine(targetProcessName + "/Id" + uwpProcess.Id + "/App" + processAppUserModelId + "vs" + targetAppUserModelId);
-                            return ProcessMulti_GetFromProcess(uwpProcess, appPackage, appxDetails);
+                            return ProcessMulti_GetByProcess(uwpProcess, appPackage, appxDetails);
                         }
                     }
                     catch { }

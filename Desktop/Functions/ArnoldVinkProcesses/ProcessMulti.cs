@@ -9,7 +9,7 @@ namespace ArnoldVinkCode
     public partial class AVProcess
     {
         //Get multi process from window handle
-        public static ProcessMulti ProcessMulti_GetFromWindowHandle(IntPtr targetWindowHandle)
+        public static ProcessMulti ProcessMulti_GetByWindowHandle(IntPtr targetWindowHandle)
         {
             try
             {
@@ -21,7 +21,7 @@ namespace ArnoldVinkCode
                 {
                     int processId = GetProcessIdFromWindowHandle(targetWindowHandle);
                     Process process = Process.GetProcessById(processId);
-                    return ProcessMulti_GetFromProcess(process, null, null);
+                    return ProcessMulti_GetByProcess(process, null, null);
                 }
             }
             catch (Exception ex)
@@ -32,7 +32,7 @@ namespace ArnoldVinkCode
         }
 
         //Get multi process from process
-        public static ProcessMulti ProcessMulti_GetFromProcess(Process convertProcess, Package uwpAppPackage, AppxDetails uwpAppxDetails)
+        public static ProcessMulti ProcessMulti_GetByProcess(Process convertProcess, Package uwpAppPackage, AppxDetails uwpAppxDetails)
         {
             ProcessMulti convertedProcess = new ProcessMulti();
             try
@@ -62,7 +62,7 @@ namespace ArnoldVinkCode
                 convertedProcess.ExecutableName = Path.GetFileName(executablePath);
 
                 //Set launch argument
-                convertedProcess.Argument = Process_GetApplicationParameter(convertProcess.Handle, __PROCESS_PARAMETER_OPTIONS.CurrentDirectoryPath);
+                convertedProcess.Argument = Process_GetApplicationParameter(convertProcess.Handle, PROCESS_PARAMETER_OPTIONS.CurrentDirectoryPath);
 
                 //Set type and path
                 string processAppUserModelId = GetAppUserModelIdFromProcess(convertProcess);

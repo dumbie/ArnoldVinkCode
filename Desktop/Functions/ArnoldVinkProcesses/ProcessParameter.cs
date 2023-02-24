@@ -7,7 +7,7 @@ namespace ArnoldVinkCode
     public partial class AVProcess
     {
         //Enumerators
-        public enum __PROCESS_PARAMETER_OPTIONS
+        public enum PROCESS_PARAMETER_OPTIONS
         {
             CurrentDirectoryPath,
             ImagePathName,
@@ -16,7 +16,7 @@ namespace ArnoldVinkCode
             Environment
         };
 
-        public enum __PROCESS_INFO_CLASS : int
+        public enum PROCESS_INFO_CLASS : int
         {
             ProcessBasicInformation = 0,
             ProcessWow64Information = 26
@@ -57,7 +57,7 @@ namespace ArnoldVinkCode
             return commandLine;
         }
 
-        public static string Process_GetApplicationParameter(IntPtr processHandle, __PROCESS_PARAMETER_OPTIONS pOption)
+        public static string Process_GetApplicationParameter(IntPtr processHandle, PROCESS_PARAMETER_OPTIONS pOption)
         {
             string parameterString = string.Empty;
             try
@@ -86,7 +86,7 @@ namespace ArnoldVinkCode
                 }
 
                 //Remove executable path from commandline
-                if (pOption == __PROCESS_PARAMETER_OPTIONS.CommandLine)
+                if (pOption == PROCESS_PARAMETER_OPTIONS.CommandLine)
                 {
                     parameterString = CommandLine_RemoveExePath(parameterString);
                 }

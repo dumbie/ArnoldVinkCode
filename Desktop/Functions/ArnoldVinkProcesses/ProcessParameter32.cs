@@ -8,31 +8,31 @@ namespace ArnoldVinkCode
     {
         //Imports
         [DllImport("ntdll.dll", EntryPoint = "NtQueryInformationProcess")]
-        private static extern int NtQueryInformationProcess32(IntPtr ProcessHandle, __PROCESS_INFO_CLASS ProcessInformationClass, ref __PROCESS_BASIC_INFORMATION32 ProcessInformation, uint ProcessInformationLength, out uint ReturnLength);
+        private static extern int NtQueryInformationProcess32(IntPtr ProcessHandle, PROCESS_INFO_CLASS ProcessInformationClass, ref PROCESS_BASIC_INFORMATION32 ProcessInformation, uint ProcessInformationLength, out uint ReturnLength);
 
         [DllImport("ntdll.dll", EntryPoint = "NtReadVirtualMemory")]
-        private static extern int NtReadVirtualMemory32(IntPtr ProcessHandle, IntPtr BaseAddress, ref __PEB32 Buffer, uint NumberOfBytesToRead, out uint NumberOfBytesRead);
+        private static extern int NtReadVirtualMemory32(IntPtr ProcessHandle, IntPtr BaseAddress, ref PEB32 Buffer, uint NumberOfBytesToRead, out uint NumberOfBytesRead);
 
         [DllImport("ntdll.dll", EntryPoint = "NtReadVirtualMemory")]
-        private static extern int NtReadVirtualMemory32(IntPtr ProcessHandle, IntPtr BaseAddress, ref __RTL_USER_PROCESS_PARAMETERS32 Buffer, uint NumberOfBytesToRead, out uint NumberOfBytesRead);
+        private static extern int NtReadVirtualMemory32(IntPtr ProcessHandle, IntPtr BaseAddress, ref RTL_USER_PROCESS_PARAMETERS32 Buffer, uint NumberOfBytesToRead, out uint NumberOfBytesRead);
 
         [DllImport("ntdll.dll", EntryPoint = "NtReadVirtualMemory")]
         private static extern int NtReadVirtualMemory32(IntPtr ProcessHandle, IntPtr BaseAddress, [MarshalAs(UnmanagedType.LPWStr)] string Buffer, uint NumberOfBytesToRead, out uint NumberOfBytesRead);
 
         //Structures
         [StructLayout(LayoutKind.Sequential)]
-        private struct __PROCESS_BASIC_INFORMATION32
+        private struct PROCESS_BASIC_INFORMATION32
         {
-            public int ExitStatus;
+            public uint ExitStatus;
             public IntPtr PebBaseAddress;
-            public IntPtr AffinityMask;
+            public UIntPtr AffinityMask;
             public int BasePriority;
-            public IntPtr UniqueProcessId;
-            public IntPtr InheritedFromUniqueProcessId;
+            public UIntPtr UniqueProcessId;
+            public UIntPtr InheritedFromUniqueProcessId;
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct __PEB32
+        public struct PEB32
         {
             public IntPtr Reserved0;
             public IntPtr Reserved1;
@@ -42,7 +42,7 @@ namespace ArnoldVinkCode
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct __UNICODE_STRING32
+        public struct UNICODE_STRING32
         {
             public ushort Length;
             public ushort MaximumLength;
@@ -55,11 +55,11 @@ namespace ArnoldVinkCode
             public ushort Flags;
             public ushort Length;
             public uint TimeStamp;
-            public __UNICODE_STRING32 DosPath;
+            public UNICODE_STRING32 DosPath;
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct __RTL_USER_PROCESS_PARAMETERS32
+        public struct RTL_USER_PROCESS_PARAMETERS32
         {
             public uint MaximumLength;
             public uint Length;
@@ -70,11 +70,11 @@ namespace ArnoldVinkCode
             public IntPtr StandardInput;
             public IntPtr StandardOutput;
             public IntPtr StandardError;
-            public __UNICODE_STRING32 CurrentDirectory;
+            public UNICODE_STRING32 CurrentDirectory;
             public IntPtr CurrentDirectoryHandle;
-            public __UNICODE_STRING32 DllPath;
-            public __UNICODE_STRING32 ImagePathName;
-            public __UNICODE_STRING32 CommandLine;
+            public UNICODE_STRING32 DllPath;
+            public UNICODE_STRING32 ImagePathName;
+            public UNICODE_STRING32 CommandLine;
             public IntPtr Environment;
             public uint StartingX;
             public uint StartingY;
@@ -85,32 +85,32 @@ namespace ArnoldVinkCode
             public uint FillAttribute;
             public uint WindowFlags;
             public uint ShowWindowFlags;
-            public __UNICODE_STRING32 WindowTitle;
-            public __UNICODE_STRING32 DesktopInfo;
-            public __UNICODE_STRING32 ShellInfo;
-            public __UNICODE_STRING32 RuntimeData;
+            public UNICODE_STRING32 WindowTitle;
+            public UNICODE_STRING32 DesktopInfo;
+            public UNICODE_STRING32 ShellInfo;
+            public UNICODE_STRING32 RuntimeData;
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
             public __RTL_DRIVE_LETTER_CURDIR32[] CurrentDirectores;
             public uint EnvironmentSize;
         }
 
         //Methods
-        private static string GetApplicationParameter32(IntPtr processHandle, __PROCESS_PARAMETER_OPTIONS pOption)
+        private static string GetApplicationParameter32(IntPtr processHandle, PROCESS_PARAMETER_OPTIONS pOption)
         {
             string parameterString = string.Empty;
             try
             {
-                Debug.WriteLine("GetApplicationParameter architecture 32");
+                //Debug.WriteLine("GetApplicationParameter architecture 32");
 
-                __PROCESS_BASIC_INFORMATION32 basicInformation = new __PROCESS_BASIC_INFORMATION32();
-                int readResult = NtQueryInformationProcess32(processHandle, __PROCESS_INFO_CLASS.ProcessBasicInformation, ref basicInformation, (uint)Marshal.SizeOf(basicInformation), out _);
+                PROCESS_BASIC_INFORMATION32 basicInformation = new PROCESS_BASIC_INFORMATION32();
+                int readResult = NtQueryInformationProcess32(processHandle, PROCESS_INFO_CLASS.ProcessBasicInformation, ref basicInformation, (uint)Marshal.SizeOf(basicInformation), out _);
                 if (readResult != 0)
                 {
                     Debug.WriteLine("Failed to get ProcessBasicInformation for: " + processHandle);
                     return parameterString;
                 }
 
-                __PEB32 pebCopy = new __PEB32();
+                PEB32 pebCopy = new PEB32();
                 readResult = NtReadVirtualMemory32(processHandle, basicInformation.PebBaseAddress, ref pebCopy, (uint)Marshal.SizeOf(pebCopy), out _);
                 if (readResult != 0)
                 {
@@ -118,7 +118,7 @@ namespace ArnoldVinkCode
                     return parameterString;
                 }
 
-                __RTL_USER_PROCESS_PARAMETERS32 paramsCopy = new __RTL_USER_PROCESS_PARAMETERS32();
+                RTL_USER_PROCESS_PARAMETERS32 paramsCopy = new RTL_USER_PROCESS_PARAMETERS32();
                 readResult = NtReadVirtualMemory32(processHandle, pebCopy.RtlUserProcessParameters, ref paramsCopy, (uint)Marshal.SizeOf(paramsCopy), out _);
                 if (readResult != 0)
                 {
@@ -128,22 +128,22 @@ namespace ArnoldVinkCode
 
                 ushort stringLength = 0;
                 IntPtr stringBuffer = IntPtr.Zero;
-                if (pOption == __PROCESS_PARAMETER_OPTIONS.CurrentDirectoryPath)
+                if (pOption == PROCESS_PARAMETER_OPTIONS.CurrentDirectoryPath)
                 {
                     stringLength = paramsCopy.CurrentDirectory.Length;
                     stringBuffer = paramsCopy.CurrentDirectory.Buffer;
                 }
-                else if (pOption == __PROCESS_PARAMETER_OPTIONS.ImagePathName)
+                else if (pOption == PROCESS_PARAMETER_OPTIONS.ImagePathName)
                 {
                     stringLength = paramsCopy.ImagePathName.Length;
                     stringBuffer = paramsCopy.ImagePathName.Buffer;
                 }
-                else if (pOption == __PROCESS_PARAMETER_OPTIONS.DesktopInfo)
+                else if (pOption == PROCESS_PARAMETER_OPTIONS.DesktopInfo)
                 {
                     stringLength = paramsCopy.DesktopInfo.Length;
                     stringBuffer = paramsCopy.DesktopInfo.Buffer;
                 }
-                else if (pOption == __PROCESS_PARAMETER_OPTIONS.Environment)
+                else if (pOption == PROCESS_PARAMETER_OPTIONS.Environment)
                 {
                     stringLength = (ushort)paramsCopy.EnvironmentSize;
                     stringBuffer = paramsCopy.Environment;

@@ -8,20 +8,20 @@ namespace ArnoldVinkCode
     {
         //Imports
         [DllImport("ntdll.dll", EntryPoint = "NtQueryInformationProcess")]
-        private static extern int NtQueryInformationProcessWow64(IntPtr ProcessHandle, __PROCESS_INFO_CLASS ProcessInformationClass, ref ulong ProcessInformation, uint ProcessInformationLength, out uint ReturnLength);
+        private static extern int NtQueryInformationProcessWow64(IntPtr ProcessHandle, PROCESS_INFO_CLASS ProcessInformationClass, ref ulong ProcessInformation, uint ProcessInformationLength, out uint ReturnLength);
 
         [DllImport("ntdll.dll", EntryPoint = "NtReadVirtualMemory")]
-        private static extern int NtReadVirtualMemoryWow64(IntPtr ProcessHandle, ulong BaseAddress, ref __PEBWOW64 Buffer, ulong NumberOfBytesToRead, out ulong NumberOfBytesRead);
+        private static extern int NtReadVirtualMemoryWow64(IntPtr ProcessHandle, ulong BaseAddress, ref PEBWOW64 Buffer, ulong NumberOfBytesToRead, out ulong NumberOfBytesRead);
 
         [DllImport("ntdll.dll", EntryPoint = "NtReadVirtualMemory")]
-        private static extern int NtReadVirtualMemoryWow64(IntPtr ProcessHandle, ulong BaseAddress, ref __RTL_USER_PROCESS_PARAMETERSWOW64 Buffer, ulong NumberOfBytesToRead, out ulong NumberOfBytesRead);
+        private static extern int NtReadVirtualMemoryWow64(IntPtr ProcessHandle, ulong BaseAddress, ref RTL_USER_PROCESS_PARAMETERSWOW64 Buffer, ulong NumberOfBytesToRead, out ulong NumberOfBytesRead);
 
         [DllImport("ntdll.dll", EntryPoint = "NtReadVirtualMemory")]
         private static extern int NtReadVirtualMemoryWow64(IntPtr ProcessHandle, ulong BaseAddress, [MarshalAs(UnmanagedType.LPWStr)] string Buffer, ulong NumberOfBytesToRead, out ulong NumberOfBytesRead);
 
         //Structures
         [StructLayout(LayoutKind.Sequential)]
-        public struct __PEBWOW64
+        public struct PEBWOW64
         {
             public uint Reserved0;
             public uint Reserved1;
@@ -31,7 +31,7 @@ namespace ArnoldVinkCode
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct __UNICODE_STRINGWOW64
+        public struct UNICODE_STRINGWOW64
         {
             public ushort Length;
             public ushort MaximumLength;
@@ -39,16 +39,16 @@ namespace ArnoldVinkCode
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct __RTL_DRIVE_LETTER_CURDIRWOW64
+        public struct RTL_DRIVE_LETTER_CURDIRWOW64
         {
             public ushort Flags;
             public ushort Length;
             public uint TimeStamp;
-            public __UNICODE_STRINGWOW64 DosPath;
+            public UNICODE_STRINGWOW64 DosPath;
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct __RTL_USER_PROCESS_PARAMETERSWOW64
+        public struct RTL_USER_PROCESS_PARAMETERSWOW64
         {
             public uint MaximumLength;
             public uint Length;
@@ -59,11 +59,11 @@ namespace ArnoldVinkCode
             public uint StandardInput;
             public uint StandardOutput;
             public uint StandardError;
-            public __UNICODE_STRINGWOW64 CurrentDirectory;
+            public UNICODE_STRINGWOW64 CurrentDirectory;
             public uint CurrentDirectoryHandle;
-            public __UNICODE_STRINGWOW64 DllPath;
-            public __UNICODE_STRINGWOW64 ImagePathName;
-            public __UNICODE_STRINGWOW64 CommandLine;
+            public UNICODE_STRINGWOW64 DllPath;
+            public UNICODE_STRINGWOW64 ImagePathName;
+            public UNICODE_STRINGWOW64 CommandLine;
             public uint Environment;
             public uint StartingX;
             public uint StartingY;
@@ -74,32 +74,32 @@ namespace ArnoldVinkCode
             public uint FillAttribute;
             public uint WindowFlags;
             public uint ShowWindowFlags;
-            public __UNICODE_STRINGWOW64 WindowTitle;
-            public __UNICODE_STRINGWOW64 DesktopInfo;
-            public __UNICODE_STRINGWOW64 ShellInfo;
-            public __UNICODE_STRINGWOW64 RuntimeData;
+            public UNICODE_STRINGWOW64 WindowTitle;
+            public UNICODE_STRINGWOW64 DesktopInfo;
+            public UNICODE_STRINGWOW64 ShellInfo;
+            public UNICODE_STRINGWOW64 RuntimeData;
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
-            public __RTL_DRIVE_LETTER_CURDIRWOW64[] CurrentDirectores;
+            public RTL_DRIVE_LETTER_CURDIRWOW64[] CurrentDirectores;
             public uint EnvironmentSize;
         }
 
         //Methods
-        private static string GetApplicationParameterWOW64(IntPtr processHandle, __PROCESS_PARAMETER_OPTIONS pOption)
+        private static string GetApplicationParameterWOW64(IntPtr processHandle, PROCESS_PARAMETER_OPTIONS pOption)
         {
             string parameterString = string.Empty;
             try
             {
-                Debug.WriteLine("GetApplicationParameter architecture WOW64");
+                //Debug.WriteLine("GetApplicationParameter architecture WOW64");
 
                 ulong pebBaseAddress = 0;
-                int readResult = NtQueryInformationProcessWow64(processHandle, __PROCESS_INFO_CLASS.ProcessWow64Information, ref pebBaseAddress, (uint)Marshal.SizeOf(pebBaseAddress), out _);
+                int readResult = NtQueryInformationProcessWow64(processHandle, PROCESS_INFO_CLASS.ProcessWow64Information, ref pebBaseAddress, (uint)Marshal.SizeOf(pebBaseAddress), out _);
                 if (readResult != 0)
                 {
                     Debug.WriteLine("Failed to get ProcessBasicInformation for: " + processHandle);
                     return parameterString;
                 }
 
-                __PEBWOW64 pebCopy = new __PEBWOW64();
+                PEBWOW64 pebCopy = new PEBWOW64();
                 readResult = NtReadVirtualMemoryWow64(processHandle, pebBaseAddress, ref pebCopy, (uint)Marshal.SizeOf(pebCopy), out _);
                 if (readResult != 0)
                 {
@@ -107,7 +107,7 @@ namespace ArnoldVinkCode
                     return parameterString;
                 }
 
-                __RTL_USER_PROCESS_PARAMETERSWOW64 paramsCopy = new __RTL_USER_PROCESS_PARAMETERSWOW64();
+                RTL_USER_PROCESS_PARAMETERSWOW64 paramsCopy = new RTL_USER_PROCESS_PARAMETERSWOW64();
                 readResult = NtReadVirtualMemoryWow64(processHandle, pebCopy.RtlUserProcessParameters, ref paramsCopy, (uint)Marshal.SizeOf(paramsCopy), out _);
                 if (readResult != 0)
                 {
@@ -117,22 +117,22 @@ namespace ArnoldVinkCode
 
                 ushort stringLength = 0;
                 uint stringBuffer = 0;
-                if (pOption == __PROCESS_PARAMETER_OPTIONS.CurrentDirectoryPath)
+                if (pOption == PROCESS_PARAMETER_OPTIONS.CurrentDirectoryPath)
                 {
                     stringLength = paramsCopy.CurrentDirectory.Length;
                     stringBuffer = paramsCopy.CurrentDirectory.Buffer;
                 }
-                else if (pOption == __PROCESS_PARAMETER_OPTIONS.ImagePathName)
+                else if (pOption == PROCESS_PARAMETER_OPTIONS.ImagePathName)
                 {
                     stringLength = paramsCopy.ImagePathName.Length;
                     stringBuffer = paramsCopy.ImagePathName.Buffer;
                 }
-                else if (pOption == __PROCESS_PARAMETER_OPTIONS.DesktopInfo)
+                else if (pOption == PROCESS_PARAMETER_OPTIONS.DesktopInfo)
                 {
                     stringLength = paramsCopy.DesktopInfo.Length;
                     stringBuffer = paramsCopy.DesktopInfo.Buffer;
                 }
-                else if (pOption == __PROCESS_PARAMETER_OPTIONS.Environment)
+                else if (pOption == PROCESS_PARAMETER_OPTIONS.Environment)
                 {
                     stringLength = (ushort)paramsCopy.EnvironmentSize;
                     stringBuffer = paramsCopy.Environment;
