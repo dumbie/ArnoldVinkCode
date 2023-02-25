@@ -23,12 +23,12 @@ namespace ArnoldVinkCode
         [StructLayout(LayoutKind.Sequential)]
         private struct PROCESS_BASIC_INFORMATION32
         {
-            public uint ExitStatus;
+            public int ExitStatus;
             public IntPtr PebBaseAddress;
-            public UIntPtr AffinityMask;
+            public IntPtr AffinityMask;
             public int BasePriority;
-            public UIntPtr UniqueProcessId;
-            public UIntPtr InheritedFromUniqueProcessId;
+            public IntPtr UniqueProcessId;
+            public IntPtr InheritedFromUniqueProcessId;
         }
 
         [StructLayout(LayoutKind.Sequential)]

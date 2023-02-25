@@ -8,6 +8,21 @@ namespace ArnoldVinkCode
     public partial class AVProcess
     {
         //Enumerators
+        public enum PROCESS_PARAMETER_OPTIONS
+        {
+            CurrentDirectoryPath,
+            ImagePathName,
+            CommandLine,
+            DesktopInfo,
+            Environment
+        };
+
+        public enum PROCESS_INFO_CLASS : int
+        {
+            ProcessBasicInformation = 0,
+            ProcessWow64Information = 26
+        }
+
         public enum ProcessType : int
         {
             Unknown = -1,
@@ -19,6 +34,7 @@ namespace ArnoldVinkCode
         //Classes
         public class ProcessMulti
         {
+            //Process details
             public int Identifier { get; set; } = -1;
             public ProcessType Type { get; set; } = ProcessType.Unknown;
             public string Name { get; set; } = string.Empty;
@@ -30,11 +46,11 @@ namespace ArnoldVinkCode
             public IntPtr WindowHandle { get; set; } = IntPtr.Zero;
             public DateTime StartTime { get; set; } = DateTime.MinValue;
 
-            //UWP store apps
+            //UWP details
             public Package AppPackage { get; set; } = null;
             public AppxDetails AppxDetails { get; set; } = null;
 
-            //List action
+            //Process action
             public string Action { get; set; } = string.Empty;
 
             public ProcessThreadCollection ProcessThreads()

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using static ArnoldVinkCode.AVInteropDll;
 
@@ -32,12 +31,12 @@ namespace ArnoldVinkCode
             return false;
         }
 
-        //Check if a specific process is running by id
-        public static bool CheckRunningProcessById(int processId)
+        //Check if process is running by process id
+        public static bool Check_RunningProcessById(int targetProcessId)
         {
             try
             {
-                return Process.GetProcesses().Any(x => x.Id == processId);
+                return Process.GetProcesses().Any(x => x.Id == targetProcessId);
             }
             catch (Exception ex)
             {
@@ -46,12 +45,12 @@ namespace ArnoldVinkCode
             }
         }
 
-        //Check if a specific process is running by window handle
-        public static bool CheckRunningProcessByWindowHandle(IntPtr windowHandle)
+        //Check if process is running by window handle
+        public static bool Check_RunningProcessByWindowHandle(IntPtr targetWindowHandle)
         {
             try
             {
-                return Process.GetProcesses().Any(x => x.MainWindowHandle == windowHandle);
+                return Process.GetProcesses().Any(x => x.MainWindowHandle == targetWindowHandle);
             }
             catch (Exception ex)
             {
@@ -60,42 +59,63 @@ namespace ArnoldVinkCode
             }
         }
 
-        //Check if a specific process is running by name
-        public static bool CheckRunningProcessByNameOrTitle(string processName, bool windowTitle, bool exactName)
+        /// <summary>
+        /// Check if process is running by process name
+        /// </summary>
+        /// <param name="targetProcessName">Process name without extension</param>
+        /// <param name="exactName">Search for exact process name</param>
+        public static bool Check_RunningProcessByName(string targetProcessName, bool exactName)
         {
             try
             {
-                if (windowTitle)
+                if (exactName)
                 {
-                    return Process.GetProcesses().Any(x => x.MainWindowTitle.ToLower().Contains(processName.ToLower()));
+                    return Process.GetProcesses().Any(x => x.ProcessName.ToLower() == targetProcessName.ToLower());
                 }
                 else
                 {
-                    processName = Path.GetFileNameWithoutExtension(processName);
-                    if (exactName)
-                    {
-                        return Process.GetProcessesByName(processName).Any();
-                    }
-                    else
-                    {
-                        return Process.GetProcesses().Where(x => x.ProcessName.ToLower().Contains(processName.ToLower())).Any();
-                    }
+                    return Process.GetProcesses().Any(x => x.ProcessName.ToLower().Contains(targetProcessName.ToLower()));
                 }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to check process by name: " + ex.Message);
+                Debug.WriteLine("Failed to check running process by name: " + ex.Message);
                 return false;
             }
         }
 
-        //Check if process is in suspended state
-        public static bool CheckProcessSuspended(ProcessThreadCollection threadCollection)
+        /// <summary>
+        /// Check if process is running by window title
+        /// </summary>
+        /// <param name="targetWindowTitle">Search for window title</param>
+        /// <param name="exactName">Search for exact window title</param>
+        public static bool Check_RunningProcessByWindowTitle(string targetWindowTitle, bool exactName)
+        {
+            try
+            {
+                if (exactName)
+                {
+                    return Process.GetProcesses().Any(x => x.MainWindowTitle.ToLower() == targetWindowTitle.ToLower());
+                }
+                else
+                {
+                    return Process.GetProcesses().Any(x => x.MainWindowTitle.ToLower().Contains(targetWindowTitle.ToLower()));
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to check running process by window title: " + ex.Message);
+                return false;
+            }
+        }
+
+        //Check if process is suspended
+        public static bool Check_ProcessSuspended(ProcessThreadCollection targetThreadCollection)
         {
             try
             {
                 //Debug.WriteLine("Checking suspend state for process: " + targetProcess.ProcessName + "/" + targetProcess.Id);
-                ProcessThread processThread = threadCollection[0];
+                ProcessThread processThread = targetThreadCollection[0];
                 if (processThread.ThreadState == ThreadState.Wait && processThread.WaitReason == ThreadWaitReason.Suspended)
                 {
                     //Debug.WriteLine("The process main thread is currently suspended.");
@@ -106,39 +126,34 @@ namespace ArnoldVinkCode
             return false;
         }
 
-        //Check if process is active
-        public static bool CheckValidProcess(Process targetProcess, bool checkSuspended, bool checkWin32)
+        //Check if window handle is from uwp application
+        public static bool Check_WindowHandleIsUwpApp(IntPtr targetWindowHandle)
         {
             try
             {
-                //Check if the application is suspended
-                if (checkSuspended)
-                {
-                    if (CheckProcessSuspended(targetProcess.Threads))
-                    {
-                        //Debug.WriteLine("Application is suspended and can't be shown or hidden.");
-                        return false;
-                    }
-                }
+                string classNamestring = Detail_ClassNameByWindowHandle(targetWindowHandle);
+                return Check_ClassNameIsUwpApp(classNamestring);
+            }
+            catch { }
+            return false;
+        }
 
-                //Check if the application is win32
-                if (checkWin32)
+        //Check if class name is from uwp application
+        public static bool Check_ClassNameIsUwpApp(string targetClassName)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(targetClassName) || targetClassName == "ApplicationFrameWindow" || targetClassName == "Windows.UI.Core.CoreWindow")
                 {
-                    if (CheckProcessIsUwp(targetProcess.MainWindowHandle))
-                    {
-                        //Debug.WriteLine("Application is an uwp application.");
-                        return false;
-                    }
+                    return true;
                 }
-
-                return true;
             }
             catch { }
             return false;
         }
 
         //Check if window handle is a window
-        public static bool CheckValidWindowHandle(IntPtr targetWindowHandle)
+        public static bool Check_ValidWindowHandle(IntPtr targetWindowHandle)
         {
             try
             {

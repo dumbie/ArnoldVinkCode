@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using static ArnoldVinkCode.AVInputOutputClass;
 using static ArnoldVinkCode.AVInputOutputKeyboard;
@@ -10,7 +11,7 @@ namespace ArnoldVinkCode
     public partial class AVProcess
     {
         //Close open start menu, cortana or search
-        public static async Task CloseOpenWindowsStartMenu(ProcessMulti foregroundProcess)
+        public static async Task Close_OpenWindowsStartMenu(ProcessMulti foregroundProcess)
         {
             try
             {
@@ -25,7 +26,7 @@ namespace ArnoldVinkCode
         }
 
         //Close open Windows system menu
-        public static async Task CloseOpenWindowsSystemMenu(ProcessMulti foregroundProcess)
+        public static async Task Close_OpenWindowsSystemMenu(ProcessMulti foregroundProcess)
         {
             try
             {
@@ -37,138 +38,103 @@ namespace ArnoldVinkCode
         }
 
         //Close open Windows prompts
-        public static async Task CloseOpenWindowsPrompts()
+        public static async Task Close_OpenWindowsPrompts()
         {
             try
             {
-                //Fix
-                ////Windows administrator consent prompt
-                //if (GetProcessByNameOrTitle("consent", false, true) != null)
-                //{
-                //    Debug.WriteLine("Windows administrator consent prompt is open, killing the process.");
-                //    bool closedProcess = CloseProcessesByNameOrTitle("consent", false, true);
-                //    await Task.Delay(500);
-                //    if (closedProcess)
-                //    {
-                //        KeyPressReleaseSingle(KeysVirtual.Escape);
-                //        await Task.Delay(10);
-                //    }
-                //}
+                //Windows administrator consent prompt
+                if (Get_ProcessesByName("consent", true).FirstOrDefault() != null)
+                {
+                    Debug.WriteLine("Windows administrator consent prompt is open, killing the process.");
+                    bool closedProcess = Close_ProcessesByName("consent", true);
+                    await Task.Delay(500);
+                    if (closedProcess)
+                    {
+                        KeyPressReleaseSingle(KeysVirtual.Escape);
+                        await Task.Delay(10);
+                    }
+                }
 
-                ////Windows feature installation prompt
-                //if (GetProcessByNameOrTitle("fondue", false, true) != null)
-                //{
-                //    Debug.WriteLine("Windows feature installation prompt is open, killing the process.");
-                //    CloseProcessesByNameOrTitle("fondue", false, true);
-                //}
+                //Windows feature installation prompt
+                if (Get_ProcessesByName("fondue", true).FirstOrDefault() != null)
+                {
+                    Debug.WriteLine("Windows feature installation prompt is open, killing the process.");
+                    Close_ProcessesByName("fondue", true);
+                }
             }
             catch { }
         }
 
-        //Focus on a process window
-        public static async Task<bool> FocusProcessWindow(string processTitle, int processId, IntPtr processWindowHandle, WindowShowCommand windowShowCommand, bool setWindowState, bool setTempTopMost)
+        //Show window by process id and window handle
+        public static async Task<bool> Show_ProcessIdAndWindowHandle(string processTitle, int processId, IntPtr processWindowHandle, WindowShowCommand windowShowCommand)
         {
             try
             {
-                //Prepare the process focus
-                async Task<bool> TaskAction()
+                //Close open Windows prompts
+                await Close_OpenWindowsPrompts();
+
+                //Get current focused application
+                ProcessMulti foregroundProcess = Get_ProcessMultiByWindowHandle(GetForegroundWindow());
+
+                //Close open start menu, cortana or search
+                await Close_OpenWindowsStartMenu(foregroundProcess);
+
+                //Close open Windows system menu
+                await Close_OpenWindowsSystemMenu(foregroundProcess);
+
+                //Detect the previous window state
+                WindowPlacement processWindowState = new WindowPlacement();
+                GetWindowPlacement(processWindowHandle, ref processWindowState);
+                Debug.WriteLine("Detected the previous window state: " + processWindowState.windowFlags);
+                if (processWindowState.windowFlags == WindowFlags.RestoreToMaximized)
+                {
+                    windowShowCommand = WindowShowCommand.ShowMaximized;
+                }
+                else
+                {
+                    windowShowCommand = WindowShowCommand.Restore;
+                }
+
+                //Retry to show the window
+                for (int i = 0; i < 2; i++)
                 {
                     try
                     {
-                        //Close open Windows prompts
-                        await CloseOpenWindowsPrompts();
+                        //Allow changing window
+                        AllowSetForegroundWindow(processId);
+                        await Task.Delay(10);
 
-                        //Get the current focused application
-                        ProcessMulti foregroundProcess = ProcessMulti_GetByWindowHandle(GetForegroundWindow());
+                        //Show window async
+                        ShowWindowAsync(processWindowHandle, windowShowCommand);
+                        await Task.Delay(10);
 
-                        //Close open start menu, cortana or search
-                        await CloseOpenWindowsStartMenu(foregroundProcess);
+                        //Show window normal
+                        ShowWindow(processWindowHandle, windowShowCommand);
+                        await Task.Delay(10);
 
-                        //Close open Windows system menu
-                        await CloseOpenWindowsSystemMenu(foregroundProcess);
+                        //Bring window to top
+                        BringWindowToTop(processWindowHandle);
+                        await Task.Delay(10);
 
-                        //Detect the previous window state
-                        if (windowShowCommand == WindowShowCommand.None && setWindowState)
-                        {
-                            WindowPlacement processWindowState = new WindowPlacement();
-                            GetWindowPlacement(processWindowHandle, ref processWindowState);
-                            Debug.WriteLine("Detected the previous window state: " + processWindowState.windowFlags);
-                            if (processWindowState.windowFlags == WindowFlags.RestoreToMaximized)
-                            {
-                                windowShowCommand = WindowShowCommand.ShowMaximized;
-                            }
-                            else
-                            {
-                                windowShowCommand = WindowShowCommand.Restore;
-                            }
-                        }
+                        //Switch to the window
+                        SwitchToThisWindow(processWindowHandle, true);
+                        await Task.Delay(10);
 
-                        //Change the window state command
-                        if (setWindowState)
-                        {
-                            ShowWindowAsync(processWindowHandle, windowShowCommand);
-                            await Task.Delay(10);
-
-                            ShowWindow(processWindowHandle, windowShowCommand);
-                            await Task.Delay(10);
-                        }
-
-                        //Set the window as top most
-                        if (setTempTopMost)
-                        {
-                            SetWindowPos(processWindowHandle, (IntPtr)SWP_WindowPosition.TopMost, 0, 0, 0, 0, (int)SWP_WindowFlags.NOMOVE | (int)SWP_WindowFlags.NOSIZE);
-                            await Task.Delay(10);
-                        }
-
-                        //Retry to show the window
-                        for (int i = 0; i < 2; i++)
-                        {
-                            try
-                            {
-                                //Allow changing window
-                                AllowSetForegroundWindow(processId);
-                                await Task.Delay(10);
-
-                                //Bring window to top
-                                BringWindowToTop(processWindowHandle);
-                                await Task.Delay(10);
-
-                                //Switch to the window
-                                SwitchToThisWindow(processWindowHandle, true);
-                                await Task.Delay(10);
-
-                                //Focus on the window
-                                UiaFocusWindowHandle(processWindowHandle);
-                                await Task.Delay(10);
-                            }
-                            catch (Exception ex)
-                            {
-                                Debug.WriteLine("Process focus error: " + ex.Message);
-                            }
-                        }
-
-                        //Disable the window as top most
-                        if (setTempTopMost)
-                        {
-                            SetWindowPos(processWindowHandle, (IntPtr)SWP_WindowPosition.NoTopMost, 0, 0, 0, 0, (int)SWP_WindowFlags.NOMOVE | (int)SWP_WindowFlags.NOSIZE);
-                            await Task.Delay(10);
-                        }
-
-                        //Return bool
-                        Debug.WriteLine("Focused process window: " + processTitle + " WindowHandle: " + processWindowHandle + " ShowCmd: " + windowShowCommand);
-                        return true;
+                        //Focus on the window
+                        UiaFocusWindowHandle(processWindowHandle);
+                        await Task.Delay(10);
                     }
                     catch { }
-                    Debug.WriteLine("Failed focusing process: " + processTitle);
-                    return false;
-                };
+                }
 
-                //Focus the process
-                return await AVActions.TaskStartReturn(TaskAction).Result;
+                Debug.WriteLine("Showed process window: " + processTitle + " WindowHandle: " + processWindowHandle + " ShowCmd: " + windowShowCommand);
+                return true;
             }
-            catch { }
-            Debug.WriteLine("Failed focusing process: " + processTitle);
-            return false;
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed showing window: " + processTitle + "/" + ex.Message);
+                return false;
+            }
         }
     }
 }

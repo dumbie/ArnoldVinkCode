@@ -17,7 +17,7 @@ namespace ArnoldVinkCode
                 {
                     try
                     {
-                        if (GetWindowThreadProcessId(childWindow, out int processId) == threadId)
+                        if (Detail_ProcessIdByWindowHandle(childWindow) == threadId)
                         {
                             listWindows.Add(childWindow);
                         }

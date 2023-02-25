@@ -6,37 +6,21 @@ namespace ArnoldVinkCode
 {
     public partial class AVProcess
     {
-        //Enumerators
-        public enum PROCESS_PARAMETER_OPTIONS
-        {
-            CurrentDirectoryPath,
-            ImagePathName,
-            CommandLine,
-            DesktopInfo,
-            Environment
-        };
-
-        public enum PROCESS_INFO_CLASS : int
-        {
-            ProcessBasicInformation = 0,
-            ProcessWow64Information = 26
-        }
-
         //Remove executable path from commandline
-        public static string CommandLine_RemoveExePath(string commandLine)
+        public static string CommandLine_RemoveExePath(string targetCommandLine)
         {
             try
             {
                 //Check command line
-                if (string.IsNullOrWhiteSpace(commandLine))
+                if (string.IsNullOrWhiteSpace(targetCommandLine))
                 {
-                    return commandLine;
+                    return targetCommandLine;
                 }
 
                 //Remove executable path
                 int endIndex = 0;
                 bool inQuotes = false;
-                foreach (char commandChar in commandLine)
+                foreach (char commandChar in targetCommandLine)
                 {
                     if (commandChar == '"')
                     {
@@ -48,37 +32,37 @@ namespace ArnoldVinkCode
                     }
                     endIndex++;
                 }
-                commandLine = commandLine.Substring(endIndex);
+                targetCommandLine = targetCommandLine.Substring(endIndex);
 
                 //Trim command line
-                commandLine = commandLine.Trim();
+                targetCommandLine = targetCommandLine.Trim();
             }
             catch { }
-            return commandLine;
+            return targetCommandLine;
         }
 
-        public static string Process_GetApplicationParameter(IntPtr processHandle, PROCESS_PARAMETER_OPTIONS pOption)
+        public static string Detail_ApplicationParameterByProcessHandle(IntPtr targetProcessHandle, PROCESS_PARAMETER_OPTIONS pOption)
         {
             string parameterString = string.Empty;
             try
             {
-                IsWow64Process(processHandle, out bool target32bit);
+                IsWow64Process(targetProcessHandle, out bool target32bit);
                 IsWow64Process(GetCurrentProcess(), out bool current32bit);
                 if (current32bit && target32bit)
                 {
-                    parameterString = GetApplicationParameter32(processHandle, pOption);
+                    parameterString = GetApplicationParameter32(targetProcessHandle, pOption);
                 }
                 else if (current32bit && !target32bit)
                 {
-                    parameterString = GetApplicationParameter64(processHandle, pOption);
+                    parameterString = GetApplicationParameter64(targetProcessHandle, pOption);
                 }
                 else if (!current32bit && target32bit)
                 {
-                    parameterString = GetApplicationParameterWOW64(processHandle, pOption);
+                    parameterString = GetApplicationParameterWOW64(targetProcessHandle, pOption);
                 }
                 else if (!current32bit && !target32bit)
                 {
-                    parameterString = GetApplicationParameter32(processHandle, pOption);
+                    parameterString = GetApplicationParameter32(targetProcessHandle, pOption);
                 }
                 else
                 {
