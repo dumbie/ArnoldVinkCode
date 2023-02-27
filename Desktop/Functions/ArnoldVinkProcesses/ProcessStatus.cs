@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using static ArnoldVinkCode.AVInteropDll;
 
 namespace ArnoldVinkCode
@@ -42,15 +41,15 @@ namespace ArnoldVinkCode
                 //Check process admin access
                 processAccess.AdminAccess = processAccess.Elevation || processAccess.ElevationType == TOKEN_ELEVATION_TYPE.TokenElevationTypeFull;
 
-                //Debug.WriteLine("Process token uiaccess access: " + processAccess.UiAccess);
-                //Debug.WriteLine("Process token administrator access: " + processAccess.AdminAccess);
-                //Debug.WriteLine("Process token elevation access: " + processAccess.Elevation);
-                //Debug.WriteLine("Process token elevation type: " + processAccess.ElevationType);
+                //AVDebug.WriteLine("Process token uiaccess access: " + processAccess.UiAccess);
+                //AVDebug.WriteLine("Process token administrator access: " + processAccess.AdminAccess);
+                //AVDebug.WriteLine("Process token elevation access: " + processAccess.Elevation);
+                //AVDebug.WriteLine("Process token elevation type: " + processAccess.ElevationType);
                 return processAccess;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to get process access status: " + ex.Message);
+                AVDebug.WriteLine("Failed to get process access status: " + ex.Message);
                 return null;
             }
             finally

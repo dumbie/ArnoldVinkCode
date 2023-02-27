@@ -6,23 +6,24 @@ namespace ArnoldVinkCode
 {
     public partial class AVProcess
     {
+        //Close process by identifier
         public static bool Close_ProcessById(int targetProcessId)
         {
             try
             {
-                //Close process
                 Process.GetProcessById(targetProcessId).Kill();
 
-                Debug.WriteLine("Closed process by id: " + targetProcessId);
+                AVDebug.WriteLine("Closed process by id: " + targetProcessId);
                 return true;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed closing process by id: " + targetProcessId + "/" + ex.Message);
+                AVDebug.WriteLine("Failed closing process by id: " + targetProcessId + "/" + ex.Message);
                 return false;
             }
         }
 
+        //Close process tree by identifier
         public static bool Close_ProcessTreeById(int targetProcessId)
         {
             try
@@ -44,16 +45,17 @@ namespace ArnoldVinkCode
                 //Close parent process
                 Process.GetProcessById(targetProcessId).Kill();
 
-                Debug.WriteLine("Closed process tree by id: " + targetProcessId);
+                AVDebug.WriteLine("Closed process tree by id: " + targetProcessId);
                 return true;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed closing process tree by id: " + targetProcessId + "/" + ex.Message);
+                AVDebug.WriteLine("Failed closing process tree by id: " + targetProcessId + "/" + ex.Message);
                 return false;
             }
         }
 
+        //Close processes by name
         public static bool Close_ProcessesByName(string targetProcessName, bool exactName)
         {
             try
@@ -67,16 +69,17 @@ namespace ArnoldVinkCode
                     }
                 }
 
-                Debug.WriteLine("Closed processes by name: " + targetProcessName + "/" + processClosed);
+                AVDebug.WriteLine("Closed processes by name: " + targetProcessName + "/" + processClosed);
                 return processClosed;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed closing processes by name: " + targetProcessName + "/" + ex.Message);
+                AVDebug.WriteLine("Failed closing processes by name: " + targetProcessName + "/" + ex.Message);
                 return false;
             }
         }
 
+        //Close process by window message
         public static bool Close_ProcessByWindowMessage(IntPtr targetWindowHandle)
         {
             try
@@ -84,12 +87,12 @@ namespace ArnoldVinkCode
                 SendMessage(targetWindowHandle, (int)WindowMessages.WM_CLOSE, 0, 0);
                 SendMessage(targetWindowHandle, (int)WindowMessages.WM_QUIT, 0, 0);
 
-                Debug.WriteLine("Closed process by window message: " + targetWindowHandle);
+                AVDebug.WriteLine("Closed process by window message: " + targetWindowHandle);
                 return true;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed closing process by window message: " + targetWindowHandle + "/" + ex.Message);
+                AVDebug.WriteLine("Failed closing process by window message: " + targetWindowHandle + "/" + ex.Message);
                 return false;
             }
         }

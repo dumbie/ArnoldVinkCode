@@ -32,16 +32,27 @@ namespace ArnoldVinkCode
         }
 
         //Classes
+        public class ProcessAccess
+        {
+            public bool UiAccess { get; set; } = false;
+            public bool AdminAccess { get; set; } = false;
+            public bool Elevation { get; set; } = false;
+            public TOKEN_ELEVATION_TYPE ElevationType { get; set; } = TOKEN_ELEVATION_TYPE.TokenElevationTypeDefault;
+        };
+
         public class ProcessMulti
         {
             //Process details
             public int Identifier { get; set; } = -1;
             public ProcessType Type { get; set; } = ProcessType.Unknown;
+            public IntPtr Handle { get; set; } = IntPtr.Zero;
             public string Name { get; set; } = string.Empty;
+            public string AppUserModelId { get; set; } = string.Empty;
             public string ExecutableName { get; set; } = string.Empty;
-            public string Path { get; set; } = string.Empty;
+            public string ExecutablePath { get; set; } = string.Empty;
+            public string WorkPath { get; set; } = string.Empty;
             public string Argument { get; set; } = string.Empty;
-            public string ClassName { get; set; } = string.Empty;
+            public string WindowClassName { get; set; } = string.Empty;
             public string WindowTitle { get; set; } = "Unknown";
             public IntPtr WindowHandle { get; set; } = IntPtr.Zero;
             public DateTime StartTime { get; set; } = DateTime.MinValue;

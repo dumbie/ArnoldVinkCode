@@ -19,7 +19,7 @@ namespace ArnoldVinkCode
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to get process by id: " + ex.Message);
+                AVDebug.WriteLine("Failed to get process by id: " + ex.Message);
                 return null;
             }
         }
@@ -44,7 +44,7 @@ namespace ArnoldVinkCode
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to get processes by name: " + ex.Message);
+                AVDebug.WriteLine("Failed to get processes by name: " + ex.Message);
                 return new Process[0];
             }
         }
@@ -69,42 +69,60 @@ namespace ArnoldVinkCode
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to get processes by window title: " + ex.Message);
+                AVDebug.WriteLine("Failed to get processes by window title: " + ex.Message);
                 return new Process[0];
             }
         }
 
         /// <summary>
-        /// Get processes by window handle
+        /// Get process by main window handle
+        /// </summary>
+        /// <param name="targetWindowHandle">Search for main window handle</param>
+        public static Process Get_ProcessByMainWindowHandle(IntPtr targetWindowHandle)
+        {
+            try
+            {
+                return Process.GetProcesses().Where(x => x.MainWindowHandle == targetWindowHandle).FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                AVDebug.WriteLine("Failed to get process by main window handle: " + ex.Message);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Get process by window handle
         /// </summary>
         /// <param name="targetWindowHandle">Search for window handle</param>
-        public static Process[] Get_ProcessesByWindowHandle(IntPtr targetWindowHandle)
+        public static Process Get_ProcessByWindowHandle(IntPtr targetWindowHandle)
         {
             try
             {
-                return Process.GetProcesses().Where(x => x.MainWindowHandle == targetWindowHandle).OrderByDescending(x => x.MainWindowHandle != IntPtr.Zero).ToArray();
+                int foundProcessId = Detail_ProcessIdByWindowHandle(targetWindowHandle);
+                return Process.GetProcessById(foundProcessId);
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to get processes by window handle: " + ex.Message);
-                return new Process[0];
+                AVDebug.WriteLine("Failed to get process by window handle: " + ex.Message);
+                return null;
             }
         }
 
         /// <summary>
-        /// Get processes by handle
+        /// Get process by handle
         /// </summary>
         /// <param name="targetProcessHandle">Search for handle</param>
-        public static Process[] Get_ProcessesByHandle(IntPtr targetProcessHandle)
+        public static Process Get_ProcessByHandle(IntPtr targetProcessHandle)
         {
             try
             {
-                return Process.GetProcesses().Where(x => x.Handle == targetProcessHandle).OrderByDescending(x => x.MainWindowHandle != IntPtr.Zero).ToArray();
+                return Process.GetProcesses().Where(x => x.Handle == targetProcessHandle).FirstOrDefault();
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to get processes by handle: " + ex.Message);
-                return new Process[0];
+                AVDebug.WriteLine("Failed to get process by handle: " + ex.Message);
+                return null;
             }
         }
 

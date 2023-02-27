@@ -40,7 +40,21 @@ namespace ArnoldVinkCode
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to check process by id: " + ex.Message);
+                AVDebug.WriteLine("Failed to check process by id: " + ex.Message);
+                return false;
+            }
+        }
+
+        //Check if process is running by main window handle
+        public static bool Check_RunningProcessByMainWindowHandle(IntPtr targetWindowHandle)
+        {
+            try
+            {
+                return Process.GetProcesses().Any(x => x.MainWindowHandle == targetWindowHandle);
+            }
+            catch (Exception ex)
+            {
+                AVDebug.WriteLine("Failed to check process by main window handle: " + ex.Message);
                 return false;
             }
         }
@@ -50,11 +64,12 @@ namespace ArnoldVinkCode
         {
             try
             {
-                return Process.GetProcesses().Any(x => x.MainWindowHandle == targetWindowHandle);
+                int foundProcessId = Detail_ProcessIdByWindowHandle(targetWindowHandle);
+                return foundProcessId > 0;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to check process by handle: " + ex.Message);
+                AVDebug.WriteLine("Failed to check process by window handle: " + ex.Message);
                 return false;
             }
         }
@@ -79,17 +94,17 @@ namespace ArnoldVinkCode
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to check running process by name: " + ex.Message);
+                AVDebug.WriteLine("Failed to check running process by name: " + ex.Message);
                 return false;
             }
         }
 
         /// <summary>
-        /// Check if process is running by window title
+        /// Check if process is running by main window title
         /// </summary>
         /// <param name="targetWindowTitle">Search for window title</param>
         /// <param name="exactName">Search for exact window title</param>
-        public static bool Check_RunningProcessByWindowTitle(string targetWindowTitle, bool exactName)
+        public static bool Check_RunningProcessByMainWindowTitle(string targetWindowTitle, bool exactName)
         {
             try
             {
@@ -104,21 +119,21 @@ namespace ArnoldVinkCode
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to check running process by window title: " + ex.Message);
+                AVDebug.WriteLine("Failed to check running process by window title: " + ex.Message);
                 return false;
             }
         }
 
-        //Check if process is suspended
-        public static bool Check_ProcessSuspended(ProcessThreadCollection targetThreadCollection)
+        //Check if process is suspended by threads
+        public static bool Check_ProcessSuspendedByThreads(ProcessThreadCollection targetThreadCollection)
         {
             try
             {
-                //Debug.WriteLine("Checking suspend state for process: " + targetProcess.ProcessName + "/" + targetProcess.Id);
+                //AVDebug.WriteLine("Checking suspend state for process: " + targetProcess.ProcessName + "/" + targetProcess.Id);
                 ProcessThread processThread = targetThreadCollection[0];
                 if (processThread.ThreadState == ThreadState.Wait && processThread.WaitReason == ThreadWaitReason.Suspended)
                 {
-                    //Debug.WriteLine("The process main thread is currently suspended.");
+                    //AVDebug.WriteLine("The process main thread is currently suspended.");
                     return true;
                 }
             }
@@ -160,23 +175,23 @@ namespace ArnoldVinkCode
                 //Check if is a window
                 if (!IsWindow(targetWindowHandle))
                 {
-                    //Debug.WriteLine("Window handle is not a Window.");
+                    //AVDebug.WriteLine("Window handle is not a Window.");
                     return false;
                 }
 
                 //Check if window is visible
                 if (!IsWindowVisible(targetWindowHandle))
                 {
-                    //Debug.WriteLine("Window handle is not visible.");
+                    //AVDebug.WriteLine("Window handle is not visible.");
                     return false;
                 }
 
-                //Check if application is hidden to the tray
+                //Check if application is hidden to tray
                 WindowPlacement ProcessWindowState = new WindowPlacement();
                 GetWindowPlacement(targetWindowHandle, ref ProcessWindowState);
                 if (ProcessWindowState.windowShowCommand <= 0)
                 {
-                    //Debug.WriteLine("Application is in the tray and can't be shown or hidden.");
+                    //AVDebug.WriteLine("Application is in the tray and can't be shown or hidden.");
                     return false;
                 }
 

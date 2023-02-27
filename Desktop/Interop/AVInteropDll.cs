@@ -31,7 +31,7 @@ namespace ArnoldVinkCode
         [DllImport("user32.dll")]
         public static extern uint GetDoubleClickTime();
         [DllImport("user32.dll")]
-        public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out int lpdwProcessId);
+        public static extern int GetWindowThreadProcessId(IntPtr hWnd, out int lpdwProcessId);
         [DllImport("oleacc.dll")]
         public static extern IntPtr GetProcessHandleFromHwnd(IntPtr hWnd);
         [DllImport("kernel32.dll")]
@@ -292,22 +292,24 @@ namespace ArnoldVinkCode
 
         //Open and close process
         [DllImport("kernel32.dll")]
-        public static extern IntPtr OpenProcess(ProcessAccessFlags processAccess, bool bInheritHandle, int processId);
-        public enum ProcessAccessFlags : uint
+        public static extern IntPtr OpenProcess(PROCESS_DESIRED_ACCESS processAccess, bool bInheritHandle, int processId);
+        public enum PROCESS_DESIRED_ACCESS : uint
         {
-            All = 0x001F0FFF,
-            Terminate = 0x00000001,
-            CreateThread = 0x00000002,
-            VirtualMemoryOperation = 0x00000008,
-            VirtualMemoryRead = 0x00000010,
-            VirtualMemoryWrite = 0x00000020,
-            DuplicateHandle = 0x00000040,
-            CreateProcess = 0x000000080,
-            SetQuota = 0x00000100,
-            SetInformation = 0x00000200,
-            QueryInformation = 0x00000400,
-            QueryLimitedInformation = 0x00001000,
-            Synchronize = 0x00100000
+            PROCESS_TERMINATE = 0x0001,
+            PROCESS_CREATE_THREAD = 0x0002,
+            PROCESS_SET_SESSIONID = 0x0004,
+            PROCESS_VM_OPERATION = 0x0008,
+            PROCESS_VM_READ = 0x0010,
+            PROCESS_VM_WRITE = 0x0020,
+            PROCESS_DUP_HANDLE = 0x0040,
+            PROCESS_CREATE_PROCESS = 0x0080,
+            PROCESS_SET_QUOTA = 0x0100,
+            PROCESS_SET_INFORMATION = 0x0200,
+            PROCESS_QUERY_INFORMATION = 0x0400,
+            PROCESS_SUSPEND_RESUME = 0x0800,
+            PROCESS_QUERY_LIMITED_INFORMATION = 0x1000,
+            PROCESS_SET_LIMITED_INFORMATION = 0x2000,
+            PROCESS_ALL_ACCESS = 0x001FFFFF
         }
 
         //Enumerate windows

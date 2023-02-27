@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using static ArnoldVinkCode.AVInteropCom;
@@ -18,14 +19,14 @@ namespace ArnoldVinkCode
                 int readResult = NtQueryInformationProcess32(targetProcess.Handle, PROCESS_INFO_CLASS.ProcessBasicInformation, ref basicInformation, (uint)Marshal.SizeOf(basicInformation), out _);
                 if (readResult != 0)
                 {
-                    Debug.WriteLine("Failed to get parent processid: " + targetProcess.Id + "/Query failed");
+                    AVDebug.WriteLine("Failed to get parent processid: " + targetProcess.Id + "/Query failed");
                     return -1;
                 }
                 return (int)basicInformation.InheritedFromUniqueProcessId;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to get parent processid: " + targetProcess.Id + "/" + ex.Message);
+                AVDebug.WriteLine("Failed to get parent processid: " + targetProcess.Id + "/" + ex.Message);
                 return -1;
             }
         }
@@ -90,6 +91,24 @@ namespace ArnoldVinkCode
             return ProcessTitle;
         }
 
+        //Get window Z order by window handle
+        public static int Detail_WindowZOrderByWindowHandle(IntPtr windowHandle)
+        {
+            int zOrder = -1;
+            try
+            {
+                IntPtr zHandle = windowHandle;
+                while (zHandle != IntPtr.Zero)
+                {
+                    zHandle = GetWindow(zHandle, GetWindowFlags.GW_HWNDPREV);
+                    zOrder++;
+                }
+                //AVDebug.WriteLine("Window " + hWnd + " ZOrder: " + zOrder);
+            }
+            catch { }
+            return zOrder;
+        }
+
         //Get class name by window handle
         public static string Detail_ClassNameByWindowHandle(IntPtr targetWindowHandle)
         {
@@ -116,7 +135,7 @@ namespace ArnoldVinkCode
             {
                 if (processId <= 0)
                 {
-                    //Debug.WriteLine("Process id 0, using GetProcessHandleFromHwnd as backup.");
+                    //AVDebug.WriteLine("Process id 0, using GetProcessHandleFromHwnd as backup.");
                     processId = GetProcessId(GetProcessHandleFromHwnd(targetWindowHandle));
                 }
             }
@@ -194,6 +213,43 @@ namespace ArnoldVinkCode
             }
             catch { }
             return string.Empty;
+        }
+
+        //Get uwp application window handle by AppUserModelId
+        public static IntPtr Detail_UwpWindowHandleByAppUserModelId(string targetAppUserModelId)
+        {
+            try
+            {
+                Process frameHostProcess = Get_ProcessesByName("ApplicationFrameHost", true).FirstOrDefault();
+                if (frameHostProcess != null)
+                {
+                    foreach (ProcessThread threadProcess in frameHostProcess.Threads)
+                    {
+                        try
+                        {
+                            foreach (IntPtr threadWindowHandle in Thread_GetWindowHandles(threadProcess.Id))
+                            {
+                                try
+                                {
+                                    if (Check_WindowHandleIsUwpApp(threadWindowHandle))
+                                    {
+                                        string targetAppUserModelIdLower = targetAppUserModelId.ToLower();
+                                        string foundAppUserModelIdLower = Detail_ApplicationUserModelIdByWindowHandle(threadWindowHandle).ToLower();
+                                        if (targetAppUserModelIdLower == foundAppUserModelIdLower)
+                                        {
+                                            return threadWindowHandle;
+                                        }
+                                    }
+                                }
+                                catch { }
+                            }
+                        }
+                        catch { }
+                    }
+                }
+            }
+            catch { }
+            return IntPtr.Zero;
         }
     }
 }

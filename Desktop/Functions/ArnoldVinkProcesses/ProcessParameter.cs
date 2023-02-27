@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using static ArnoldVinkCode.AVInteropDll;
 
 namespace ArnoldVinkCode
@@ -66,7 +65,7 @@ namespace ArnoldVinkCode
                 }
                 else
                 {
-                    Debug.WriteLine("GetApplicationParameter unknown architecture.");
+                    AVDebug.WriteLine("GetApplicationParameter unknown architecture.");
                 }
 
                 //Remove executable path from commandline
@@ -79,7 +78,7 @@ namespace ArnoldVinkCode
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to get GetApplicationParameter: " + ex.Message);
+                AVDebug.WriteLine("Failed to get GetApplicationParameter: " + ex.Message);
                 return parameterString;
             }
         }

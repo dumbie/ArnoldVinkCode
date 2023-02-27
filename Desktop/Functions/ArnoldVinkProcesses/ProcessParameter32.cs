@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace ArnoldVinkCode
@@ -100,13 +99,13 @@ namespace ArnoldVinkCode
             string parameterString = string.Empty;
             try
             {
-                //Debug.WriteLine("GetApplicationParameter architecture 32");
+                //AVDebug.WriteLine("GetApplicationParameter architecture 32");
 
                 PROCESS_BASIC_INFORMATION32 basicInformation = new PROCESS_BASIC_INFORMATION32();
                 int readResult = NtQueryInformationProcess32(processHandle, PROCESS_INFO_CLASS.ProcessBasicInformation, ref basicInformation, (uint)Marshal.SizeOf(basicInformation), out _);
                 if (readResult != 0)
                 {
-                    Debug.WriteLine("Failed to get ProcessBasicInformation for: " + processHandle);
+                    AVDebug.WriteLine("Failed to get ProcessBasicInformation for: " + processHandle);
                     return parameterString;
                 }
 
@@ -114,7 +113,7 @@ namespace ArnoldVinkCode
                 readResult = NtReadVirtualMemory32(processHandle, basicInformation.PebBaseAddress, ref pebCopy, (uint)Marshal.SizeOf(pebCopy), out _);
                 if (readResult != 0)
                 {
-                    Debug.WriteLine("Failed to get PebBaseAddress for: " + processHandle);
+                    AVDebug.WriteLine("Failed to get PebBaseAddress for: " + processHandle);
                     return parameterString;
                 }
 
@@ -122,7 +121,7 @@ namespace ArnoldVinkCode
                 readResult = NtReadVirtualMemory32(processHandle, pebCopy.RtlUserProcessParameters, ref paramsCopy, (uint)Marshal.SizeOf(paramsCopy), out _);
                 if (readResult != 0)
                 {
-                    Debug.WriteLine("Failed to get ProcessParameters for: " + processHandle);
+                    AVDebug.WriteLine("Failed to get ProcessParameters for: " + processHandle);
                     return parameterString;
                 }
 
@@ -156,7 +155,7 @@ namespace ArnoldVinkCode
 
                 if (stringLength <= 0)
                 {
-                    Debug.WriteLine("Failed to get ParameterString length for: " + processHandle);
+                    AVDebug.WriteLine("Failed to get ParameterString length for: " + processHandle);
                     return parameterString;
                 }
 
@@ -164,7 +163,7 @@ namespace ArnoldVinkCode
                 readResult = NtReadVirtualMemory32(processHandle, stringBuffer, getString, stringLength, out _);
                 if (readResult != 0)
                 {
-                    Debug.WriteLine("Failed to get ParameterString for: " + processHandle);
+                    AVDebug.WriteLine("Failed to get ParameterString for: " + processHandle);
                     return parameterString;
                 }
 
@@ -172,7 +171,7 @@ namespace ArnoldVinkCode
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to get GetApplicationParameter: " + ex.Message);
+                AVDebug.WriteLine("Failed to get GetApplicationParameter: " + ex.Message);
                 return parameterString;
             }
         }

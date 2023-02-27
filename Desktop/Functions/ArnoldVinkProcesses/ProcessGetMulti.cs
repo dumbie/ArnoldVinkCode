@@ -38,7 +38,7 @@ namespace ArnoldVinkCode
                         string processAppUserModelId = Detail_ApplicationUserModelIdByProcess(uwpProcess);
                         if (processAppUserModelId == targetAppUserModelId)
                         {
-                            //Debug.WriteLine(targetProcessName + "/Id" + uwpProcess.Id + "/App" + processAppUserModelId + "vs" + targetAppUserModelId);
+                            //AVDebug.WriteLine(targetProcessName + "/Id" + uwpProcess.Id + "/App" + processAppUserModelId + "vs" + targetAppUserModelId);
                             return Get_ProcessMultiByProcess(uwpProcess, targetAppPackage, targetAppxDetails);
                         }
                     }
@@ -82,7 +82,22 @@ namespace ArnoldVinkCode
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to get multi process: " + ex.Message);
+                AVDebug.WriteLine("Failed to get multi process by window handle: " + ex.Message);
+                return null;
+            }
+        }
+
+        //Get multi process by process id
+        public static ProcessMulti Get_ProcessMultiByProcessId(int targetProcessId)
+        {
+            try
+            {
+                Process targetProcess = Process.GetProcessById(targetProcessId);
+                return Get_ProcessMultiByProcess(targetProcess, null, null);
+            }
+            catch (Exception ex)
+            {
+                AVDebug.WriteLine("Failed to get multi process by id: " + ex.Message);
                 return null;
             }
         }
@@ -98,6 +113,9 @@ namespace ArnoldVinkCode
                 //Set process identifier
                 convertedProcess.Identifier = targetProcess.Id;
 
+                //Set process handle
+                convertedProcess.Handle = targetProcess.Handle;
+
                 //Set process name
                 convertedProcess.Name = targetProcess.ProcessName;
 
@@ -111,13 +129,19 @@ namespace ArnoldVinkCode
                 convertedProcess.WindowTitle = Detail_WindowTitleByProcess(targetProcess);
 
                 //Get window class name
-                convertedProcess.ClassName = Detail_ClassNameByWindowHandle(targetProcess.MainWindowHandle);
+                convertedProcess.WindowClassName = Detail_ClassNameByWindowHandle(targetProcess.MainWindowHandle);
 
                 //Get executable path
                 string executablePath = Detail_ExecutablePathByProcess(targetProcess);
 
                 //Set executable name
                 convertedProcess.ExecutableName = Path.GetFileName(executablePath);
+
+                //Set executable path
+                convertedProcess.ExecutablePath = executablePath;
+
+                //Set workpath argument
+                convertedProcess.WorkPath = Detail_ApplicationParameterByProcessHandle(targetProcess.Handle, PROCESS_PARAMETER_OPTIONS.CurrentDirectoryPath);
 
                 //Set launch argument
                 convertedProcess.Argument = Detail_ApplicationParameterByProcessHandle(targetProcess.Handle, PROCESS_PARAMETER_OPTIONS.CommandLine);
@@ -127,16 +151,14 @@ namespace ArnoldVinkCode
                 if (!string.IsNullOrWhiteSpace(processAppUserModelId))
                 {
                     convertedProcess.Type = ProcessType.UWP;
-                    convertedProcess.Path = processAppUserModelId;
-                    //Fix set UWP executable name
+                    convertedProcess.AppUserModelId = processAppUserModelId;
                 }
                 else
                 {
                     convertedProcess.Type = ProcessType.Win32;
-                    convertedProcess.Path = executablePath;
                 }
 
-                //Check if application is UWP
+                //Check if application is UWP or Win32Store
                 if (convertedProcess.Type == ProcessType.UWP)
                 {
                     //Check if AppPackage is provided
@@ -160,10 +182,10 @@ namespace ArnoldVinkCode
                     }
 
                     //Check if application is Win32Store
-                    if (Check_ClassNameIsUwpApp(convertedProcess.ClassName))
+                    if (Check_ClassNameIsUwpApp(convertedProcess.WindowClassName))
                     {
                         convertedProcess.WindowTitle = convertedProcess.AppxDetails.DisplayName;
-                        convertedProcess.WindowHandle = Window_UwpWindowHandleByAppUserModelId(processAppUserModelId);
+                        convertedProcess.WindowHandle = Detail_UwpWindowHandleByAppUserModelId(processAppUserModelId);
                     }
                     else
                     {
@@ -171,20 +193,19 @@ namespace ArnoldVinkCode
                     }
                 }
 
-                //Debug.WriteLine("Identifier: " + convertedProcess.Identifier);
-                //Debug.WriteLine("Type: " + convertedProcess.Type);
-                //Debug.WriteLine("Name: " + convertedProcess.Name);
-                //Debug.WriteLine("ExecutableName: " + convertedProcess.ExecutableName);
-                //Debug.WriteLine("Path: " + convertedProcess.Path);
-                //Debug.WriteLine("Argument: " + convertedProcess.Argument);
-                //Debug.WriteLine("ClassName: " + convertedProcess.ClassName);
-                //Debug.WriteLine("WindowTitle: " + convertedProcess.WindowTitle);
-                //Debug.WriteLine("WindowHandle: " + convertedProcess.WindowHandle);
+                //AVDebug.WriteLine("Identifier: " + convertedProcess.Identifier);
+                //AVDebug.WriteLine("ProcessType: " + convertedProcess.ProcessType);
+                //AVDebug.WriteLine("ExecutableName: " + convertedProcess.ExecutableName);
+                //AVDebug.WriteLine("ExecutablePath: " + convertedProcess.ExecutablePath);
+                //AVDebug.WriteLine("Argument: " + convertedProcess.Argument);
+                //AVDebug.WriteLine("WindowClassName: " + convertedProcess.WindowClassName);
+                //AVDebug.WriteLine("WindowTitle: " + convertedProcess.WindowTitle);
+                //AVDebug.WriteLine("WindowHandle: " + convertedProcess.WindowHandle);
                 return convertedProcess;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to convert Process to ProcessMulti: " + ex.Message);
+                AVDebug.WriteLine("Failed to convert Process to ProcessMulti: " + ex.Message);
                 return null;
             }
         }

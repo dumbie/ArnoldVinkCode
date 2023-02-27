@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using static ArnoldVinkCode.AVInteropDll;
 
@@ -16,19 +15,19 @@ namespace ArnoldVinkCode
                 SECURITY_ATTRIBUTES securityAttributes = new SECURITY_ATTRIBUTES();
                 if (!DuplicateTokenEx(hToken, TOKEN_DESIRED_ACCESS.TOKEN_ALL_ACCESS, ref securityAttributes, TOKEN_IMPERSONATION_LEVEL.SecurityImpersonation, TOKEN_TYPE.TokenImpersonation, out dToken))
                 {
-                    Debug.WriteLine("Failed to duplicate process token: " + Marshal.GetLastWin32Error());
+                    AVDebug.WriteLine("Failed to duplicate process token: " + Marshal.GetLastWin32Error());
                     return IntPtr.Zero;
                 }
                 else
                 {
-                    Debug.WriteLine("Succesfully duplicated process token: " + hToken + " > " + dToken);
+                    AVDebug.WriteLine("Succesfully duplicated process token: " + hToken + " > " + dToken);
                     CloseHandleAuto(hToken);
                     return dToken;
                 }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to duplicate process token: " + ex.Message);
+                AVDebug.WriteLine("Failed to duplicate process token: " + ex.Message);
                 return IntPtr.Zero;
             }
         }
@@ -45,16 +44,16 @@ namespace ArnoldVinkCode
                 //Open current process token
                 if (!OpenProcessToken(hProcess, TOKEN_DESIRED_ACCESS.TOKEN_ALL_ACCESS, out IntPtr hToken))
                 {
-                    Debug.WriteLine("Failed getting current process token: " + Marshal.GetLastWin32Error());
+                    AVDebug.WriteLine("Failed getting current process token: " + Marshal.GetLastWin32Error());
                     return IntPtr.Zero;
                 }
 
-                Debug.WriteLine("Got current process token: " + hToken);
+                AVDebug.WriteLine("Got current process token: " + hToken);
                 return hToken;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed getting current process token: " + ex.Message);
+                AVDebug.WriteLine("Failed getting current process token: " + ex.Message);
                 return IntPtr.Zero;
             }
             finally
@@ -64,7 +63,7 @@ namespace ArnoldVinkCode
         }
 
         //Get other process token
-        private static IntPtr Token_Create_Process(int processId, ProcessAccessFlags processAccess, TOKEN_DESIRED_ACCESS tokenAccess)
+        private static IntPtr Token_Create_Process(int processId, PROCESS_DESIRED_ACCESS processAccess, TOKEN_DESIRED_ACCESS tokenAccess)
         {
             IntPtr hProcess = IntPtr.Zero;
             try
@@ -73,23 +72,23 @@ namespace ArnoldVinkCode
                 hProcess = OpenProcess(processAccess, false, processId);
                 if (hProcess == IntPtr.Zero)
                 {
-                    Debug.WriteLine("Failed getting other process: " + Marshal.GetLastWin32Error());
+                    AVDebug.WriteLine("Failed getting other process: " + Marshal.GetLastWin32Error());
                     return IntPtr.Zero;
                 }
 
                 //Open other process token
                 if (!OpenProcessToken(hProcess, tokenAccess, out IntPtr hToken))
                 {
-                    Debug.WriteLine("Failed getting other process token: " + Marshal.GetLastWin32Error());
+                    AVDebug.WriteLine("Failed getting other process token: " + Marshal.GetLastWin32Error());
                     return IntPtr.Zero;
                 }
 
-                Debug.WriteLine("Got other process token: " + hToken);
+                AVDebug.WriteLine("Got other process token: " + hToken);
                 return hToken;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed getting other process token: " + ex.Message);
+                AVDebug.WriteLine("Failed getting other process token: " + ex.Message);
                 return IntPtr.Zero;
             }
             finally
@@ -109,26 +108,26 @@ namespace ArnoldVinkCode
                 int unelevatedProcessId = Detail_ProcessIdByWindowHandle(shellWindow);
 
                 //Open unelevated process
-                hProcess = OpenProcess(ProcessAccessFlags.QueryInformation, false, unelevatedProcessId);
+                hProcess = OpenProcess(PROCESS_DESIRED_ACCESS.PROCESS_QUERY_INFORMATION, false, unelevatedProcessId);
                 if (hProcess == IntPtr.Zero)
                 {
-                    Debug.WriteLine("Failed getting unelevated process: " + Marshal.GetLastWin32Error());
+                    AVDebug.WriteLine("Failed getting unelevated process: " + Marshal.GetLastWin32Error());
                     return IntPtr.Zero;
                 }
 
                 //Open unelevated process token
                 if (!OpenProcessToken(hProcess, TOKEN_DESIRED_ACCESS.TOKEN_ALL_ACCESS, out IntPtr hToken))
                 {
-                    Debug.WriteLine("Failed getting unelevated process token: " + Marshal.GetLastWin32Error());
+                    AVDebug.WriteLine("Failed getting unelevated process token: " + Marshal.GetLastWin32Error());
                     return IntPtr.Zero;
                 }
 
-                Debug.WriteLine("Got unelevated process token: " + hToken);
+                AVDebug.WriteLine("Got unelevated process token: " + hToken);
                 return hToken;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed getting unelevated process token: " + ex.Message);
+                AVDebug.WriteLine("Failed getting unelevated process token: " + ex.Message);
                 return IntPtr.Zero;
             }
             finally
