@@ -9,6 +9,8 @@ namespace ArnoldVinkCode
         public const int SID_MAX_SUB_AUTHORITIES = 15;
         public const int SECURITY_BUILTIN_DOMAIN_RID = 0x00000020;
         public const int DOMAIN_ALIAS_RID_ADMINS = 0x00000220;
+        public const int DOMAIN_ALIAS_RID_USERS = 0x00000221;
+        public static byte[] SECURITY_NT_AUTHORITY = { 0, 0, 0, 0, 0, 5 };
 
         //Structures
         [StructLayout(LayoutKind.Sequential)]
@@ -210,6 +212,12 @@ namespace ArnoldVinkCode
 
         [DllImport("advapi32.dll", SetLastError = true)]
         public static extern bool DuplicateTokenEx(IntPtr hExistingToken, TOKEN_DESIRED_ACCESS dwDesiredAccess, ref SECURITY_ATTRIBUTES lpTokenAttributes, TOKEN_IMPERSONATION_LEVEL ImpersonationLevel, TOKEN_TYPE TokenType, out IntPtr phNewToken);
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        public static extern bool GetTokenInformation(IntPtr TokenHandle, TOKEN_INFORMATION_CLASS TokenInformationClass, ref uint TokenInformation, uint TokenInformationLength, out uint ReturnLength);
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        public static extern bool GetTokenInformation(IntPtr TokenHandle, TOKEN_INFORMATION_CLASS TokenInformationClass, ref TOKEN_ELEVATION_TYPE TokenInformation, uint TokenInformationLength, out uint ReturnLength);
 
         [DllImport("advapi32.dll", SetLastError = true)]
         public static extern bool SetTokenInformation(IntPtr TokenHandle, TOKEN_INFORMATION_CLASS TokenInformationClass, ref uint TokenInformation, uint TokenInformationLength);
