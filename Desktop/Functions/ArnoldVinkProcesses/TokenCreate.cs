@@ -1,54 +1,106 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Security.Principal;
 using static ArnoldVinkCode.AVInteropDll;
 
 namespace ArnoldVinkCode
 {
     public partial class AVProcess
     {
-        private static bool Token_Create_FromCurrentProcess(out IntPtr dToken, out bool tokenAdminAccess)
+        //Duplicate process token
+        private static IntPtr Token_Duplicate(IntPtr hToken)
         {
-            IntPtr hToken = IntPtr.Zero;
-            dToken = IntPtr.Zero;
-            tokenAdminAccess = false;
             try
             {
-                //Get current process token
-                WindowsIdentity windowsIdentity = WindowsIdentity.GetCurrent(TokenAccessLevels.AllAccess);
-                hToken = windowsIdentity.Token;
-
-                //Duplicate current process token
+                IntPtr dToken = IntPtr.Zero;
                 SECURITY_ATTRIBUTES securityAttributes = new SECURITY_ATTRIBUTES();
-                if (!DuplicateTokenEx(hToken, TOKEN_DESIRED_ACCESS.TOKEN_ALL_ACCESS, ref securityAttributes, TOKEN_IMPERSONATION_LEVEL.SecurityImpersonation, TOKEN_TYPE.TokenPrimary, out dToken))
+                if (!DuplicateTokenEx(hToken, TOKEN_DESIRED_ACCESS.TOKEN_ALL_ACCESS, ref securityAttributes, TOKEN_IMPERSONATION_LEVEL.SecurityImpersonation, TOKEN_TYPE.TokenImpersonation, out dToken))
                 {
-                    Debug.WriteLine("Failed to duplicate current process token: " + Marshal.GetLastWin32Error());
-                    return false;
+                    Debug.WriteLine("Failed to duplicate process token: " + Marshal.GetLastWin32Error());
+                    return IntPtr.Zero;
+                }
+                else
+                {
+                    Debug.WriteLine("Succesfully duplicated process token: " + hToken + " > " + dToken);
+                    CloseHandleAuto(hToken);
+                    return dToken;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to duplicate process token: " + ex.Message);
+                return IntPtr.Zero;
+            }
+        }
+
+        //Get current process token
+        private static IntPtr Token_Create_Current()
+        {
+            IntPtr hProcess = IntPtr.Zero;
+            try
+            {
+                //Get current process
+                hProcess = GetCurrentProcess();
+
+                //Open current process token
+                if (!OpenProcessToken(hProcess, TOKEN_DESIRED_ACCESS.TOKEN_ALL_ACCESS, out IntPtr hToken))
+                {
+                    Debug.WriteLine("Failed getting current process token: " + Marshal.GetLastWin32Error());
+                    return IntPtr.Zero;
                 }
 
-                //Check administrator access
-                tokenAdminAccess = new WindowsPrincipal(windowsIdentity).IsInRole(WindowsBuiltInRole.Administrator);
-                //adminAccess = windowsIdentity.Owner.IsWellKnown(WellKnownSidType.BuiltinAdministratorsSid);
-                Debug.WriteLine("Got current process token: " + dToken + "/admin: " + tokenAdminAccess);
-                return dToken != IntPtr.Zero;
+                Debug.WriteLine("Got current process token: " + hToken);
+                return hToken;
             }
             catch (Exception ex)
             {
                 Debug.WriteLine("Failed getting current process token: " + ex.Message);
-                return false;
+                return IntPtr.Zero;
             }
             finally
             {
-                CloseHandleAuto(hToken);
+                CloseHandleAuto(hProcess);
             }
         }
 
-        private static bool Token_Create_FromUnelevatedProcess(out IntPtr dToken, out bool tokenAdminAccess)
+        //Get other process token
+        private static IntPtr Token_Create_Process(int processId, ProcessAccessFlags processAccess, TOKEN_DESIRED_ACCESS tokenAccess)
         {
-            IntPtr hToken = IntPtr.Zero;
-            dToken = IntPtr.Zero;
-            tokenAdminAccess = false;
+            IntPtr hProcess = IntPtr.Zero;
+            try
+            {
+                //Open other process
+                hProcess = OpenProcess(processAccess, false, processId);
+                if (hProcess == IntPtr.Zero)
+                {
+                    Debug.WriteLine("Failed getting other process: " + Marshal.GetLastWin32Error());
+                    return IntPtr.Zero;
+                }
+
+                //Open other process token
+                if (!OpenProcessToken(hProcess, tokenAccess, out IntPtr hToken))
+                {
+                    Debug.WriteLine("Failed getting other process token: " + Marshal.GetLastWin32Error());
+                    return IntPtr.Zero;
+                }
+
+                Debug.WriteLine("Got other process token: " + hToken);
+                return hToken;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed getting other process token: " + ex.Message);
+                return IntPtr.Zero;
+            }
+            finally
+            {
+                CloseHandleAuto(hProcess);
+            }
+        }
+
+        //Get unelevated process token
+        private static IntPtr Token_Create_Unelevated()
+        {
             IntPtr hProcess = IntPtr.Zero;
             try
             {
@@ -60,40 +112,27 @@ namespace ArnoldVinkCode
                 hProcess = OpenProcess(ProcessAccessFlags.QueryInformation, false, unelevatedProcessId);
                 if (hProcess == IntPtr.Zero)
                 {
-                    Debug.WriteLine("Failed to get unelevated process: " + Marshal.GetLastWin32Error());
-                    return false;
+                    Debug.WriteLine("Failed getting unelevated process: " + Marshal.GetLastWin32Error());
+                    return IntPtr.Zero;
                 }
 
-                //Get unelevated process token
-                if (!OpenProcessToken(hProcess, TOKEN_DESIRED_ACCESS.TOKEN_ALL_ACCESS, out hToken))
+                //Open unelevated process token
+                if (!OpenProcessToken(hProcess, TOKEN_DESIRED_ACCESS.TOKEN_ALL_ACCESS, out IntPtr hToken))
                 {
-                    Debug.WriteLine("Failed to get unelevated process token: " + Marshal.GetLastWin32Error());
-                    return false;
+                    Debug.WriteLine("Failed getting unelevated process token: " + Marshal.GetLastWin32Error());
+                    return IntPtr.Zero;
                 }
 
-                //Duplicate unelevated process token
-                SECURITY_ATTRIBUTES securityAttributes = new SECURITY_ATTRIBUTES();
-                if (!DuplicateTokenEx(hToken, TOKEN_DESIRED_ACCESS.TOKEN_ALL_ACCESS, ref securityAttributes, TOKEN_IMPERSONATION_LEVEL.SecurityImpersonation, TOKEN_TYPE.TokenPrimary, out dToken))
-                {
-                    Debug.WriteLine("Failed to duplicate unelevated process token: " + Marshal.GetLastWin32Error());
-                    return false;
-                }
-
-                //Check administrator access
-                WindowsIdentity windowsIdentity = new WindowsIdentity(dToken);
-                tokenAdminAccess = new WindowsPrincipal(windowsIdentity).IsInRole(WindowsBuiltInRole.Administrator);
-                //adminAccess = windowsIdentity.Owner.IsWellKnown(WellKnownSidType.BuiltinAdministratorsSid);
-                Debug.WriteLine("Got unelevated process token: " + dToken + "/admin: " + tokenAdminAccess);
-                return dToken != IntPtr.Zero;
+                Debug.WriteLine("Got unelevated process token: " + hToken);
+                return hToken;
             }
             catch (Exception ex)
             {
                 Debug.WriteLine("Failed getting unelevated process token: " + ex.Message);
-                return false;
+                return IntPtr.Zero;
             }
             finally
             {
-                CloseHandleAuto(hToken);
                 CloseHandleAuto(hProcess);
             }
         }
