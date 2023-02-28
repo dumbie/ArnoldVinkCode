@@ -67,32 +67,42 @@ namespace ArnoldVinkCode
         //Show window by window handle
         public static async Task<bool> Show_ProcessByWindowHandle(IntPtr windowHandle)
         {
-            AVDebug.WriteLine("Showing process by window handle: " + windowHandle);
+            try
+            {
+                AVDebug.WriteLine("Showing process by window handle: " + windowHandle);
 
-            //Get process id from window handle
-            int foundProcessId = Detail_ProcessIdByWindowHandle(windowHandle);
+                //Get process id from window handle
+                int foundProcessId = Detail_ProcessIdByWindowHandle(windowHandle);
 
-            //Show process window
-            return await Show_ProcessIdAndWindowHandle(foundProcessId, windowHandle);
+                //Show process window
+                return await Show_ProcessIdAndWindowHandle(foundProcessId, windowHandle);
+            }
+            catch { }
+            return false;
         }
 
         //Show window by process id
         public static async Task<bool> Show_ProcessById(int processId)
         {
-            AVDebug.WriteLine("Showing process by id: " + processId);
-
-            //Get multi process
-            ProcessMulti processMulti = Get_ProcessMultiByProcessId(processId);
-
-            //Check window handle
-            if (processMulti.WindowHandle == IntPtr.Zero)
+            try
             {
-                AVDebug.WriteLine("Failed showing process by id: " + processId);
-                return false;
-            }
+                AVDebug.WriteLine("Showing process by id: " + processId);
 
-            //Show process window
-            return await Show_ProcessIdAndWindowHandle(processId, processMulti.WindowHandle);
+                //Get multi process
+                ProcessMulti processMulti = Get_ProcessMultiByProcessId(processId);
+
+                //Check window handle
+                if (processMulti.WindowHandle == IntPtr.Zero)
+                {
+                    AVDebug.WriteLine("Failed showing process by id: " + processId);
+                    return false;
+                }
+
+                //Show process window
+                return await Show_ProcessIdAndWindowHandle(processId, processMulti.WindowHandle);
+            }
+            catch { }
+            return false;
         }
 
         //Show window by process id and window handle

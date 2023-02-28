@@ -63,10 +63,14 @@ namespace ArnoldVinkCode
                 bool processClosed = false;
                 foreach (Process allProcesses in Get_ProcessesByName(targetProcessName, exactName))
                 {
-                    if (Close_ProcessTreeById(allProcesses.Id))
+                    try
                     {
-                        processClosed = true;
+                        if (Close_ProcessTreeById(allProcesses.Id))
+                        {
+                            processClosed = true;
+                        }
                     }
+                    catch { }
                 }
 
                 AVDebug.WriteLine("Closed processes by name: " + targetProcessName + "/" + processClosed);

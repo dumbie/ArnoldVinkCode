@@ -132,13 +132,10 @@ namespace ArnoldVinkCode
                 convertedProcess.WindowClassName = Detail_ClassNameByWindowHandle(targetProcess.MainWindowHandle);
 
                 //Get executable path
-                string executablePath = Detail_ExecutablePathByProcess(targetProcess);
+                convertedProcess.ExecutablePath = Detail_ExecutablePathByProcess(targetProcess);
 
                 //Set executable name
-                convertedProcess.ExecutableName = Path.GetFileName(executablePath);
-
-                //Set executable path
-                convertedProcess.ExecutablePath = executablePath;
+                convertedProcess.ExecutableName = Path.GetFileName(convertedProcess.ExecutablePath);
 
                 //Set workpath argument
                 convertedProcess.WorkPath = Detail_ApplicationParameterByProcessHandle(targetProcess.Handle, PROCESS_PARAMETER_OPTIONS.CurrentDirectoryPath);

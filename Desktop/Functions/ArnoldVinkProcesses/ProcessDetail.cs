@@ -19,14 +19,14 @@ namespace ArnoldVinkCode
                 int readResult = NtQueryInformationProcess32(targetProcess.Handle, PROCESS_INFO_CLASS.ProcessBasicInformation, ref basicInformation, (uint)Marshal.SizeOf(basicInformation), out _);
                 if (readResult != 0)
                 {
-                    AVDebug.WriteLine("Failed to get parent processid: " + targetProcess.Id + "/Query failed");
+                    AVDebug.WriteLine("Failed to get parent processid: " + targetProcess.Id + "/Query failed.");
                     return -1;
                 }
                 return (int)basicInformation.InheritedFromUniqueProcessId;
             }
-            catch (Exception ex)
+            catch
             {
-                AVDebug.WriteLine("Failed to get parent processid: " + targetProcess.Id + "/" + ex.Message);
+                //AVDebug.WriteLine("Failed to get parent processid: " + targetProcess.Id + "/" + ex.Message);
                 return -1;
             }
         }

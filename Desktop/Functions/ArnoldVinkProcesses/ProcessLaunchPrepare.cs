@@ -23,9 +23,12 @@ namespace ArnoldVinkCode
                 {
                     AVDebug.WriteLine("Shell launch command detected.");
                     asAdmin = false;
+                    workPath = string.Empty;
+                    arguments = string.Empty;
                 }
                 else
                 {
+                    //Check launch access
                     if (asAdmin)
                     {
                         AVDebug.WriteLine("Starting process as administrator.");
@@ -38,6 +41,18 @@ namespace ArnoldVinkCode
                             launchShellExecute = false;
                             launchUnelevated = true;
                         }
+                    }
+
+                    //Check working path
+                    if (string.IsNullOrWhiteSpace(workPath))
+                    {
+                        workPath = Path.GetDirectoryName(exePath);
+                        AVDebug.WriteLine("Workpath is empty, using exepath: " + workPath);
+                    }
+                    else if (!Directory.Exists(workPath))
+                    {
+                        workPath = Path.GetDirectoryName(exePath);
+                        AVDebug.WriteLine("Workpath not found, using exepath: " + workPath);
                     }
                 }
 
@@ -63,13 +78,6 @@ namespace ArnoldVinkCode
                 {
                     AVDebug.WriteLine("Starting process without uiaccess.");
                     Token_Adjust_UIAccess(ref launchTokenHandle, false);
-                }
-
-                //Check work path
-                if (!shellCommand && string.IsNullOrWhiteSpace(workPath))
-                {
-                    workPath = Path.GetDirectoryName(exePath);
-                    AVDebug.WriteLine("Workpath is empty, using exepath: " + workPath);
                 }
 
                 //Launch application

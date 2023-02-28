@@ -9,7 +9,7 @@ namespace ArnoldVinkCode
         //Enumerate all thread windows including fullscreen
         public static List<IntPtr> Thread_GetWindowHandles(int threadId)
         {
-            AVDebug.WriteLine("Getting thread window handles: " + threadId);
+            //AVDebug.WriteLine("Getting thread window handles: " + threadId);
             List<IntPtr> listWindows = new List<IntPtr>();
             try
             {

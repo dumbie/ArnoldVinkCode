@@ -83,14 +83,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                if (exactName)
-                {
-                    return Process.GetProcesses().Any(x => x.ProcessName.ToLower() == targetProcessName.ToLower());
-                }
-                else
-                {
-                    return Process.GetProcesses().Any(x => x.ProcessName.ToLower().Contains(targetProcessName.ToLower()));
-                }
+                return Get_ProcessesByName(targetProcessName, exactName).Any();
             }
             catch (Exception ex)
             {

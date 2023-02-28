@@ -13,19 +13,14 @@ namespace ArnoldVinkCode
         {
             try
             {
-                AVDebug.WriteLine("Launching create process: " + exePath);
+                AVDebug.WriteLine("Launching process using create process: " + exePath);
 
                 //Set launch information
-                string currentDirectory = string.Empty;
-                if (!string.IsNullOrWhiteSpace(workPath) && Directory.Exists(workPath))
+                string commandLine = exePath;
+                if (!string.IsNullOrWhiteSpace(arguments))
                 {
-                    currentDirectory = workPath;
+                    commandLine += " " + arguments;
                 }
-                else
-                {
-                    currentDirectory = Path.GetDirectoryName(exePath);
-                }
-                string commandLine = exePath + " " + arguments;
 
                 //Create process
                 STARTUPINFOW startupInfo = new STARTUPINFOW();
@@ -33,7 +28,7 @@ namespace ArnoldVinkCode
                 CreateProcessFlags creationFlags = CreateProcessFlags.CREATE_NEW_CONSOLE | CreateProcessFlags.CREATE_NEW_PROCESS_GROUP;
                 if (toolAdminAccess)
                 {
-                    if (!CreateProcessWithTokenW(hToken, CreateLogonFlags.LOGON_NONE, null, commandLine, creationFlags, IntPtr.Zero, currentDirectory, ref startupInfo, out processInfo))
+                    if (!CreateProcessWithTokenW(hToken, CreateLogonFlags.LOGON_NONE, null, commandLine, creationFlags, IntPtr.Zero, workPath, ref startupInfo, out processInfo))
                     {
                         Debug.Write("CreateProcessWithToken failed: " + Marshal.GetLastWin32Error());
                         return 0;
@@ -48,7 +43,7 @@ namespace ArnoldVinkCode
                 {
                     SECURITY_ATTRIBUTES saProcess = new SECURITY_ATTRIBUTES();
                     SECURITY_ATTRIBUTES saThread = new SECURITY_ATTRIBUTES();
-                    if (!CreateProcessAsUserW(hToken, null, commandLine, ref saProcess, ref saThread, false, creationFlags, IntPtr.Zero, currentDirectory, ref startupInfo, out processInfo))
+                    if (!CreateProcessAsUserW(hToken, null, commandLine, ref saProcess, ref saThread, false, creationFlags, IntPtr.Zero, workPath, ref startupInfo, out processInfo))
                     {
                         Debug.Write("CreateProcessAsUser failed: " + Marshal.GetLastWin32Error());
                         return 0;
@@ -62,13 +57,14 @@ namespace ArnoldVinkCode
             }
             catch (Exception ex)
             {
-                Debug.Write("CreateProcess failed: " + exePath + " / " + ex.Message);
+                Debug.Write("CreateProcess failed: " + exePath + "/" + ex.Message);
                 return 0;
             }
         }
 
         public static int Launch_ShellExecute(string exePath, string workPath, string arguments, bool asAdmin)
         {
+            //Does not inherit token from thread started with custom token.
             //Does not reset integrity level from process.
             //Does not remove elevation from process.
             //Does not disable UIAccess from process.
@@ -78,8 +74,8 @@ namespace ArnoldVinkCode
 
                 //Set shell execute info
                 ShellExecuteInfo shellExecuteInfo = new ShellExecuteInfo();
-                shellExecuteInfo.fMask = SHELL_EXECUTE_SEE_MASK.SEE_MASK_NOCLOSEPROCESS;
                 shellExecuteInfo.nShow = WindowShowCommand.Show;
+                shellExecuteInfo.fMask = SHELL_EXECUTE_SEE_MASK.SEE_MASK_NOCLOSEPROCESS;
                 shellExecuteInfo.lpVerb = asAdmin ? "runas" : "open";
                 shellExecuteInfo.lpFile = exePath;
 
@@ -105,28 +101,28 @@ namespace ArnoldVinkCode
                 else
                 {
                     int processId = GetProcessId(shellExecuteInfo.hProcess);
-                    AVDebug.WriteLine("Launched shell process success: " + processId);
+                    AVDebug.WriteLine("Launched shell process successfully: " + processId);
                     return processId;
                 }
             }
             catch (Exception ex)
             {
-                Debug.Write("Launching shell process failed: " + exePath + " / " + ex.Message);
+                Debug.Write("Launching shell process failed: " + exePath + "/" + ex.Message);
                 return 0;
             }
         }
 
         //Launch uwp application
-        public static int Launch_UwpApplication(string appUserModelId, string runArgument)
+        public static int Launch_UwpApplication(string appUserModelId, string arguments)
         {
             try
             {
                 //Show launching message
-                AVDebug.WriteLine("Launching UWP or Win32Store application: " + appUserModelId + " / " + runArgument);
+                AVDebug.WriteLine("Launching UWP or Win32Store application: " + appUserModelId + "/" + arguments);
 
                 //Start the process
                 UWPActivationManager UWPActivationManager = new UWPActivationManager();
-                UWPActivationManager.ActivateApplication(appUserModelId, runArgument, UWPActivationManagerOptions.None, out int processId);
+                UWPActivationManager.ActivateApplication(appUserModelId, arguments, UWP_ACTIVATEOPTIONS.AO_NONE, out int processId);
 
                 //Return process id
                 AVDebug.WriteLine("Launched UWP or Win32Store process identifier: " + processId);
@@ -134,7 +130,7 @@ namespace ArnoldVinkCode
             }
             catch (Exception ex)
             {
-                AVDebug.WriteLine("Failed launching UWP or Win32Store: " + appUserModelId + " / " + ex.Message);
+                AVDebug.WriteLine("Failed launching UWP or Win32Store: " + appUserModelId + "/" + ex.Message);
                 return 0;
             }
         }

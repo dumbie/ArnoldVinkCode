@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 
 namespace ArnoldVinkCode
@@ -33,14 +34,35 @@ namespace ArnoldVinkCode
         {
             try
             {
-                if (exactName)
+                List<Process> foundProcesses = new List<Process>();
+                foreach (Process process in Process.GetProcesses())
                 {
-                    return Process.GetProcesses().Where(x => x.ProcessName.ToLower() == targetProcessName.ToLower()).OrderByDescending(x => x.MainWindowHandle != IntPtr.Zero).ToArray();
+                    try
+                    {
+                        string targetExecutableNameLower = Path.GetFileNameWithoutExtension(targetProcessName).ToLower();
+                        string foundExecutableNameLower = Path.GetFileNameWithoutExtension(process.MainModule.FileName).ToLower();
+                        string targetApplicationUserModelIdLower = targetProcessName.ToLower();
+                        string foundApplicationUserModelIdLower = Detail_ApplicationUserModelIdByProcess(process).ToLower();
+                        if (exactName)
+                        {
+                            if (foundExecutableNameLower == targetExecutableNameLower || foundApplicationUserModelIdLower == targetApplicationUserModelIdLower)
+                            {
+                                foundProcesses.Add(process);
+                            }
+                        }
+                        else
+                        {
+                            if (foundExecutableNameLower.Contains(targetExecutableNameLower) || foundApplicationUserModelIdLower.Contains(targetApplicationUserModelIdLower))
+                            {
+                                foundProcesses.Add(process);
+                            }
+                        }
+                    }
+                    catch { }
                 }
-                else
-                {
-                    return Process.GetProcesses().Where(x => x.ProcessName.ToLower().Contains(targetProcessName.ToLower())).OrderByDescending(x => x.MainWindowHandle != IntPtr.Zero).ToArray();
-                }
+
+                //Sort processes by mainwindowhandle
+                return foundProcesses.OrderByDescending(x => x.MainWindowHandle != IntPtr.Zero).ToArray();
             }
             catch (Exception ex)
             {
@@ -50,11 +72,11 @@ namespace ArnoldVinkCode
         }
 
         /// <summary>
-        /// Get processes by window title
+        /// Get processes by main window title
         /// </summary>
-        /// <param name="targetWindowTitle">Search for window title</param>
-        /// <param name="exactName">Search for exact window title</param>
-        public static Process[] Get_ProcessesByWindowTitle(string targetWindowTitle, bool exactName)
+        /// <param name="targetWindowTitle">Search for main window title</param>
+        /// <param name="exactName">Search for exact main window title</param>
+        public static Process[] Get_ProcessesByMainWindowTitle(string targetWindowTitle, bool exactName)
         {
             try
             {
