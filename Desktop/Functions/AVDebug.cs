@@ -6,6 +6,17 @@ namespace ArnoldVinkCode
 {
     public partial class AVDebug
     {
+        //Write line to Debug and Console
+        public static void WriteLine(object writeLine)
+        {
+            try
+            {
+                Debug.WriteLine(writeLine);
+                Console.WriteLine(writeLine);
+            }
+            catch { }
+        }
+
         //Write debug text to file
         public static bool WriteFile(string debugText)
         {
