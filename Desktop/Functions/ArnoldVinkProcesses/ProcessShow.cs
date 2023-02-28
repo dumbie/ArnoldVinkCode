@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using static ArnoldVinkCode.AVInputOutputClass;
 using static ArnoldVinkCode.AVInputOutputKeyboard;
 using static ArnoldVinkCode.AVInteropDll;
@@ -18,7 +18,7 @@ namespace ArnoldVinkCode
                 {
                     AVDebug.WriteLine("Start menu is currently open, pressing escape to close it.");
                     KeyPressReleaseSingle(KeysVirtual.Escape);
-                    await Task.Delay(10);
+                    await Task.Delay(50);
                 }
             }
             catch { }
@@ -31,7 +31,7 @@ namespace ArnoldVinkCode
             {
                 AVDebug.WriteLine("Closing system menu for window: " + foregroundProcess.WindowHandle);
                 SendMessage(foregroundProcess.WindowHandle, (int)WindowMessages.WM_CANCELMODE, 0, 0);
-                await Task.Delay(10);
+                await Task.Delay(50);
             }
             catch { }
         }
@@ -42,20 +42,20 @@ namespace ArnoldVinkCode
             try
             {
                 //Windows administrator consent prompt
-                if (Get_ProcessesByName("consent", true).FirstOrDefault() != null)
+                if (Check_RunningProcessByName("consent", true))
                 {
                     AVDebug.WriteLine("Windows administrator consent prompt is open, killing the process.");
                     bool closedProcess = Close_ProcessesByName("consent", true);
-                    await Task.Delay(500);
+                    await Task.Delay(250);
                     if (closedProcess)
                     {
                         KeyPressReleaseSingle(KeysVirtual.Escape);
-                        await Task.Delay(10);
+                        await Task.Delay(50);
                     }
                 }
 
                 //Windows feature installation prompt
-                if (Get_ProcessesByName("fondue", true).FirstOrDefault() != null)
+                if (Check_RunningProcessByName("fondue", true))
                 {
                     AVDebug.WriteLine("Windows feature installation prompt is open, killing the process.");
                     Close_ProcessesByName("fondue", true);
@@ -110,7 +110,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                AVDebug.WriteLine("Showing process by id: " + processId + "and window handle: " + windowHandle);
+                AVDebug.WriteLine("Showing process by id: " + processId + " and window handle: " + windowHandle);
 
                 //Close open Windows prompts
                 await Close_OpenWindowsPrompts();
@@ -124,19 +124,17 @@ namespace ArnoldVinkCode
                 //Close open Windows system menu
                 await Close_OpenWindowsSystemMenu(foregroundProcess);
 
-                //Detect the previous window state
-                WindowShowCommand windowShowCommand = WindowShowCommand.None;
+                //Get current window placement
                 WindowPlacement processWindowState = new WindowPlacement();
                 GetWindowPlacement(windowHandle, ref processWindowState);
-                AVDebug.WriteLine("Detected the previous window state: " + processWindowState.windowFlags);
+
+                //Check current window placement
+                WindowShowCommand windowShowCommand = WindowShowCommand.Restore;
                 if (processWindowState.windowFlags == WindowFlags.RestoreToMaximized)
                 {
                     windowShowCommand = WindowShowCommand.ShowMaximized;
                 }
-                else
-                {
-                    windowShowCommand = WindowShowCommand.Restore;
-                }
+                AVDebug.WriteLine("Changing window placement to: " + windowShowCommand);
 
                 //Retry to show the window
                 for (int i = 0; i < 2; i++)
@@ -144,8 +142,11 @@ namespace ArnoldVinkCode
                     try
                     {
                         //Allow changing window
-                        AllowSetForegroundWindow(processId);
-                        await Task.Delay(10);
+                        if (processId > 0)
+                        {
+                            AllowSetForegroundWindow(processId);
+                            await Task.Delay(10);
+                        }
 
                         //Show window async
                         ShowWindowAsync(windowHandle, windowShowCommand);
@@ -161,10 +162,6 @@ namespace ArnoldVinkCode
 
                         //Switch to the window
                         SwitchToThisWindow(windowHandle, true);
-                        await Task.Delay(10);
-
-                        //Focus on the window
-                        UiaFocusWindowHandle(windowHandle);
                         await Task.Delay(10);
                     }
                     catch { }

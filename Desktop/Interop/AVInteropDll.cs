@@ -692,7 +692,10 @@ namespace ArnoldVinkCode
                 RawUiaSetFocus(hNode);
                 RawUiaNodeRelease(hNode);
             }
-            catch { }
+            catch
+            {
+                Debug.WriteLine("Failed to uia focus on window handle: " + windowHandle);
+            }
         }
 
         //SystemParametersInfo

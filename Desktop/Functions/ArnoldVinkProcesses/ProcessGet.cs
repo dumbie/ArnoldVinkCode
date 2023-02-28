@@ -35,26 +35,26 @@ namespace ArnoldVinkCode
             try
             {
                 List<Process> foundProcesses = new List<Process>();
-                foreach (Process process in Process.GetProcesses())
+                foreach (Process foundProcess in Process.GetProcesses())
                 {
                     try
                     {
                         string targetExecutableNameLower = Path.GetFileNameWithoutExtension(targetProcessName).ToLower();
-                        string foundExecutableNameLower = Path.GetFileNameWithoutExtension(process.MainModule.FileName).ToLower();
+                        string foundExecutableNameLower = Path.GetFileNameWithoutExtension(foundProcess.ProcessName).ToLower();
                         string targetApplicationUserModelIdLower = targetProcessName.ToLower();
-                        string foundApplicationUserModelIdLower = Detail_ApplicationUserModelIdByProcess(process).ToLower();
+                        string foundApplicationUserModelIdLower = Detail_ApplicationUserModelIdByProcess(foundProcess).ToLower();
                         if (exactName)
                         {
                             if (foundExecutableNameLower == targetExecutableNameLower || foundApplicationUserModelIdLower == targetApplicationUserModelIdLower)
                             {
-                                foundProcesses.Add(process);
+                                foundProcesses.Add(foundProcess);
                             }
                         }
                         else
                         {
                             if (foundExecutableNameLower.Contains(targetExecutableNameLower) || foundApplicationUserModelIdLower.Contains(targetApplicationUserModelIdLower))
                             {
-                                foundProcesses.Add(process);
+                                foundProcesses.Add(foundProcess);
                             }
                         }
                     }

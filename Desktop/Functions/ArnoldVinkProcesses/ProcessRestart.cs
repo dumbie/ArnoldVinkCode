@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace ArnoldVinkCode
@@ -53,8 +54,11 @@ namespace ArnoldVinkCode
                     return Launch_Prepare(processDetails.ExecutablePath, processDetails.WorkPath, launchArgument, false, currentProcessAccess.AdminAccess, currentProcessAccess.UiAccess);
                 }
             }
-            catch { }
-            return 0;
+            catch (Exception ex)
+            {
+                AVDebug.WriteLine("Failed to restart process id: " + processId + "/" + ex.Message);
+                return 0;
+            }
         }
     }
 }

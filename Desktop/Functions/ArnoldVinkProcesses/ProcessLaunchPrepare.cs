@@ -15,7 +15,7 @@ namespace ArnoldVinkCode
                 bool launchUnelevated = false;
 
                 //Check current process access
-                ProcessAccess currentProcessAccess = AVProcess.Get_ProcessAccessStatus(0, true);
+                ProcessAccess currentProcessAccess = Get_ProcessAccessStatus(0, true);
 
                 //Check for url protocol
                 bool shellCommand = Check_PathUrlProtocol(exePath);

@@ -6,7 +6,7 @@ namespace ArnoldVinkCode
 {
     public partial class AVProcess
     {
-        public static bool Token_Adjust_Privilege(ref IntPtr hToken, PrivilegeConstants privilegeName, bool enablePrivilege)
+        private static bool Token_Adjust_Privilege(ref IntPtr hToken, PrivilegeConstants privilegeName, bool enablePrivilege)
         {
             //Does not add new privilege only change existing.
             try
@@ -39,7 +39,7 @@ namespace ArnoldVinkCode
             }
             catch (Exception ex)
             {
-                AVDebug.WriteLine("Failed setting token privilege: " + ex.Message);
+                AVDebug.WriteLine("Failed setting token privilege: " + privilegeName.ToString() + "/" + ex.Message);
                 return false;
             }
         }
