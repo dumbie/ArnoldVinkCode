@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using System.Windows;
 using static ArnoldVinkCode.AVInputOutputClass;
 using static ArnoldVinkCode.AVInputOutputKeyboard;
 using static ArnoldVinkCode.AVInteropDll;
@@ -14,7 +13,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                if (foregroundProcess.Name == "SearchUI")
+                if (foregroundProcess.Name == "SearchUI" || foregroundProcess.Name == "SearchHost")
                 {
                     AVDebug.WriteLine("Start menu is currently open, pressing escape to close it.");
                     KeyPressReleaseSingle(KeysVirtual.Escape);
@@ -117,6 +116,11 @@ namespace ArnoldVinkCode
 
                 //Get current focused application
                 ProcessMulti foregroundProcess = Get_ProcessMultiByWindowHandle(GetForegroundWindow());
+                if (foregroundProcess == null)
+                {
+                    AVDebug.WriteLine("Failed showing process Id: " + processId + "/No foreground window.");
+                    return false;
+                }
 
                 //Close open start menu, cortana or search
                 await Close_OpenWindowsStartMenu(foregroundProcess);

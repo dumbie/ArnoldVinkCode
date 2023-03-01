@@ -35,7 +35,7 @@ namespace ArnoldVinkCode
                 {
                     try
                     {
-                        string processAppUserModelId = Detail_ApplicationUserModelIdByProcess(uwpProcess);
+                        string processAppUserModelId = Detail_AppUserModelIdByProcess(uwpProcess);
                         if (processAppUserModelId == targetAppUserModelId)
                         {
                             //AVDebug.WriteLine(targetProcessName + "/Id" + uwpProcess.Id + "/App" + processAppUserModelId + "vs" + targetAppUserModelId);
@@ -70,7 +70,7 @@ namespace ArnoldVinkCode
                     }
 
                     //Get process from the appx package
-                    string appUserModelId = Detail_ApplicationUserModelIdByWindowHandle(targetWindowHandle);
+                    string appUserModelId = Detail_AppUserModelIdByWindowHandle(targetWindowHandle);
                     return Get_ProcessMultiByUwpAppUserModelId(appUserModelId);
                 }
                 else
@@ -144,7 +144,7 @@ namespace ArnoldVinkCode
                 convertedProcess.Argument = Detail_ApplicationParameterByProcessHandle(targetProcess.Handle, PROCESS_PARAMETER_OPTIONS.CommandLine);
 
                 //Set application type and path
-                string processAppUserModelId = Detail_ApplicationUserModelIdByProcess(targetProcess);
+                string processAppUserModelId = Detail_AppUserModelIdByProcess(targetProcess);
                 if (!string.IsNullOrWhiteSpace(processAppUserModelId))
                 {
                     convertedProcess.Type = ProcessType.UWP;
@@ -190,14 +190,20 @@ namespace ArnoldVinkCode
                     }
                 }
 
+                //AVDebug.WriteLine("----------------");
                 //AVDebug.WriteLine("Identifier: " + convertedProcess.Identifier);
-                //AVDebug.WriteLine("ProcessType: " + convertedProcess.ProcessType);
+                //AVDebug.WriteLine("Type: " + convertedProcess.Type);
+                //AVDebug.WriteLine("Handle: " + convertedProcess.Handle);
+                //AVDebug.WriteLine("Name: " + convertedProcess.Name);
+                //AVDebug.WriteLine("AppUserModelId: " + convertedProcess.AppUserModelId);
                 //AVDebug.WriteLine("ExecutableName: " + convertedProcess.ExecutableName);
                 //AVDebug.WriteLine("ExecutablePath: " + convertedProcess.ExecutablePath);
+                //AVDebug.WriteLine("WorkPath: " + convertedProcess.WorkPath);
                 //AVDebug.WriteLine("Argument: " + convertedProcess.Argument);
                 //AVDebug.WriteLine("WindowClassName: " + convertedProcess.WindowClassName);
                 //AVDebug.WriteLine("WindowTitle: " + convertedProcess.WindowTitle);
                 //AVDebug.WriteLine("WindowHandle: " + convertedProcess.WindowHandle);
+                //AVDebug.WriteLine("StartTime: " + convertedProcess.StartTime);
                 return convertedProcess;
             }
             catch (Exception ex)

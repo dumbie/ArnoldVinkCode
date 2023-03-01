@@ -41,18 +41,18 @@ namespace ArnoldVinkCode
                     {
                         string targetExecutableNameLower = Path.GetFileNameWithoutExtension(targetProcessName).ToLower();
                         string foundExecutableNameLower = Path.GetFileNameWithoutExtension(foundProcess.ProcessName).ToLower();
-                        string targetApplicationUserModelIdLower = targetProcessName.ToLower();
-                        string foundApplicationUserModelIdLower = Detail_ApplicationUserModelIdByProcess(foundProcess).ToLower();
+                        string targetAppUserModelIdLower = targetProcessName.ToLower();
+                        string foundAppUserModelIdLower = Detail_AppUserModelIdByProcess(foundProcess).ToLower();
                         if (exactName)
                         {
-                            if (foundExecutableNameLower == targetExecutableNameLower || foundApplicationUserModelIdLower == targetApplicationUserModelIdLower)
+                            if (foundExecutableNameLower == targetExecutableNameLower || foundAppUserModelIdLower == targetAppUserModelIdLower)
                             {
                                 foundProcesses.Add(foundProcess);
                             }
                         }
                         else
                         {
-                            if (foundExecutableNameLower.Contains(targetExecutableNameLower) || foundApplicationUserModelIdLower.Contains(targetApplicationUserModelIdLower))
+                            if (foundExecutableNameLower.Contains(targetExecutableNameLower) || foundAppUserModelIdLower.Contains(targetAppUserModelIdLower))
                             {
                                 foundProcesses.Add(foundProcess);
                             }

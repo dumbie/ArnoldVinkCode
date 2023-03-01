@@ -182,7 +182,7 @@ namespace ArnoldVinkCode
         }
 
         //Get AppUserModelId by process
-        public static string Detail_ApplicationUserModelIdByProcess(Process targetProcess)
+        public static string Detail_AppUserModelIdByProcess(Process targetProcess)
         {
             try
             {
@@ -199,7 +199,7 @@ namespace ArnoldVinkCode
         }
 
         //Get AppUserModelId by window handle
-        public static string Detail_ApplicationUserModelIdByWindowHandle(IntPtr targetWindowHandle)
+        public static string Detail_AppUserModelIdByWindowHandle(IntPtr targetWindowHandle)
         {
             try
             {
@@ -234,7 +234,7 @@ namespace ArnoldVinkCode
                                     if (Check_WindowHandleIsUwpApp(threadWindowHandle))
                                     {
                                         string targetAppUserModelIdLower = targetAppUserModelId.ToLower();
-                                        string foundAppUserModelIdLower = Detail_ApplicationUserModelIdByWindowHandle(threadWindowHandle).ToLower();
+                                        string foundAppUserModelIdLower = Detail_AppUserModelIdByWindowHandle(threadWindowHandle).ToLower();
                                         if (targetAppUserModelIdLower == foundAppUserModelIdLower)
                                         {
                                             return threadWindowHandle;
