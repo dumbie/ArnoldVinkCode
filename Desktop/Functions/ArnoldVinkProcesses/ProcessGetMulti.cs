@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using Windows.ApplicationModel;
+using System.Linq;
 using static ArnoldVinkCode.AVInteropDll;
 using static ArnoldVinkCode.AVUwpAppx;
 
@@ -10,40 +10,12 @@ namespace ArnoldVinkCode
     public partial class AVProcess
     {
         //Get multi process by UWP AppUserModelId
-        public static ProcessMulti Get_ProcessMultiByUwpAppUserModelId(string targetAppUserModelId)
+        public static ProcessMulti Get_ProcessMultiByAppUserModelId(string targetAppUserModelId)
         {
             try
             {
-                Package appPackage = GetUwpAppPackageByAppUserModelId(targetAppUserModelId);
-                AppxDetails appxDetails = GetUwpAppxDetailsByAppPackage(appPackage);
-                return Get_ProcessMultiByUwpPackageAndAppxDetails(appPackage, appxDetails);
-            }
-            catch { }
-            return null;
-        }
-
-        //Get multi process by UWP Package and AppxDetails
-        public static ProcessMulti Get_ProcessMultiByUwpPackageAndAppxDetails(Package targetAppPackage, AppxDetails targetAppxDetails)
-        {
-            try
-            {
-                string targetAppUserModelId = targetAppxDetails.AppUserModelId;
-                string targetProcessName = Path.GetFileNameWithoutExtension(targetAppxDetails.ExecutableAliasName);
-
-                Process[] uwpProcesses = Get_ProcessesByName(targetProcessName, true);
-                foreach (Process uwpProcess in uwpProcesses)
-                {
-                    try
-                    {
-                        string processAppUserModelId = Detail_AppUserModelIdByProcess(uwpProcess);
-                        if (processAppUserModelId == targetAppUserModelId)
-                        {
-                            //AVDebug.WriteLine(targetProcessName + "/Id" + uwpProcess.Id + "/App" + processAppUserModelId + "vs" + targetAppUserModelId);
-                            return Get_ProcessMultiByProcess(uwpProcess, targetAppPackage, targetAppxDetails);
-                        }
-                    }
-                    catch { }
-                }
+                Process uwpProcess = Get_ProcessesByAppUserModelId(targetAppUserModelId).FirstOrDefault();
+                return Get_ProcessMultiByProcess(uwpProcess);
             }
             catch { }
             return null;
@@ -65,19 +37,19 @@ namespace ArnoldVinkCode
                         if (processId > 0)
                         {
                             Process uwpProcess = Process.GetProcessById(processId);
-                            return Get_ProcessMultiByProcess(uwpProcess, null, null);
+                            return Get_ProcessMultiByProcess(uwpProcess);
                         }
                     }
 
                     //Get process from the appx package
                     string appUserModelId = Detail_AppUserModelIdByWindowHandle(targetWindowHandle);
-                    return Get_ProcessMultiByUwpAppUserModelId(appUserModelId);
+                    return Get_ProcessMultiByAppUserModelId(appUserModelId);
                 }
                 else
                 {
                     int processId = Detail_ProcessIdByWindowHandle(targetWindowHandle);
                     Process process = Process.GetProcessById(processId);
-                    return Get_ProcessMultiByProcess(process, null, null);
+                    return Get_ProcessMultiByProcess(process);
                 }
             }
             catch (Exception ex)
@@ -93,7 +65,7 @@ namespace ArnoldVinkCode
             try
             {
                 Process targetProcess = Process.GetProcessById(targetProcessId);
-                return Get_ProcessMultiByProcess(targetProcess, null, null);
+                return Get_ProcessMultiByProcess(targetProcess);
             }
             catch (Exception ex)
             {
@@ -103,7 +75,7 @@ namespace ArnoldVinkCode
         }
 
         //Get multi process by process
-        public static ProcessMulti Get_ProcessMultiByProcess(Process targetProcess, Package uwpAppPackage, AppxDetails uwpAppxDetails)
+        public static ProcessMulti Get_ProcessMultiByProcess(Process targetProcess)
         {
             try
             {
@@ -158,25 +130,9 @@ namespace ArnoldVinkCode
                 //Check if application is UWP or Win32Store
                 if (convertedProcess.Type == ProcessType.UWP)
                 {
-                    //Check if AppPackage is provided
-                    if (uwpAppPackage == null)
-                    {
-                        convertedProcess.AppPackage = GetUwpAppPackageByAppUserModelId(processAppUserModelId);
-                    }
-                    else
-                    {
-                        convertedProcess.AppPackage = uwpAppPackage;
-                    }
-
-                    //Check if AppxDetails is provided
-                    if (uwpAppxDetails == null)
-                    {
-                        convertedProcess.AppxDetails = GetUwpAppxDetailsByAppPackage(convertedProcess.AppPackage);
-                    }
-                    else
-                    {
-                        convertedProcess.AppxDetails = uwpAppxDetails;
-                    }
+                    //Get AppPackage and AppxDetails
+                    convertedProcess.AppPackage = GetUwpAppPackageByAppUserModelId(processAppUserModelId);
+                    convertedProcess.AppxDetails = GetUwpAppxDetailsByAppPackage(convertedProcess.AppPackage);
 
                     //Check if application is Win32Store
                     if (Check_ClassNameIsUwpApp(convertedProcess.WindowClassName))

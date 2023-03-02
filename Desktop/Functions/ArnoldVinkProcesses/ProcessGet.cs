@@ -41,18 +41,16 @@ namespace ArnoldVinkCode
                     {
                         string targetExecutableNameLower = Path.GetFileNameWithoutExtension(targetProcessName).ToLower();
                         string foundExecutableNameLower = Path.GetFileNameWithoutExtension(foundProcess.ProcessName).ToLower();
-                        string targetAppUserModelIdLower = targetProcessName.ToLower();
-                        string foundAppUserModelIdLower = Detail_AppUserModelIdByProcess(foundProcess).ToLower();
                         if (exactName)
                         {
-                            if (foundExecutableNameLower == targetExecutableNameLower || foundAppUserModelIdLower == targetAppUserModelIdLower)
+                            if (foundExecutableNameLower == targetExecutableNameLower)
                             {
                                 foundProcesses.Add(foundProcess);
                             }
                         }
                         else
                         {
-                            if (foundExecutableNameLower.Contains(targetExecutableNameLower) || foundAppUserModelIdLower.Contains(targetAppUserModelIdLower))
+                            if (foundExecutableNameLower.Contains(targetExecutableNameLower))
                             {
                                 foundProcesses.Add(foundProcess);
                             }
@@ -61,12 +59,45 @@ namespace ArnoldVinkCode
                     catch { }
                 }
 
-                //Sort processes by mainwindowhandle
+                //Sort processes by main window handle
                 return foundProcesses.OrderByDescending(x => x.MainWindowHandle != IntPtr.Zero).ToArray();
             }
             catch (Exception ex)
             {
                 AVDebug.WriteLine("Failed to get processes by name: " + ex.Message);
+                return new Process[0];
+            }
+        }
+
+        /// <summary>
+        /// Get processes by AppUserModelId
+        /// </summary>
+        /// <param name="targetAppUserModelId">UWP or Win32Store AppUserModelId</param>
+        public static Process[] Get_ProcessesByAppUserModelId(string targetAppUserModelId)
+        {
+            try
+            {
+                List<Process> foundProcesses = new List<Process>();
+                foreach (Process foundProcess in Process.GetProcesses())
+                {
+                    try
+                    {
+                        string targetAppUserModelIdLower = targetAppUserModelId.ToLower();
+                        string foundAppUserModelIdLower = Detail_AppUserModelIdByProcess(foundProcess).ToLower();
+                        if (foundAppUserModelIdLower == targetAppUserModelIdLower)
+                        {
+                            foundProcesses.Add(foundProcess);
+                        }
+                    }
+                    catch { }
+                }
+
+                //Sort processes by main window handle
+                return foundProcesses.OrderByDescending(x => x.MainWindowHandle != IntPtr.Zero).ToArray();
+            }
+            catch (Exception ex)
+            {
+                AVDebug.WriteLine("Failed to get processes by AppUserModelId: " + ex.Message);
                 return new Process[0];
             }
         }

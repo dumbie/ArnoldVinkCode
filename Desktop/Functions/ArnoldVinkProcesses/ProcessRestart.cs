@@ -22,7 +22,7 @@ namespace ArnoldVinkCode
                 }
 
                 //Get multi process
-                ProcessMulti processDetails = Get_ProcessMultiByProcess(restartProcess, null, null);
+                ProcessMulti processDetails = Get_ProcessMultiByProcess(restartProcess);
 
                 //Get process access status
                 ProcessAccess currentProcessAccess = Get_ProcessAccessStatus(processId, false);

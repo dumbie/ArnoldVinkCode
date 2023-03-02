@@ -75,7 +75,7 @@ namespace ArnoldVinkCode
         }
 
         /// <summary>
-        /// Check if process is running by process name
+        /// Check if process is running by name
         /// </summary>
         /// <param name="targetProcessName">Process name without extension</param>
         /// <param name="exactName">Search for exact process name</param>
@@ -88,6 +88,23 @@ namespace ArnoldVinkCode
             catch (Exception ex)
             {
                 AVDebug.WriteLine("Failed to check running process by name: " + ex.Message);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Check if process is running by AppUserModelId
+        /// </summary>
+        /// <param name="targetAppUserModelId">UWP or Win32Store AppUserModelId</param>
+        public static bool Check_RunningProcessByAppUserModelId(string targetAppUserModelId)
+        {
+            try
+            {
+                return Get_ProcessesByAppUserModelId(targetAppUserModelId).Any();
+            }
+            catch (Exception ex)
+            {
+                AVDebug.WriteLine("Failed to check running process by AppUserModelId: " + ex.Message);
                 return false;
             }
         }

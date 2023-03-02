@@ -83,6 +83,34 @@ namespace ArnoldVinkCode
             }
         }
 
+        //Close processes by AppUserModelId
+        public static bool Close_ProcessesByAppUserModelId(string targetAppUserModelId)
+        {
+            try
+            {
+                bool processClosed = false;
+                foreach (Process allProcesses in Get_ProcessesByAppUserModelId(targetAppUserModelId))
+                {
+                    try
+                    {
+                        if (Close_ProcessTreeById(allProcesses.Id))
+                        {
+                            processClosed = true;
+                        }
+                    }
+                    catch { }
+                }
+
+                AVDebug.WriteLine("Closed processes by AppUserModelId: " + targetAppUserModelId + "/" + processClosed);
+                return processClosed;
+            }
+            catch (Exception ex)
+            {
+                AVDebug.WriteLine("Failed closing processes by AppUserModelId: " + targetAppUserModelId + "/" + ex.Message);
+                return false;
+            }
+        }
+
         //Close process by window message
         public static bool Close_ProcessByWindowMessage(IntPtr targetWindowHandle)
         {
