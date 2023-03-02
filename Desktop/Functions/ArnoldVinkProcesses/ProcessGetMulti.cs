@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using static ArnoldVinkCode.AVInteropDll;
 using static ArnoldVinkCode.AVUwpAppx;
 
@@ -14,8 +13,19 @@ namespace ArnoldVinkCode
         {
             try
             {
-                Process uwpProcess = Get_ProcessesByAppUserModelId(targetAppUserModelId).FirstOrDefault();
-                return Get_ProcessMultiByProcess(uwpProcess);
+                Process[] uwpProcesses = Get_ProcessesByAppUserModelId(targetAppUserModelId);
+                foreach (Process foundProcess in uwpProcesses)
+                {
+                    try
+                    {
+                        ProcessMulti processMulti = Get_ProcessMultiByProcess(foundProcess);
+                        if (processMulti != null)
+                        {
+                            return processMulti;
+                        }
+                    }
+                    catch { }
+                }
             }
             catch { }
             return null;
