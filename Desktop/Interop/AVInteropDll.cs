@@ -44,8 +44,6 @@ namespace ArnoldVinkCode
         public static extern bool IsIconic(IntPtr hWnd);
         [DllImport("user32.dll")]
         public static extern bool IsWindow(IntPtr hWnd);
-        [DllImport("kernel32.dll")]
-        public static extern int GetProcessIdOfThread(IntPtr hWnd);
         [DllImport("Shell32.dll", CharSet = CharSet.Unicode)]
         public static extern int SHGetPropertyStoreForWindow(IntPtr hwnd, ref Guid iid, [Out(), MarshalAs(UnmanagedType.Interface)] out IPropertyStore propertyStore);
         [DllImport("kernel32.dll")]
@@ -310,6 +308,24 @@ namespace ArnoldVinkCode
             PROCESS_QUERY_LIMITED_INFORMATION = 0x1000,
             PROCESS_SET_LIMITED_INFORMATION = 0x2000,
             PROCESS_ALL_ACCESS = 0x001FFFFF
+        }
+
+        //Open and close thread
+        [DllImport("kernel32.dll")]
+        public static extern int GetProcessIdOfThread(IntPtr tHandle);
+        [DllImport("kernel32.dll")]
+        public static extern IntPtr OpenThread(THREAD_DESIRED_ACCESS dwDesiredAccess, bool bInheritHandle, int dwThreadId);
+        public enum THREAD_DESIRED_ACCESS : int
+        {
+            TERMINATE = 0x0001,
+            SUSPEND_RESUME = 0x0002,
+            GET_CONTEXT = 0x0008,
+            SET_CONTEXT = 0x0010,
+            SET_INFORMATION = 0x0020,
+            QUERY_INFORMATION = 0x0040,
+            SET_THREAD_TOKEN = 0x0080,
+            IMPERSONATE = 0x0100,
+            DIRECT_IMPERSONATION = 0x0200
         }
 
         //Enumerate windows
