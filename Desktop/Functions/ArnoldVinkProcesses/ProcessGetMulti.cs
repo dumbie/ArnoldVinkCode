@@ -141,7 +141,7 @@ namespace ArnoldVinkCode
                         convertedProcess.Type = ProcessType.UWP;
                         convertedProcess.WindowTitle = convertedProcess.AppxDetails.DisplayName;
                         IntPtr uwpWindowHandle = Detail_UwpWindowHandleByAppUserModelId(convertedProcess.AppUserModelId);
-                        if (uwpWindowHandle != IntPtr.Zero)
+                        if (Check_ValidWindowHandle(uwpWindowHandle))
                         {
                             convertedProcess.WindowHandle = uwpWindowHandle;
                         }
