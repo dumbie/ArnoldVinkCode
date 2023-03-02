@@ -125,35 +125,35 @@ namespace ArnoldVinkCode
                 //Set launch argument
                 convertedProcess.Argument = Detail_ApplicationParameterByProcessHandle(targetProcess.Handle, PROCESS_PARAMETER_OPTIONS.CommandLine);
 
-                //Set application type and path
-                string processAppUserModelId = Detail_AppUserModelIdByProcess(targetProcess);
-                if (!string.IsNullOrWhiteSpace(processAppUserModelId))
-                {
-                    convertedProcess.Type = ProcessType.UWP;
-                    convertedProcess.AppUserModelId = processAppUserModelId;
-                }
-                else
-                {
-                    convertedProcess.Type = ProcessType.Win32;
-                }
+                //Set app user model id
+                convertedProcess.AppUserModelId = Detail_AppUserModelIdByProcess(targetProcess);
 
                 //Check if application is UWP or Win32Store
-                if (convertedProcess.Type == ProcessType.UWP)
+                if (!string.IsNullOrWhiteSpace(convertedProcess.AppUserModelId))
                 {
                     //Get AppPackage and AppxDetails
-                    convertedProcess.AppPackage = GetUwpAppPackageByAppUserModelId(processAppUserModelId);
+                    convertedProcess.AppPackage = GetUwpAppPackageByAppUserModelId(convertedProcess.AppUserModelId);
                     convertedProcess.AppxDetails = GetUwpAppxDetailsByAppPackage(convertedProcess.AppPackage);
 
                     //Check if application is Win32Store
                     if (Check_ClassNameIsUwpApp(convertedProcess.WindowClassName))
                     {
+                        convertedProcess.Type = ProcessType.UWP;
                         convertedProcess.WindowTitle = convertedProcess.AppxDetails.DisplayName;
-                        convertedProcess.WindowHandle = Detail_UwpWindowHandleByAppUserModelId(processAppUserModelId);
+                        IntPtr uwpWindowHandle = Detail_UwpWindowHandleByAppUserModelId(convertedProcess.AppUserModelId);
+                        if (uwpWindowHandle != IntPtr.Zero)
+                        {
+                            convertedProcess.WindowHandle = uwpWindowHandle;
+                        }
                     }
                     else
                     {
                         convertedProcess.Type = ProcessType.Win32Store;
                     }
+                }
+                else
+                {
+                    convertedProcess.Type = ProcessType.Win32;
                 }
 
                 //AVDebug.WriteLine("----------------");
