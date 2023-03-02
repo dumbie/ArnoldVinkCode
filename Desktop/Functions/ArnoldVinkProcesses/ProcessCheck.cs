@@ -188,6 +188,13 @@ namespace ArnoldVinkCode
         {
             try
             {
+                //Check if handle is empty
+                if (targetWindowHandle == IntPtr.Zero)
+                {
+                    //AVDebug.WriteLine("Window handle is empty.");
+                    return false;
+                }
+
                 //Check if is a window
                 if (!IsWindow(targetWindowHandle))
                 {
