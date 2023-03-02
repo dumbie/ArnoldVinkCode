@@ -270,7 +270,7 @@ namespace ArnoldVinkCode
                 {
                     hmsString += convertedDays + (useChar ? "d " : ":");
                 }
-                
+
                 if (convertedHours != 0)
                 {
                     hmsString += convertedHours + (useChar ? "h " : ":");
