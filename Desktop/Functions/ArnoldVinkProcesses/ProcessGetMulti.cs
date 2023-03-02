@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using static ArnoldVinkCode.AVInteropDll;
 using static ArnoldVinkCode.AVUwpAppx;
 
 namespace ArnoldVinkCode
@@ -39,19 +38,6 @@ namespace ArnoldVinkCode
                 //Check if window handle is uwp application
                 if (Check_WindowHandleIsUwpApp(targetWindowHandle))
                 {
-                    IntPtr threadWindowHandleEx = FindWindowEx(targetWindowHandle, IntPtr.Zero, "Windows.UI.Core.CoreWindow", null);
-                    if (threadWindowHandleEx != IntPtr.Zero)
-                    {
-                        //Get process from the window handle
-                        int processId = Detail_ProcessIdByWindowHandle(threadWindowHandleEx);
-                        if (processId > 0)
-                        {
-                            Process uwpProcess = Process.GetProcessById(processId);
-                            return Get_ProcessMultiByProcess(uwpProcess);
-                        }
-                    }
-
-                    //Get process from the appx package
                     string appUserModelId = Detail_AppUserModelIdByWindowHandle(targetWindowHandle);
                     return Get_ProcessMultiByAppUserModelId(appUserModelId);
                 }
@@ -106,12 +92,16 @@ namespace ArnoldVinkCode
 
                 //Set window handle
                 convertedProcess.WindowHandle = targetProcess.MainWindowHandle;
+                if (convertedProcess.WindowHandle == IntPtr.Zero)
+                {
+                    convertedProcess.WindowHandle = Detail_MainWindowHandleByProcess(targetProcess);
+                }
 
                 //Get window title
                 convertedProcess.WindowTitle = Detail_WindowTitleByProcess(targetProcess);
 
                 //Get window class name
-                convertedProcess.WindowClassName = Detail_ClassNameByWindowHandle(targetProcess.MainWindowHandle);
+                convertedProcess.WindowClassName = Detail_ClassNameByWindowHandle(convertedProcess.WindowHandle);
 
                 //Get executable path
                 convertedProcess.ExecutablePath = Detail_ExecutablePathByProcess(targetProcess);

@@ -156,12 +156,6 @@ namespace ArnoldVinkCode
         {
             try
             {
-                string appUserModelId = Detail_AppUserModelIdByWindowHandle(targetWindowHandle);
-                if (string.IsNullOrWhiteSpace(appUserModelId))
-                {
-                    return false;
-                }
-
                 string classNamestring = Detail_ClassNameByWindowHandle(targetWindowHandle);
                 return Check_ClassNameIsUwpApp(classNamestring);
             }
@@ -174,10 +168,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(targetClassName) || targetClassName == "ApplicationFrameWindow" || targetClassName == "Windows.UI.Core.CoreWindow")
-                {
-                    return true;
-                }
+                return targetClassName == "ApplicationFrameWindow" || targetClassName == "Windows.UI.Core.CoreWindow";
             }
             catch { }
             return false;

@@ -251,5 +251,35 @@ namespace ArnoldVinkCode
             catch { }
             return IntPtr.Zero;
         }
+
+        //Get main window handle by process
+        public static IntPtr Detail_MainWindowHandleByProcess(Process targetProcess)
+        {
+            try
+            {
+                foreach (ProcessThread threadProcess in targetProcess.Threads)
+                {
+                    try
+                    {
+                        foreach (IntPtr threadWindowHandle in Thread_GetWindowHandles(threadProcess.Id))
+                        {
+                            try
+                            {
+                                bool windowVisible = IsWindowVisible(threadWindowHandle);
+                                bool windowOwner = GetWindow(threadWindowHandle, GetWindowFlags.GW_OWNER) == IntPtr.Zero;
+                                if (windowVisible && windowOwner)
+                                {
+                                    return threadWindowHandle;
+                                }
+                            }
+                            catch { }
+                        }
+                    }
+                    catch { }
+                }
+            }
+            catch { }
+            return IntPtr.Zero;
+        }
     }
 }
