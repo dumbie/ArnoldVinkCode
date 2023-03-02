@@ -260,23 +260,47 @@ namespace ArnoldVinkCode
         {
             try
             {
-                TimeSpan timeSpan = TimeSpan.FromSeconds(secondsInt);
+                int convertedDays = secondsInt / 86400;
+                int convertedHours = secondsInt % 86400 / 3600;
+                int convertedMinutes = secondsInt % 3600 / 60;
+                int convertedSeconds = secondsInt % 60;
+
                 string hmsString = string.Empty;
-                if (timeSpan.Hours != 0)
+                if (convertedDays != 0)
                 {
-                    hmsString += timeSpan.Hours + (useChar ? "h " : ":");
-                    hmsString += timeSpan.Minutes.ToString("00") + (useChar ? "m " : ":");
+                    hmsString += convertedDays + (useChar ? "d " : ":");
                 }
-                else if (timeSpan.Minutes != 0)
+                
+                if (convertedHours != 0)
                 {
-                    hmsString += timeSpan.Minutes + (useChar ? "m " : ":");
-                }
-                else if (timeSpan.Minutes == 0 && !useChar && emptyMinutes)
-                {
-                    hmsString += "0:";
+                    hmsString += convertedHours + (useChar ? "h " : ":");
                 }
 
-                hmsString += timeSpan.Seconds.ToString("00") + (useChar ? "s" : "");
+                if (convertedMinutes != 0)
+                {
+                    if (useChar)
+                    {
+                        hmsString += convertedMinutes + "m ";
+                    }
+                    else
+                    {
+                        hmsString += convertedMinutes.ToString("00") + ":";
+                    }
+                }
+                else if (convertedMinutes == 0 && !useChar && emptyMinutes)
+                {
+                    hmsString += "00:";
+                }
+
+                if (useChar)
+                {
+                    hmsString += convertedSeconds + "s";
+                }
+                else
+                {
+                    hmsString += convertedSeconds.ToString("00");
+                }
+
                 return hmsString;
             }
             catch
