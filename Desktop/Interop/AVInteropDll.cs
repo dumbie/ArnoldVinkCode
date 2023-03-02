@@ -768,5 +768,21 @@ namespace ArnoldVinkCode
             ES_DISPLAY_REQUIRED = 0x00000002,
             ES_SYSTEM_REQUIRED = 0x00000001
         }
+
+        //Process times
+        [DllImport("kernel32.dll")]
+        public static extern bool GetProcessTimes(IntPtr hProcess, out _FILETIME lpCreationTime, out _FILETIME lpExitTime, out _FILETIME lpKernelTime, out _FILETIME lpUserTime);
+
+        public struct _FILETIME
+        {
+            public int dwLowDateTime;
+            public int dwHighDateTime;
+        }
+
+        public static DateTime FileTimeToDateTime(_FILETIME fileTime)
+        {
+            long highLowTime = (((long)fileTime.dwHighDateTime) << 32) + fileTime.dwLowDateTime;
+            return DateTime.FromFileTime(highLowTime);
+        }
     }
 }

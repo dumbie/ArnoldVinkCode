@@ -168,7 +168,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                return targetClassName == "ApplicationFrameWindow" || targetClassName == "Windows.UI.Core.CoreWindow";
+                return targetClassName == string.Empty || targetClassName == "ApplicationFrameWindow" || targetClassName == "Windows.UI.Core.CoreWindow";
             }
             catch { }
             return false;
