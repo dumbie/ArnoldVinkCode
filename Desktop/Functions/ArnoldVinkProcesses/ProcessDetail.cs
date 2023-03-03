@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -10,6 +11,21 @@ namespace ArnoldVinkCode
 {
     public partial class AVProcess
     {
+        //Get process start time by process handle
+        public static DateTime Detail_StartTimeByProcessHandle(IntPtr processHandle)
+        {
+            try
+            {
+                //Get process times
+                GetProcessTimes(processHandle, out long lpCreationTime, out long lpExitTime, out long lpKernelTime, out long lpUserTime);
+
+                //Convert start time
+                return DateTime.FromFileTime(lpCreationTime);
+            }
+            catch { }
+            return DateTime.MinValue;
+        }
+
         //Get process parent id by process
         public static int Detail_ProcessParentIdByProcess(Process targetProcess)
         {
@@ -29,35 +45,6 @@ namespace ArnoldVinkCode
                 //AVDebug.WriteLine("Failed to get parent processid: " + targetProcess.Id + "/" + ex.Message);
                 return -1;
             }
-        }
-
-        //Get window title by process
-        public static string Detail_WindowTitleByProcess(Process targetProcess)
-        {
-            string ProcessTitle = "Unknown";
-            try
-            {
-                ProcessTitle = targetProcess.MainWindowTitle;
-                if (string.IsNullOrWhiteSpace(ProcessTitle))
-                {
-                    ProcessTitle = Detail_WindowTitleByWindowHandle(targetProcess.MainWindowHandle);
-                }
-                if (string.IsNullOrWhiteSpace(ProcessTitle) || ProcessTitle == "Unknown")
-                {
-                    ProcessTitle = targetProcess.ProcessName;
-                }
-                if (!string.IsNullOrWhiteSpace(ProcessTitle))
-                {
-                    ProcessTitle = AVFunctions.StringRemoveStart(ProcessTitle, " ");
-                    ProcessTitle = AVFunctions.StringRemoveEnd(ProcessTitle, " ");
-                }
-                else
-                {
-                    ProcessTitle = "Unknown";
-                }
-            }
-            catch { }
-            return ProcessTitle;
         }
 
         //Get window title by window handle
@@ -143,19 +130,14 @@ namespace ArnoldVinkCode
             return processId;
         }
 
-        //Get full exe path by process
-        public static string Detail_ExecutablePathByProcess(Process targetProcess)
+        //Get full exe path by process handle
+        public static string Detail_ExecutablePathByProcessHandle(IntPtr targetProcessHandle)
         {
-            try
-            {
-                return targetProcess.MainModule.FileName;
-            }
-            catch { }
             try
             {
                 int stringLength = 1024;
                 StringBuilder stringBuilder = new StringBuilder(stringLength);
-                if (QueryFullProcessImageName(targetProcess.Handle, 0, stringBuilder, ref stringLength))
+                if (QueryFullProcessImageName(targetProcessHandle, 0, stringBuilder, ref stringLength))
                 {
                     return stringBuilder.ToString();
                 }
@@ -181,14 +163,14 @@ namespace ArnoldVinkCode
             return string.Empty;
         }
 
-        //Get AppUserModelId by process
-        public static string Detail_AppUserModelIdByProcess(Process targetProcess)
+        //Get AppUserModelId by process handle
+        public static string Detail_AppUserModelIdByProcessHandle(IntPtr targetProcessHandle)
         {
             try
             {
                 int stringLength = 1024;
                 StringBuilder stringBuilder = new StringBuilder(stringLength);
-                int Succes = GetApplicationUserModelId(targetProcess.Handle, ref stringLength, stringBuilder);
+                int Succes = GetApplicationUserModelId(targetProcessHandle, ref stringLength, stringBuilder);
                 if (Succes == 0)
                 {
                     return stringBuilder.ToString();
@@ -252,16 +234,16 @@ namespace ArnoldVinkCode
             return IntPtr.Zero;
         }
 
-        //Get main window handle by process
-        public static IntPtr Detail_MainWindowHandleByProcess(Process targetProcess)
+        //Get main window handle by process threads
+        public static IntPtr Detail_MainWindowHandleByProcessThreads(List<int> targetThreadsIds)
         {
             try
             {
-                foreach (ProcessThread threadProcess in targetProcess.Threads)
+                foreach (int threadId in targetThreadsIds)
                 {
                     try
                     {
-                        foreach (IntPtr threadWindowHandle in Thread_GetWindowHandles(threadProcess.Id))
+                        foreach (IntPtr threadWindowHandle in Thread_GetWindowHandles(threadId))
                         {
                             try
                             {

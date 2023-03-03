@@ -13,7 +13,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                if (foregroundProcess.Name == "SearchUI" || foregroundProcess.Name == "SearchHost")
+                if (foregroundProcess.ExeNameNoExt == "SearchUI" || foregroundProcess.ExeNameNoExt == "SearchHost")
                 {
                     AVDebug.WriteLine("Start menu is currently open, pressing escape to close it.");
                     KeyPressReleaseSingle(KeysVirtual.Escape);

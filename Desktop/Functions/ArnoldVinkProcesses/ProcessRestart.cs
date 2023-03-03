@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using static ArnoldVinkCode.AVProcess;
 
 namespace ArnoldVinkCode
 {
@@ -22,10 +23,7 @@ namespace ArnoldVinkCode
                 }
 
                 //Get multi process
-                ProcessMulti processDetails = Get_ProcessMultiByProcess(restartProcess);
-
-                //Get process access status
-                ProcessAccess currentProcessAccess = Get_ProcessAccessStatus(processId, false);
+                ProcessMulti processDetails = Get_ProcessMultiByProcessId(restartProcess.Id);
 
                 //Check launch argument
                 string launchArgument = string.Empty;
@@ -51,7 +49,11 @@ namespace ArnoldVinkCode
                 }
                 else
                 {
-                    return Launch_Prepare(processDetails.ExecutablePath, processDetails.WorkPath, launchArgument, false, currentProcessAccess.AdminAccess, currentProcessAccess.UiAccess);
+                    //Get process access status
+                    ProcessAccess currentProcessAccess = Get_ProcessAccessStatus(processId, false);
+
+                    //Prepare process launch
+                    return Launch_Prepare(processDetails.ExePath, processDetails.WorkPath, launchArgument, false, currentProcessAccess.AdminAccess, currentProcessAccess.UiAccess);
                 }
             }
             catch (Exception ex)

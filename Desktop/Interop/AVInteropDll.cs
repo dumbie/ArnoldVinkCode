@@ -307,26 +307,33 @@ namespace ArnoldVinkCode
             PROCESS_SUSPEND_RESUME = 0x0800,
             PROCESS_QUERY_LIMITED_INFORMATION = 0x1000,
             PROCESS_SET_LIMITED_INFORMATION = 0x2000,
-            PROCESS_ALL_ACCESS = 0x001FFFFF
+            PROCESS_ALL_ACCESS = 0x001FFFFF,
+            PROCESS_MAXIMUM_ALLOWED = 0x02000000
         }
 
         //Open and close thread
         [DllImport("kernel32.dll")]
-        public static extern int GetProcessIdOfThread(IntPtr tHandle);
-        [DllImport("kernel32.dll")]
         public static extern IntPtr OpenThread(THREAD_DESIRED_ACCESS dwDesiredAccess, bool bInheritHandle, int dwThreadId);
         public enum THREAD_DESIRED_ACCESS : int
         {
-            TERMINATE = 0x0001,
-            SUSPEND_RESUME = 0x0002,
-            GET_CONTEXT = 0x0008,
-            SET_CONTEXT = 0x0010,
-            SET_INFORMATION = 0x0020,
-            QUERY_INFORMATION = 0x0040,
-            SET_THREAD_TOKEN = 0x0080,
-            IMPERSONATE = 0x0100,
-            DIRECT_IMPERSONATION = 0x0200
+            THREAD_TERMINATE = 0x0001,
+            THREAD_SUSPEND_RESUME = 0x0002,
+            THREAD_GET_CONTEXT = 0x0008,
+            THREAD_SET_CONTEXT = 0x0010,
+            THREAD_SET_INFORMATION = 0x0020,
+            THREAD_QUERY_INFORMATION = 0x0040,
+            THREAD_SET_THREAD_TOKEN = 0x0080,
+            THREAD_IMPERSONATE = 0x0100,
+            THREAD_DIRECT_IMPERSONATION = 0x0200,
+            THREAD_SET_LIMITED_INFORMATION = 0x0400,
+            THREAD_QUERY_LIMITED_INFORMATION = 0x0800,
+            THREAD_RESUME = 0x1000,
+            THREAD_ALL_ACCESS = 0x001FFFFF,
+            THREAD_MAXIMUM_ALLOWED = 0x02000000
         }
+
+        [DllImport("kernel32.dll")]
+        public static extern int GetProcessIdOfThread(IntPtr tHandle);
 
         //Enumerate windows
         [DllImport("user32.dll")]
@@ -771,18 +778,61 @@ namespace ArnoldVinkCode
 
         //Process times
         [DllImport("kernel32.dll")]
-        public static extern bool GetProcessTimes(IntPtr hProcess, out _FILETIME lpCreationTime, out _FILETIME lpExitTime, out _FILETIME lpKernelTime, out _FILETIME lpUserTime);
+        public static extern bool GetProcessTimes(IntPtr hProcess, out long lpCreationTime, out long lpExitTime, out long lpKernelTime, out long lpUserTime);
 
-        public struct _FILETIME
+        //CreateToolhelp32Snapshot
+        [DllImport("kernel32.dll")]
+        public static extern IntPtr CreateToolhelp32Snapshot(SNAPSHOT_FLAGS dwFlags, uint th32ProcessID);
+
+        [DllImport("kernel32.dll")]
+        public static extern bool Process32First(IntPtr hSnapshot, ref PROCESSENTRY32 lppe);
+
+        [DllImport("kernel32.dll")]
+        public static extern bool Process32Next(IntPtr hSnapshot, ref PROCESSENTRY32 lppe);
+
+        [DllImport("kernel32.dll")]
+        public static extern bool Thread32First(IntPtr hSnapshot, ref THREADENTRY32 lpte);
+
+        [DllImport("kernel32.dll")]
+        public static extern bool Thread32Next(IntPtr hSnapshot, ref THREADENTRY32 lpte);
+
+        public enum SNAPSHOT_FLAGS : uint
         {
-            public int dwLowDateTime;
-            public int dwHighDateTime;
+            TH32CS_SNAPHEAPLIST = 0x00000001,
+            TH32CS_SNAPPROCESS = 0x00000002,
+            TH32CS_SNAPTHREAD = 0x00000004,
+            TH32CS_SNAPMODULE = 0x00000008,
+            TH32CS_SNAPMODULE32 = 0x00000010,
+            TH32CS_INHERIT = 0x80000000,
+            TH32CS_SNAPALL = 0x0000001F
         }
 
-        public static DateTime FileTimeToDateTime(_FILETIME fileTime)
+        [StructLayout(LayoutKind.Sequential)]
+        public struct PROCESSENTRY32
         {
-            long highLowTime = (((long)fileTime.dwHighDateTime) << 32) + fileTime.dwLowDateTime;
-            return DateTime.FromFileTime(highLowTime);
+            public uint dwSize;
+            public uint cntUsage;
+            public int th32ProcessID;
+            public IntPtr th32DefaultHeapID;
+            public uint th32ModuleID;
+            public uint cntThreads;
+            public int th32ParentProcessID;
+            public int pcPriClassBase;
+            public uint dwFlags;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
+            public string szExeFile;
+        };
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct THREADENTRY32
+        {
+            public uint dwSize;
+            public uint cntUsage;
+            public int th32ThreadID;
+            public int th32OwnerProcessID;
+            public int tpBasePri;
+            public int tpDeltaPri;
+            public uint dwFlags;
         }
     }
 }

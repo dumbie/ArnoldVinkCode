@@ -17,7 +17,7 @@ namespace ArnoldVinkCode
                 {
                     try
                     {
-                        ProcessMulti processMulti = Get_ProcessMultiByProcess(foundProcess);
+                        ProcessMulti processMulti = Get_ProcessMultiByProcessId(foundProcess.Id);
                         if (processMulti != null)
                         {
                             return processMulti;
@@ -44,8 +44,7 @@ namespace ArnoldVinkCode
                 else
                 {
                     int processId = Detail_ProcessIdByWindowHandle(targetWindowHandle);
-                    Process process = Process.GetProcessById(processId);
-                    return Get_ProcessMultiByProcess(process);
+                    return Get_ProcessMultiByProcessId(processId);
                 }
             }
             catch (Exception ex)
@@ -60,63 +59,51 @@ namespace ArnoldVinkCode
         {
             try
             {
-                Process targetProcess = Process.GetProcessById(targetProcessId);
-                return Get_ProcessMultiByProcess(targetProcess);
-            }
-            catch (Exception ex)
-            {
-                AVDebug.WriteLine("Failed to get multi process by id: " + ex.Message);
-                return null;
-            }
-        }
-
-        //Get multi process by process
-        public static ProcessMulti Get_ProcessMultiByProcess(Process targetProcess)
-        {
-            try
-            {
                 //Create process multi
                 ProcessMulti convertedProcess = new ProcessMulti();
 
                 //Set process identifier
-                convertedProcess.Identifier = targetProcess.Id;
+                convertedProcess.Identifier = targetProcessId;
 
-                //Set process handle
-                convertedProcess.Handle = targetProcess.Handle;
+                //Open process and set handle
+                convertedProcess.Handle = Get_ProcessHandleById(convertedProcess.Identifier);
 
-                //Set process name
-                convertedProcess.Name = targetProcess.ProcessName;
-
-                //Set process starttime
-                convertedProcess.StartTime = targetProcess.StartTime;
-
-                //Set window handle
-                convertedProcess.WindowHandle = targetProcess.MainWindowHandle;
-                if (convertedProcess.WindowHandle == IntPtr.Zero)
+                //Check open process handle
+                if (convertedProcess.Handle == IntPtr.Zero)
                 {
-                    convertedProcess.WindowHandle = Detail_MainWindowHandleByProcess(targetProcess);
+                    AVDebug.WriteLine("ProcessMulti failed to open process: " + targetProcessId + "/" + convertedProcess.Handle);
+                    return null;
                 }
 
+                //Set process starttime
+                convertedProcess.StartTime = Detail_StartTimeByProcessHandle(convertedProcess.Handle);
+
+                //Set window handle
+                convertedProcess.WindowHandle = Detail_MainWindowHandleByProcessThreads(convertedProcess.ProcessThreads());
+
                 //Get window title
-                convertedProcess.WindowTitle = Detail_WindowTitleByProcess(targetProcess);
+                convertedProcess.WindowTitle = Detail_WindowTitleByWindowHandle(convertedProcess.WindowHandle);
 
                 //Get window class name
                 convertedProcess.WindowClassName = Detail_ClassNameByWindowHandle(convertedProcess.WindowHandle);
 
                 //Get executable path
-                convertedProcess.ExecutablePath = Detail_ExecutablePathByProcess(targetProcess);
+                convertedProcess.ExePath = Detail_ExecutablePathByProcessHandle(convertedProcess.Handle);
 
-                //Set executable name
-                convertedProcess.ExecutableName = Path.GetFileName(convertedProcess.ExecutablePath);
+                //Set executable name (with extension)
+                convertedProcess.ExeName = Path.GetFileName(convertedProcess.ExePath);
+
+                //Set executable name (no extension)
+                convertedProcess.ExeNameNoExt = Path.GetFileNameWithoutExtension(convertedProcess.ExePath);
 
                 //Set workpath argument
-                convertedProcess.WorkPath = Detail_ApplicationParameterByProcessHandle(targetProcess.Handle, PROCESS_PARAMETER_OPTIONS.CurrentDirectoryPath);
+                convertedProcess.WorkPath = Detail_ApplicationParameterByProcessHandle(convertedProcess.Handle, PROCESS_PARAMETER_OPTIONS.CurrentDirectoryPath);
 
                 //Set launch argument
-                convertedProcess.Argument = Detail_ApplicationParameterByProcessHandle(targetProcess.Handle, PROCESS_PARAMETER_OPTIONS.CommandLine);
+                convertedProcess.Argument = Detail_ApplicationParameterByProcessHandle(convertedProcess.Handle, PROCESS_PARAMETER_OPTIONS.CommandLine);
 
                 //Set app user model id
-                convertedProcess.AppUserModelId = Detail_AppUserModelIdByProcess(targetProcess);
+                convertedProcess.AppUserModelId = Detail_AppUserModelIdByProcessHandle(convertedProcess.Handle);
 
                 //Check if application is UWP or Win32Store
                 if (!string.IsNullOrWhiteSpace(convertedProcess.AppUserModelId))
@@ -150,9 +137,9 @@ namespace ArnoldVinkCode
                 //AVDebug.WriteLine("Identifier: " + convertedProcess.Identifier);
                 //AVDebug.WriteLine("Type: " + convertedProcess.Type);
                 //AVDebug.WriteLine("Handle: " + convertedProcess.Handle);
-                //AVDebug.WriteLine("Name: " + convertedProcess.Name);
                 //AVDebug.WriteLine("AppUserModelId: " + convertedProcess.AppUserModelId);
                 //AVDebug.WriteLine("ExecutableName: " + convertedProcess.ExecutableName);
+                //AVDebug.WriteLine("ExecutableNameNoExt: " + convertedProcess.ExecutableNameNoExt);
                 //AVDebug.WriteLine("ExecutablePath: " + convertedProcess.ExecutablePath);
                 //AVDebug.WriteLine("WorkPath: " + convertedProcess.WorkPath);
                 //AVDebug.WriteLine("Argument: " + convertedProcess.Argument);

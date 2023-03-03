@@ -72,23 +72,23 @@ namespace ArnoldVinkCode
                 hProcess = OpenProcess(processAccess, false, processId);
                 if (hProcess == IntPtr.Zero)
                 {
-                    AVDebug.WriteLine("Failed getting other process: " + Marshal.GetLastWin32Error());
+                    AVDebug.WriteLine("Failed getting other process: " + processId + "/" + Marshal.GetLastWin32Error());
                     return IntPtr.Zero;
                 }
 
                 //Open other process token
                 if (!OpenProcessToken(hProcess, tokenAccess, out IntPtr hToken))
                 {
-                    AVDebug.WriteLine("Failed getting other process token: " + Marshal.GetLastWin32Error());
+                    AVDebug.WriteLine("Failed getting other process token: " + processId + "/" + Marshal.GetLastWin32Error());
                     return IntPtr.Zero;
                 }
 
-                AVDebug.WriteLine("Got other process token: " + hToken);
+                AVDebug.WriteLine("Got other process token: " + processId + "/" + hToken);
                 return hToken;
             }
             catch (Exception ex)
             {
-                AVDebug.WriteLine("Failed getting other process token: " + ex.Message);
+                AVDebug.WriteLine("Failed getting other process token: " + processId + "/" + ex.Message);
                 return IntPtr.Zero;
             }
             finally

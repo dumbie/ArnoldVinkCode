@@ -42,6 +42,7 @@ namespace ArnoldVinkCode
 
         public static string Detail_ApplicationParameterByProcessHandle(IntPtr targetProcessHandle, PROCESS_PARAMETER_OPTIONS pOption)
         {
+            //Process handle with VM_READ access required.
             string parameterString = string.Empty;
             try
             {

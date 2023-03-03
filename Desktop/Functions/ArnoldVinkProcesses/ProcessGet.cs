@@ -3,25 +3,37 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
+using static ArnoldVinkCode.AVInteropDll;
 
 namespace ArnoldVinkCode
 {
     public partial class AVProcess
     {
         /// <summary>
-        /// Get process by identifier
+        /// Get process handle by identifier
         /// </summary>
         /// <param name="targetProcessId">Process identifier</param>
-        public static Process Get_ProcessById(int targetProcessId)
+        public static IntPtr Get_ProcessHandleById(int targetProcessId)
         {
             try
             {
-                return Process.GetProcessById(targetProcessId);
+                IntPtr hProcess = OpenProcess(PROCESS_DESIRED_ACCESS.PROCESS_MAXIMUM_ALLOWED, false, targetProcessId);
+                if (hProcess == IntPtr.Zero)
+                {
+                    AVDebug.WriteLine("Failed opening process id: " + targetProcessId + "/" + Marshal.GetLastWin32Error());
+                    return IntPtr.Zero;
+                }
+                else
+                {
+                    AVDebug.WriteLine("Opened process id: " + targetProcessId + "/" + Marshal.GetLastWin32Error());
+                    return hProcess;
+                }
             }
             catch (Exception ex)
             {
-                AVDebug.WriteLine("Failed to get process by id: " + ex.Message);
-                return null;
+                AVDebug.WriteLine("Failed to get process handle by id: " + targetProcessId + "/" + ex.Message);
+                return IntPtr.Zero;
             }
         }
 
@@ -83,7 +95,7 @@ namespace ArnoldVinkCode
                     try
                     {
                         string targetAppUserModelIdLower = targetAppUserModelId.ToLower();
-                        string foundAppUserModelIdLower = Detail_AppUserModelIdByProcess(foundProcess).ToLower();
+                        string foundAppUserModelIdLower = Detail_AppUserModelIdByProcessHandle(foundProcess.Handle).ToLower();
                         if (foundAppUserModelIdLower == targetAppUserModelIdLower)
                         {
                             foundProcesses.Add(foundProcess);

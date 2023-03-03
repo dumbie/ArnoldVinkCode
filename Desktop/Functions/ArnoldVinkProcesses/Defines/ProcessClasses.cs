@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Windows.Documents;
 using Windows.ApplicationModel;
 using static ArnoldVinkCode.AVUwpAppx;
 
@@ -46,10 +48,10 @@ namespace ArnoldVinkCode
             public int Identifier { get; set; } = -1;
             public ProcessType Type { get; set; } = ProcessType.Unknown;
             public IntPtr Handle { get; set; } = IntPtr.Zero;
-            public string Name { get; set; } = string.Empty;
             public string AppUserModelId { get; set; } = string.Empty;
-            public string ExecutableName { get; set; } = string.Empty;
-            public string ExecutablePath { get; set; } = string.Empty;
+            public string ExeName { get; set; } = string.Empty;
+            public string ExeNameNoExt { get; set; } = string.Empty;
+            public string ExePath { get; set; } = string.Empty;
             public string WorkPath { get; set; } = string.Empty;
             public string Argument { get; set; } = string.Empty;
             public string WindowClassName { get; set; } = string.Empty;
@@ -64,11 +66,11 @@ namespace ArnoldVinkCode
             //Process action
             public string Action { get; set; } = string.Empty;
 
-            public ProcessThreadCollection ProcessThreads()
+            public List<int> ProcessThreads()
             {
                 try
                 {
-                    return Process.GetProcessById(Identifier).Threads;
+                    return Thread_GetProcessThreadIds(Identifier);
                 }
                 catch { }
                 return null;
