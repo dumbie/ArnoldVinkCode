@@ -156,8 +156,9 @@ namespace ArnoldVinkCode
         {
             try
             {
+                string appUserModelIdString = Detail_AppUserModelIdByWindowHandle(targetWindowHandle);
                 string classNamestring = Detail_ClassNameByWindowHandle(targetWindowHandle);
-                return Check_ClassNameIsUwpApp(classNamestring);
+                return !string.IsNullOrWhiteSpace(appUserModelIdString) && Check_ClassNameIsUwpApp(classNamestring);
             }
             catch { }
             return false;
