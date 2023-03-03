@@ -217,8 +217,8 @@ namespace ArnoldVinkCode
             return false;
         }
 
-        //Fixup string to valid link
-        public static string StringLinkFixup(string stringLink)
+        //Cleanup string to valid link
+        public static string StringLinkCleanup(string stringLink)
         {
             try
             {

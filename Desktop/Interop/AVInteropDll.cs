@@ -767,7 +767,14 @@ namespace ArnoldVinkCode
         public static extern bool SetEvent(IntPtr hEvent);
 
         [DllImport("kernel32.dll")]
-        public static extern uint WaitForSingleObject(IntPtr hEvent, uint dwMilliseconds);
+        public static extern WaitObjectResult WaitForSingleObject(IntPtr hEvent, uint dwMilliseconds);
+        public enum WaitObjectResult : uint
+        {
+            WAIT_OBJECT_0 = 0x00000000,
+            WAIT_ABANDONED = 0x00000080,
+            WAIT_TIMEOUT = 0x00000102,
+            WAIT_FAILED_INFINITE = 0xFFFFFFFF
+        }
 
         //Prevent sleep or monitor timeout
         [DllImport("kernel32.dll", CharSet = CharSet.Auto)]

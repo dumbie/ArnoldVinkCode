@@ -24,6 +24,36 @@ namespace ArnoldVinkCode
             ProcessWow64Information = 26
         }
 
+        public enum ProcessThreadState : int
+        {
+            Initialized,
+            Ready,
+            Running,
+            Standby,
+            Terminated,
+            Waiting,
+            Transition,
+            Unknown
+        }
+
+        public enum ProcessThreadWaitReason : int
+        {
+            Executive,
+            FreePage,
+            PageIn,
+            SystemAllocation,
+            ExecutionDelay,
+            Suspended,
+            UserRequest,
+            EventPairHigh,
+            EventPairLow,
+            LpcReceive,
+            LpcReply,
+            VirtualMemory,
+            PageOut,
+            Unknown
+        }
+
         public enum ProcessType : int
         {
             Unknown = -1,
@@ -41,13 +71,22 @@ namespace ArnoldVinkCode
             public TOKEN_ELEVATION_TYPE ElevationType { get; set; } = TOKEN_ELEVATION_TYPE.TokenElevationTypeDefault;
         };
 
-        public class ProcessMulti
+        public class ProcessHandle
         {
-            //Process details
             public int Identifier { get; set; } = -1;
             public int ParentIdentifier { get; set; } = -1;
-            public ProcessType Type { get; set; } = ProcessType.Unknown;
             public IntPtr Handle { get; set; } = IntPtr.Zero;
+        };
+
+        public class ProcessMulti
+        {
+            //Process handle
+            public int Identifier { get; set; } = -1;
+            public int ParentIdentifier { get; set; } = -1;
+            public IntPtr Handle { get; set; } = IntPtr.Zero;
+
+            //Process details
+            public ProcessType Type { get; set; } = ProcessType.Unknown;
             public string AppUserModelId { get; set; } = string.Empty;
             public string ExeName { get; set; } = string.Empty;
             public string ExeNameNoExt { get; set; } = string.Empty;

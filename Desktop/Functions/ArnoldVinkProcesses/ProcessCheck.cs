@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Management;
 using static ArnoldVinkCode.AVInteropDll;
 
 namespace ArnoldVinkCode
@@ -36,8 +36,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                //Fix replace with ProcessHandle
-                return Get_AllProcessesMulti().Any(x => x.Identifier == targetProcessId);
+                return Get_AllProcessesHandle(false).Any(x => x.Identifier == targetProcessId);
             }
             catch (Exception ex)
             {
@@ -95,22 +94,50 @@ namespace ArnoldVinkCode
             }
         }
 
-        //Check if process is suspended by threads
-        public static bool Check_ProcessSuspendedByThreads(List<int> targetThreadCollection)
+        //Check if process is suspended by process id
+        public static bool Check_ProcessSuspendedByProcessId(int targetProcessId)
         {
+            //Fix find easy way to read ThreadState and ThreadWaitReason
             try
             {
-                //Fix Write code to openthread and check state
-                ////AVDebug.WriteLine("Checking suspend state for process: " + targetProcess.ProcessName + "/" + targetProcess.Id);
-                //ProcessThread processThread = targetThreadCollection[0];
-                //if (processThread.ThreadState == ThreadState.Wait && processThread.WaitReason == ThreadWaitReason.Suspended)
-                //{
-                //    //AVDebug.WriteLine("The process main thread is currently suspended.");
-                //    return true;
-                //}
+                //AVDebug.WriteLine("Checking suspend state for process id: " + targetProcessId);
+
+                bool waitingThreadState = false;
+                bool suspendedThreadWaitReason = false;
+
+                string objQuery = "SELECT * FROM Win32_Thread WHERE ProcessHandle = " + targetProcessId;
+                using (ManagementObjectSearcher objSearcher = new ManagementObjectSearcher(objQuery))
+                {
+                    using (ManagementObjectCollection objCollection = objSearcher.Get())
+                    {
+                        foreach (ManagementObject objDriver in objCollection)
+                        {
+                            try
+                            {
+                                if (!waitingThreadState)
+                                {
+                                    ProcessThreadState threadState = (ProcessThreadState)Convert.ToInt32(objDriver["ThreadState"]);
+                                    waitingThreadState = threadState == ProcessThreadState.Waiting;
+                                }
+
+                                if (!suspendedThreadWaitReason)
+                                {
+                                    ProcessThreadWaitReason threadWaitReason = (ProcessThreadWaitReason)Convert.ToInt32(objDriver["ThreadWaitReason"]);
+                                    suspendedThreadWaitReason = threadWaitReason == ProcessThreadWaitReason.Suspended;
+                                }
+                            }
+                            catch { }
+                        }
+                    }
+                }
+
+                return waitingThreadState && suspendedThreadWaitReason;
             }
-            catch { }
-            return false;
+            catch (Exception ex)
+            {
+                AVDebug.WriteLine("Failed to check if process is suspended: " + targetProcessId + "/" + ex.Message);
+                return false;
+            }
         }
 
         //Check if window handle is from uwp application

@@ -88,7 +88,7 @@ namespace ArnoldVinkCode
                 AVDebug.WriteLine("Showing process by id: " + processId);
 
                 //Get multi process
-                ProcessMulti processMulti = Get_ProcessMultiByProcessId(processId);
+                ProcessMulti processMulti = Get_ProcessMultiByProcessId(processId, 0, IntPtr.Zero);
 
                 //Check window handle
                 if (processMulti == null && processMulti.WindowHandle == IntPtr.Zero)

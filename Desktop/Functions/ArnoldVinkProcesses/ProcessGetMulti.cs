@@ -13,7 +13,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                return Get_ProcessMultiByProcessId(GetCurrentProcessId());
+                return Get_ProcessMultiByProcessId(GetCurrentProcessId(), 0, IntPtr.Zero);
             }
             catch (Exception ex)
             {
@@ -36,7 +36,7 @@ namespace ArnoldVinkCode
                 else
                 {
                     int processId = Detail_ProcessIdByWindowHandle(targetWindowHandle);
-                    return Get_ProcessMultiByProcessId(processId);
+                    return Get_ProcessMultiByProcessId(processId, 0, IntPtr.Zero);
                 }
             }
             catch (Exception ex)
@@ -47,7 +47,7 @@ namespace ArnoldVinkCode
         }
 
         //Get multi process by process id
-        public static ProcessMulti Get_ProcessMultiByProcessId(int targetProcessId, int parentProcessId = -1)
+        public static ProcessMulti Get_ProcessMultiByProcessId(int targetProcessId, int parentProcessId, IntPtr processHandle)
         {
             try
             {
@@ -58,17 +58,17 @@ namespace ArnoldVinkCode
                 convertedProcess.Identifier = targetProcessId;
 
                 //Open process and set handle
-                convertedProcess.Handle = Get_ProcessHandleById(convertedProcess.Identifier);
+                convertedProcess.Handle = processHandle;
 
                 //Check open process handle
                 if (convertedProcess.Handle == IntPtr.Zero)
                 {
-                    return null;
+                    convertedProcess.Handle = Get_ProcessHandleById(convertedProcess.Identifier);
                 }
 
                 //Set parent process identifier
                 convertedProcess.ParentIdentifier = parentProcessId;
-                if (convertedProcess.ParentIdentifier == -1)
+                if (convertedProcess.ParentIdentifier <= 0)
                 {
                     convertedProcess.ParentIdentifier = Detail_ProcessParentIdByProcessHandle(convertedProcess.Handle);
                 }
@@ -103,10 +103,6 @@ namespace ArnoldVinkCode
                 //Set app user model id
                 convertedProcess.AppUserModelId = Detail_AppUserModelIdByProcessHandle(convertedProcess.Handle);
 
-
-                return convertedProcess;
-
-
                 //Check if application is UWP or Win32Store
                 if (!string.IsNullOrWhiteSpace(convertedProcess.AppUserModelId))
                 {
@@ -119,6 +115,7 @@ namespace ArnoldVinkCode
                     {
                         convertedProcess.Type = ProcessType.UWP;
                         convertedProcess.WindowTitle = convertedProcess.AppxDetails.DisplayName;
+                        //Fix possible loop
                         //IntPtr uwpWindowHandle = Detail_UwpWindowHandleByAppUserModelId(convertedProcess.AppUserModelId);
                         //if (Check_ValidWindowHandle(uwpWindowHandle))
                         //{
@@ -140,9 +137,9 @@ namespace ArnoldVinkCode
                 //AVDebug.WriteLine("Type: " + convertedProcess.Type);
                 //AVDebug.WriteLine("Handle: " + convertedProcess.Handle);
                 //AVDebug.WriteLine("AppUserModelId: " + convertedProcess.AppUserModelId);
-                //AVDebug.WriteLine("ExecutableName: " + convertedProcess.ExecutableName);
-                //AVDebug.WriteLine("ExecutableNameNoExt: " + convertedProcess.ExecutableNameNoExt);
-                //AVDebug.WriteLine("ExecutablePath: " + convertedProcess.ExecutablePath);
+                //AVDebug.WriteLine("ExeName: " + convertedProcess.ExeName);
+                //AVDebug.WriteLine("ExeNameNoExt: " + convertedProcess.ExeNameNoExt);
+                //AVDebug.WriteLine("ExePath: " + convertedProcess.ExePath);
                 //AVDebug.WriteLine("WorkPath: " + convertedProcess.WorkPath);
                 //AVDebug.WriteLine("Argument: " + convertedProcess.Argument);
                 //AVDebug.WriteLine("WindowClassName: " + convertedProcess.WindowClassName);

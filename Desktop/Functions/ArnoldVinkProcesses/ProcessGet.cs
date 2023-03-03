@@ -37,18 +37,18 @@ namespace ArnoldVinkCode
             }
         }
 
-        //Get all processes multi
-        public static List<ProcessMulti> Get_AllProcessesMulti()
+        //Get all processes handle
+        public static List<ProcessHandle> Get_AllProcessesHandle(bool openProcess)
         {
-            //AVDebug.WriteLine("Getting all processes multi.");
+            //AVDebug.WriteLine("Getting all processes handle.");
             IntPtr toolSnapShot = IntPtr.Zero;
-            List<ProcessMulti> listProcesses = new List<ProcessMulti>();
+            List<ProcessHandle> listProcesses = new List<ProcessHandle>();
             try
             {
                 toolSnapShot = CreateToolhelp32Snapshot(SNAPSHOT_FLAGS.TH32CS_SNAPPROCESS, 0);
                 if (toolSnapShot == IntPtr.Zero)
                 {
-                    AVDebug.WriteLine("Get AllProcessesMulti failed: Zero snapshot.");
+                    AVDebug.WriteLine("Get AllProcessesHandle failed: Zero snapshot.");
                     return listProcesses;
                 }
 
@@ -59,10 +59,21 @@ namespace ArnoldVinkCode
                 {
                     try
                     {
-                        ProcessMulti processMulti = Get_ProcessMultiByProcessId(processEntry.th32ProcessID);
-                        if (processMulti != null)
+                        bool addProcessHandle = true;
+                        ProcessHandle processHandle = new ProcessHandle();
+                        processHandle.Identifier = processEntry.th32ProcessID;
+                        processHandle.ParentIdentifier = processEntry.th32ParentProcessID;
+                        if (openProcess)
                         {
-                            listProcesses.Add(processMulti);
+                            processHandle.Handle = Get_ProcessHandleById(processHandle.Identifier);
+                            if (processHandle.Handle == IntPtr.Zero)
+                            {
+                                addProcessHandle = false;
+                            }
+                        }
+                        if (addProcessHandle)
+                        {
+                            listProcesses.Add(processHandle);
                         }
                     }
                     catch { }
@@ -70,12 +81,29 @@ namespace ArnoldVinkCode
             }
             catch (Exception ex)
             {
-                AVDebug.WriteLine("Failed to get all processes multi: " + ex.Message);
+                AVDebug.WriteLine("Failed to get all processes handle: " + ex.Message);
             }
             finally
             {
                 CloseHandleAuto(toolSnapShot);
             }
+            return listProcesses;
+        }
+
+        //Get all processes multi
+        public static List<ProcessMulti> Get_AllProcessesMulti()
+        {
+            //AVDebug.WriteLine("Getting all processes multi.");
+            List<ProcessMulti> listProcesses = new List<ProcessMulti>();
+            try
+            {
+                List<ProcessHandle> processHandles = Get_AllProcessesHandle(true);
+                foreach (ProcessHandle processHandle in processHandles)
+                {
+                    listProcesses.Add(Get_ProcessMultiByProcessId(processHandle.Identifier, processHandle.ParentIdentifier, processHandle.Handle));
+                }
+            }
+            catch { }
             return listProcesses;
         }
 
@@ -178,24 +206,6 @@ namespace ArnoldVinkCode
             {
                 AVDebug.WriteLine("Failed to get processes by window title: " + ex.Message);
                 return new ProcessMulti[0];
-            }
-        }
-
-        /// <summary>
-        /// Get process multi by handle
-        /// </summary>
-        /// <param name="targetProcessHandle">Search for handle</param>
-        public static ProcessMulti Get_ProcessMultiByHandle(IntPtr targetProcessHandle)
-        {
-            try
-            {
-                //Fix replace with ProcessHandle
-                return Get_AllProcessesMulti().Where(x => x.Handle == targetProcessHandle).FirstOrDefault();
-            }
-            catch (Exception ex)
-            {
-                AVDebug.WriteLine("Failed to get process by handle: " + ex.Message);
-                return null;
             }
         }
 
