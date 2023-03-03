@@ -1,33 +1,25 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using static ArnoldVinkCode.AVInteropDll;
 using static ArnoldVinkCode.AVUwpAppx;
 
 namespace ArnoldVinkCode
 {
     public partial class AVProcess
     {
-        //Get multi process by UWP AppUserModelId
-        public static ProcessMulti Get_ProcessMultiByAppUserModelId(string targetAppUserModelId)
+        //Get multi process for current process
+        public static ProcessMulti Get_ProcessMultiCurrent()
         {
             try
             {
-                Process[] uwpProcesses = Get_ProcessesByAppUserModelId(targetAppUserModelId);
-                foreach (Process foundProcess in uwpProcesses)
-                {
-                    try
-                    {
-                        ProcessMulti processMulti = Get_ProcessMultiByProcessId(foundProcess.Id);
-                        if (processMulti != null)
-                        {
-                            return processMulti;
-                        }
-                    }
-                    catch { }
-                }
+                return Get_ProcessMultiByProcessId(GetCurrentProcessId());
             }
-            catch { }
-            return null;
+            catch (Exception ex)
+            {
+                AVDebug.WriteLine("Failed to get multi process for current process: " + ex.Message);
+                return null;
+            }
         }
 
         //Get multi process by window handle
@@ -39,7 +31,7 @@ namespace ArnoldVinkCode
                 if (Check_WindowHandleIsUwpApp(targetWindowHandle))
                 {
                     string appUserModelId = Detail_AppUserModelIdByWindowHandle(targetWindowHandle);
-                    return Get_ProcessMultiByAppUserModelId(appUserModelId);
+                    return Get_ProcessesByAppUserModelId(appUserModelId).FirstOrDefault();
                 }
                 else
                 {
@@ -55,7 +47,7 @@ namespace ArnoldVinkCode
         }
 
         //Get multi process by process id
-        public static ProcessMulti Get_ProcessMultiByProcessId(int targetProcessId)
+        public static ProcessMulti Get_ProcessMultiByProcessId(int targetProcessId, int parentProcessId = -1)
         {
             try
             {
@@ -71,15 +63,21 @@ namespace ArnoldVinkCode
                 //Check open process handle
                 if (convertedProcess.Handle == IntPtr.Zero)
                 {
-                    AVDebug.WriteLine("ProcessMulti failed to open process: " + targetProcessId + "/" + convertedProcess.Handle);
                     return null;
+                }
+
+                //Set parent process identifier
+                convertedProcess.ParentIdentifier = parentProcessId;
+                if (convertedProcess.ParentIdentifier == -1)
+                {
+                    convertedProcess.ParentIdentifier = Detail_ProcessParentIdByProcessHandle(convertedProcess.Handle);
                 }
 
                 //Set process starttime
                 convertedProcess.StartTime = Detail_StartTimeByProcessHandle(convertedProcess.Handle);
 
                 //Set window handle
-                convertedProcess.WindowHandle = Detail_MainWindowHandleByProcessThreads(convertedProcess.ProcessThreads());
+                convertedProcess.WindowHandle = Detail_MainWindowHandleByProcessThreads(convertedProcess.GetProcessThreads());
 
                 //Get window title
                 convertedProcess.WindowTitle = Detail_WindowTitleByWindowHandle(convertedProcess.WindowHandle);
@@ -105,6 +103,10 @@ namespace ArnoldVinkCode
                 //Set app user model id
                 convertedProcess.AppUserModelId = Detail_AppUserModelIdByProcessHandle(convertedProcess.Handle);
 
+
+                return convertedProcess;
+
+
                 //Check if application is UWP or Win32Store
                 if (!string.IsNullOrWhiteSpace(convertedProcess.AppUserModelId))
                 {
@@ -117,11 +119,11 @@ namespace ArnoldVinkCode
                     {
                         convertedProcess.Type = ProcessType.UWP;
                         convertedProcess.WindowTitle = convertedProcess.AppxDetails.DisplayName;
-                        IntPtr uwpWindowHandle = Detail_UwpWindowHandleByAppUserModelId(convertedProcess.AppUserModelId);
-                        if (Check_ValidWindowHandle(uwpWindowHandle))
-                        {
-                            convertedProcess.WindowHandle = uwpWindowHandle;
-                        }
+                        //IntPtr uwpWindowHandle = Detail_UwpWindowHandleByAppUserModelId(convertedProcess.AppUserModelId);
+                        //if (Check_ValidWindowHandle(uwpWindowHandle))
+                        //{
+                        //    convertedProcess.WindowHandle = uwpWindowHandle;
+                        //}
                     }
                     else
                     {

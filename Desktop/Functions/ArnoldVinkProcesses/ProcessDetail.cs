@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -26,23 +25,23 @@ namespace ArnoldVinkCode
             return DateTime.MinValue;
         }
 
-        //Get process parent id by process
-        public static int Detail_ProcessParentIdByProcess(Process targetProcess)
+        //Get process parent id by process handle
+        public static int Detail_ProcessParentIdByProcessHandle(IntPtr targetProcessHandle)
         {
             try
             {
                 PROCESS_BASIC_INFORMATION32 basicInformation = new PROCESS_BASIC_INFORMATION32();
-                int readResult = NtQueryInformationProcess32(targetProcess.Handle, PROCESS_INFO_CLASS.ProcessBasicInformation, ref basicInformation, (uint)Marshal.SizeOf(basicInformation), out _);
+                int readResult = NtQueryInformationProcess32(targetProcessHandle, PROCESS_INFO_CLASS.ProcessBasicInformation, ref basicInformation, (uint)Marshal.SizeOf(basicInformation), out _);
                 if (readResult != 0)
                 {
-                    AVDebug.WriteLine("Failed to get parent processid: " + targetProcess.Id + "/Query failed.");
+                    AVDebug.WriteLine("Failed to get parent processid: " + targetProcessHandle + "/Query failed.");
                     return -1;
                 }
                 return (int)basicInformation.InheritedFromUniqueProcessId;
             }
             catch
             {
-                //AVDebug.WriteLine("Failed to get parent processid: " + targetProcess.Id + "/" + ex.Message);
+                //AVDebug.WriteLine("Failed to get parent processid: " + targetProcessHandle + "/" + ex.Message);
                 return -1;
             }
         }
@@ -146,14 +145,14 @@ namespace ArnoldVinkCode
             return string.Empty;
         }
 
-        //Get full package name by process
-        public static string Detail_PackageFullNameByProcess(Process targetProcess)
+        //Get full package name by process handle
+        public static string Detail_PackageFullNameByProcessHandle(IntPtr targetProcessHandle)
         {
             try
             {
                 int stringLength = 1024;
                 StringBuilder stringBuilder = new StringBuilder(stringLength);
-                int Succes = GetPackageFullName(targetProcess.Handle, ref stringLength, stringBuilder);
+                int Succes = GetPackageFullName(targetProcessHandle, ref stringLength, stringBuilder);
                 if (Succes == 0)
                 {
                     return stringBuilder.ToString();
@@ -202,14 +201,14 @@ namespace ArnoldVinkCode
         {
             try
             {
-                Process frameHostProcess = Get_ProcessesByName("ApplicationFrameHost", true).FirstOrDefault();
+                ProcessMulti frameHostProcess = Get_ProcessesByName("ApplicationFrameHost", true).FirstOrDefault();
                 if (frameHostProcess != null)
                 {
-                    foreach (ProcessThread threadProcess in frameHostProcess.Threads)
+                    foreach (int threadProcessId in frameHostProcess.GetProcessThreads())
                     {
                         try
                         {
-                            foreach (IntPtr threadWindowHandle in Thread_GetWindowHandles(threadProcess.Id))
+                            foreach (IntPtr threadWindowHandle in Thread_GetWindowHandles(threadProcessId))
                             {
                                 try
                                 {

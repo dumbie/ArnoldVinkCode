@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.Linq;
 using static ArnoldVinkCode.AVInteropDll;
 
@@ -36,25 +36,12 @@ namespace ArnoldVinkCode
         {
             try
             {
-                return Process.GetProcesses().Any(x => x.Id == targetProcessId);
+                //Fix replace with ProcessHandle
+                return Get_AllProcessesMulti().Any(x => x.Identifier == targetProcessId);
             }
             catch (Exception ex)
             {
                 AVDebug.WriteLine("Failed to check process by id: " + ex.Message);
-                return false;
-            }
-        }
-
-        //Check if process is running by main window handle
-        public static bool Check_RunningProcessByMainWindowHandle(IntPtr targetWindowHandle)
-        {
-            try
-            {
-                return Process.GetProcesses().Any(x => x.MainWindowHandle == targetWindowHandle);
-            }
-            catch (Exception ex)
-            {
-                AVDebug.WriteLine("Failed to check process by main window handle: " + ex.Message);
                 return false;
             }
         }
@@ -64,8 +51,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                int foundProcessId = Detail_ProcessIdByWindowHandle(targetWindowHandle);
-                return foundProcessId > 0;
+                return Detail_ProcessIdByWindowHandle(targetWindowHandle) > 0;
             }
             catch (Exception ex)
             {
@@ -109,43 +95,19 @@ namespace ArnoldVinkCode
             }
         }
 
-        /// <summary>
-        /// Check if process is running by main window title
-        /// </summary>
-        /// <param name="targetWindowTitle">Search for window title</param>
-        /// <param name="exactName">Search for exact window title</param>
-        public static bool Check_RunningProcessByMainWindowTitle(string targetWindowTitle, bool exactName)
-        {
-            try
-            {
-                if (exactName)
-                {
-                    return Process.GetProcesses().Any(x => x.MainWindowTitle.ToLower() == targetWindowTitle.ToLower());
-                }
-                else
-                {
-                    return Process.GetProcesses().Any(x => x.MainWindowTitle.ToLower().Contains(targetWindowTitle.ToLower()));
-                }
-            }
-            catch (Exception ex)
-            {
-                AVDebug.WriteLine("Failed to check running process by window title: " + ex.Message);
-                return false;
-            }
-        }
-
         //Check if process is suspended by threads
-        public static bool Check_ProcessSuspendedByThreads(ProcessThreadCollection targetThreadCollection)
+        public static bool Check_ProcessSuspendedByThreads(List<int> targetThreadCollection)
         {
             try
             {
-                //AVDebug.WriteLine("Checking suspend state for process: " + targetProcess.ProcessName + "/" + targetProcess.Id);
-                ProcessThread processThread = targetThreadCollection[0];
-                if (processThread.ThreadState == ThreadState.Wait && processThread.WaitReason == ThreadWaitReason.Suspended)
-                {
-                    //AVDebug.WriteLine("The process main thread is currently suspended.");
-                    return true;
-                }
+                //Fix Write code to openthread and check state
+                ////AVDebug.WriteLine("Checking suspend state for process: " + targetProcess.ProcessName + "/" + targetProcess.Id);
+                //ProcessThread processThread = targetThreadCollection[0];
+                //if (processThread.ThreadState == ThreadState.Wait && processThread.WaitReason == ThreadWaitReason.Suspended)
+                //{
+                //    //AVDebug.WriteLine("The process main thread is currently suspended.");
+                //    return true;
+                //}
             }
             catch { }
             return false;

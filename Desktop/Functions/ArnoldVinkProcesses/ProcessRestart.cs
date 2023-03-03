@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Threading.Tasks;
-using static ArnoldVinkCode.AVProcess;
 
 namespace ArnoldVinkCode
 {
@@ -15,15 +13,12 @@ namespace ArnoldVinkCode
                 AVDebug.WriteLine("Restarting process by id: " + processId);
 
                 //Get restart process
-                Process restartProcess = Process.GetProcessById(processId);
+                ProcessMulti restartProcess = Get_ProcessMultiByProcessId(processId);
                 if (restartProcess == null)
                 {
                     AVDebug.WriteLine("Failed to get restart process by id: " + processId);
                     return 0;
                 }
-
-                //Get multi process
-                ProcessMulti processDetails = Get_ProcessMultiByProcessId(restartProcess.Id);
 
                 //Check launch argument
                 string launchArgument = string.Empty;
@@ -32,7 +27,7 @@ namespace ArnoldVinkCode
                     launchArgument = newArgs;
                     if (string.IsNullOrWhiteSpace(launchArgument))
                     {
-                        launchArgument = processDetails.Argument;
+                        launchArgument = restartProcess.Argument;
                     }
                 }
 
@@ -43,9 +38,9 @@ namespace ArnoldVinkCode
                 await Task.Delay(500);
 
                 //Launch process
-                if (processDetails.Type == ProcessType.UWP || processDetails.Type == ProcessType.Win32Store)
+                if (restartProcess.Type == ProcessType.UWP || restartProcess.Type == ProcessType.Win32Store)
                 {
-                    return Launch_UwpApplication(processDetails.AppUserModelId, launchArgument);
+                    return Launch_UwpApplication(restartProcess.AppUserModelId, launchArgument);
                 }
                 else
                 {
@@ -53,7 +48,7 @@ namespace ArnoldVinkCode
                     ProcessAccess currentProcessAccess = Get_ProcessAccessStatus(processId, false);
 
                     //Prepare process launch
-                    return Launch_Prepare(processDetails.ExePath, processDetails.WorkPath, launchArgument, false, currentProcessAccess.AdminAccess, currentProcessAccess.UiAccess);
+                    return Launch_Prepare(restartProcess.ExePath, restartProcess.WorkPath, launchArgument, false, currentProcessAccess.AdminAccess, currentProcessAccess.UiAccess);
                 }
             }
             catch (Exception ex)

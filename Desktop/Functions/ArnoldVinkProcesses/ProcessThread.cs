@@ -37,7 +37,10 @@ namespace ArnoldVinkCode
                     catch { }
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                AVDebug.WriteLine("Failed to get process thread ids: " + ex.Message);
+            }
             finally
             {
                 CloseHandleAuto(toolSnapShot);

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using static ArnoldVinkCode.AVInteropDll;
 
 namespace ArnoldVinkCode
@@ -11,10 +10,19 @@ namespace ArnoldVinkCode
         {
             try
             {
-                Process.GetProcessById(targetProcessId).Kill();
-
-                AVDebug.WriteLine("Closed process by id: " + targetProcessId);
-                return true;
+                IntPtr closeProcess = OpenProcess(PROCESS_DESIRED_ACCESS.PROCESS_TERMINATE, false, targetProcessId);
+                if (closeProcess == IntPtr.Zero)
+                {
+                    AVDebug.WriteLine("Failed closing process by id: " + targetProcessId + "/Process not found.");
+                    return false;
+                }
+                else
+                {
+                    bool processClosed = TerminateProcess(closeProcess, 1);
+                    CloseHandleAuto(closeProcess);
+                    AVDebug.WriteLine("Closed process by id: " + targetProcessId + "/" + processClosed);
+                    return processClosed;
+                }
             }
             catch (Exception ex)
             {
@@ -29,21 +37,21 @@ namespace ArnoldVinkCode
             try
             {
                 //Close child processes
-                foreach (Process childProcess in Process.GetProcesses())
+                //Fix replace with ProcessHandle
+                foreach (ProcessMulti childProcess in Get_AllProcessesMulti())
                 {
                     try
                     {
-                        int parentProcessId = Detail_ProcessParentIdByProcess(childProcess);
-                        if (parentProcessId == targetProcessId)
+                        if (childProcess.ParentIdentifier == targetProcessId)
                         {
-                            childProcess.Kill();
+                            Close_ProcessById(childProcess.Identifier);
                         }
                     }
                     catch { }
                 }
 
                 //Close parent process
-                Process.GetProcessById(targetProcessId).Kill();
+                Close_ProcessById(targetProcessId);
 
                 AVDebug.WriteLine("Closed process tree by id: " + targetProcessId);
                 return true;
@@ -61,11 +69,11 @@ namespace ArnoldVinkCode
             try
             {
                 bool processClosed = false;
-                foreach (Process allProcesses in Get_ProcessesByName(targetProcessName, exactName))
+                foreach (ProcessMulti allProcesses in Get_ProcessesByName(targetProcessName, exactName))
                 {
                     try
                     {
-                        if (Close_ProcessTreeById(allProcesses.Id))
+                        if (Close_ProcessTreeById(allProcesses.Identifier))
                         {
                             processClosed = true;
                         }
@@ -89,11 +97,11 @@ namespace ArnoldVinkCode
             try
             {
                 bool processClosed = false;
-                foreach (Process allProcesses in Get_ProcessesByAppUserModelId(targetAppUserModelId))
+                foreach (ProcessMulti allProcesses in Get_ProcessesByAppUserModelId(targetAppUserModelId))
                 {
                     try
                     {
-                        if (Close_ProcessTreeById(allProcesses.Id))
+                        if (Close_ProcessTreeById(allProcesses.Identifier))
                         {
                             processClosed = true;
                         }

@@ -91,7 +91,7 @@ namespace ArnoldVinkCode
                 ProcessMulti processMulti = Get_ProcessMultiByProcessId(processId);
 
                 //Check window handle
-                if (processMulti.WindowHandle == IntPtr.Zero)
+                if (processMulti == null && processMulti.WindowHandle == IntPtr.Zero)
                 {
                     AVDebug.WriteLine("Failed showing process by id: " + processId);
                     return false;

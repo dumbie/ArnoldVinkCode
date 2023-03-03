@@ -38,6 +38,8 @@ namespace ArnoldVinkCode
         public static extern int GetProcessId(IntPtr processHandle);
         [DllImport("kernel32.dll")]
         public static extern IntPtr GetCurrentProcess();
+        [DllImport("kernel32.dll")]
+        public static extern int GetCurrentProcessId();
         [DllImport("user32.dll")]
         public static extern bool IsWindowVisible(IntPtr hWnd);
         [DllImport("user32.dll")]
@@ -310,6 +312,9 @@ namespace ArnoldVinkCode
             PROCESS_ALL_ACCESS = 0x001FFFFF,
             PROCESS_MAXIMUM_ALLOWED = 0x02000000
         }
+
+        [DllImport("kernel32.dll")]
+        public static extern bool TerminateProcess(IntPtr hProcess, uint uExitCode);
 
         //Open and close thread
         [DllImport("kernel32.dll")]
@@ -833,6 +838,22 @@ namespace ArnoldVinkCode
             public int tpBasePri;
             public int tpDeltaPri;
             public uint dwFlags;
+        }
+
+        //Set process priority
+        [DllImport("kernel32.dll")]
+        public static extern bool SetPriorityClass(IntPtr hProcess, PriorityClass dwPriorityClass);
+
+        public enum PriorityClass : uint
+        {
+            ABOVE_NORMAL_PRIORITY_CLASS = 0x00008000,
+            BELOW_NORMAL_PRIORITY_CLASS = 0x00004000,
+            HIGH_PRIORITY_CLASS = 0x00000080,
+            IDLE_PRIORITY_CLASS = 0x00000040,
+            NORMAL_PRIORITY_CLASS = 0x00000020,
+            PROCESS_MODE_BACKGROUND_BEGIN = 0x00100000,
+            PROCESS_MODE_BACKGROUND_END = 0x00200000,
+            REALTIME_PRIORITY_CLASS = 0x00000100
         }
     }
 }

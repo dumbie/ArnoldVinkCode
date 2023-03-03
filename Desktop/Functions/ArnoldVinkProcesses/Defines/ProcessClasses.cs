@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Windows.Documents;
 using Windows.ApplicationModel;
+using static ArnoldVinkCode.AVInteropDll;
 using static ArnoldVinkCode.AVUwpAppx;
 
 namespace ArnoldVinkCode
@@ -46,6 +45,7 @@ namespace ArnoldVinkCode
         {
             //Process details
             public int Identifier { get; set; } = -1;
+            public int ParentIdentifier { get; set; } = -1;
             public ProcessType Type { get; set; } = ProcessType.Unknown;
             public IntPtr Handle { get; set; } = IntPtr.Zero;
             public string AppUserModelId { get; set; } = string.Empty;
@@ -66,7 +66,18 @@ namespace ArnoldVinkCode
             //Process action
             public string Action { get; set; } = string.Empty;
 
-            public List<int> ProcessThreads()
+            //Multi functions
+            public bool SetProcessPriority(PriorityClass priorityClass)
+            {
+                try
+                {
+                    return SetPriorityClass(Handle, priorityClass);
+                }
+                catch { }
+                return false;
+            }
+
+            public List<int> GetProcessThreads()
             {
                 try
                 {
@@ -76,7 +87,7 @@ namespace ArnoldVinkCode
                 return null;
             }
 
-            public TimeSpan ProcessRuntime()
+            public TimeSpan GetProcessRuntime()
             {
                 try
                 {
