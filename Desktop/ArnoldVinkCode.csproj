@@ -87,6 +87,7 @@
     <Compile Include="Functions\ArnoldVinkProcesses\ProcessParameter32.cs" />
     <Compile Include="Functions\ArnoldVinkProcesses\Defines\ProcessClasses.cs" />
     <Compile Include="Functions\ArnoldVinkProcesses\ProcessClose.cs" />
+    <Compile Include="Functions\ArnoldVinkProcesses\ProcessWindow.cs" />
     <Compile Include="Functions\ArnoldVinkProcesses\TokenSid.cs" />
     <Compile Include="Functions\ArnoldVinkProcesses\TokenCreate.cs" />
     <Compile Include="Functions\ArnoldVinkProcesses\TokenAdjust.cs" />
