@@ -269,9 +269,7 @@ namespace ArnoldVinkCode
                         if (string.IsNullOrWhiteSpace(loadFile)) { continue; }
 
                         //Adjust the load path
-                        string loadFileLower = loadFile.ToLower();
-                        loadFileLower = AVFunctions.StringRemoveStart(loadFileLower, " ");
-                        loadFileLower = AVFunctions.StringRemoveEnd(loadFileLower, " ");
+                        string loadFileLower = loadFile.ToLower().Trim();
                         //Debug.WriteLine("Loading text: " + loadFileLower);
 
                         //Read the text file

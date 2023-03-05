@@ -22,9 +22,7 @@ namespace ArnoldVinkCode
                         if (string.IsNullOrWhiteSpace(searchFile)) { continue; }
 
                         //Adjust the search term
-                        string loadFileLower = searchFile.ToLower();
-                        loadFileLower = AVFunctions.StringRemoveStart(loadFileLower, " ");
-                        loadFileLower = AVFunctions.StringRemoveEnd(loadFileLower, " ");
+                        string loadFileLower = searchFile.ToLower().Trim();
                         if (!loadFileLower.Contains("/") && !loadFileLower.Contains("\\"))
                         {
                             loadFileLower = string.Join(string.Empty, loadFileLower.Split(Path.GetInvalidFileNameChars()));
