@@ -7,10 +7,10 @@ namespace ArnoldVinkCode
 {
     public partial class AVProcess
     {
-        //Get process thread identifiers
-        public static List<int> Thread_GetProcessThreadIds(int processId)
+        //Get process thread identifiers by process id
+        public static List<int> Get_ThreadIdsByProcessId(int targetProcessId)
         {
-            //AVDebug.WriteLine("Getting thread identifiers: " + processId);
+            //AVDebug.WriteLine("Getting thread identifiers: " + targetProcessId);
             IntPtr toolSnapShot = IntPtr.Zero;
             List<int> listIdentifiers = new List<int>();
             try
@@ -18,7 +18,7 @@ namespace ArnoldVinkCode
                 toolSnapShot = CreateToolhelp32Snapshot(SNAPSHOT_FLAGS.TH32CS_SNAPTHREAD, 0);
                 if (toolSnapShot == IntPtr.Zero)
                 {
-                    AVDebug.WriteLine("GetProcessThreadIds failed: Zero snapshot.");
+                    AVDebug.WriteLine("GetProcessThreadIds failed: " + targetProcessId + "/Zero snapshot.");
                     return listIdentifiers;
                 }
 
@@ -29,7 +29,7 @@ namespace ArnoldVinkCode
                 {
                     try
                     {
-                        if (threadEntry.th32OwnerProcessID == processId)
+                        if (threadEntry.th32OwnerProcessID == targetProcessId)
                         {
                             listIdentifiers.Add(threadEntry.th32ThreadID);
                         }
@@ -39,39 +39,13 @@ namespace ArnoldVinkCode
             }
             catch (Exception ex)
             {
-                AVDebug.WriteLine("Failed to get process thread ids: " + ex.Message);
+                AVDebug.WriteLine("Failed to get process thread ids: " + targetProcessId + "/" + ex.Message);
             }
             finally
             {
                 CloseHandleAuto(toolSnapShot);
             }
             return listIdentifiers;
-        }
-
-        //Enumerate all thread windows including fullscreen
-        public static List<IntPtr> Thread_GetWindowHandles(int threadId)
-        {
-            //AVDebug.WriteLine("Getting thread window handles: " + threadId);
-            List<IntPtr> listWindows = new List<IntPtr>();
-            try
-            {
-                IntPtr childWindow = IntPtr.Zero;
-                while ((childWindow = FindWindowEx(IntPtr.Zero, childWindow, null, null)) != IntPtr.Zero)
-                {
-                    try
-                    {
-                        int foundProcessId = 0;
-                        int foundThreadId = GetWindowThreadProcessId(childWindow, out foundProcessId);
-                        if (foundThreadId == threadId)
-                        {
-                            listWindows.Add(childWindow);
-                        }
-                    }
-                    catch { }
-                }
-            }
-            catch { }
-            return listWindows;
         }
     }
 }
