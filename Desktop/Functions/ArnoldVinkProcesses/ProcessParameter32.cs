@@ -105,7 +105,7 @@ namespace ArnoldVinkCode
                 int readResult = NtQueryInformationProcess32(processHandle, PROCESS_INFO_CLASS.ProcessBasicInformation, ref basicInformation, (uint)Marshal.SizeOf(basicInformation), out _);
                 if (readResult != 0)
                 {
-                    AVDebug.WriteLine("Failed to get ProcessBasicInformation for: " + processHandle);
+                    //AVDebug.WriteLine("Failed to get ProcessBasicInformation for: " + processHandle);
                     return parameterString;
                 }
 
@@ -113,7 +113,7 @@ namespace ArnoldVinkCode
                 readResult = NtReadVirtualMemory32(processHandle, basicInformation.PebBaseAddress, ref pebCopy, (uint)Marshal.SizeOf(pebCopy), out _);
                 if (readResult != 0)
                 {
-                    AVDebug.WriteLine("Failed to get PebBaseAddress for: " + processHandle);
+                    //AVDebug.WriteLine("Failed to get PebBaseAddress for: " + processHandle);
                     return parameterString;
                 }
 
@@ -121,7 +121,7 @@ namespace ArnoldVinkCode
                 readResult = NtReadVirtualMemory32(processHandle, pebCopy.RtlUserProcessParameters, ref paramsCopy, (uint)Marshal.SizeOf(paramsCopy), out _);
                 if (readResult != 0)
                 {
-                    AVDebug.WriteLine("Failed to get ProcessParameters for: " + processHandle);
+                    //AVDebug.WriteLine("Failed to get ProcessParameters for: " + processHandle);
                     return parameterString;
                 }
 

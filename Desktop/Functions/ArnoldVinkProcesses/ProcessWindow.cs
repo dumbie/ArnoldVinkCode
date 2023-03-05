@@ -55,10 +55,10 @@ namespace ArnoldVinkCode
             return listWindows;
         }
 
-        //Enumerate all windows by appusermodelid (including uwp and fullscreen)
+        //Enumerate all windows by AppUserModelId (including uwp and fullscreen)
         public static List<IntPtr> Get_WindowHandlesByAppUserModelId(string targetAppUserModelId)
         {
-            //AVDebug.WriteLine("Getting window handles by appusermodelid: " + targetAppUserModelId);
+            //AVDebug.WriteLine("Getting window handles by AppUserModelId: " + targetAppUserModelId);
             List<IntPtr> listWindows = new List<IntPtr>();
             try
             {

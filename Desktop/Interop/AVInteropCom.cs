@@ -32,12 +32,20 @@ namespace ArnoldVinkCode
         //PropertyKey
         public static PropertyKey PKEY_AppUserModel_ID = new PropertyKey { fmtId = new Guid("9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3"), pId = 5 };
         public static PropertyKey PKEY_Device_FriendlyName = new PropertyKey { fmtId = new Guid("A45C254E-DF1C-4EFD-8020-67D146A850E0"), pId = 14 };
+
         [StructLayout(LayoutKind.Sequential)]
         public struct PropertyKey
         {
             public Guid fmtId;
             public uint pId;
         };
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct FILETIME
+        {
+            public int dwLowDateTime;
+            public int dwHighDateTime;
+        }
 
         [StructLayout(LayoutKind.Sequential, Pack = 0)]
         public struct PropertyArray
@@ -69,7 +77,7 @@ namespace ArnoldVinkCode
             [FieldOffset(8)] public IntPtr pwszVal;
             [FieldOffset(8)] public IntPtr punkVal;
             [FieldOffset(8)] public PropertyArray ca;
-            [FieldOffset(8)] public System.Runtime.InteropServices.ComTypes.FILETIME filetime;
+            [FieldOffset(8)] public FILETIME filetime;
         }
 
         [ComImport, Guid("886D8EEB-8CF2-4446-8D02-CDBA1DBDCF99"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]

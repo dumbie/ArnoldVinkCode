@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using static ArnoldVinkCode.AVInteropCom;
@@ -49,32 +47,35 @@ namespace ArnoldVinkCode
         //Get window title by window handle
         public static string Detail_WindowTitleByWindowHandle(IntPtr targetWindowHandle)
         {
-            string ProcessTitle = "Unknown";
+            string processTitle = "Unknown";
             try
             {
-                int WindowTextBuilderLength = GetWindowTextLength(targetWindowHandle);
-                if (WindowTextBuilderLength <= 0)
+                if (targetWindowHandle == IntPtr.Zero)
                 {
-                    return ProcessTitle;
+                    return processTitle;
                 }
 
-                WindowTextBuilderLength += 1;
-                StringBuilder WindowTextBuilder = new StringBuilder(WindowTextBuilderLength);
-                GetWindowText(targetWindowHandle, WindowTextBuilder, WindowTextBuilder.Capacity);
-                string BuilderString = WindowTextBuilder.ToString();
-                if (!string.IsNullOrWhiteSpace(BuilderString))
+                int windowTextBuilderLength = GetWindowTextLength(targetWindowHandle);
+                if (windowTextBuilderLength <= 0)
                 {
-                    ProcessTitle = BuilderString;
-                    ProcessTitle = AVFunctions.StringRemoveStart(ProcessTitle, " ");
-                    ProcessTitle = AVFunctions.StringRemoveEnd(ProcessTitle, " ");
+                    return processTitle;
+                }
+
+                windowTextBuilderLength += 1;
+                StringBuilder windowTextBuilder = new StringBuilder(windowTextBuilderLength);
+                GetWindowText(targetWindowHandle, windowTextBuilder, windowTextBuilder.Capacity);
+                string builderString = windowTextBuilder.ToString();
+                if (!string.IsNullOrWhiteSpace(builderString))
+                {
+                    processTitle = builderString.Trim();
                 }
                 else
                 {
-                    ProcessTitle = "Unknown";
+                    processTitle = "Unknown";
                 }
             }
             catch { }
-            return ProcessTitle;
+            return processTitle;
         }
 
         //Get window Z order by window handle
@@ -184,76 +185,29 @@ namespace ArnoldVinkCode
         {
             try
             {
-                PropertyVariant propertyVariant = new PropertyVariant();
                 Guid propertyStoreGuid = typeof(IPropertyStore).GUID;
-
                 SHGetPropertyStoreForWindow(targetWindowHandle, ref propertyStoreGuid, out IPropertyStore propertyStore);
-                propertyStore.GetValue(ref PKEY_AppUserModel_ID, out propertyVariant);
-
+                propertyStore.GetValue(ref PKEY_AppUserModel_ID, out PropertyVariant propertyVariant);
                 return Marshal.PtrToStringUni(propertyVariant.pwszVal);
             }
             catch { }
             return string.Empty;
         }
 
-        //Get uwp application window handle by AppUserModelId
-        public static IntPtr Detail_UwpWindowHandleByAppUserModelId(string targetAppUserModelId)
+        //Get main window handle by process id
+        public static IntPtr Detail_MainWindowHandleByProcessId(int targetProcessId)
         {
             try
             {
-                ProcessMulti frameHostProcess = Get_ProcessesByName("ApplicationFrameHost", true).FirstOrDefault();
-                if (frameHostProcess != null)
-                {
-                    foreach (int threadProcessId in frameHostProcess.GetProcessThreads())
-                    {
-                        try
-                        {
-                            foreach (IntPtr threadWindowHandle in Thread_GetWindowHandles(threadProcessId))
-                            {
-                                try
-                                {
-                                    if (Check_WindowHandleIsUwpApp(threadWindowHandle))
-                                    {
-                                        string targetAppUserModelIdLower = targetAppUserModelId.ToLower();
-                                        string foundAppUserModelIdLower = Detail_AppUserModelIdByWindowHandle(threadWindowHandle).ToLower();
-                                        if (targetAppUserModelIdLower == foundAppUserModelIdLower)
-                                        {
-                                            return threadWindowHandle;
-                                        }
-                                    }
-                                }
-                                catch { }
-                            }
-                        }
-                        catch { }
-                    }
-                }
-            }
-            catch { }
-            return IntPtr.Zero;
-        }
-
-        //Get main window handle by process threads
-        public static IntPtr Detail_MainWindowHandleByProcessThreads(List<int> targetThreadsIds)
-        {
-            try
-            {
-                foreach (int threadId in targetThreadsIds)
+                foreach (IntPtr windowHandle in Get_WindowHandlesByProcessId(targetProcessId))
                 {
                     try
                     {
-                        foreach (IntPtr threadWindowHandle in Thread_GetWindowHandles(threadId))
+                        bool windowVisible = IsWindowVisible(windowHandle);
+                        bool windowOwner = GetWindow(windowHandle, GetWindowFlags.GW_OWNER) == IntPtr.Zero;
+                        if (windowVisible && windowOwner)
                         {
-                            try
-                            {
-                                bool windowVisible = IsWindowVisible(threadWindowHandle);
-                                bool windowOwner = GetWindow(threadWindowHandle, GetWindowFlags.GW_OWNER) == IntPtr.Zero;
-                                if (windowVisible && windowOwner)
-                                {
-                                    return threadWindowHandle;
-                                }
-                            }
-                            catch { }
+                            return windowHandle;
                         }
                     }
                     catch { }

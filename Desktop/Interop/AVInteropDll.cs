@@ -47,7 +47,7 @@ namespace ArnoldVinkCode
         [DllImport("user32.dll")]
         public static extern bool IsWindow(IntPtr hWnd);
         [DllImport("Shell32.dll", CharSet = CharSet.Unicode)]
-        public static extern int SHGetPropertyStoreForWindow(IntPtr hwnd, ref Guid iid, [Out(), MarshalAs(UnmanagedType.Interface)] out IPropertyStore propertyStore);
+        public static extern int SHGetPropertyStoreForWindow(IntPtr hwnd, ref Guid iid, out IPropertyStore propertyStore);
         [DllImport("kernel32.dll")]
         public static extern bool IsWow64Process(IntPtr processHandle, out bool wow64Process);
 

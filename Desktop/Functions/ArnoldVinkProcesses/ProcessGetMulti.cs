@@ -31,7 +31,8 @@ namespace ArnoldVinkCode
                 if (Check_WindowHandleIsUwpApp(targetWindowHandle))
                 {
                     string appUserModelId = Detail_AppUserModelIdByWindowHandle(targetWindowHandle);
-                    return Get_ProcessesByAppUserModelId(appUserModelId).FirstOrDefault();
+                    ProcessConnect processConnect = Get_ProcessesByAppUserModelId(appUserModelId).FirstOrDefault();
+                    return Get_ProcessMultiByProcessId(processConnect.Identifier, processConnect.ParentIdentifier, processConnect.Handle);
                 }
                 else
                 {
@@ -59,11 +60,14 @@ namespace ArnoldVinkCode
 
                 //Open process and set handle
                 convertedProcess.Handle = processHandle;
-
-                //Check open process handle
                 if (convertedProcess.Handle == IntPtr.Zero)
                 {
                     convertedProcess.Handle = Get_ProcessHandleById(convertedProcess.Identifier);
+                }
+                if (convertedProcess.Handle == IntPtr.Zero)
+                {
+                    AVDebug.WriteLine("GetProcessMultiByProcessId process handle is empty.");
+                    return null;
                 }
 
                 //Set parent process identifier
@@ -77,7 +81,7 @@ namespace ArnoldVinkCode
                 convertedProcess.StartTime = Detail_StartTimeByProcessHandle(convertedProcess.Handle);
 
                 //Set window handle
-                convertedProcess.WindowHandle = Detail_MainWindowHandleByProcessThreads(convertedProcess.GetProcessThreads());
+                convertedProcess.WindowHandle = Detail_MainWindowHandleByProcessId(convertedProcess.Identifier);
 
                 //Get window title
                 convertedProcess.WindowTitle = Detail_WindowTitleByWindowHandle(convertedProcess.WindowHandle);
@@ -115,12 +119,7 @@ namespace ArnoldVinkCode
                     {
                         convertedProcess.Type = ProcessType.UWP;
                         convertedProcess.WindowTitle = convertedProcess.AppxDetails.DisplayName;
-                        //Fix possible loop
-                        //IntPtr uwpWindowHandle = Detail_UwpWindowHandleByAppUserModelId(convertedProcess.AppUserModelId);
-                        //if (Check_ValidWindowHandle(uwpWindowHandle))
-                        //{
-                        //    convertedProcess.WindowHandle = uwpWindowHandle;
-                        //}
+                        convertedProcess.WindowHandle = Get_WindowHandlesByAppUserModelId(convertedProcess.AppUserModelId).FirstOrDefault();
                     }
                     else
                     {

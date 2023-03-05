@@ -69,18 +69,25 @@ namespace ArnoldVinkCode
             public bool AdminAccess { get; set; } = false;
             public bool Elevation { get; set; } = false;
             public TOKEN_ELEVATION_TYPE ElevationType { get; set; } = TOKEN_ELEVATION_TYPE.TokenElevationTypeDefault;
-        };
+        }
 
-        public class ProcessHandle
+        public class ProcessConnect
         {
-            public int Identifier { get; set; } = -1;
-            public int ParentIdentifier { get; set; } = -1;
+            public int Identifier { get; set; } = 0;
+            public int ParentIdentifier { get; set; } = 0;
             public IntPtr Handle { get; set; } = IntPtr.Zero;
-        };
+        }
+
+        public class ProcessThread
+        {
+            public int ThreadId { get; set; } = 0;
+            public ProcessThreadState ThreadState { get; set; } = ProcessThreadState.Unknown;
+            public ProcessThreadWaitReason ThreadWaitReason { get; set; } = ProcessThreadWaitReason.Unknown;
+        }
 
         public class ProcessMulti
         {
-            //Process handle
+            //Process connect
             public int Identifier { get; set; } = -1;
             public int ParentIdentifier { get; set; } = -1;
             public IntPtr Handle { get; set; } = IntPtr.Zero;
@@ -106,7 +113,7 @@ namespace ArnoldVinkCode
             public string Action { get; set; } = string.Empty;
 
             //Multi functions
-            public bool SetProcessPriority(PriorityClass priorityClass)
+            public bool Set_ProcessPriority(PriorityClass priorityClass)
             {
                 try
                 {
@@ -116,17 +123,17 @@ namespace ArnoldVinkCode
                 return false;
             }
 
-            public List<int> GetProcessThreads()
+            public List<int> Get_ProcessThreadIds()
             {
                 try
                 {
-                    return Thread_GetProcessThreadIds(Identifier);
+                    return Get_ThreadIdsByProcessId(Identifier);
                 }
                 catch { }
                 return null;
             }
 
-            public TimeSpan GetProcessRuntime()
+            public TimeSpan Get_ProcessRuntime()
             {
                 try
                 {

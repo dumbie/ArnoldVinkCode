@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Management;
 using static ArnoldVinkCode.AVInteropDll;
@@ -36,7 +37,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                return Get_AllProcessesHandle(false).Any(x => x.Identifier == targetProcessId);
+                return Get_AllProcessesConnect(false).Any(x => x.Identifier == targetProcessId);
             }
             catch (Exception ex)
             {
@@ -102,9 +103,7 @@ namespace ArnoldVinkCode
             {
                 //AVDebug.WriteLine("Checking suspend state for process id: " + targetProcessId);
 
-                bool waitingThreadState = false;
-                bool suspendedThreadWaitReason = false;
-
+                List<ProcessThread> processThreads = new List<ProcessThread>();
                 string objQuery = "SELECT * FROM Win32_Thread WHERE ProcessHandle = " + targetProcessId;
                 using (ManagementObjectSearcher objSearcher = new ManagementObjectSearcher(objQuery))
                 {
@@ -114,24 +113,23 @@ namespace ArnoldVinkCode
                         {
                             try
                             {
-                                if (!waitingThreadState)
-                                {
-                                    ProcessThreadState threadState = (ProcessThreadState)Convert.ToInt32(objDriver["ThreadState"]);
-                                    waitingThreadState = threadState == ProcessThreadState.Waiting;
-                                }
-
-                                if (!suspendedThreadWaitReason)
-                                {
-                                    ProcessThreadWaitReason threadWaitReason = (ProcessThreadWaitReason)Convert.ToInt32(objDriver["ThreadWaitReason"]);
-                                    suspendedThreadWaitReason = threadWaitReason == ProcessThreadWaitReason.Suspended;
-                                }
+                                ProcessThread processThread = new ProcessThread();
+                                processThread.ThreadId = Convert.ToInt32(objDriver["Handle"]);
+                                processThread.ThreadState = (ProcessThreadState)Convert.ToInt32(objDriver["ThreadState"]);
+                                processThread.ThreadWaitReason = (ProcessThreadWaitReason)Convert.ToInt32(objDriver["ThreadWaitReason"]);
+                                processThreads.Add(processThread);
                             }
                             catch { }
                         }
                     }
                 }
 
-                return waitingThreadState && suspendedThreadWaitReason;
+                //Sort threads by identifier
+                processThreads.Sort((x, y) => x.ThreadId.CompareTo(y.ThreadId));
+
+                //Check if first thread is suspended
+                ProcessThread firstThread = processThreads.First();
+                return firstThread.ThreadState == ProcessThreadState.Waiting && firstThread.ThreadWaitReason == ProcessThreadWaitReason.Suspended;
             }
             catch (Exception ex)
             {

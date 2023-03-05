@@ -8,9 +8,10 @@ namespace ArnoldVinkCode
         //Close process by identifier
         public static bool Close_ProcessById(int targetProcessId)
         {
+            IntPtr closeProcess = IntPtr.Zero;
             try
             {
-                IntPtr closeProcess = OpenProcess(PROCESS_DESIRED_ACCESS.PROCESS_TERMINATE, false, targetProcessId);
+                closeProcess = OpenProcess(PROCESS_DESIRED_ACCESS.PROCESS_TERMINATE, false, targetProcessId);
                 if (closeProcess == IntPtr.Zero)
                 {
                     AVDebug.WriteLine("Failed closing process by id: " + targetProcessId + "/Process not found.");
@@ -19,7 +20,6 @@ namespace ArnoldVinkCode
                 else
                 {
                     bool processClosed = TerminateProcess(closeProcess, 1);
-                    CloseHandleAuto(closeProcess);
                     AVDebug.WriteLine("Closed process by id: " + targetProcessId + "/" + processClosed);
                     return processClosed;
                 }
@@ -29,6 +29,10 @@ namespace ArnoldVinkCode
                 AVDebug.WriteLine("Failed closing process by id: " + targetProcessId + "/" + ex.Message);
                 return false;
             }
+            finally
+            {
+                CloseHandleAuto(closeProcess);
+            }
         }
 
         //Close process tree by identifier
@@ -37,7 +41,7 @@ namespace ArnoldVinkCode
             try
             {
                 //Close child processes
-                foreach (ProcessHandle childProcess in Get_AllProcessesHandle(false))
+                foreach (ProcessConnect childProcess in Get_AllProcessesConnect(false))
                 {
                     try
                     {
@@ -68,11 +72,11 @@ namespace ArnoldVinkCode
             try
             {
                 bool processClosed = false;
-                foreach (ProcessMulti allProcesses in Get_ProcessesByName(targetProcessName, exactName))
+                foreach (ProcessConnect foundProcesses in Get_ProcessesByName(targetProcessName, exactName))
                 {
                     try
                     {
-                        if (Close_ProcessTreeById(allProcesses.Identifier))
+                        if (Close_ProcessTreeById(foundProcesses.Identifier))
                         {
                             processClosed = true;
                         }
@@ -96,11 +100,11 @@ namespace ArnoldVinkCode
             try
             {
                 bool processClosed = false;
-                foreach (ProcessMulti allProcesses in Get_ProcessesByAppUserModelId(targetAppUserModelId))
+                foreach (ProcessConnect foundProcesses in Get_ProcessesByAppUserModelId(targetAppUserModelId))
                 {
                     try
                     {
-                        if (Close_ProcessTreeById(allProcesses.Identifier))
+                        if (Close_ProcessTreeById(foundProcesses.Identifier))
                         {
                             processClosed = true;
                         }
