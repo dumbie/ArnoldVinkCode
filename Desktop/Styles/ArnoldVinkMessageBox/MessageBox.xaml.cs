@@ -75,7 +75,7 @@ namespace ArnoldVinkCode
                 Show();
 
                 //Wait for user messagebox input
-                while (vPopupResult == string.Empty && !vPopupDone && this.IsVisible) { await Task.Delay(500); }
+                while (string.IsNullOrWhiteSpace(vPopupResult) && !vPopupDone && this.IsVisible) { await Task.Delay(500); }
 
                 //Enable the source frameworkelement
                 if (disableElement != null)
