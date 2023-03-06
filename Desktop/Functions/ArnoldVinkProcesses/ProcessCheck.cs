@@ -37,7 +37,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                return Get_AllProcessesConnect(false).Any(x => x.Identifier == targetProcessId);
+                return Get_AllProcessesMulti().Any(x => x.Identifier == targetProcessId);
             }
             catch (Exception ex)
             {
@@ -69,7 +69,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                return Get_ProcessesByName(targetProcessName, exactName).Any();
+                return Get_ProcessesMultiByName(targetProcessName, exactName).Any();
             }
             catch (Exception ex)
             {
@@ -86,7 +86,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                return Get_ProcessesByAppUserModelId(targetAppUserModelId).Any();
+                return Get_ProcessesMultiByAppUserModelId(targetAppUserModelId).Any();
             }
             catch (Exception ex)
             {

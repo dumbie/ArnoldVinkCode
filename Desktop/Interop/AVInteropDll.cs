@@ -847,20 +847,22 @@ namespace ArnoldVinkCode
             public uint dwFlags;
         }
 
-        //Set process priority
+        //Process priority
         [DllImport("kernel32.dll")]
-        public static extern bool SetPriorityClass(IntPtr hProcess, PriorityClass dwPriorityClass);
+        public static extern bool SetPriorityClass(IntPtr hProcess, ProcessPriority dwPriorityClass);
 
-        public enum PriorityClass : uint
+        [DllImport("kernel32.dll")]
+        public static extern ProcessPriority GetPriorityClass(IntPtr hProcess);
+
+        public enum ProcessPriority : uint
         {
-            ABOVE_NORMAL_PRIORITY_CLASS = 0x00008000,
-            BELOW_NORMAL_PRIORITY_CLASS = 0x00004000,
-            HIGH_PRIORITY_CLASS = 0x00000080,
-            IDLE_PRIORITY_CLASS = 0x00000040,
-            NORMAL_PRIORITY_CLASS = 0x00000020,
-            PROCESS_MODE_BACKGROUND_BEGIN = 0x00100000,
-            PROCESS_MODE_BACKGROUND_END = 0x00200000,
-            REALTIME_PRIORITY_CLASS = 0x00000100
+            Unknown = 0x00,
+            Normal = 0x20,
+            Idle = 0x40,
+            High = 0x80,
+            RealTime = 0x100,
+            BelowNormal = 0x4000,
+            AboveNormal = 0x8000
         }
     }
 }

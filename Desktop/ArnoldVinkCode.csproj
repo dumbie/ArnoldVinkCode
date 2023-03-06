@@ -72,6 +72,8 @@
     <Compile Include="Functions\ArnoldVinkInputOutput\InputOutputInterop.cs" />
     <Compile Include="Functions\ArnoldVinkInputOutput\InputOutputKeyboard.cs" />
     <Compile Include="Functions\ArnoldVinkInputOutput\InputOutputMouse.cs" />
+    <Compile Include="Functions\ArnoldVinkProcesses\Defines\ProcessEnumerators.cs" />
+    <Compile Include="Functions\ArnoldVinkProcesses\Defines\ProcessMulti.cs" />
     <Compile Include="Functions\ArnoldVinkProcesses\Interop\ProcessToken.cs" />
     <Compile Include="Functions\ArnoldVinkProcesses\Interop\ProcessShell.cs" />
     <Compile Include="Functions\ArnoldVinkProcesses\Interop\ProcessCreate.cs" />
@@ -92,7 +94,6 @@
     <Compile Include="Functions\ArnoldVinkProcesses\TokenCreate.cs" />
     <Compile Include="Functions\ArnoldVinkProcesses\TokenAdjust.cs" />
     <Compile Include="Functions\ArnoldVinkProcesses\ProcessThread.cs" />
-    <Compile Include="Functions\ArnoldVinkProcesses\ProcessGetMulti.cs" />
     <Compile Include="Functions\ArnoldVinkProcesses\ProcessDetail.cs" />
     <Compile Include="Functions\ArnoldVinkProcesses\ProcessParameter.cs" />
     <Compile Include="Functions\ArnoldVinkSockets\SocketClass.cs" />

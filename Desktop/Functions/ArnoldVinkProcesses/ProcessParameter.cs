@@ -32,9 +32,6 @@ namespace ArnoldVinkCode
                     endIndex++;
                 }
                 targetCommandLine = targetCommandLine.Substring(endIndex);
-
-                //Trim command line
-                targetCommandLine = targetCommandLine.Trim();
             }
             catch { }
             return targetCommandLine;
@@ -75,7 +72,8 @@ namespace ArnoldVinkCode
                     parameterString = CommandLine_RemoveExePath(parameterString);
                 }
 
-                return parameterString;
+                //Trim and return string
+                return parameterString.Trim();
             }
             catch (Exception ex)
             {

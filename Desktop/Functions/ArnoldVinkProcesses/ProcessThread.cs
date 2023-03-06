@@ -18,7 +18,7 @@ namespace ArnoldVinkCode
                 toolSnapShot = CreateToolhelp32Snapshot(SNAPSHOT_FLAGS.TH32CS_SNAPTHREAD, 0);
                 if (toolSnapShot == IntPtr.Zero)
                 {
-                    AVDebug.WriteLine("GetProcessThreadIds failed: " + targetProcessId + "/Zero snapshot.");
+                    AVDebug.WriteLine("Failed to get process thread ids: " + targetProcessId + "/Zero snapshot.");
                     return listIdentifiers;
                 }
 

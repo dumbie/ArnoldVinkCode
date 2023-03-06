@@ -16,7 +16,7 @@ namespace ArnoldVinkCode
     public partial class AVUwpAppx
     {
         //Get uwp application details from package
-        public static AppxDetails GetUwpAppxDetailsByAppPackage(Package appPackage)
+        public static AppxDetails GetUwpAppxDetailsByUwpAppPackage(Package appPackage)
         {
             AppxDetails appxDetails = new AppxDetails();
             try

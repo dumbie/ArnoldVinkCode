@@ -153,8 +153,7 @@ namespace ArnoldVinkCode
             {
                 int stringLength = 1024;
                 StringBuilder stringBuilder = new StringBuilder(stringLength);
-                int Succes = GetPackageFullName(targetProcessHandle, ref stringLength, stringBuilder);
-                if (Succes == 0)
+                if (GetPackageFullName(targetProcessHandle, ref stringLength, stringBuilder) == 0)
                 {
                     return stringBuilder.ToString();
                 }
@@ -170,8 +169,7 @@ namespace ArnoldVinkCode
             {
                 int stringLength = 1024;
                 StringBuilder stringBuilder = new StringBuilder(stringLength);
-                int Succes = GetApplicationUserModelId(targetProcessHandle, ref stringLength, stringBuilder);
-                if (Succes == 0)
+                if (GetApplicationUserModelId(targetProcessHandle, ref stringLength, stringBuilder) == 0)
                 {
                     return stringBuilder.ToString();
                 }

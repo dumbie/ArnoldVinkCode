@@ -88,7 +88,7 @@ namespace ArnoldVinkCode
                 AVDebug.WriteLine("Showing process by id: " + processId);
 
                 //Get multi process
-                ProcessMulti processMulti = Get_ProcessMultiByProcessId(processId, 0, IntPtr.Zero);
+                ProcessMulti processMulti = Get_ProcessMultiByProcessId(processId, 0);
 
                 //Check window handle
                 if (processMulti == null && processMulti.WindowHandle == IntPtr.Zero)
@@ -116,17 +116,14 @@ namespace ArnoldVinkCode
 
                 //Get current focused application
                 ProcessMulti foregroundProcess = Get_ProcessMultiByWindowHandle(GetForegroundWindow());
-                if (foregroundProcess == null)
+                if (foregroundProcess != null)
                 {
-                    AVDebug.WriteLine("Failed showing process Id: " + processId + "/No foreground window.");
-                    return false;
+                    //Close open start menu, cortana or search
+                    await Close_OpenWindowsStartMenu(foregroundProcess);
+
+                    //Close open Windows system menu
+                    await Close_OpenWindowsSystemMenu(foregroundProcess);
                 }
-
-                //Close open start menu, cortana or search
-                await Close_OpenWindowsStartMenu(foregroundProcess);
-
-                //Close open Windows system menu
-                await Close_OpenWindowsSystemMenu(foregroundProcess);
 
                 //Get current window placement
                 WindowPlacement processWindowState = new WindowPlacement();

@@ -41,11 +41,11 @@ namespace ArnoldVinkCode
             try
             {
                 //Close child processes
-                foreach (ProcessConnect childProcess in Get_AllProcessesConnect(false))
+                foreach (ProcessMulti childProcess in Get_AllProcessesMulti())
                 {
                     try
                     {
-                        if (childProcess.ParentIdentifier == targetProcessId)
+                        if (childProcess.IdentifierParent == targetProcessId)
                         {
                             Close_ProcessById(childProcess.Identifier);
                         }
@@ -72,7 +72,7 @@ namespace ArnoldVinkCode
             try
             {
                 bool processClosed = false;
-                foreach (ProcessConnect foundProcesses in Get_ProcessesByName(targetProcessName, exactName))
+                foreach (ProcessMulti foundProcesses in Get_ProcessesMultiByName(targetProcessName, exactName))
                 {
                     try
                     {
@@ -100,7 +100,7 @@ namespace ArnoldVinkCode
             try
             {
                 bool processClosed = false;
-                foreach (ProcessConnect foundProcesses in Get_ProcessesByAppUserModelId(targetAppUserModelId))
+                foreach (ProcessMulti foundProcesses in Get_ProcessesMultiByAppUserModelId(targetAppUserModelId))
                 {
                     try
                     {
