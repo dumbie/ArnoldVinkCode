@@ -7,16 +7,16 @@ namespace ArnoldVinkCode
     {
         //Imports
         [DllImport("ntdll.dll", EntryPoint = "NtQueryInformationProcess")]
-        private static extern int NtQueryInformationProcess32(IntPtr ProcessHandle, PROCESS_INFO_CLASS ProcessInformationClass, ref PROCESS_BASIC_INFORMATION32 ProcessInformation, uint ProcessInformationLength, out uint ReturnLength);
+        private static extern uint NtQueryInformationProcess32(IntPtr ProcessHandle, PROCESS_INFO_CLASS ProcessInformationClass, ref PROCESS_BASIC_INFORMATION32 ProcessInformation, uint ProcessInformationLength, out uint ReturnLength);
 
         [DllImport("ntdll.dll", EntryPoint = "NtReadVirtualMemory")]
-        private static extern int NtReadVirtualMemory32(IntPtr ProcessHandle, IntPtr BaseAddress, ref PEB32 Buffer, uint NumberOfBytesToRead, out uint NumberOfBytesRead);
+        private static extern uint NtReadVirtualMemory32(IntPtr ProcessHandle, IntPtr BaseAddress, ref PEB32 Buffer, uint NumberOfBytesToRead, out uint NumberOfBytesRead);
 
         [DllImport("ntdll.dll", EntryPoint = "NtReadVirtualMemory")]
-        private static extern int NtReadVirtualMemory32(IntPtr ProcessHandle, IntPtr BaseAddress, ref RTL_USER_PROCESS_PARAMETERS32 Buffer, uint NumberOfBytesToRead, out uint NumberOfBytesRead);
+        private static extern uint NtReadVirtualMemory32(IntPtr ProcessHandle, IntPtr BaseAddress, ref RTL_USER_PROCESS_PARAMETERS32 Buffer, uint NumberOfBytesToRead, out uint NumberOfBytesRead);
 
         [DllImport("ntdll.dll", EntryPoint = "NtReadVirtualMemory")]
-        private static extern int NtReadVirtualMemory32(IntPtr ProcessHandle, IntPtr BaseAddress, [MarshalAs(UnmanagedType.LPWStr)] string Buffer, uint NumberOfBytesToRead, out uint NumberOfBytesRead);
+        private static extern uint NtReadVirtualMemory32(IntPtr ProcessHandle, IntPtr BaseAddress, [MarshalAs(UnmanagedType.LPWStr)] string Buffer, uint NumberOfBytesToRead, out uint NumberOfBytesRead);
 
         //Structures
         [StructLayout(LayoutKind.Sequential)]
@@ -102,7 +102,7 @@ namespace ArnoldVinkCode
                 //AVDebug.WriteLine("GetApplicationParameter architecture 32");
 
                 PROCESS_BASIC_INFORMATION32 basicInformation = new PROCESS_BASIC_INFORMATION32();
-                int readResult = NtQueryInformationProcess32(processHandle, PROCESS_INFO_CLASS.ProcessBasicInformation, ref basicInformation, (uint)Marshal.SizeOf(basicInformation), out _);
+                uint readResult = NtQueryInformationProcess32(processHandle, PROCESS_INFO_CLASS.ProcessBasicInformation, ref basicInformation, (uint)Marshal.SizeOf(basicInformation), out _);
                 if (readResult != 0)
                 {
                     //AVDebug.WriteLine("Failed to get ProcessBasicInformation for: " + processHandle + "/Query failed.");

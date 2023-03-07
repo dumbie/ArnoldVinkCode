@@ -7,16 +7,16 @@ namespace ArnoldVinkCode
     {
         //Imports
         [DllImport("ntdll.dll", EntryPoint = "NtQueryInformationProcess")]
-        private static extern int NtQueryInformationProcess64(IntPtr ProcessHandle, PROCESS_INFO_CLASS ProcessInformationClass, ref ulong ProcessInformation, uint ProcessInformationLength, out uint ReturnLength);
+        private static extern uint NtQueryInformationProcess64(IntPtr ProcessHandle, PROCESS_INFO_CLASS ProcessInformationClass, ref ulong ProcessInformation, uint ProcessInformationLength, out uint ReturnLength);
 
         [DllImport("ntdll.dll", EntryPoint = "NtReadVirtualMemory")]
-        private static extern int NtReadVirtualMemory64(IntPtr ProcessHandle, ulong BaseAddress, ref PEB64 Buffer, ulong NumberOfBytesToRead, out ulong NumberOfBytesRead);
+        private static extern uint NtReadVirtualMemory64(IntPtr ProcessHandle, ulong BaseAddress, ref PEB64 Buffer, ulong NumberOfBytesToRead, out ulong NumberOfBytesRead);
 
         [DllImport("ntdll.dll", EntryPoint = "NtReadVirtualMemory")]
-        private static extern int NtReadVirtualMemory64(IntPtr ProcessHandle, ulong BaseAddress, ref RTL_USER_PROCESS_PARAMETERS64 Buffer, ulong NumberOfBytesToRead, out ulong NumberOfBytesRead);
+        private static extern uint NtReadVirtualMemory64(IntPtr ProcessHandle, ulong BaseAddress, ref RTL_USER_PROCESS_PARAMETERS64 Buffer, ulong NumberOfBytesToRead, out ulong NumberOfBytesRead);
 
         [DllImport("ntdll.dll", EntryPoint = "NtReadVirtualMemory")]
-        private static extern int NtReadVirtualMemory64(IntPtr ProcessHandle, ulong BaseAddress, [MarshalAs(UnmanagedType.LPWStr)] string Buffer, ulong NumberOfBytesToRead, out ulong NumberOfBytesRead);
+        private static extern uint NtReadVirtualMemory64(IntPtr ProcessHandle, ulong BaseAddress, [MarshalAs(UnmanagedType.LPWStr)] string Buffer, ulong NumberOfBytesToRead, out ulong NumberOfBytesRead);
 
         //Structures
         [StructLayout(LayoutKind.Sequential)]
@@ -91,7 +91,7 @@ namespace ArnoldVinkCode
                 //AVDebug.WriteLine("GetApplicationParameter architecture 64");
 
                 ulong pebBaseAddress = 0;
-                int readResult = NtQueryInformationProcess64(processHandle, PROCESS_INFO_CLASS.ProcessWow64Information, ref pebBaseAddress, (uint)Marshal.SizeOf(pebBaseAddress), out _);
+                uint readResult = NtQueryInformationProcess64(processHandle, PROCESS_INFO_CLASS.ProcessWow64Information, ref pebBaseAddress, (uint)Marshal.SizeOf(pebBaseAddress), out _);
                 if (readResult != 0)
                 {
                     //AVDebug.WriteLine("Failed to get ProcessBasicInformation for: " + processHandle + "/Query failed.");

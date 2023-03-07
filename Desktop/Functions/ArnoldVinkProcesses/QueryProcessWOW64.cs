@@ -7,16 +7,16 @@ namespace ArnoldVinkCode
     {
         //Imports
         [DllImport("ntdll.dll", EntryPoint = "NtWow64QueryInformationProcess64")]
-        private static extern int NtQueryInformationProcessWOW64(IntPtr ProcessHandle, PROCESS_INFO_CLASS ProcessInformationClass, ref PROCESS_BASIC_INFORMATIONWOW64 ProcessInformation, uint ProcessInformationLength, out uint ReturnLength);
+        private static extern uint NtQueryInformationProcessWOW64(IntPtr ProcessHandle, PROCESS_INFO_CLASS ProcessInformationClass, ref PROCESS_BASIC_INFORMATIONWOW64 ProcessInformation, uint ProcessInformationLength, out uint ReturnLength);
 
         [DllImport("ntdll.dll", EntryPoint = "NtWow64ReadVirtualMemory64")]
-        private static extern int NtReadVirtualMemoryWOW64(IntPtr ProcessHandle, long BaseAddress, ref PEBWOW64 Buffer, ulong NumberOfBytesToRead, out ulong NumberOfBytesRead);
+        private static extern uint NtReadVirtualMemoryWOW64(IntPtr ProcessHandle, long BaseAddress, ref PEBWOW64 Buffer, ulong NumberOfBytesToRead, out ulong NumberOfBytesRead);
 
         [DllImport("ntdll.dll", EntryPoint = "NtWow64ReadVirtualMemory64")]
-        private static extern int NtReadVirtualMemoryWOW64(IntPtr ProcessHandle, long BaseAddress, ref RTL_USER_PROCESS_PARAMETERSWOW64 Buffer, ulong NumberOfBytesToRead, out ulong NumberOfBytesRead);
+        private static extern uint NtReadVirtualMemoryWOW64(IntPtr ProcessHandle, long BaseAddress, ref RTL_USER_PROCESS_PARAMETERSWOW64 Buffer, ulong NumberOfBytesToRead, out ulong NumberOfBytesRead);
 
         [DllImport("ntdll.dll", EntryPoint = "NtWow64ReadVirtualMemory64")]
-        private static extern int NtReadVirtualMemoryWOW64(IntPtr ProcessHandle, long BaseAddress, [MarshalAs(UnmanagedType.LPWStr)] string Buffer, ulong NumberOfBytesToRead, out ulong NumberOfBytesRead);
+        private static extern uint NtReadVirtualMemoryWOW64(IntPtr ProcessHandle, long BaseAddress, [MarshalAs(UnmanagedType.LPWStr)] string Buffer, ulong NumberOfBytesToRead, out ulong NumberOfBytesRead);
 
         //Structures
         [StructLayout(LayoutKind.Sequential)]
@@ -102,7 +102,7 @@ namespace ArnoldVinkCode
                 //AVDebug.WriteLine("GetApplicationParameter architecture WOW64");
 
                 PROCESS_BASIC_INFORMATIONWOW64 basicInformation = new PROCESS_BASIC_INFORMATIONWOW64();
-                int readResult = NtQueryInformationProcessWOW64(processHandle, PROCESS_INFO_CLASS.ProcessBasicInformation, ref basicInformation, (uint)Marshal.SizeOf(basicInformation), out _);
+                uint readResult = NtQueryInformationProcessWOW64(processHandle, PROCESS_INFO_CLASS.ProcessBasicInformation, ref basicInformation, (uint)Marshal.SizeOf(basicInformation), out _);
                 if (readResult != 0)
                 {
                     //AVDebug.WriteLine("Failed to get ProcessBasicInformation for: " + processHandle + "/Query failed.");

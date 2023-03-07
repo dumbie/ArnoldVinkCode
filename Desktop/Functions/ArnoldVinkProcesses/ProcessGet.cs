@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using static ArnoldVinkCode.AVInteropDll;
@@ -72,47 +71,6 @@ namespace ArnoldVinkCode
                 AVDebug.WriteLine("Failed to get multi process by window handle: " + ex.Message);
                 return null;
             }
-        }
-
-        //Get all processes multi
-        public static List<ProcessMulti> Get_AllProcessesMulti()
-        {
-            //AVDebug.WriteLine("Getting all processes multi.");
-            IntPtr toolSnapShot = IntPtr.Zero;
-            List<ProcessMulti> listProcesses = new List<ProcessMulti>();
-            try
-            {
-                toolSnapShot = CreateToolhelp32Snapshot(SNAPSHOT_FLAGS.TH32CS_SNAPPROCESS, 0);
-                if (toolSnapShot == IntPtr.Zero)
-                {
-                    AVDebug.WriteLine("Failed to get all multi processes: Zero snapshot.");
-                    return listProcesses;
-                }
-
-                PROCESSENTRY32 processEntry = new PROCESSENTRY32();
-                processEntry.dwSize = (uint)Marshal.SizeOf(processEntry);
-
-                while (Process32Next(toolSnapShot, ref processEntry))
-                {
-                    try
-                    {
-                        ProcessMulti processMulti = new ProcessMulti();
-                        processMulti.Identifier = processEntry.th32ProcessID;
-                        processMulti.IdentifierParent = processEntry.th32ParentProcessID;
-                        listProcesses.Add(processMulti);
-                    }
-                    catch { }
-                }
-            }
-            catch (Exception ex)
-            {
-                AVDebug.WriteLine("Failed to get all multi processes: " + ex.Message);
-            }
-            finally
-            {
-                CloseHandleAuto(toolSnapShot);
-            }
-            return listProcesses;
         }
 
         /// <summary>
