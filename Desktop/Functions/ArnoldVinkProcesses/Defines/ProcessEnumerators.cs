@@ -13,13 +13,13 @@
 
         public enum PROCESS_INFO_CLASS : int
         {
-            ProcessBasicInformation = 0x00,
-            ProcessWow64Information = 0x26
+            ProcessBasicInformation = 0,
+            ProcessWow64Information = 26
         }
 
         public enum THREAD_INFO_CLASS : int
         {
-            ThreadSystemThreadInformation = 0x28
+            ThreadSystemThreadInformation = 40
         }
 
         public enum ProcessThreadState : int
