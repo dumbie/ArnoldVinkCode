@@ -792,61 +792,6 @@ namespace ArnoldVinkCode
         [DllImport("kernel32.dll")]
         public static extern bool GetProcessTimes(IntPtr hProcess, out long lpCreationTime, out long lpExitTime, out long lpKernelTime, out long lpUserTime);
 
-        //CreateToolhelp32Snapshot
-        [DllImport("kernel32.dll")]
-        public static extern IntPtr CreateToolhelp32Snapshot(SNAPSHOT_FLAGS dwFlags, uint th32ProcessID);
-
-        [DllImport("kernel32.dll")]
-        public static extern bool Process32First(IntPtr hSnapshot, ref PROCESSENTRY32 lppe);
-
-        [DllImport("kernel32.dll")]
-        public static extern bool Process32Next(IntPtr hSnapshot, ref PROCESSENTRY32 lppe);
-
-        [DllImport("kernel32.dll")]
-        public static extern bool Thread32First(IntPtr hSnapshot, ref THREADENTRY32 lpte);
-
-        [DllImport("kernel32.dll")]
-        public static extern bool Thread32Next(IntPtr hSnapshot, ref THREADENTRY32 lpte);
-
-        public enum SNAPSHOT_FLAGS : uint
-        {
-            TH32CS_SNAPHEAPLIST = 0x00000001,
-            TH32CS_SNAPPROCESS = 0x00000002,
-            TH32CS_SNAPTHREAD = 0x00000004,
-            TH32CS_SNAPMODULE = 0x00000008,
-            TH32CS_SNAPMODULE32 = 0x00000010,
-            TH32CS_INHERIT = 0x80000000,
-            TH32CS_SNAPALL = 0x0000001F
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        public struct PROCESSENTRY32
-        {
-            public uint dwSize;
-            public uint cntUsage;
-            public int th32ProcessID;
-            public IntPtr th32DefaultHeapID;
-            public uint th32ModuleID;
-            public uint cntThreads;
-            public int th32ParentProcessID;
-            public int pcPriClassBase;
-            public uint dwFlags;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)]
-            public string szExeFile;
-        };
-
-        [StructLayout(LayoutKind.Sequential)]
-        public struct THREADENTRY32
-        {
-            public uint dwSize;
-            public uint cntUsage;
-            public int th32ThreadID;
-            public int th32OwnerProcessID;
-            public int tpBasePri;
-            public int tpDeltaPri;
-            public uint dwFlags;
-        }
-
         //Process priority
         [DllImport("kernel32.dll")]
         public static extern bool SetPriorityClass(IntPtr hProcess, ProcessPriority dwPriorityClass);

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using static ArnoldVinkCode.AVInteropDll;
 
 namespace ArnoldVinkCode
@@ -54,10 +53,10 @@ namespace ArnoldVinkCode
         {
             try
             {
-                //Check if window handle is uwp application
-                if (Check_WindowHandleIsUwpApp(targetWindowHandle))
+                //Check if window handle is UWP or Win32Store application
+                string appUserModelId = Detail_AppUserModelIdByWindowHandle(targetWindowHandle);
+                if (!string.IsNullOrWhiteSpace(appUserModelId))
                 {
-                    string appUserModelId = Detail_AppUserModelIdByWindowHandle(targetWindowHandle);
                     return Get_ProcessesMultiByAppUserModelId(appUserModelId).FirstOrDefault();
                 }
                 else
@@ -194,16 +193,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                //Create process multi
-                ProcessMulti convertedProcess = new ProcessMulti();
-
-                //Set process identifier
-                convertedProcess.Identifier = targetProcessId;
-
-                //Set parent process identifier
-                convertedProcess.IdentifierParent = parentProcessId;
-
-                return convertedProcess;
+                return new ProcessMulti(targetProcessId, parentProcessId);
             }
             catch (Exception ex)
             {

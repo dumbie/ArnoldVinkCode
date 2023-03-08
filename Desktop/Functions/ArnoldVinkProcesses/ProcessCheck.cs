@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using static ArnoldVinkCode.AVInteropDll;
 
 namespace ArnoldVinkCode
@@ -95,53 +93,13 @@ namespace ArnoldVinkCode
             }
         }
 
-        //Check if process is suspended by thread ids
-        public static bool Check_ProcessSuspendedByThreadIds(List<int> targetThreadIds)
-        {
-            IntPtr threadHandle = IntPtr.Zero;
-            try
-            {
-                int firstThreadId = targetThreadIds.FirstOrDefault();
-                AVDebug.WriteLine("Checking suspend state for thread id: " + firstThreadId);
-
-                //Open thread for reading
-                threadHandle = OpenThread(THREAD_DESIRED_ACCESS.THREAD_MAXIMUM_ALLOWED, false, firstThreadId);
-                if (threadHandle == IntPtr.Zero)
-                {
-                    AVDebug.WriteLine("Failed to open thread id: " + firstThreadId);
-                    return false;
-                }
-
-                //Query thread information
-                //Fix Add 32, 64 and WOW64 support
-                SYSTEM_THREAD_INFORMATION32 systemThreadInformation = new SYSTEM_THREAD_INFORMATION32();
-                int readResult = NtQueryInformationThread32(threadHandle, THREAD_INFO_CLASS.ThreadSystemThreadInformation, ref systemThreadInformation, (uint)Marshal.SizeOf(systemThreadInformation), out _);
-                if (readResult != 0)
-                {
-                    AVDebug.WriteLine("Failed to get thread information: " + firstThreadId + "/Query failed.");
-                    return false;
-                }
-
-                //Check thread state and wait reason
-                AVDebug.WriteLine("Thread status: " + firstThreadId + "/" + systemThreadInformation.ThreadState + "/" + systemThreadInformation.ThreadWaitReason);
-                return systemThreadInformation.ThreadState == ProcessThreadState.Waiting && systemThreadInformation.ThreadWaitReason == ProcessThreadWaitReason.Suspended;
-            }
-            catch { }
-            finally
-            {
-                CloseHandleAuto(threadHandle);
-            }
-            return false;
-        }
-
         //Check if window handle is from uwp application
         public static bool Check_WindowHandleIsUwpApp(IntPtr targetWindowHandle)
         {
             try
             {
-                string appUserModelIdString = Detail_AppUserModelIdByWindowHandle(targetWindowHandle);
                 string classNamestring = Detail_ClassNameByWindowHandle(targetWindowHandle);
-                return !string.IsNullOrWhiteSpace(appUserModelIdString) && Check_ClassNameIsUwpApp(classNamestring);
+                return Check_ClassNameIsUwpApp(classNamestring);
             }
             catch { }
             return false;
@@ -152,7 +110,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                return string.IsNullOrWhiteSpace(targetClassName) || targetClassName == "ApplicationFrameWindow" || targetClassName == "Windows.UI.Core.CoreWindow";
+                return targetClassName == "ApplicationFrameWindow" || targetClassName == "Windows.UI.Core.CoreWindow";
             }
             catch { }
             return false;

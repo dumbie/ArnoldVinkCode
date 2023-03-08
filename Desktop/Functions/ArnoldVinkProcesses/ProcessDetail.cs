@@ -23,59 +23,34 @@ namespace ArnoldVinkCode
             return DateTime.MinValue;
         }
 
-        //Get process parent id by process handle
-        public static int Detail_ProcessParentIdByProcessHandle(IntPtr targetProcessHandle)
-        {
-            try
-            {
-                PROCESS_BASIC_INFORMATION32 basicInformation = new PROCESS_BASIC_INFORMATION32();
-                int readResult = NtQueryInformationProcess32(targetProcessHandle, PROCESS_INFO_CLASS.ProcessBasicInformation, ref basicInformation, (uint)Marshal.SizeOf(basicInformation), out _);
-                if (readResult != 0)
-                {
-                    AVDebug.WriteLine("Failed to get parent processid: " + targetProcessHandle + "/Query failed.");
-                    return -1;
-                }
-                return (int)basicInformation.InheritedFromUniqueProcessId;
-            }
-            catch
-            {
-                //AVDebug.WriteLine("Failed to get parent processid: " + targetProcessHandle + "/" + ex.Message);
-                return -1;
-            }
-        }
-
         //Get window title by window handle
         public static string Detail_WindowTitleByWindowHandle(IntPtr targetWindowHandle)
         {
-            string processTitle = "Unknown";
+            string stringReturn = "Unknown";
             try
             {
                 if (targetWindowHandle == IntPtr.Zero)
                 {
-                    return processTitle;
+                    return stringReturn;
                 }
 
-                int windowTextBuilderLength = GetWindowTextLength(targetWindowHandle);
-                if (windowTextBuilderLength <= 0)
+                int stringLength = GetWindowTextLength(targetWindowHandle);
+                if (stringLength <= 0)
                 {
-                    return processTitle;
+                    return stringReturn;
                 }
 
-                windowTextBuilderLength += 1;
-                StringBuilder windowTextBuilder = new StringBuilder(windowTextBuilderLength);
-                GetWindowText(targetWindowHandle, windowTextBuilder, windowTextBuilder.Capacity);
-                string builderString = windowTextBuilder.ToString();
-                if (!string.IsNullOrWhiteSpace(builderString))
+                stringLength += 1;
+                StringBuilder stringBuilder = new StringBuilder(stringLength);
+                GetWindowText(targetWindowHandle, stringBuilder, stringLength);
+                string stringBuilderString = stringBuilder.ToString();
+                if (!string.IsNullOrWhiteSpace(stringBuilderString))
                 {
-                    processTitle = builderString.Trim();
-                }
-                else
-                {
-                    processTitle = "Unknown";
+                    stringReturn = stringBuilderString.Trim();
                 }
             }
             catch { }
-            return processTitle;
+            return stringReturn;
         }
 
         //Get window Z order by window handle
@@ -101,9 +76,10 @@ namespace ArnoldVinkCode
         {
             try
             {
-                StringBuilder classNameBuilder = new StringBuilder(1024);
-                GetClassName(targetWindowHandle, classNameBuilder, classNameBuilder.Capacity);
-                return classNameBuilder.ToString();
+                int stringLength = 1024;
+                StringBuilder stringBuilder = new StringBuilder(stringLength);
+                GetClassName(targetWindowHandle, stringBuilder, stringLength);
+                return stringBuilder.ToString();
             }
             catch { }
             return string.Empty;
@@ -198,6 +174,52 @@ namespace ArnoldVinkCode
             try
             {
                 foreach (IntPtr windowHandle in Get_WindowHandlesByProcessId(targetProcessId))
+                {
+                    try
+                    {
+                        bool windowVisible = IsWindowVisible(windowHandle);
+                        bool windowOwner = GetWindow(windowHandle, GetWindowFlags.GW_OWNER) == IntPtr.Zero;
+                        if (windowVisible && windowOwner)
+                        {
+                            return windowHandle;
+                        }
+                    }
+                    catch { }
+                }
+            }
+            catch { }
+            return IntPtr.Zero;
+        }
+
+        //Get main window handle by thread id
+        public static IntPtr Detail_MainWindowHandleByThreadId(int targetThreadId)
+        {
+            try
+            {
+                foreach (IntPtr windowHandle in Get_WindowHandlesByThreadId(targetThreadId))
+                {
+                    try
+                    {
+                        bool windowVisible = IsWindowVisible(windowHandle);
+                        bool windowOwner = GetWindow(windowHandle, GetWindowFlags.GW_OWNER) == IntPtr.Zero;
+                        if (windowVisible && windowOwner)
+                        {
+                            return windowHandle;
+                        }
+                    }
+                    catch { }
+                }
+            }
+            catch { }
+            return IntPtr.Zero;
+        }
+
+        //Get main window handle by AppUserModelId
+        public static IntPtr Detail_MainWindowHandleByAppUserModelId(string targetAppUserModelId)
+        {
+            try
+            {
+                foreach (IntPtr windowHandle in Get_WindowHandlesByAppUserModelId(targetAppUserModelId))
                 {
                     try
                     {

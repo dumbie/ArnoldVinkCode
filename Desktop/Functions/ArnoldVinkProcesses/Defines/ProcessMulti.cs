@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Windows.ApplicationModel;
 using static ArnoldVinkCode.AVInteropDll;
 using static ArnoldVinkCode.AVUwpAppx;
@@ -11,9 +12,25 @@ namespace ArnoldVinkCode
     {
         public class ProcessMulti
         {
-            public string Action { get; set; } = string.Empty;
+            public ProcessMulti(int identifier, int identifierParent)
+            {
+                CachedIdentifier = identifier;
+                CachedIdentifierParent = identifierParent;
+            }
 
-            public int Identifier { get; set; } = 0;
+            public ProcessMulti(string action)
+            {
+                Action = action;
+            }
+
+            private int CachedIdentifier = 0;
+            public int Identifier
+            {
+                get
+                {
+                    return CachedIdentifier;
+                }
+            }
 
             private int CachedIdentifierParent = 0;
             public int IdentifierParent
@@ -62,7 +79,6 @@ namespace ArnoldVinkCode
                     {
                         if (CachedType == ProcessType.Unknown)
                         {
-                            //Check if application is UWP or Win32Store or Win32
                             if (!string.IsNullOrWhiteSpace(AppUserModelId))
                             {
                                 if (Check_ClassNameIsUwpApp(WindowClassName))
@@ -114,7 +130,7 @@ namespace ArnoldVinkCode
                 {
                     try
                     {
-                        if (CachedAppUserModelId == string.Empty)
+                        if (string.IsNullOrWhiteSpace(CachedAppUserModelId))
                         {
                             CachedAppUserModelId = Detail_AppUserModelIdByProcessHandle(Handle);
                         }
@@ -131,7 +147,7 @@ namespace ArnoldVinkCode
                 {
                     try
                     {
-                        if (CachedExeName == string.Empty)
+                        if (string.IsNullOrWhiteSpace(CachedExeName))
                         {
                             CachedExeName = Path.GetFileName(ExePath);
                         }
@@ -148,7 +164,7 @@ namespace ArnoldVinkCode
                 {
                     try
                     {
-                        if (CachedExeNameNoExt == string.Empty)
+                        if (string.IsNullOrWhiteSpace(CachedExeNameNoExt))
                         {
                             CachedExeNameNoExt = Path.GetFileNameWithoutExtension(ExePath);
                         }
@@ -165,7 +181,7 @@ namespace ArnoldVinkCode
                 {
                     try
                     {
-                        if (CachedExePath == string.Empty)
+                        if (string.IsNullOrWhiteSpace(CachedExePath))
                         {
                             CachedExePath = Detail_ExecutablePathByProcessHandle(Handle);
                         }
@@ -182,9 +198,9 @@ namespace ArnoldVinkCode
                 {
                     try
                     {
-                        if (CachedWorkPath == string.Empty)
+                        if (string.IsNullOrWhiteSpace(CachedWorkPath))
                         {
-                            CachedWorkPath = Detail_ApplicationParameterByProcessHandle(Handle, PROCESS_PARAMETER_OPTIONS.CurrentDirectoryPath);
+                            CachedWorkPath = Detail_ParameterByProcessHandle(Handle, PROCESS_PARAMETER_OPTIONS.CurrentDirectoryPath);
                         }
                     }
                     catch { }
@@ -199,9 +215,9 @@ namespace ArnoldVinkCode
                 {
                     try
                     {
-                        if (CachedArgument == string.Empty)
+                        if (string.IsNullOrWhiteSpace(CachedArgument))
                         {
-                            CachedArgument = Detail_ApplicationParameterByProcessHandle(Handle, PROCESS_PARAMETER_OPTIONS.CommandLine);
+                            CachedArgument = Detail_ParameterByProcessHandle(Handle, PROCESS_PARAMETER_OPTIONS.CommandLine);
                         }
                     }
                     catch { }
@@ -209,21 +225,27 @@ namespace ArnoldVinkCode
                 }
             }
 
-            private IntPtr CachedWindowHandle = IntPtr.Zero;
-            public IntPtr WindowHandle
+            private IntPtr CachedWindowHandleMain = IntPtr.Zero;
+            public IntPtr WindowHandleMain
             {
                 get
                 {
                     try
                     {
-                        if (CachedWindowHandle == IntPtr.Zero)
+                        if (!string.IsNullOrWhiteSpace(AppUserModelId))
                         {
-                            CachedWindowHandle = Detail_MainWindowHandleByProcessId(Identifier);
-                            //Fix check uwp
+                            if (CachedWindowHandleMain == IntPtr.Zero)
+                            {
+                                CachedWindowHandleMain = Detail_MainWindowHandleByAppUserModelId(AppUserModelId);
+                            }
+                        }
+                        if (CachedWindowHandleMain == IntPtr.Zero)
+                        {
+                            CachedWindowHandleMain = Detail_MainWindowHandleByProcessId(Identifier);
                         }
                     }
                     catch { }
-                    return CachedWindowHandle;
+                    return CachedWindowHandleMain;
                 }
             }
 
@@ -236,8 +258,7 @@ namespace ArnoldVinkCode
                     {
                         if (CachedWindowClassName == string.Empty)
                         {
-                            CachedWindowClassName = Detail_ClassNameByWindowHandle(WindowHandle);
-                            //Fix check uwp
+                            CachedWindowClassName = Detail_ClassNameByWindowHandle(WindowHandleMain);
                         }
                     }
                     catch { }
@@ -250,9 +271,9 @@ namespace ArnoldVinkCode
             {
                 get
                 {
-                    if (CustomWindowTitle == string.Empty)
+                    if (string.IsNullOrWhiteSpace(CustomWindowTitle))
                     {
-                        return Detail_WindowTitleByWindowHandle(WindowHandle);
+                        return Detail_WindowTitleByWindowHandle(WindowHandleMain);
                     }
                     else
                     {
@@ -301,20 +322,20 @@ namespace ArnoldVinkCode
                 {
                     try
                     {
-                        return Check_ProcessSuspendedByProcessId(Identifier);
+                        return Get_ProcessThreadsByProcessId(Identifier, true).FirstOrDefault().Suspended;
                     }
                     catch { }
                     return false;
                 }
             }
 
-            public List<int> ThreadIdentifiers
+            public List<ProcessThreadInfo> Threads
             {
                 get
                 {
                     try
                     {
-                        return Get_ThreadIdsByProcessId(Identifier);
+                        return Get_ProcessThreadsByProcessId(Identifier, false);
                     }
                     catch { }
                     return null;
@@ -355,6 +376,8 @@ namespace ArnoldVinkCode
                 }
             }
 
+            public string Action { get; set; } = string.Empty;
+
             public void Debug()
             {
                 try
@@ -370,13 +393,13 @@ namespace ArnoldVinkCode
                     AVDebug.WriteLine("ExePath: " + ExePath);
                     AVDebug.WriteLine("WorkPath: " + WorkPath);
                     AVDebug.WriteLine("Argument: " + Argument);
-                    AVDebug.WriteLine("WindowHandle: " + WindowHandle);
+                    AVDebug.WriteLine("WindowHandleMain: " + WindowHandleMain);
                     AVDebug.WriteLine("WindowClassName: " + WindowClassName);
                     AVDebug.WriteLine("WindowTitle: " + WindowTitle);
                     AVDebug.WriteLine("StartTime: " + StartTime);
                     AVDebug.WriteLine("RunTime: " + RunTime);
                     AVDebug.WriteLine("Suspended: " + Suspended);
-                    AVDebug.WriteLine("Threads: " + ThreadIdentifiers.Count);
+                    AVDebug.WriteLine("Threads: " + Threads.Count);
                     AVDebug.WriteLine("AppPackageName: " + AppPackage.DisplayName);
                     AVDebug.WriteLine("AppxDetailsName: " + AppxDetails.DisplayName);
                 }

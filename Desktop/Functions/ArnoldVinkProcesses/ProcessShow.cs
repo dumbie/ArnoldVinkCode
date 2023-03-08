@@ -8,33 +8,6 @@ namespace ArnoldVinkCode
 {
     public partial class AVProcess
     {
-        //Close open start menu, cortana or search
-        public static async Task Close_OpenWindowsStartMenu(ProcessMulti foregroundProcess)
-        {
-            try
-            {
-                if (foregroundProcess.ExeNameNoExt == "SearchUI" || foregroundProcess.ExeNameNoExt == "SearchHost")
-                {
-                    AVDebug.WriteLine("Start menu is currently open, pressing escape to close it.");
-                    KeyPressReleaseSingle(KeysVirtual.Escape);
-                    await Task.Delay(50);
-                }
-            }
-            catch { }
-        }
-
-        //Close open Windows system menu
-        public static async Task Close_OpenWindowsSystemMenu(ProcessMulti foregroundProcess)
-        {
-            try
-            {
-                AVDebug.WriteLine("Closing system menu for window: " + foregroundProcess.WindowHandle);
-                SendMessage(foregroundProcess.WindowHandle, (int)WindowMessages.WM_CANCELMODE, 0, 0);
-                await Task.Delay(50);
-            }
-            catch { }
-        }
-
         //Close open Windows prompts
         public static async Task Close_OpenWindowsPrompts()
         {
@@ -91,14 +64,14 @@ namespace ArnoldVinkCode
                 ProcessMulti processMulti = Get_ProcessMultiByProcessId(processId, 0);
 
                 //Check window handle
-                if (processMulti == null && processMulti.WindowHandle == IntPtr.Zero)
+                if (processMulti == null || processMulti.WindowHandleMain == IntPtr.Zero)
                 {
                     AVDebug.WriteLine("Failed showing process by id: " + processId);
                     return false;
                 }
 
                 //Show process window
-                return await Show_ProcessIdAndWindowHandle(processId, processMulti.WindowHandle);
+                return await Show_ProcessIdAndWindowHandle(processId, processMulti.WindowHandleMain);
             }
             catch { }
             return false;
@@ -113,17 +86,6 @@ namespace ArnoldVinkCode
 
                 //Close open Windows prompts
                 await Close_OpenWindowsPrompts();
-
-                //Get current focused application
-                ProcessMulti foregroundProcess = Get_ProcessMultiByWindowHandle(GetForegroundWindow());
-                if (foregroundProcess != null)
-                {
-                    //Close open start menu, cortana or search
-                    await Close_OpenWindowsStartMenu(foregroundProcess);
-
-                    //Close open Windows system menu
-                    await Close_OpenWindowsSystemMenu(foregroundProcess);
-                }
 
                 //Get current window placement
                 WindowPlacement processWindowState = new WindowPlacement();
