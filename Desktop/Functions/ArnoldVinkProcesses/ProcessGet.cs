@@ -53,17 +53,8 @@ namespace ArnoldVinkCode
         {
             try
             {
-                //Check if window handle is UWP or Win32Store application
-                string appUserModelId = Detail_AppUserModelIdByWindowHandle(targetWindowHandle);
-                if (!string.IsNullOrWhiteSpace(appUserModelId))
-                {
-                    return Get_ProcessesMultiByAppUserModelId(appUserModelId).FirstOrDefault();
-                }
-                else
-                {
-                    int processId = Detail_ProcessIdByWindowHandle(targetWindowHandle);
-                    return Get_ProcessMultiByProcessId(processId, 0);
-                }
+                int processId = Detail_ProcessIdByWindowHandle(targetWindowHandle);
+                return Get_ProcessMultiByProcessId(processId, 0);
             }
             catch (Exception ex)
             {

@@ -402,6 +402,7 @@ namespace ArnoldVinkCode
                     AVDebug.WriteLine("Threads: " + Threads.Count);
                     AVDebug.WriteLine("AppPackageName: " + AppPackage.DisplayName);
                     AVDebug.WriteLine("AppxDetailsName: " + AppxDetails.DisplayName);
+                    AVDebug.WriteLine("Action: " + Action);
                 }
                 catch { }
             }
