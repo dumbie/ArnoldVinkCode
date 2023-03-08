@@ -147,7 +147,11 @@ namespace ArnoldVinkCode
                 StringBuilder stringBuilder = new StringBuilder(stringLength);
                 if (GetApplicationUserModelId(targetProcessHandle, ref stringLength, stringBuilder) == 0)
                 {
-                    return stringBuilder.ToString();
+                    string appUserModelId = stringBuilder.ToString();
+                    if (Check_PathUwpApplication(appUserModelId))
+                    {
+                        return appUserModelId;
+                    }
                 }
             }
             catch { }
@@ -162,7 +166,11 @@ namespace ArnoldVinkCode
                 Guid propertyStoreGuid = typeof(IPropertyStore).GUID;
                 SHGetPropertyStoreForWindow(targetWindowHandle, ref propertyStoreGuid, out IPropertyStore propertyStore);
                 propertyStore.GetValue(ref PKEY_AppUserModel_ID, out PropertyVariant propertyVariant);
-                return Marshal.PtrToStringUni(propertyVariant.pwszVal);
+                string appUserModelId = Marshal.PtrToStringUni(propertyVariant.pwszVal);
+                if (Check_PathUwpApplication(appUserModelId))
+                {
+                    return appUserModelId;
+                }
             }
             catch { }
             return string.Empty;
