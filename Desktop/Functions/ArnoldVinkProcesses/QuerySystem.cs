@@ -102,28 +102,28 @@ namespace ArnoldVinkCode
         public static List<ProcessThreadInfo> Get_ProcessThreadsByProcessId(int targetProcessId, bool firstThreadOnly)
         {
             List<ProcessThreadInfo> listProcessThread = new List<ProcessThreadInfo>();
-            IntPtr systemInfoBuffer = IntPtr.Zero;
+            IntPtr systemInfoBufferQuery = IntPtr.Zero;
             try
             {
                 //AVDebug.WriteLine("Getting process threads for process id: " + targetProcessId + "/" + firstThreadOnly);
 
                 //Query process information
-                systemInfoBuffer = Query_SystemProcessInformation();
-                if (systemInfoBuffer == IntPtr.Zero)
+                systemInfoBufferQuery = Query_SystemProcessInformation();
+                if (systemInfoBufferQuery == IntPtr.Zero)
                 {
                     AVDebug.WriteLine("Failed getting all process threads: query failed.");
                     return listProcessThread;
                 }
 
                 //Loop process information
-                long processOffsetLoop = systemInfoBuffer.ToInt64();
+                long systemInfoOffsetLoop = systemInfoBufferQuery.ToInt64();
                 while (true)
                 {
                     try
                     {
                         //Read process information
-                        systemInfoBuffer = new IntPtr(processOffsetLoop);
-                        SYSTEM_PROCESS_INFORMATION systemProcess = (SYSTEM_PROCESS_INFORMATION)Marshal.PtrToStructure(systemInfoBuffer, typeof(SYSTEM_PROCESS_INFORMATION));
+                        IntPtr systemInfoBufferLoop = new IntPtr(systemInfoOffsetLoop);
+                        SYSTEM_PROCESS_INFORMATION systemProcess = (SYSTEM_PROCESS_INFORMATION)Marshal.PtrToStructure(systemInfoBufferLoop, typeof(SYSTEM_PROCESS_INFORMATION));
 
                         //Check target process id
                         if (targetProcessId == systemProcess.UniqueProcessId.ToInt32())
@@ -131,7 +131,7 @@ namespace ArnoldVinkCode
                             //AVDebug.WriteLine("Found thread process: " + systemProcess.UniqueProcessId.ToInt32());
 
                             //Move to thread information
-                            systemInfoBuffer = new IntPtr(systemInfoBuffer.ToInt64() + Marshal.SizeOf(typeof(SYSTEM_PROCESS_INFORMATION)));
+                            systemInfoBufferLoop = new IntPtr(systemInfoBufferLoop.ToInt64() + Marshal.SizeOf(typeof(SYSTEM_PROCESS_INFORMATION)));
 
                             //Read thread info
                             for (int i = 0; i < systemProcess.NumberOfThreads; i++)
@@ -139,7 +139,7 @@ namespace ArnoldVinkCode
                                 try
                                 {
                                     //Read thread information
-                                    SYSTEM_THREAD_INFORMATION systemThread = (SYSTEM_THREAD_INFORMATION)Marshal.PtrToStructure(systemInfoBuffer, typeof(SYSTEM_THREAD_INFORMATION));
+                                    SYSTEM_THREAD_INFORMATION systemThread = (SYSTEM_THREAD_INFORMATION)Marshal.PtrToStructure(systemInfoBufferLoop, typeof(SYSTEM_THREAD_INFORMATION));
 
                                     //Add process thread to list
                                     ProcessThreadInfo processThread = new ProcessThreadInfo();
@@ -155,7 +155,7 @@ namespace ArnoldVinkCode
                                     }
 
                                     //Move to next thread
-                                    systemInfoBuffer = new IntPtr(systemInfoBuffer.ToInt64() + Marshal.SizeOf(typeof(SYSTEM_THREAD_INFORMATION)));
+                                    systemInfoBufferLoop = new IntPtr(systemInfoBufferLoop.ToInt64() + Marshal.SizeOf(typeof(SYSTEM_THREAD_INFORMATION)));
                                 }
                                 catch { }
                             }
@@ -164,7 +164,7 @@ namespace ArnoldVinkCode
                         //Move to next process
                         if (systemProcess.NextEntryOffset != 0)
                         {
-                            processOffsetLoop += systemProcess.NextEntryOffset;
+                            systemInfoOffsetLoop += systemProcess.NextEntryOffset;
                         }
                         else
                         {
@@ -184,7 +184,7 @@ namespace ArnoldVinkCode
             }
             finally
             {
-                CloseHandleAuto(systemInfoBuffer);
+                CloseMarshalAuto(systemInfoBufferQuery);
             }
         }
 
@@ -192,26 +192,28 @@ namespace ArnoldVinkCode
         public static List<ProcessMulti> Get_AllProcessesMulti()
         {
             List<ProcessMulti> listProcessMulti = new List<ProcessMulti>();
-            IntPtr systemInfoBuffer = IntPtr.Zero;
+            IntPtr systemInfoBufferQuery = IntPtr.Zero;
             try
             {
                 //AVDebug.WriteLine("Getting all multi processes.");
 
                 //Query process information
-                systemInfoBuffer = Query_SystemProcessInformation();
-                if (systemInfoBuffer == IntPtr.Zero)
+                systemInfoBufferQuery = Query_SystemProcessInformation();
+                if (systemInfoBufferQuery == IntPtr.Zero)
                 {
                     AVDebug.WriteLine("Failed getting all multi processes: query failed.");
                     return listProcessMulti;
                 }
 
                 //Loop process information
+                long systemInfoOffsetLoop = systemInfoBufferQuery.ToInt64();
                 while (true)
                 {
                     try
                     {
                         //Read process information
-                        SYSTEM_PROCESS_INFORMATION systemProcess = (SYSTEM_PROCESS_INFORMATION)Marshal.PtrToStructure(systemInfoBuffer, typeof(SYSTEM_PROCESS_INFORMATION));
+                        IntPtr systemInfoBufferLoop = new IntPtr(systemInfoOffsetLoop);
+                        SYSTEM_PROCESS_INFORMATION systemProcess = (SYSTEM_PROCESS_INFORMATION)Marshal.PtrToStructure(systemInfoBufferLoop, typeof(SYSTEM_PROCESS_INFORMATION));
 
                         //Add multi process to list
                         ProcessMulti processMulti = new ProcessMulti(systemProcess.UniqueProcessId.ToInt32(), systemProcess.ParentProcessId.ToInt32());
@@ -220,7 +222,7 @@ namespace ArnoldVinkCode
                         //Move to next process
                         if (systemProcess.NextEntryOffset != 0)
                         {
-                            systemInfoBuffer = new IntPtr(systemInfoBuffer.ToInt64() + systemProcess.NextEntryOffset);
+                            systemInfoOffsetLoop += systemProcess.NextEntryOffset;
                         }
                         else
                         {
@@ -240,7 +242,7 @@ namespace ArnoldVinkCode
             }
             finally
             {
-                CloseHandleAuto(systemInfoBuffer);
+                CloseMarshalAuto(systemInfoBufferQuery);
             }
         }
     }
