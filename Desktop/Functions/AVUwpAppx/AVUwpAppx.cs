@@ -34,16 +34,27 @@ namespace ArnoldVinkCode
                     appxManifest = (AppxManifest)xmlSerializer.Deserialize(myFileStream);
                 }
 
-                //Get first appx application
-                AppxApplication appxApplication = appxManifest.Applications.Application.FirstOrDefault();
+                //Get and set device family
+                try
+                {
+                    string familyDeviceString = appxManifest.Dependencies.TargetDeviceFamily.Name.ToLower();
+                    if (familyDeviceString.Contains("desktop"))
+                    {
+                        appxDetails.AppDeviceFamily = AppxDeviceFamily.Desktop;
+                    }
+                }
+                catch { }
+
+                //Get first application
+                Application applicationInfo = appxManifest.Applications.Application.FirstOrDefault();
 
                 //Get and set executable name
-                appxDetails.ExecutableName = Path.GetFileName(appxApplication.Executable);
+                appxDetails.ExecutableName = Path.GetFileName(applicationInfo.Executable);
 
                 //Get and set executable alias name
-                if (appxApplication.Extensions != null && appxApplication.Extensions.ExtensionUAP3 != null)
+                if (applicationInfo.Extensions != null && applicationInfo.Extensions.ExtensionUAP3 != null)
                 {
-                    foreach (ExtensionUAP3 extUAP3 in appxApplication.Extensions.ExtensionUAP3)
+                    foreach (ExtensionUAP3 extUAP3 in applicationInfo.Extensions.ExtensionUAP3)
                     {
                         try
                         {
@@ -58,51 +69,51 @@ namespace ArnoldVinkCode
                 }
 
                 //Get and set application names
-                appxDetails.AppIdentifier = appxApplication.Id;
-                appxDetails.AppUserModelId = appPackage.Id.FamilyName + "!" + appxApplication.Id;
+                appxDetails.AppIdentifier = applicationInfo.Id;
+                appxDetails.AppUserModelId = appPackage.Id.FamilyName + "!" + applicationInfo.Id;
                 appxDetails.FamilyName = appPackage.Id.FamilyName;
                 appxDetails.FullPackageName = appPackage.Id.FullName;
 
                 //Get and set application display name
-                string displayNameResource = appxApplication.VisualElements.DisplayName;
+                string displayNameResource = applicationInfo.VisualElements.DisplayName;
                 if (string.IsNullOrWhiteSpace(displayNameResource))
                 {
                     displayNameResource = appxManifest.Properties.DisplayName;
                 }
-                appxDetails.DisplayName = GetUwpMsResourceString(appxApplication.Id, appxDetails.FullPackageName, displayNameResource);
+                appxDetails.DisplayName = GetUwpMsResourceString(applicationInfo.Id, appxDetails.FullPackageName, displayNameResource);
 
                 //Check the largest available square logo
-                if (!string.IsNullOrWhiteSpace(appxApplication.VisualElements.Square310x310Logo))
+                if (!string.IsNullOrWhiteSpace(applicationInfo.VisualElements.Square310x310Logo))
                 {
-                    appxDetails.SquareLargestLogoPath = Path.Combine(appxDetails.InstallPath, appxApplication.VisualElements.Square310x310Logo);
+                    appxDetails.SquareLargestLogoPath = Path.Combine(appxDetails.InstallPath, applicationInfo.VisualElements.Square310x310Logo);
                 }
-                else if (!string.IsNullOrWhiteSpace(appxApplication.VisualElements.DefaultTile.Square310x310Logo))
+                else if (!string.IsNullOrWhiteSpace(applicationInfo.VisualElements.DefaultTile.Square310x310Logo))
                 {
-                    appxDetails.SquareLargestLogoPath = Path.Combine(appxDetails.InstallPath, appxApplication.VisualElements.DefaultTile.Square310x310Logo);
+                    appxDetails.SquareLargestLogoPath = Path.Combine(appxDetails.InstallPath, applicationInfo.VisualElements.DefaultTile.Square310x310Logo);
                 }
-                else if (!string.IsNullOrWhiteSpace(appxApplication.VisualElements.Square150x150Logo))
+                else if (!string.IsNullOrWhiteSpace(applicationInfo.VisualElements.Square150x150Logo))
                 {
-                    appxDetails.SquareLargestLogoPath = Path.Combine(appxDetails.InstallPath, appxApplication.VisualElements.Square150x150Logo);
+                    appxDetails.SquareLargestLogoPath = Path.Combine(appxDetails.InstallPath, applicationInfo.VisualElements.Square150x150Logo);
                 }
-                else if (!string.IsNullOrWhiteSpace(appxApplication.VisualElements.DefaultTile.Square150x150Logo))
+                else if (!string.IsNullOrWhiteSpace(applicationInfo.VisualElements.DefaultTile.Square150x150Logo))
                 {
-                    appxDetails.SquareLargestLogoPath = Path.Combine(appxDetails.InstallPath, appxApplication.VisualElements.DefaultTile.Square150x150Logo);
+                    appxDetails.SquareLargestLogoPath = Path.Combine(appxDetails.InstallPath, applicationInfo.VisualElements.DefaultTile.Square150x150Logo);
                 }
-                else if (!string.IsNullOrWhiteSpace(appxApplication.VisualElements.Square71x71Logo))
+                else if (!string.IsNullOrWhiteSpace(applicationInfo.VisualElements.Square71x71Logo))
                 {
-                    appxDetails.SquareLargestLogoPath = Path.Combine(appxDetails.InstallPath, appxApplication.VisualElements.Square71x71Logo);
+                    appxDetails.SquareLargestLogoPath = Path.Combine(appxDetails.InstallPath, applicationInfo.VisualElements.Square71x71Logo);
                 }
-                else if (!string.IsNullOrWhiteSpace(appxApplication.VisualElements.DefaultTile.Square71x71Logo))
+                else if (!string.IsNullOrWhiteSpace(applicationInfo.VisualElements.DefaultTile.Square71x71Logo))
                 {
-                    appxDetails.SquareLargestLogoPath = Path.Combine(appxDetails.InstallPath, appxApplication.VisualElements.DefaultTile.Square71x71Logo);
+                    appxDetails.SquareLargestLogoPath = Path.Combine(appxDetails.InstallPath, applicationInfo.VisualElements.DefaultTile.Square71x71Logo);
                 }
-                else if (!string.IsNullOrWhiteSpace(appxApplication.VisualElements.Square44x44Logo))
+                else if (!string.IsNullOrWhiteSpace(applicationInfo.VisualElements.Square44x44Logo))
                 {
-                    appxDetails.SquareLargestLogoPath = Path.Combine(appxDetails.InstallPath, appxApplication.VisualElements.Square44x44Logo);
+                    appxDetails.SquareLargestLogoPath = Path.Combine(appxDetails.InstallPath, applicationInfo.VisualElements.Square44x44Logo);
                 }
-                else if (!string.IsNullOrWhiteSpace(appxApplication.VisualElements.DefaultTile.Square44x44Logo))
+                else if (!string.IsNullOrWhiteSpace(applicationInfo.VisualElements.DefaultTile.Square44x44Logo))
                 {
-                    appxDetails.SquareLargestLogoPath = Path.Combine(appxDetails.InstallPath, appxApplication.VisualElements.DefaultTile.Square44x44Logo);
+                    appxDetails.SquareLargestLogoPath = Path.Combine(appxDetails.InstallPath, applicationInfo.VisualElements.DefaultTile.Square44x44Logo);
                 }
                 string originalSquareLargestLogoPath = appxDetails.SquareLargestLogoPath;
                 appxDetails.SquareLargestLogoPath = GetUwpImageSizePath(appxDetails.SquareLargestLogoPath);
@@ -126,13 +137,13 @@ namespace ArnoldVinkCode
                 }
 
                 //Check the largest available wide logo
-                if (!string.IsNullOrWhiteSpace(appxApplication.VisualElements.Wide310x150Logo))
+                if (!string.IsNullOrWhiteSpace(applicationInfo.VisualElements.Wide310x150Logo))
                 {
-                    appxDetails.WideLargestLogoPath = Path.Combine(appxDetails.InstallPath, appxApplication.VisualElements.Wide310x150Logo);
+                    appxDetails.WideLargestLogoPath = Path.Combine(appxDetails.InstallPath, applicationInfo.VisualElements.Wide310x150Logo);
                 }
-                else if (!string.IsNullOrWhiteSpace(appxApplication.VisualElements.DefaultTile.Wide310x150Logo))
+                else if (!string.IsNullOrWhiteSpace(applicationInfo.VisualElements.DefaultTile.Wide310x150Logo))
                 {
-                    appxDetails.WideLargestLogoPath = Path.Combine(appxDetails.InstallPath, appxApplication.VisualElements.DefaultTile.Wide310x150Logo);
+                    appxDetails.WideLargestLogoPath = Path.Combine(appxDetails.InstallPath, applicationInfo.VisualElements.DefaultTile.Wide310x150Logo);
                 }
                 string originalWideLargestLogoPath = appxDetails.WideLargestLogoPath;
                 appxDetails.WideLargestLogoPath = GetUwpImageSizePath(appxDetails.WideLargestLogoPath);

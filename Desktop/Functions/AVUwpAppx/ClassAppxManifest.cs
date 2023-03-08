@@ -15,6 +15,7 @@ namespace ArnoldVinkCode
         {
             public Identity Identity { get; set; } = new Identity();
             public Properties Properties { get; set; } = new Properties();
+            public Dependencies Dependencies { get; set; } = new Dependencies();
             public Applications Applications { get; set; } = new Applications();
         }
 
@@ -37,13 +38,25 @@ namespace ArnoldVinkCode
             public string Logo { get; set; }
         }
 
+        public class Dependencies
+        {
+            [XmlElement(ElementName = "TargetDeviceFamily")]
+            public TargetDeviceFamily TargetDeviceFamily { get; set; }
+        }
+
+        public class TargetDeviceFamily
+        {
+            [XmlAttribute(AttributeName = "Name")]
+            public string Name { get; set; }
+        }
+
         public class Applications
         {
             [XmlElement(ElementName = "Application")]
-            public List<AppxApplication> Application { get; set; }
+            public List<Application> Application { get; set; }
         }
 
-        public class AppxApplication
+        public class Application
         {
             [XmlAttribute(AttributeName = "Id")]
             public string Id { get; set; }
