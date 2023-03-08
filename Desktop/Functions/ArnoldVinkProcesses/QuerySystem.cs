@@ -11,40 +11,7 @@ namespace ArnoldVinkCode
         [DllImport("ntdll.dll")]
         public static extern uint NtQuerySystemInformation(SYSTEM_INFO_CLASS SystemInformationClass, IntPtr SystemInformation, uint SystemInformationLength, out uint ReturnLength);
 
-        //Enumerators
-        public enum THREAD_STATE
-        {
-            Initialized,
-            Ready,
-            Running,
-            Standby,
-            Terminated,
-            Wait,
-            Transition,
-            Unknown
-        }
-
-        public enum THREAD_WAIT_REASON
-        {
-            Executive,
-            FreePage,
-            PageIn,
-            PoolAllocation,
-            DelayExecution,
-            Suspended,
-            UserRequest,
-            Unknown
-        }
-
         //Structures
-        [StructLayout(LayoutKind.Sequential)]
-        public struct SYSTEM_UNICODE_STRING
-        {
-            public ushort Length;
-            public ushort MaximumLength;
-            public IntPtr Buffer;
-        }
-
         [StructLayout(LayoutKind.Sequential)]
         public struct SYSTEM_THREAD_INFORMATION
         {
@@ -55,11 +22,11 @@ namespace ArnoldVinkCode
             public IntPtr StartAddress;
             public IntPtr UniqueProcessId;
             public IntPtr UniqueThreadId;
-            public uint Priority;
-            public uint BasePriority;
-            public uint ContextSwitchCount;
-            public THREAD_STATE ThreadState;
-            public THREAD_WAIT_REASON ThreadWaitReason;
+            public int Priority;
+            public int BasePriority;
+            public uint ContextSwitches;
+            public ProcessThreadState ThreadState;
+            public ProcessThreadWaitReason ThreadWaitReason;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -67,32 +34,33 @@ namespace ArnoldVinkCode
         {
             public uint NextEntryOffset;
             public uint NumberOfThreads;
-            public uint WorkingSetPrivateSize;
-            public uint HardFaultCount;
-            public uint NumberOfThreadsHighWatermark;
-            public long CycleTime;
+            public long SpareLi1;
+            public long SpareLi2;
+            public long SpareLi3;
             public long CreateTime;
             public long UserTime;
             public long KernelTime;
-            public SYSTEM_UNICODE_STRING ImageName;
-            public uint BasePriority;
+            public ushort NameLength;
+            public ushort MaximumNameLength;
+            public IntPtr NamePtr;
+            public int BasePriority;
             public IntPtr UniqueProcessId;
             public IntPtr ParentProcessId;
             public uint HandleCount;
             public uint SessionId;
-            public IntPtr UniqueProcessKey;
-            public IntPtr PeakVirtualSize;
-            public IntPtr VirtualSize;
+            public UIntPtr PageDirectoryBase;
+            public UIntPtr PeakVirtualSize;
+            public UIntPtr VirtualSize;
             public uint PageFaultCount;
-            public IntPtr PeakWorkingSetSize;
-            public IntPtr WorkingSetSize;
-            public IntPtr QuotaPeakPagedPoolUsage;
-            public IntPtr QuotaPagedPoolUsage;
-            public IntPtr QuotaPeakNonPagedPoolUsage;
-            public IntPtr QuotaNonPagedPoolUsage;
-            public IntPtr PagefileUsage;
-            public IntPtr PeakPagefileUsage;
-            public IntPtr PrivatePageCount;
+            public UIntPtr PeakWorkingSetSize;
+            public UIntPtr WorkingSetSize;
+            public UIntPtr QuotaPeakPagedPoolUsage;
+            public UIntPtr QuotaPagedPoolUsage;
+            public UIntPtr QuotaPeakNonPagedPoolUsage;
+            public UIntPtr QuotaNonPagedPoolUsage;
+            public UIntPtr PagefileUsage;
+            public UIntPtr PeakPagefileUsage;
+            public UIntPtr publicPageCount;
             public long ReadOperationCount;
             public long WriteOperationCount;
             public long OtherOperationCount;
@@ -101,83 +69,158 @@ namespace ArnoldVinkCode
             public long OtherTransferCount;
         }
 
-        //Get process thread information by process id
-        public static List<ProcessThread> Get_ProcessThreadsByProcessId(int targetProcessId, bool firstThreadOnly)
+        //Query system process information
+        private static IntPtr Query_SystemProcessInformation()
         {
-            //Fix write query system code
-            return null;
-        }
-
-        public static List<ProcessMulti> Get_AllProcessesMulti()
-        {
-            List<ProcessMulti> listProcessMulti = new List<ProcessMulti>();
+            uint systemOffset = 0;
             IntPtr systemInfoBufferBegin = IntPtr.Zero;
-            IntPtr systemInfoBufferSeek = IntPtr.Zero;
             try
             {
-                AVDebug.WriteLine("Getting all multi processes.");
-
-                //Query process information
-                uint systemOffset = 0;
-                uint systemLength = 0;
                 while (true)
                 {
-                    systemInfoBufferBegin = Marshal.AllocHGlobal((int)systemOffset);
-                    uint queryResult = NtQuerySystemInformation(SYSTEM_INFO_CLASS.SystemProcessInformation, systemInfoBufferBegin, systemOffset, out systemLength);
-                    if (queryResult == 3221225476)
+                    try
                     {
-                        systemOffset = Math.Max(systemOffset, systemLength);
-                        AVDebug.WriteLine("System information offset begin: " + systemOffset);
+                        systemInfoBufferBegin = Marshal.AllocHGlobal((int)systemOffset);
+                        uint queryResult = NtQuerySystemInformation(SYSTEM_INFO_CLASS.SystemProcessInformation, systemInfoBufferBegin, systemOffset, out uint systemLength);
+                        if (queryResult == 3221225476)
+                        {
+                            systemOffset = Math.Max(systemOffset, systemLength);
+                        }
+                        else if (queryResult == 0)
+                        {
+                            break;
+                        }
                     }
-                    else if (queryResult == 0)
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        AVDebug.WriteLine("Failed getting all multi processes: query failed.");
-                        return listProcessMulti;
-                    }
+                    catch { }
+                }
+            }
+            catch { }
+            return systemInfoBufferBegin;
+        }
+
+        //Get process thread information by process id
+        public static List<ProcessThreadInfo> Get_ProcessThreadsByProcessId(int targetProcessId, bool firstThreadOnly)
+        {
+            List<ProcessThreadInfo> listProcessThread = new List<ProcessThreadInfo>();
+            IntPtr systemInfoBuffer = IntPtr.Zero;
+            try
+            {
+                //AVDebug.WriteLine("Getting process threads for process id: " + targetProcessId + "/" + firstThreadOnly);
+
+                //Query process information
+                systemInfoBuffer = Query_SystemProcessInformation();
+                if (systemInfoBuffer == IntPtr.Zero)
+                {
+                    AVDebug.WriteLine("Failed getting all process threads: query failed.");
+                    return listProcessThread;
                 }
 
                 //Loop process information
-                systemOffset = 0;
+                long processOffsetLoop = systemInfoBuffer.ToInt64();
                 while (true)
                 {
                     try
                     {
                         //Read process information
-                        systemInfoBufferSeek = new IntPtr(systemInfoBufferBegin.ToInt64() + systemOffset);
-                        SYSTEM_PROCESS_INFORMATION systemProcess = (SYSTEM_PROCESS_INFORMATION)Marshal.PtrToStructure(systemInfoBufferSeek, typeof(SYSTEM_PROCESS_INFORMATION));
+                        systemInfoBuffer = new IntPtr(processOffsetLoop);
+                        SYSTEM_PROCESS_INFORMATION systemProcess = (SYSTEM_PROCESS_INFORMATION)Marshal.PtrToStructure(systemInfoBuffer, typeof(SYSTEM_PROCESS_INFORMATION));
 
-                        //Create multi process
-                        ProcessMulti processMulti = new ProcessMulti();
-                        processMulti.Identifier = systemProcess.UniqueProcessId.ToInt32();
-                        processMulti.IdentifierParent = systemProcess.ParentProcessId.ToInt32();
-                        processMulti.StartTime = DateTime.FromFileTime(systemProcess.CreateTime);
+                        //Check target process id
+                        if (targetProcessId == systemProcess.UniqueProcessId.ToInt32())
+                        {
+                            //AVDebug.WriteLine("Found thread process: " + systemProcess.UniqueProcessId.ToInt32());
 
-                        ////Move to thread information
-                        //systemInfoBufferSeek = new IntPtr(systemInfoBufferSeek.ToInt64() + Marshal.SizeOf(typeof(SYSTEM_PROCESS_INFORMATION)));
+                            //Move to thread information
+                            systemInfoBuffer = new IntPtr(systemInfoBuffer.ToInt64() + Marshal.SizeOf(typeof(SYSTEM_PROCESS_INFORMATION)));
 
-                        ////Read thread info
-                        //for (int i = 0; i < systemProcess.NumberOfThreads; i++)
-                        //{
-                        //    SYSTEM_THREAD_INFORMATION systemThread = (SYSTEM_THREAD_INFORMATION)Marshal.PtrToStructure(systemInfoBufferSeek, typeof(SYSTEM_THREAD_INFORMATION));
-                        //    AVDebug.WriteLine("Thread ID: " + systemThread.UniqueThreadId);
-                        //    AVDebug.WriteLine("Thread State: " + systemThread.ThreadState);
-                        //    AVDebug.WriteLine("Thread WaitReason: " + systemThread.ThreadWaitReason);
+                            //Read thread info
+                            for (int i = 0; i < systemProcess.NumberOfThreads; i++)
+                            {
+                                try
+                                {
+                                    //Read thread information
+                                    SYSTEM_THREAD_INFORMATION systemThread = (SYSTEM_THREAD_INFORMATION)Marshal.PtrToStructure(systemInfoBuffer, typeof(SYSTEM_THREAD_INFORMATION));
 
-                        //    //Move to next thread
-                        //    systemInfoBufferSeek = new IntPtr(systemInfoBufferSeek.ToInt64() + Marshal.SizeOf(typeof(SYSTEM_THREAD_INFORMATION)));
-                        //}
+                                    //Add process thread to list
+                                    ProcessThreadInfo processThread = new ProcessThreadInfo();
+                                    processThread.Identifier = systemThread.UniqueThreadId.ToInt32();
+                                    processThread.ThreadState = systemThread.ThreadState;
+                                    processThread.ThreadWaitReason = systemThread.ThreadWaitReason;
+                                    listProcessThread.Add(processThread);
+
+                                    //Return process threads
+                                    if (firstThreadOnly)
+                                    {
+                                        return listProcessThread;
+                                    }
+
+                                    //Move to next thread
+                                    systemInfoBuffer = new IntPtr(systemInfoBuffer.ToInt64() + Marshal.SizeOf(typeof(SYSTEM_THREAD_INFORMATION)));
+                                }
+                                catch { }
+                            }
+                        }
+
+                        //Move to next process
+                        if (systemProcess.NextEntryOffset != 0)
+                        {
+                            processOffsetLoop += systemProcess.NextEntryOffset;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    catch { }
+                }
+
+                //Return process threads
+                return listProcessThread;
+            }
+            catch (Exception ex)
+            {
+                AVDebug.WriteLine("Failed getting all process threads: " + ex.Message);
+                return listProcessThread;
+            }
+            finally
+            {
+                CloseHandleAuto(systemInfoBuffer);
+            }
+        }
+
+        //Get all running processes multi
+        public static List<ProcessMulti> Get_AllProcessesMulti()
+        {
+            List<ProcessMulti> listProcessMulti = new List<ProcessMulti>();
+            IntPtr systemInfoBuffer = IntPtr.Zero;
+            try
+            {
+                //AVDebug.WriteLine("Getting all multi processes.");
+
+                //Query process information
+                systemInfoBuffer = Query_SystemProcessInformation();
+                if (systemInfoBuffer == IntPtr.Zero)
+                {
+                    AVDebug.WriteLine("Failed getting all multi processes: query failed.");
+                    return listProcessMulti;
+                }
+
+                //Loop process information
+                while (true)
+                {
+                    try
+                    {
+                        //Read process information
+                        SYSTEM_PROCESS_INFORMATION systemProcess = (SYSTEM_PROCESS_INFORMATION)Marshal.PtrToStructure(systemInfoBuffer, typeof(SYSTEM_PROCESS_INFORMATION));
 
                         //Add multi process to list
+                        ProcessMulti processMulti = new ProcessMulti(systemProcess.UniqueProcessId.ToInt32(), systemProcess.ParentProcessId.ToInt32());
                         listProcessMulti.Add(processMulti);
 
                         //Move to next process
                         if (systemProcess.NextEntryOffset != 0)
                         {
-                            systemOffset += systemProcess.NextEntryOffset;
+                            systemInfoBuffer = new IntPtr(systemInfoBuffer.ToInt64() + systemProcess.NextEntryOffset);
                         }
                         else
                         {
@@ -192,13 +235,12 @@ namespace ArnoldVinkCode
             }
             catch (Exception ex)
             {
-                AVDebug.WriteLine("Failed to get all multi processes: " + ex.Message);
+                AVDebug.WriteLine("Failed getting all multi processes: " + ex.Message);
                 return listProcessMulti;
             }
             finally
             {
-                CloseHandleAuto(systemInfoBufferBegin);
-                CloseHandleAuto(systemInfoBufferSeek);
+                CloseHandleAuto(systemInfoBuffer);
             }
         }
     }

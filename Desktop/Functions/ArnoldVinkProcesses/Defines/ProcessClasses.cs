@@ -10,11 +10,19 @@
             public TOKEN_ELEVATION_TYPE ElevationType { get; set; } = TOKEN_ELEVATION_TYPE.TokenElevationTypeDefault;
         }
 
-        public class ProcessThread
+        public class ProcessThreadInfo
         {
-            public int ThreadId { get; set; } = 0;
+            public int Identifier { get; set; } = 0;
             public ProcessThreadState ThreadState { get; set; } = ProcessThreadState.Unknown;
             public ProcessThreadWaitReason ThreadWaitReason { get; set; } = ProcessThreadWaitReason.Unknown;
+
+            public bool Suspended
+            {
+                get
+                {
+                    return ThreadState == ProcessThreadState.Waiting && ThreadWaitReason == ProcessThreadWaitReason.Suspended;
+                }
+            }
         }
     }
 }

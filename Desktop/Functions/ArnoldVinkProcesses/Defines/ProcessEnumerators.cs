@@ -17,9 +17,10 @@
             ProcessWow64Information = 26
         }
 
-        public enum THREAD_INFO_CLASS : int
+        public enum SYSTEM_INFO_CLASS : int
         {
-            ThreadSystemThreadInformation = 40
+            SystemBasicInformation = 0,
+            SystemProcessInformation = 5
         }
 
         public enum ProcessThreadState : int
