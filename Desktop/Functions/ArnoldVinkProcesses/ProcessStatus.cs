@@ -7,6 +7,7 @@ namespace ArnoldVinkCode
     {
         public static ProcessAccessStatus Get_ProcessAccessStatus(int processId, bool currentProcess)
         {
+            ProcessAccessStatus processAccessStatus = new ProcessAccessStatus();
             IntPtr processTokenHandle = IntPtr.Zero;
             try
             {
@@ -18,6 +19,13 @@ namespace ArnoldVinkCode
                 else
                 {
                     processTokenHandle = Token_Create_Process(processId, PROCESS_DESIRED_ACCESS.PROCESS_QUERY_LIMITED_INFORMATION, TOKEN_DESIRED_ACCESS.TOKEN_QUERY);
+                }
+
+                //Check process token
+                if (processTokenHandle == IntPtr.Zero)
+                {
+                    AVDebug.WriteLine("Failed to get process access status for process id: " + processId);
+                    return processAccessStatus;
                 }
 
                 //Check process uiaccess access
@@ -33,24 +41,23 @@ namespace ArnoldVinkCode
                 GetTokenInformation(processTokenHandle, TOKEN_INFORMATION_CLASS.TokenElevationType, ref tokenElevationType, sizeof(TOKEN_ELEVATION_TYPE), out _);
 
                 //Create process access
-                ProcessAccessStatus processAccess = new ProcessAccessStatus();
-                processAccess.UiAccess = Convert.ToBoolean(tokenUiAccess);
-                processAccess.Elevation = Convert.ToBoolean(tokenElevation);
-                processAccess.ElevationType = tokenElevationType;
+                processAccessStatus.UiAccess = Convert.ToBoolean(tokenUiAccess);
+                processAccessStatus.Elevation = Convert.ToBoolean(tokenElevation);
+                processAccessStatus.ElevationType = tokenElevationType;
 
                 //Check process admin access
-                processAccess.AdminAccess = processAccess.Elevation || processAccess.ElevationType == TOKEN_ELEVATION_TYPE.TokenElevationTypeFull;
+                processAccessStatus.AdminAccess = processAccessStatus.Elevation || processAccessStatus.ElevationType == TOKEN_ELEVATION_TYPE.TokenElevationTypeFull;
 
                 //AVDebug.WriteLine("Process token uiaccess access: " + processAccess.UiAccess);
                 //AVDebug.WriteLine("Process token administrator access: " + processAccess.AdminAccess);
                 //AVDebug.WriteLine("Process token elevation access: " + processAccess.Elevation);
                 //AVDebug.WriteLine("Process token elevation type: " + processAccess.ElevationType);
-                return processAccess;
+                return processAccessStatus;
             }
             catch (Exception ex)
             {
                 AVDebug.WriteLine("Failed to get process access status: " + ex.Message);
-                return null;
+                return processAccessStatus;
             }
             finally
             {

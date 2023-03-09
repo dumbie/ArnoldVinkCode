@@ -101,6 +101,23 @@ namespace ArnoldVinkCode
                 }
             }
 
+            private ProcessAccessStatus CachedAccessStatus = null;
+            public ProcessAccessStatus AccessStatus
+            {
+                get
+                {
+                    try
+                    {
+                        if (CachedAccessStatus == null)
+                        {
+                            CachedAccessStatus = Get_ProcessAccessStatus(Identifier, false);
+                        }
+                    }
+                    catch { }
+                    return CachedAccessStatus;
+                }
+            }
+
             public ProcessPriority Priority
             {
                 get
@@ -406,6 +423,7 @@ namespace ArnoldVinkCode
                     AVDebug.WriteLine("IdentifierParent: " + IdentifierParent);
                     AVDebug.WriteLine("Handle: " + Handle);
                     AVDebug.WriteLine("Type: " + Type);
+                    AVDebug.WriteLine("AdminAccess: " + AccessStatus.AdminAccess);
                     AVDebug.WriteLine("Priority: " + Priority);
                     AVDebug.WriteLine("AppUserModelId: " + AppUserModelId);
                     AVDebug.WriteLine("ExeName: " + ExeName);
@@ -436,6 +454,7 @@ namespace ArnoldVinkCode
                     _ = IdentifierParent;
                     _ = Handle;
                     _ = Type;
+                    _ = AccessStatus;
                     _ = Priority;
                     _ = AppUserModelId;
                     _ = ExeName;

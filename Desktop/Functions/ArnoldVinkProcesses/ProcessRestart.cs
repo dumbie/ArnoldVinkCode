@@ -47,11 +47,7 @@ namespace ArnoldVinkCode
                 }
                 else
                 {
-                    //Get process access status
-                    ProcessAccessStatus currentProcessAccess = Get_ProcessAccessStatus(processId, false);
-
-                    //Prepare process launch
-                    return Launch_Execute(restartProcess.ExePath, restartProcess.WorkPath, launchArgument, currentProcessAccess.AdminAccess);
+                    return Launch_Execute(restartProcess.ExePath, restartProcess.WorkPath, launchArgument, restartProcess.AccessStatus.AdminAccess);
                 }
             }
             catch (Exception ex)
