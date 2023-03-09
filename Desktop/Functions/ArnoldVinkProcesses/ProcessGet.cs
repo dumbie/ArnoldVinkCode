@@ -8,10 +8,10 @@ namespace ArnoldVinkCode
     public partial class AVProcess
     {
         /// <summary>
-        /// Get process handle by identifier
+        /// Get process handle by process identifier
         /// </summary>
         /// <param name="targetProcessId">Process identifier</param>
-        public static IntPtr Get_ProcessHandleById(int targetProcessId)
+        public static IntPtr Get_ProcessHandleByProcessId(int targetProcessId)
         {
             try
             {
@@ -83,23 +83,23 @@ namespace ArnoldVinkCode
             List<ProcessMulti> foundProcesses = new List<ProcessMulti>();
             try
             {
+                string targetNameLower = targetName.ToLower();
                 foreach (ProcessMulti checkProcess in Get_AllProcessesMulti())
                 {
                     try
                     {
-                        string targetNameLower = targetName.ToLower();
                         string foundExecutableNameLower = checkProcess.ExeName.ToLower();
-                        string foundProcessNameLower = checkProcess.ExeNameNoExt.ToLower();
+                        string foundExecutableNameNoExtLower = checkProcess.ExeNameNoExt.ToLower();
                         if (exactName)
                         {
-                            if (foundExecutableNameLower == targetNameLower || foundProcessNameLower == targetNameLower)
+                            if (foundExecutableNameLower == targetNameLower || foundExecutableNameNoExtLower == targetNameLower)
                             {
                                 foundProcesses.Add(checkProcess);
                             }
                         }
                         else
                         {
-                            if (foundExecutableNameLower.Contains(targetNameLower) || foundProcessNameLower.Contains(targetNameLower))
+                            if (foundExecutableNameLower.Contains(targetNameLower) || foundExecutableNameNoExtLower.Contains(targetNameLower))
                             {
                                 foundProcesses.Add(checkProcess);
                             }
@@ -116,6 +116,37 @@ namespace ArnoldVinkCode
         }
 
         /// <summary>
+        /// Get processes multi by executable path
+        /// </summary>
+        /// <param name="targetExecutablePath">Process executable path</param>
+        public static List<ProcessMulti> Get_ProcessesMultiByExecutablePath(string targetExecutablePath)
+        {
+            //AVDebug.WriteLine("Getting processes by executable path: " + targetExecutablePath);
+            List<ProcessMulti> foundProcesses = new List<ProcessMulti>();
+            try
+            {
+                string targetExecutablePathLower = targetExecutablePath.ToLower();
+                foreach (ProcessMulti checkProcess in Get_AllProcessesMulti())
+                {
+                    try
+                    {
+                        string foundExecutablePathLower = checkProcess.ExePath.ToLower();
+                        if (foundExecutablePathLower == targetExecutablePathLower)
+                        {
+                            foundProcesses.Add(checkProcess);
+                        }
+                    }
+                    catch { }
+                }
+            }
+            catch (Exception ex)
+            {
+                AVDebug.WriteLine("Failed to get multi processes by executable path: " + ex.Message);
+            }
+            return foundProcesses;
+        }
+
+        /// <summary>
         /// Get processes multi by AppUserModelId
         /// </summary>
         /// <param name="targetAppUserModelId">UWP or Win32Store AppUserModelId</param>
@@ -125,11 +156,11 @@ namespace ArnoldVinkCode
             List<ProcessMulti> foundProcesses = new List<ProcessMulti>();
             try
             {
+                string targetAppUserModelIdLower = targetAppUserModelId.ToLower();
                 foreach (ProcessMulti checkProcess in Get_AllProcessesMulti())
                 {
                     try
                     {
-                        string targetAppUserModelIdLower = targetAppUserModelId.ToLower();
                         string foundAppUserModelIdLower = checkProcess.AppUserModelId.ToLower();
                         if (foundAppUserModelIdLower == targetAppUserModelIdLower)
                         {
@@ -157,11 +188,11 @@ namespace ArnoldVinkCode
             List<ProcessMulti> foundProcesses = new List<ProcessMulti>();
             try
             {
+                string targetWindowTitleLower = targetWindowTitle.ToLower();
                 foreach (ProcessMulti checkProcess in Get_AllProcessesMulti())
                 {
                     try
                     {
-                        string targetWindowTitleLower = targetWindowTitle.ToLower();
                         string foundWindowTitleLower = checkProcess.WindowTitle.ToLower();
                         if (exactName)
                         {

@@ -8,73 +8,34 @@ namespace ArnoldVinkCode
 {
     public partial class AVProcess
     {
-        public static int Launch_CreateProcess(string exePath, string workPath, string arguments, IntPtr hToken, bool toolAdminAccess)
-        {
-            try
-            {
-                AVDebug.WriteLine("Launching process using create process: " + exePath);
-
-                //Set launch information
-                string commandLine = exePath;
-                if (!string.IsNullOrWhiteSpace(arguments))
-                {
-                    commandLine += " " + arguments;
-                }
-
-                //Create process
-                STARTUPINFOW startupInfo = new STARTUPINFOW();
-                PROCESS_INFORMATION processInfo = new PROCESS_INFORMATION();
-                CreateProcessFlags creationFlags = CreateProcessFlags.CREATE_NEW_CONSOLE | CreateProcessFlags.CREATE_NEW_PROCESS_GROUP;
-                if (toolAdminAccess)
-                {
-                    if (!CreateProcessWithTokenW(hToken, CreateLogonFlags.LOGON_NONE, null, commandLine, creationFlags, IntPtr.Zero, workPath, ref startupInfo, out processInfo))
-                    {
-                        Debug.Write("CreateProcessWithToken failed: " + Marshal.GetLastWin32Error());
-                        return 0;
-                    }
-                    else
-                    {
-                        Debug.Write("CreateProcessWithToken launched: " + processInfo.dwProcessId);
-                        return (int)processInfo.dwProcessId;
-                    }
-                }
-                else
-                {
-                    SECURITY_ATTRIBUTES saProcess = new SECURITY_ATTRIBUTES();
-                    SECURITY_ATTRIBUTES saThread = new SECURITY_ATTRIBUTES();
-                    if (!CreateProcessAsUserW(hToken, null, commandLine, ref saProcess, ref saThread, false, creationFlags, IntPtr.Zero, workPath, ref startupInfo, out processInfo))
-                    {
-                        Debug.Write("CreateProcessAsUser failed: " + Marshal.GetLastWin32Error());
-                        return 0;
-                    }
-                    else
-                    {
-                        Debug.Write("CreateProcessAsUser launched: " + processInfo.dwProcessId);
-                        return (int)processInfo.dwProcessId;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.Write("CreateProcess failed: " + exePath + "/" + ex.Message);
-                return 0;
-            }
-        }
-
-        public static int Launch_ShellExecute(string exePath, string workPath, string arguments, bool asAdmin)
+        //Launch application by ShellExecute
+        public static int Launch_Execute(string exePath, string workPath, string arguments, bool asAdmin)
         {
             //Does not inherit token from thread started with custom token.
             //Does not reset integrity level from process.
             //Does not remove elevation from process.
-            //Does not disable UIAccess from process.
+            //Disables UIAccess from launch process.
             try
             {
+                //Check execute path
+                if (string.IsNullOrWhiteSpace(exePath))
+                {
+                    Debug.Write("Launching shell process failed: execute path is empty.");
+                    return 0;
+                }
+
                 AVDebug.WriteLine("Launching shell process: " + exePath);
+
+                //Get current process token
+                IntPtr launchTokenHandle = Token_Create_Current();
+
+                //Disable token ui access
+                Token_Adjust_UIAccess(ref launchTokenHandle, false);
 
                 //Set shell execute info
                 ShellExecuteInfo shellExecuteInfo = new ShellExecuteInfo();
                 shellExecuteInfo.nShow = WindowShowCommand.Show;
-                shellExecuteInfo.fMask = SHELL_EXECUTE_SEE_MASK.SEE_MASK_NOCLOSEPROCESS;
+                shellExecuteInfo.fMask = SHELL_EXECUTE_SEE_MASK.SEE_MASK_NOCLOSEPROCESS | SHELL_EXECUTE_SEE_MASK.SEE_MASK_FLAG_NO_UI;
                 shellExecuteInfo.lpVerb = asAdmin ? "runas" : "open";
                 shellExecuteInfo.lpFile = exePath;
 

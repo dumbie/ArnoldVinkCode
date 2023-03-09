@@ -31,7 +31,7 @@ namespace ArnoldVinkCode
         }
 
         //Check if process is running by process id
-        public static bool Check_RunningProcessById(int targetProcessId)
+        public static bool Check_RunningProcessByProcessId(int targetProcessId)
         {
             try
             {

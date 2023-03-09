@@ -2,7 +2,7 @@
 {
     public partial class AVProcess
     {
-        public class ProcessAccess
+        public class ProcessAccessStatus
         {
             public bool UiAccess { get; set; } = false;
             public bool AdminAccess { get; set; } = false;

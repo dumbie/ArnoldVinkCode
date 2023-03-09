@@ -62,7 +62,7 @@ namespace ArnoldVinkCode
                     {
                         if (CachedHandle == IntPtr.Zero)
                         {
-                            CachedHandle = Get_ProcessHandleById(Identifier);
+                            CachedHandle = Get_ProcessHandleByProcessId(Identifier);
                         }
                     }
                     catch { }
@@ -249,6 +249,26 @@ namespace ArnoldVinkCode
                 }
             }
 
+            public List<IntPtr> WindowHandles
+            {
+                get
+                {
+                    try
+                    {
+                        if (Type == ProcessType.UWP)
+                        {
+                            return Get_WindowHandlesByAppUserModelId(AppUserModelId);
+                        }
+                        else
+                        {
+                            return Get_WindowHandlesByProcessId(Identifier);
+                        }
+                    }
+                    catch { }
+                    return null;
+                }
+            }
+
             private string CachedWindowClassName = string.Empty;
             public string WindowClassName
             {
@@ -394,6 +414,7 @@ namespace ArnoldVinkCode
                     AVDebug.WriteLine("WorkPath: " + WorkPath);
                     AVDebug.WriteLine("Argument: " + Argument);
                     AVDebug.WriteLine("WindowHandleMain: " + WindowHandleMain);
+                    AVDebug.WriteLine("WindowHandles: " + WindowHandles.Count);
                     AVDebug.WriteLine("WindowClassName: " + WindowClassName);
                     AVDebug.WriteLine("WindowTitle: " + WindowTitle);
                     AVDebug.WriteLine("StartTime: " + StartTime);
@@ -403,6 +424,36 @@ namespace ArnoldVinkCode
                     AVDebug.WriteLine("AppPackageName: " + AppPackage.DisplayName);
                     AVDebug.WriteLine("AppxDetailsName: " + AppxDetails.DisplayName);
                     AVDebug.WriteLine("Action: " + Action);
+                }
+                catch { }
+            }
+
+            public void Cache()
+            {
+                try
+                {
+                    _ = Identifier;
+                    _ = IdentifierParent;
+                    _ = Handle;
+                    _ = Type;
+                    _ = Priority;
+                    _ = AppUserModelId;
+                    _ = ExeName;
+                    _ = ExeNameNoExt;
+                    _ = ExePath;
+                    _ = WorkPath;
+                    _ = Argument;
+                    _ = WindowHandleMain;
+                    _ = WindowHandles;
+                    _ = WindowClassName;
+                    _ = WindowTitle;
+                    _ = StartTime;
+                    _ = RunTime;
+                    _ = Suspended;
+                    _ = Threads;
+                    _ = AppPackage;
+                    _ = AppxDetails;
+                    _ = Action;
                 }
                 catch { }
             }

@@ -47,14 +47,14 @@ namespace ArnoldVinkCode
                 int foundProcessId = Detail_ProcessIdByWindowHandle(windowHandle);
 
                 //Show process window
-                return await Show_ProcessIdAndWindowHandle(foundProcessId, windowHandle);
+                return await Show_ProcessByProcessIdAndWindowHandle(foundProcessId, windowHandle);
             }
             catch { }
             return false;
         }
 
         //Show window by process id
-        public static async Task<bool> Show_ProcessById(int processId)
+        public static async Task<bool> Show_ProcessByProcessId(int processId)
         {
             try
             {
@@ -71,14 +71,14 @@ namespace ArnoldVinkCode
                 }
 
                 //Show process window
-                return await Show_ProcessIdAndWindowHandle(processId, processMulti.WindowHandleMain);
+                return await Show_ProcessByProcessIdAndWindowHandle(processId, processMulti.WindowHandleMain);
             }
             catch { }
             return false;
         }
 
         //Show window by process id and window handle
-        public static async Task<bool> Show_ProcessIdAndWindowHandle(int processId, IntPtr windowHandle)
+        public static async Task<bool> Show_ProcessByProcessIdAndWindowHandle(int processId, IntPtr windowHandle)
         {
             try
             {

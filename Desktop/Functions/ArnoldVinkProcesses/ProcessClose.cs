@@ -5,8 +5,8 @@ namespace ArnoldVinkCode
 {
     public partial class AVProcess
     {
-        //Close process by identifier
-        public static bool Close_ProcessById(int targetProcessId)
+        //Close process by process identifier
+        public static bool Close_ProcessByProcessId(int targetProcessId)
         {
             IntPtr closeProcess = IntPtr.Zero;
             try
@@ -35,8 +35,8 @@ namespace ArnoldVinkCode
             }
         }
 
-        //Close process tree by identifier
-        public static bool Close_ProcessTreeById(int targetProcessId)
+        //Close process tree by process identifier
+        public static bool Close_ProcessTreeByProcessId(int targetProcessId)
         {
             try
             {
@@ -47,14 +47,14 @@ namespace ArnoldVinkCode
                     {
                         if (childProcess.IdentifierParent == targetProcessId)
                         {
-                            Close_ProcessById(childProcess.Identifier);
+                            Close_ProcessByProcessId(childProcess.Identifier);
                         }
                     }
                     catch { }
                 }
 
                 //Close parent process
-                Close_ProcessById(targetProcessId);
+                Close_ProcessByProcessId(targetProcessId);
 
                 AVDebug.WriteLine("Closed process tree by id: " + targetProcessId);
                 return true;
@@ -76,7 +76,7 @@ namespace ArnoldVinkCode
                 {
                     try
                     {
-                        if (Close_ProcessTreeById(foundProcesses.Identifier))
+                        if (Close_ProcessTreeByProcessId(foundProcesses.Identifier))
                         {
                             processClosed = true;
                         }
@@ -94,6 +94,34 @@ namespace ArnoldVinkCode
             }
         }
 
+        //Close processes by executable path
+        public static bool Close_ProcessesByExecutablePath(string targetExecutablePath)
+        {
+            try
+            {
+                bool processClosed = false;
+                foreach (ProcessMulti foundProcesses in Get_ProcessesMultiByExecutablePath(targetExecutablePath))
+                {
+                    try
+                    {
+                        if (Close_ProcessTreeByProcessId(foundProcesses.Identifier))
+                        {
+                            processClosed = true;
+                        }
+                    }
+                    catch { }
+                }
+
+                AVDebug.WriteLine("Closed processes by executable path: " + targetExecutablePath + "/" + processClosed);
+                return processClosed;
+            }
+            catch (Exception ex)
+            {
+                AVDebug.WriteLine("Failed closing processes by executable path: " + targetExecutablePath + "/" + ex.Message);
+                return false;
+            }
+        }
+
         //Close processes by AppUserModelId
         public static bool Close_ProcessesByAppUserModelId(string targetAppUserModelId)
         {
@@ -104,7 +132,7 @@ namespace ArnoldVinkCode
                 {
                     try
                     {
-                        if (Close_ProcessTreeById(foundProcesses.Identifier))
+                        if (Close_ProcessTreeByProcessId(foundProcesses.Identifier))
                         {
                             processClosed = true;
                         }

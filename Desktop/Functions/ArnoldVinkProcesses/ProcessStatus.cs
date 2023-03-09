@@ -5,7 +5,7 @@ namespace ArnoldVinkCode
 {
     public partial class AVProcess
     {
-        public static ProcessAccess Get_ProcessAccessStatus(int processId, bool currentProcess)
+        public static ProcessAccessStatus Get_ProcessAccessStatus(int processId, bool currentProcess)
         {
             IntPtr processTokenHandle = IntPtr.Zero;
             try
@@ -33,7 +33,7 @@ namespace ArnoldVinkCode
                 GetTokenInformation(processTokenHandle, TOKEN_INFORMATION_CLASS.TokenElevationType, ref tokenElevationType, sizeof(TOKEN_ELEVATION_TYPE), out _);
 
                 //Create process access
-                ProcessAccess processAccess = new ProcessAccess();
+                ProcessAccessStatus processAccess = new ProcessAccessStatus();
                 processAccess.UiAccess = Convert.ToBoolean(tokenUiAccess);
                 processAccess.Elevation = Convert.ToBoolean(tokenElevation);
                 processAccess.ElevationType = tokenElevationType;

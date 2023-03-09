@@ -5,8 +5,8 @@ namespace ArnoldVinkCode
 {
     public partial class AVProcess
     {
-        //Restart process by id
-        public static async Task<int> Restart_ProcessById(int processId, string newArgs, bool withoutArgs)
+        //Restart process by process id
+        public static async Task<int> Restart_ProcessByProcessId(int processId, string newArgs, bool withoutArgs)
         {
             try
             {
@@ -20,6 +20,9 @@ namespace ArnoldVinkCode
                     return 0;
                 }
 
+                //Cache restart process
+                restartProcess.Cache();
+
                 //Check launch argument
                 string launchArgument = string.Empty;
                 if (!withoutArgs)
@@ -32,7 +35,7 @@ namespace ArnoldVinkCode
                 }
 
                 //Close current process
-                Close_ProcessTreeById(processId);
+                Close_ProcessTreeByProcessId(processId);
 
                 //Wait for process to have closed
                 await Task.Delay(500);
@@ -45,10 +48,10 @@ namespace ArnoldVinkCode
                 else
                 {
                     //Get process access status
-                    ProcessAccess currentProcessAccess = Get_ProcessAccessStatus(processId, false);
+                    ProcessAccessStatus currentProcessAccess = Get_ProcessAccessStatus(processId, false);
 
                     //Prepare process launch
-                    return Launch_Prepare(restartProcess.ExePath, restartProcess.WorkPath, launchArgument, false, currentProcessAccess.AdminAccess, currentProcessAccess.UiAccess);
+                    return Launch_Execute(restartProcess.ExePath, restartProcess.WorkPath, launchArgument, currentProcessAccess.AdminAccess);
                 }
             }
             catch (Exception ex)
