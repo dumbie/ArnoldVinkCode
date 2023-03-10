@@ -74,8 +74,10 @@
     <Compile Include="Functions\ArnoldVinkInputOutput\InputOutputMouse.cs" />
     <Compile Include="Functions\ArnoldVinkProcesses\Defines\ProcessEnumerators.cs" />
     <Compile Include="Functions\ArnoldVinkProcesses\Defines\ProcessMulti.cs" />
+    <Compile Include="Functions\ArnoldVinkProcesses\Interop\ProcessUWP.cs" />
+    <Compile Include="Functions\ArnoldVinkProcesses\Interop\ProcessShellUser.cs" />
     <Compile Include="Functions\ArnoldVinkProcesses\Interop\ProcessToken.cs" />
-    <Compile Include="Functions\ArnoldVinkProcesses\Interop\ProcessShell.cs" />
+    <Compile Include="Functions\ArnoldVinkProcesses\Interop\ProcessShellInherit.cs" />
     <Compile Include="Functions\ArnoldVinkProcesses\ProcessStatus.cs" />
     <Compile Include="Functions\ArnoldVinkProcesses\ProcessGet.cs" />
     <Compile Include="Functions\ArnoldVinkProcesses\ProcessCheck.cs" />
@@ -93,6 +95,7 @@
     <Compile Include="Functions\ArnoldVinkProcesses\TokenCreate.cs" />
     <Compile Include="Functions\ArnoldVinkProcesses\TokenAdjust.cs" />
     <Compile Include="Functions\ArnoldVinkProcesses\ProcessDetail.cs" />
+    <Compile Include="Functions\ArnoldVinkProcesses\TokenSid.cs" />
     <Compile Include="Functions\ArnoldVinkSockets\SocketClass.cs" />
     <Compile Include="Functions\ArnoldVinkSockets\SocketCleanTcp.cs" />
     <Compile Include="Functions\ArnoldVinkSockets\SocketCleanUdp.cs" />

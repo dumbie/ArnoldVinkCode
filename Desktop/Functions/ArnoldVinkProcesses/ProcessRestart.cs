@@ -47,7 +47,7 @@ namespace ArnoldVinkCode
                 }
                 else
                 {
-                    return Launch_Execute(restartProcess.ExePath, restartProcess.WorkPath, launchArgument, restartProcess.AccessStatus.AdminAccess);
+                    return Launch_ExecuteInherit(restartProcess.ExePath, restartProcess.WorkPath, launchArgument, restartProcess.AccessStatus.AdminAccess);
                 }
             }
             catch (Exception ex)

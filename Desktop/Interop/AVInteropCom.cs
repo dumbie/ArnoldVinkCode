@@ -1,34 +1,10 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace ArnoldVinkCode
 {
     public partial class AVInteropCom
     {
-        //UWPActivation
-        [ComImport, Guid("2e941141-7f97-4756-ba1d-9decde894a3d"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-        public interface IApplicationActivationManager
-        {
-            IntPtr ActivateApplication([In] string AppId, [In] string Arguments, [In] UWP_ACTIVATEOPTIONS Options, [Out] out int ProcessId);
-        }
-
-        [ComImport, Guid("45BA127D-10A8-46EA-8AB7-56EA9078943C")]
-        public class UWPActivationManager : IApplicationActivationManager
-        {
-            [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-            public extern IntPtr ActivateApplication([In] string AppId, [In] string Arguments, [In] UWP_ACTIVATEOPTIONS Options, [Out] out int ProcessId);
-        }
-
-        public enum UWP_ACTIVATEOPTIONS
-        {
-            AO_NONE = 0,
-            AO_DESIGNMODE = 0x1,
-            AO_NOERRORUI = 0x2,
-            AO_NOSPLASHSCREEN = 0x4,
-            AO_PRELAUNCH = 0x2000000
-        }
-
         //PropertyKey
         public static PropertyKey PKEY_AppUserModel_ID = new PropertyKey { fmtId = new Guid("9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3"), pId = 5 };
         public static PropertyKey PKEY_Device_FriendlyName = new PropertyKey { fmtId = new Guid("A45C254E-DF1C-4EFD-8020-67D146A850E0"), pId = 14 };

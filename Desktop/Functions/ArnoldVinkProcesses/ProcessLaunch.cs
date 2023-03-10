@@ -1,30 +1,27 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
-using static ArnoldVinkCode.AVInteropCom;
 using static ArnoldVinkCode.AVInteropDll;
 
 namespace ArnoldVinkCode
 {
     public partial class AVProcess
     {
-        //Launch application by ShellExecute
-        public static int Launch_Execute(string exePath, string workPath, string arguments, bool asAdmin)
+        /// <summary>
+        /// Launch application by ShellExecute inherit access
+        /// </summary>
+        /// <summary>Disables UIAccess from launching process.</summary>
+        public static int Launch_ExecuteInherit(string exePath, string workPath, string arguments, bool asAdmin)
         {
-            //Does not inherit token from thread started with custom token.
-            //Does not reset integrity level from process.
-            //Does not remove elevation from process.
-            //Disables UIAccess from launch process.
             try
             {
                 //Check execute path
                 if (string.IsNullOrWhiteSpace(exePath))
                 {
-                    Debug.Write("Launching shell process failed: execute path is empty.");
+                    AVDebug.WriteLine("Launching shell process failed: execute path is empty.");
                     return 0;
                 }
 
-                AVDebug.WriteLine("Launching shell process: " + exePath);
+                AVDebug.WriteLine("Launching shell process with inherited access: " + exePath);
 
                 //Get current process token
                 IntPtr launchTokenHandle = Token_Create_Current();
@@ -55,7 +52,7 @@ namespace ArnoldVinkCode
                 //Shell execute process
                 if (!ShellExecuteExW(shellExecuteInfo))
                 {
-                    Debug.Write("Launching shell process failed: " + Marshal.GetLastWin32Error());
+                    AVDebug.WriteLine("Launching shell process failed: " + Marshal.GetLastWin32Error());
                     return 0;
                 }
                 else
@@ -67,12 +64,69 @@ namespace ArnoldVinkCode
             }
             catch (Exception ex)
             {
-                Debug.Write("Launching shell process failed: " + exePath + "/" + ex.Message);
+                AVDebug.WriteLine("Launching shell process failed: " + exePath + "/" + ex.Message);
                 return 0;
             }
         }
 
-        //Launch uwp application
+        /// <summary>
+        /// Launch application by ShellExecute user access
+        /// </summary>
+        public static bool Launch_ExecuteUser(string exePath, string workPath, string arguments, bool asAdmin)
+        {
+            try
+            {
+                //Check execute path
+                if (string.IsNullOrWhiteSpace(exePath))
+                {
+                    AVDebug.WriteLine("Launching shell process failed: execute path is empty.");
+                    return false;
+                }
+
+                AVDebug.WriteLine("Launching shell process with user access: " + exePath);
+
+                //Set shell execute info
+                WindowShowCommand nShow = WindowShowCommand.Show;
+                string lpVerb = asAdmin ? "runas" : "open";
+                string lpFile = exePath;
+
+                //Check for url protocol
+                string lpParameters = string.Empty;
+                string lpDirectory = string.Empty;
+                if (!Check_PathUrlProtocol(exePath))
+                {
+                    if (!string.IsNullOrWhiteSpace(arguments))
+                    {
+                        lpParameters = arguments;
+                    }
+                    if (!string.IsNullOrWhiteSpace(workPath))
+                    {
+                        lpDirectory = workPath;
+                    }
+                }
+
+                //Shell execute process
+                if (!ShellExecuteUser(lpFile, lpDirectory, lpParameters, lpVerb, nShow))
+                {
+                    AVDebug.WriteLine("Launching shell process failed.");
+                    return false;
+                }
+                else
+                {
+                    AVDebug.WriteLine("Launched shell process successfully.");
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                AVDebug.WriteLine("Launching shell process failed: " + exePath + "/" + ex.Message);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Launch uwp application
+        /// </summary>
         public static int Launch_UwpApplication(string appUserModelId, string arguments)
         {
             try
