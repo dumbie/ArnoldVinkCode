@@ -26,31 +26,28 @@ namespace ArnoldVinkCode
         //Get window title by window handle
         public static string Detail_WindowTitleByWindowHandle(IntPtr targetWindowHandle)
         {
-            string stringReturn = "Unknown";
             try
             {
                 if (targetWindowHandle == IntPtr.Zero)
                 {
-                    return stringReturn;
+                    return "Unknown";
                 }
 
                 int stringLength = GetWindowTextLength(targetWindowHandle);
-                if (stringLength <= 0)
+                if (stringLength > 0)
                 {
-                    return stringReturn;
-                }
-
-                stringLength += 1;
-                StringBuilder stringBuilder = new StringBuilder(stringLength);
-                GetWindowText(targetWindowHandle, stringBuilder, stringLength);
-                string stringBuilderString = stringBuilder.ToString();
-                if (!string.IsNullOrWhiteSpace(stringBuilderString))
-                {
-                    stringReturn = stringBuilderString.Trim();
+                    stringLength += 1;
+                    StringBuilder stringBuilder = new StringBuilder(stringLength);
+                    GetWindowText(targetWindowHandle, stringBuilder, stringLength);
+                    string stringBuilderString = stringBuilder.ToString();
+                    if (!string.IsNullOrWhiteSpace(stringBuilderString))
+                    {
+                        return stringBuilderString.Trim();
+                    }
                 }
             }
             catch { }
-            return stringReturn;
+            return "Unknown";
         }
 
         //Get window Z order by window handle

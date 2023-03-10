@@ -310,7 +310,15 @@ namespace ArnoldVinkCode
                 {
                     if (string.IsNullOrWhiteSpace(CustomWindowTitle))
                     {
-                        return Detail_WindowTitleByWindowHandle(WindowHandleMain);
+                        string foundWindowTitle = Detail_WindowTitleByWindowHandle(WindowHandleMain);
+                        if (foundWindowTitle == "Unknown")
+                        {
+                            return ExeNameNoExt + " window";
+                        }
+                        else
+                        {
+                            return foundWindowTitle;
+                        }
                     }
                     else
                     {
