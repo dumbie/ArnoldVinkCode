@@ -65,6 +65,7 @@ namespace ArnoldVinkCode
             SeTcbPrivilege,
             SeDebugPrivilege,
             SeCreateTokenPrivilege,
+            SeIncreaseQuotaPrivilege,
             SeAssignPrimaryTokenPrivilege
         }
 

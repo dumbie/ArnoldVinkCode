@@ -7,7 +7,7 @@ namespace ArnoldVinkCode
     public partial class AVProcess
     {
         //Duplicate process token
-        private static IntPtr Token_Duplicate(IntPtr hToken)
+        private static IntPtr Token_Duplicate(IntPtr hToken, bool closeHToken)
         {
             try
             {
@@ -21,7 +21,7 @@ namespace ArnoldVinkCode
                 else
                 {
                     AVDebug.WriteLine("Succesfully duplicated process token: " + hToken + " > " + dToken);
-                    CloseHandleAuto(hToken);
+                    if (closeHToken) { CloseHandleAuto(hToken); }
                     return dToken;
                 }
             }
