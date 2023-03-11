@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.InteropServices;
 using static ArnoldVinkCode.AVInteropDll;
 
@@ -43,9 +44,14 @@ namespace ArnoldVinkCode
                     {
                         shellExecuteInfo.lpParameters = arguments;
                     }
-                    if (!string.IsNullOrWhiteSpace(workPath))
+                    if (!string.IsNullOrWhiteSpace(workPath) && Directory.Exists(workPath))
                     {
                         shellExecuteInfo.lpDirectory = workPath;
+                    }
+                    else
+                    {
+                        shellExecuteInfo.lpDirectory = Path.GetDirectoryName(exePath);
+                        AVDebug.WriteLine("Workpath is empty or missing, using exepath.");
                     }
                 }
 
@@ -99,9 +105,14 @@ namespace ArnoldVinkCode
                     {
                         lpParameters = arguments;
                     }
-                    if (!string.IsNullOrWhiteSpace(workPath))
+                    if (!string.IsNullOrWhiteSpace(workPath) && Directory.Exists(workPath))
                     {
                         lpDirectory = workPath;
+                    }
+                    else
+                    {
+                        lpDirectory = Path.GetDirectoryName(exePath);
+                        AVDebug.WriteLine("Workpath is empty or missing, using exepath.");
                     }
                 }
 
