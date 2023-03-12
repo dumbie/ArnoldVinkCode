@@ -70,8 +70,8 @@
     <Compile Include="Functions\AVActions\DispatcherInvoke.cs" />
     <Compile Include="Functions\AVActions\TaskDelay.cs" />
     <Compile Include="Functions\AVActions\TaskLoop.cs" />
-    <Compile Include="Functions\AVActions\TaskStartTimeoutReturn.cs" />
-    <Compile Include="Functions\AVActions\TaskStart.cs" />
+    <Compile Include="Functions\AVActions\TaskStartReturn.cs" />
+    <Compile Include="Functions\AVActions\TaskStartBackground.cs" />
     <Compile Include="Functions\AVActions\TaskStartTimeout.cs" />
     <Compile Include="Functions\ArnoldVinkInputOutput\InputOutputClass.cs" />
     <Compile Include="Functions\ArnoldVinkInputOutput\InputOutputHotKey.cs" />
