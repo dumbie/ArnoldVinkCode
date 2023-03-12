@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using static ArnoldVinkCode.AVInputOutputClass;
-using static ArnoldVinkCode.AVInputOutputKeyboard;
 using static ArnoldVinkCode.AVInteropDll;
 
 namespace ArnoldVinkCode
@@ -9,7 +7,7 @@ namespace ArnoldVinkCode
     public partial class AVProcess
     {
         //Close open Windows prompts
-        public static async Task Close_OpenWindowsPrompts()
+        public static void Close_OpenWindowsPrompts()
         {
             try
             {
@@ -17,13 +15,7 @@ namespace ArnoldVinkCode
                 if (Check_RunningProcessByName("consent", true))
                 {
                     AVDebug.WriteLine("Windows administrator consent prompt is open, killing the process.");
-                    bool closedProcess = Close_ProcessesByName("consent", true);
-                    await Task.Delay(250);
-                    if (closedProcess)
-                    {
-                        KeyPressReleaseSingle(KeysVirtual.Escape);
-                        await Task.Delay(50);
-                    }
+                    Close_ProcessesByName("consent", true);
                 }
 
                 //Windows feature installation prompt
@@ -36,23 +28,6 @@ namespace ArnoldVinkCode
             catch { }
         }
 
-        //Show window by window handle
-        public static async Task<bool> Show_ProcessByWindowHandle(IntPtr windowHandle)
-        {
-            try
-            {
-                AVDebug.WriteLine("Showing process by window handle: " + windowHandle);
-
-                //Get process id from window handle
-                int foundProcessId = Detail_ProcessIdByWindowHandle(windowHandle);
-
-                //Show process window
-                return await Show_ProcessByProcessIdAndWindowHandle(foundProcessId, windowHandle);
-            }
-            catch { }
-            return false;
-        }
-
         //Show window by process id
         public static async Task<bool> Show_ProcessByProcessId(int processId)
         {
@@ -63,29 +38,36 @@ namespace ArnoldVinkCode
                 //Get multi process
                 ProcessMulti processMulti = Get_ProcessMultiByProcessId(processId, 0);
 
-                //Check window handle
-                if (processMulti == null || processMulti.WindowHandleMain == IntPtr.Zero)
+                //Check multi process
+                if (processMulti == null)
                 {
                     AVDebug.WriteLine("Failed showing process by id: " + processId);
                     return false;
                 }
 
                 //Show process window
-                return await Show_ProcessByProcessIdAndWindowHandle(processId, processMulti.WindowHandleMain);
+                return await Show_ProcessByWindowHandle(processMulti.WindowHandleMain);
             }
             catch { }
             return false;
         }
 
-        //Show window by process id and window handle
-        public static async Task<bool> Show_ProcessByProcessIdAndWindowHandle(int processId, IntPtr windowHandle)
+        //Show window by window handle
+        public static async Task<bool> Show_ProcessByWindowHandle(IntPtr windowHandle)
         {
             try
             {
-                AVDebug.WriteLine("Showing process by id: " + processId + " and window handle: " + windowHandle);
+                //Check the window handle
+                if (windowHandle == IntPtr.Zero)
+                {
+                    AVDebug.WriteLine("Failed showing process, window handle is empty.");
+                    return false;
+                }
+
+                AVDebug.WriteLine("Showing process by window handle: " + windowHandle);
 
                 //Close open Windows prompts
-                await Close_OpenWindowsPrompts();
+                Close_OpenWindowsPrompts();
 
                 //Get current window placement
                 WindowPlacement processWindowState = new WindowPlacement();
@@ -97,45 +79,47 @@ namespace ArnoldVinkCode
                 {
                     windowShowCommand = WindowShowCommand.ShowMaximized;
                 }
-                AVDebug.WriteLine("Changing window placement to: " + windowShowCommand);
+
+                //Allow set foreground window
+                AllowSetForegroundWindow(ASFW_ANY);
+                await Task.Delay(50);
 
                 //Retry to show the window
-                for (int i = 0; i < 2; i++)
+                int showCommandDelay = 25;
+                for (int i = 0; i < 3; i++)
                 {
                     try
                     {
-                        //Allow changing window
-                        if (processId > 0)
-                        {
-                            AllowSetForegroundWindow(processId);
-                            await Task.Delay(10);
-                        }
-
                         //Show window async
                         ShowWindowAsync(windowHandle, windowShowCommand);
-                        await Task.Delay(10);
+                        await Task.Delay(showCommandDelay);
 
                         //Show window normal
                         ShowWindow(windowHandle, windowShowCommand);
-                        await Task.Delay(10);
+                        await Task.Delay(showCommandDelay);
+
+                        //Set foreground window
+                        SetForegroundWindow(windowHandle);
+                        await Task.Delay(showCommandDelay);
 
                         //Bring window to top
-                        BringWindowToTop(windowHandle);
-                        await Task.Delay(10);
+                        //Locks thread when target process is unresponsive.
+                        //BringWindowToTop(windowHandle);
+                        //await Task.Delay(showCommandDelay);
 
                         //Switch to the window
                         SwitchToThisWindow(windowHandle, true);
-                        await Task.Delay(10);
+                        await Task.Delay(showCommandDelay);
                     }
                     catch { }
                 }
 
-                AVDebug.WriteLine("Showed process Id: " + processId + " WindowHandle: " + windowHandle + " ShowCmd: " + windowShowCommand);
+                AVDebug.WriteLine("Showed process window handle: " + windowHandle + "/Show command: " + windowShowCommand);
                 return true;
             }
             catch (Exception ex)
             {
-                AVDebug.WriteLine("Failed showing process Id: " + processId + "/" + ex.Message);
+                AVDebug.WriteLine("Failed showing process window handle: " + windowHandle + "/" + ex.Message);
                 return false;
             }
         }

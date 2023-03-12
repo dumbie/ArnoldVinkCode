@@ -115,15 +115,16 @@ namespace ArnoldVinkCode
         [DllImport("user32.dll")]
         public static extern void SwitchToThisWindow(IntPtr hWnd, bool fAltTab);
         [DllImport("user32.dll")]
-        public static extern bool AllowSetForegroundWindow(int dwProcessId);
-        [DllImport("user32.dll")]
-        public static extern bool SetForegroundWindow(IntPtr hWnd);
-        [DllImport("user32.dll")]
         public static extern IntPtr GetForegroundWindow();
         [DllImport("user32.dll")]
         public static extern bool BringWindowToTop(IntPtr hWnd);
         [DllImport("user32.dll")]
         public static extern IntPtr SetActiveWindow(IntPtr hWnd);
+        [DllImport("user32.dll")]
+        public static extern bool AllowSetForegroundWindow(int dwProcessId);
+        [DllImport("user32.dll")]
+        public static extern bool SetForegroundWindow(IntPtr hWnd);
+        public const int ASFW_ANY = -1;
 
         //Window create
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
