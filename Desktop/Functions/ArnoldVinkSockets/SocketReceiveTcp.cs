@@ -29,7 +29,7 @@ namespace ArnoldVinkCode
                                 }
                                 catch { }
                             }
-                            AVActions.TaskStart(TaskAction);
+                            AVActions.TaskStartBackground(TaskAction);
                         }
                     }
                     catch { }

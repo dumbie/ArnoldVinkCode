@@ -7,9 +7,9 @@ namespace ArnoldVinkCode
     public partial class AVActions
     {
         ///<param name="actionRun">void TaskAction() { void(); }</param>
-        ///<example>AVActions.TaskStart(TaskAction);</example>
+        ///<example>AVActions.TaskStartBackground(TaskAction);</example>
         ///<summary>Don't forget to use try and catch to improve stability</summary>
-        public static void TaskStart(Action actionRun)
+        public static void TaskStartBackground(Action actionRun)
         {
             try
             {
@@ -17,14 +17,14 @@ namespace ArnoldVinkCode
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to start regular task: " + ex.Message);
+                Debug.WriteLine("Failed to start background task: " + ex.Message);
             }
         }
 
         ///<param name="actionRun">async Task TaskAction() { void(); }</param>
-        ///<example>AVActions.TaskStart(TaskAction);</example>
+        ///<example>AVActions.TaskStartBackground(TaskAction);</example>
         ///<summary>Don't forget to use try and catch to improve stability</summary>
-        public static void TaskStart(Func<Task> actionRun)
+        public static void TaskStartBackground(Func<Task> actionRun)
         {
             try
             {
@@ -32,7 +32,7 @@ namespace ArnoldVinkCode
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to start regular task: " + ex.Message);
+                Debug.WriteLine("Failed to start background task: " + ex.Message);
             }
         }
     }
