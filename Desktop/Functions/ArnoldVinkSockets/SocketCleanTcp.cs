@@ -57,7 +57,7 @@ namespace ArnoldVinkCode
                     catch { }
 
                     //Delay the loop task
-                    await TaskDelayLoop(3000, vTask_TcpCleanLoop);
+                    await TaskDelay(3000, vTask_TcpCleanLoop);
                 }
             }
             catch (Exception ex)

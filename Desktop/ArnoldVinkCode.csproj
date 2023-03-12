@@ -65,8 +65,14 @@
     <Compile Include="Api\GitHub\GitHub_Paths.cs" />
     <Compile Include="Api\GitHub\GitHub_Version.cs" />
     <Compile Include="Extensions\AVExtensions.cs" />
-    <Compile Include="Functions\ArnoldVinkActions\AVActions.cs" />
-    <Compile Include="Functions\ArnoldVinkActions\Classes\AVTaskDetails.cs" />
+    <Compile Include="Functions\AVActions\AVActions.cs" />
+    <Compile Include="Functions\AVActions\Classes\AVTaskDetails.cs" />
+    <Compile Include="Functions\AVActions\DispatcherInvoke.cs" />
+    <Compile Include="Functions\AVActions\TaskDelay.cs" />
+    <Compile Include="Functions\AVActions\TaskLoop.cs" />
+    <Compile Include="Functions\AVActions\TaskStartTimeoutReturn.cs" />
+    <Compile Include="Functions\AVActions\TaskStart.cs" />
+    <Compile Include="Functions\AVActions\TaskStartTimeout.cs" />
     <Compile Include="Functions\ArnoldVinkInputOutput\InputOutputClass.cs" />
     <Compile Include="Functions\ArnoldVinkInputOutput\InputOutputHotKey.cs" />
     <Compile Include="Functions\ArnoldVinkInputOutput\InputOutputInterop.cs" />

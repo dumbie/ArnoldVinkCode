@@ -35,7 +35,7 @@ namespace ArnoldVinkCode
                                 vUdpClients.Add(updDetailsNew);
 
                                 //Signal that bytes have arrived
-                                await EventBytesReceived(null, updDetailsNew, receivedBytes);
+                                EventBytesReceived(null, updDetailsNew, receivedBytes);
                             }
                             else
                             {
@@ -43,7 +43,7 @@ namespace ArnoldVinkCode
                                 updDetailsExisting.LastConnection = GetSystemTicksMs();
 
                                 //Signal that bytes have arrived
-                                await EventBytesReceived(null, updDetailsExisting, receivedBytes);
+                                EventBytesReceived(null, updDetailsExisting, receivedBytes);
                             }
                         }
                     }

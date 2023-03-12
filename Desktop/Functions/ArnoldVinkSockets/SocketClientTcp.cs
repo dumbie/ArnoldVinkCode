@@ -160,7 +160,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                async void TaskAction()
+                async Task TaskAction()
                 {
                     try
                     {
@@ -199,7 +199,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                async void TaskAction()
+                async Task TaskAction()
                 {
                     try
                     {
@@ -222,7 +222,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                async void TaskAction()
+                async Task TaskAction()
                 {
                     try
                     {

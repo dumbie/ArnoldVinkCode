@@ -21,7 +21,7 @@ namespace ArnoldVinkCode
                         if (tcpClient != null && tcpClient.Connected)
                         {
                             Debug.WriteLine("New tcp client connected from (S): " + tcpClient.Client.RemoteEndPoint);
-                            async void TaskAction()
+                            async Task TaskAction()
                             {
                                 try
                                 {
@@ -29,7 +29,7 @@ namespace ArnoldVinkCode
                                 }
                                 catch { }
                             }
-                            await AVActions.TaskStart(TaskAction);
+                            AVActions.TaskStart(TaskAction);
                         }
                     }
                     catch { }
@@ -63,7 +63,7 @@ namespace ArnoldVinkCode
                         {
                             //Debug.WriteLine("Received bytes from tcp client (S): " + bytesReceivedLength);
                             //Signal that bytes have arrived
-                            await EventBytesReceived(tcpClient, null, receivedBytes);
+                            EventBytesReceived(tcpClient, null, receivedBytes);
                         }
                         else
                         {
