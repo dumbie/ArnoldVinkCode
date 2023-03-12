@@ -5,7 +5,19 @@ namespace ArnoldVinkCode
 {
     public partial class AVProcess
     {
-        public static ProcessAccessStatus Get_ProcessAccessStatus(int processId, bool currentProcess)
+        public static bool Detail_ProcessRespondingByWindowHandle(IntPtr targetWindowHandle)
+        {
+            bool processResponding = true;
+            try
+            {
+                processResponding = SendMessageTimeout(targetWindowHandle, 0, IntPtr.Zero, IntPtr.Zero, SendMessageTimeoutFlags.SMTO_ABORTIFHUNG, 2000, out var _) != IntPtr.Zero;
+                //Debug.WriteLine("Process window handle is responding: " + processResponding  + "/" + targetWindowHandle);
+            }
+            catch { }
+            return processResponding;
+        }
+
+        public static ProcessAccessStatus Detail_ProcessAccessStatusByProcessId(int targetProcessId, bool currentProcess)
         {
             ProcessAccessStatus processAccessStatus = new ProcessAccessStatus();
             IntPtr processTokenHandle = IntPtr.Zero;
@@ -18,13 +30,13 @@ namespace ArnoldVinkCode
                 }
                 else
                 {
-                    processTokenHandle = Token_Create_Process(processId, PROCESS_DESIRED_ACCESS.PROCESS_QUERY_LIMITED_INFORMATION, TOKEN_DESIRED_ACCESS.TOKEN_QUERY);
+                    processTokenHandle = Token_Create_Process(targetProcessId, PROCESS_DESIRED_ACCESS.PROCESS_QUERY_LIMITED_INFORMATION, TOKEN_DESIRED_ACCESS.TOKEN_QUERY);
                 }
 
                 //Check process token
                 if (processTokenHandle == IntPtr.Zero)
                 {
-                    AVDebug.WriteLine("Failed to get process access status for process id: " + processId);
+                    AVDebug.WriteLine("Failed to get process access status for process id: " + targetProcessId);
                     return processAccessStatus;
                 }
 

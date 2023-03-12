@@ -810,5 +810,18 @@ namespace ArnoldVinkCode
             BelowNormal = 0x4000,
             AboveNormal = 0x8000
         }
+
+        //Process not responding
+        [DllImport("user32.dll")]
+        public static extern IntPtr SendMessageTimeout(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam, SendMessageTimeoutFlags flags, int timeout, out IntPtr pdwResult);
+
+        public enum SendMessageTimeoutFlags : int
+        {
+            SMTO_ABORTIFHUNG = 0x0002,
+            SMTO_BLOCK = 0x0001,
+            SMTO_NORMAL = 0x0000,
+            SMTO_NOTIMEOUTIFNOTHUNG = 0x0008,
+            SMTO_ERRORONEXIT = 0x0020
+        }
     }
 }

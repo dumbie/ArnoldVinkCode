@@ -110,11 +110,24 @@ namespace ArnoldVinkCode
                     {
                         if (CachedAccessStatus == null)
                         {
-                            CachedAccessStatus = Get_ProcessAccessStatus(Identifier, false);
+                            CachedAccessStatus = Detail_ProcessAccessStatusByProcessId(Identifier, false);
                         }
                     }
                     catch { }
                     return CachedAccessStatus;
+                }
+            }
+
+            public bool Responding
+            {
+                get
+                {
+                    try
+                    {
+                        return Detail_ProcessRespondingByWindowHandle(WindowHandleMain);
+                    }
+                    catch { }
+                    return true;
                 }
             }
 
@@ -432,6 +445,7 @@ namespace ArnoldVinkCode
                     AVDebug.WriteLine("Handle: " + Handle);
                     AVDebug.WriteLine("Type: " + Type);
                     AVDebug.WriteLine("AdminAccess: " + AccessStatus.AdminAccess);
+                    AVDebug.WriteLine("Responding: " + Responding);
                     AVDebug.WriteLine("Priority: " + Priority);
                     AVDebug.WriteLine("AppUserModelId: " + AppUserModelId);
                     AVDebug.WriteLine("ExeName: " + ExeName);
@@ -463,6 +477,7 @@ namespace ArnoldVinkCode
                     _ = Handle;
                     _ = Type;
                     _ = AccessStatus;
+                    _ = Responding;
                     _ = Priority;
                     _ = AppUserModelId;
                     _ = ExeName;
