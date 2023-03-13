@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using static ArnoldVinkCode.AVInteropDll;
 
 namespace ArnoldVinkCode
 {
@@ -83,7 +82,7 @@ namespace ArnoldVinkCode
         }
 
         //Functions
-        public static bool ShellExecuteUser(string lpFile, string lpDirectory, string lpParameters, string lpVerb, WindowShowCommand nShow)
+        public static bool ShellExecuteUser(ShellExecuteInfo shellExecuteInfo)
         {
             try
             {
@@ -137,12 +136,11 @@ namespace ArnoldVinkCode
                 }
 
                 //Shell execute
-                int executeResult = applicationDispatch.ShellExecute(lpFile, lpParameters, lpDirectory, lpVerb, nShow);
+                int executeResult = applicationDispatch.ShellExecute(shellExecuteInfo.lpFile, shellExecuteInfo.lpParameters, shellExecuteInfo.lpDirectory, shellExecuteInfo.lpVerb, shellExecuteInfo.nShow);
                 return executeResult == 0;
             }
-            catch (Exception ex)
+            catch
             {
-                Debug.WriteLine("Failed to shell execute user: " + lpFile + "/" + ex.Message);
                 return false;
             }
         }

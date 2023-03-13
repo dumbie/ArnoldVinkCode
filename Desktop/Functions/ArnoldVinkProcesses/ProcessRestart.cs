@@ -6,7 +6,7 @@ namespace ArnoldVinkCode
     public partial class AVProcess
     {
         //Restart process by process id
-        public static async Task<int> Restart_ProcessByProcessId(int processId, string newArgs, bool withoutArgs)
+        public static async Task<bool> Restart_ProcessByProcessId(int processId, string newArgs, bool withoutArgs)
         {
             try
             {
@@ -17,7 +17,7 @@ namespace ArnoldVinkCode
                 if (restartProcess == null)
                 {
                     AVDebug.WriteLine("Failed to get restart process by id: " + processId);
-                    return 0;
+                    return false;
                 }
 
                 //Cache restart process
@@ -47,13 +47,14 @@ namespace ArnoldVinkCode
                 }
                 else
                 {
-                    return Launch_ExecuteInherit(restartProcess.ExePath, restartProcess.WorkPath, launchArgument, restartProcess.AccessStatus.AdminAccess);
+                    bool adminAccess = restartProcess.AccessStatus.AdminAccess;
+                    return Launch_ShellExecute(restartProcess.ExePath, restartProcess.WorkPath, launchArgument, adminAccess);
                 }
             }
             catch (Exception ex)
             {
                 AVDebug.WriteLine("Failed to restart process id: " + processId + "/" + ex.Message);
-                return 0;
+                return false;
             }
         }
     }
