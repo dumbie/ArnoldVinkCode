@@ -10,13 +10,13 @@ namespace ArnoldVinkCode
     {
         //Imports
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
-        public static extern DriveTypes GetDriveType(string lpRootPathName);
+        private static extern DriveTypes GetDriveType(string lpRootPathName);
 
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
-        public extern static bool GetVolumeInformation(string lpRootPathName, StringBuilder lpVolumeNameBuffer, int nVolumeNameSize, out uint lpVolumeSerialNumber, out uint lpMaximumComponentLength, out uint lpFileSystemFlags, StringBuilder lpFileSystemNameBuffer, int nFileSystemNameSize);
+        private extern static bool GetVolumeInformation(string lpRootPathName, StringBuilder lpVolumeNameBuffer, int nVolumeNameSize, out uint lpVolumeSerialNumber, out uint lpMaximumComponentLength, out uint lpFileSystemFlags, StringBuilder lpFileSystemNameBuffer, int nFileSystemNameSize);
 
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
-        public static extern bool GetDiskFreeSpaceEx(string lpDirectoryName, out ulong lpFreeBytesAvailable, out ulong lpTotalNumberOfBytes, out ulong lpTotalNumberOfFreeBytes);
+        private static extern bool GetDiskFreeSpaceEx(string lpDirectoryName, out ulong lpFreeBytesAvailable, out ulong lpTotalNumberOfBytes, out ulong lpTotalNumberOfFreeBytes);
 
         //Enums
         public enum DriveTypes : uint
@@ -41,19 +41,26 @@ namespace ArnoldVinkCode
             public ulong SizeDisk { get; set; } = 0;
             public ulong SizeFree { get; set; } = 0;
 
-            public string SizeString()
+            public string SizeString
             {
-                try
+                get
                 {
-                    if (SizeDisk != 0 && SizeFree != 0)
+                    try
                     {
-                        string sizeDiskString = AVFunctions.ConvertBytesSizeToString(SizeDisk);
-                        string sizeFreeString = AVFunctions.ConvertBytesSizeToString(SizeFree);
-                        return sizeFreeString + "/" + sizeDiskString;
+                        if (SizeDisk != 0 && SizeFree != 0)
+                        {
+                            string sizeDiskString = AVFunctions.ConvertBytesSizeToString(SizeDisk);
+                            string sizeFreeString = AVFunctions.ConvertBytesSizeToString(SizeFree);
+                            return sizeFreeString + "/" + sizeDiskString;
+                        }
+                        else if (SizeDisk != 0)
+                        {
+                            return AVFunctions.ConvertBytesSizeToString(SizeDisk);
+                        }
                     }
+                    catch { }
+                    return "Not available";
                 }
-                catch { }
-                return "Unknown";
             }
 
             public void DebugPrint()
@@ -67,7 +74,7 @@ namespace ArnoldVinkCode
                     Debug.WriteLine("FileSystem: " + FileSystem);
                     Debug.WriteLine("SizeDisk: " + SizeDisk);
                     Debug.WriteLine("SizeFree: " + SizeFree);
-                    Debug.WriteLine("SizeString: " + SizeString());
+                    Debug.WriteLine("SizeString: " + SizeString);
                 }
                 catch { }
             }
@@ -88,8 +95,9 @@ namespace ArnoldVinkCode
 
                 //Disk path cleanup
                 diskPath = diskPath.Replace("/", "\\");
-                diskPath = diskPath.TrimEnd('\\');
-                if (diskPath.Length == 1)
+                diskPath = AVFunctions.StringReplaceMulti(diskPath, "\\\\", "\\");
+                diskPath = AVFunctions.StringRemoveEnd(diskPath, "\\");
+                if (diskPath.Length == 1 && char.IsLetter(diskPath[0]))
                 {
                     diskPath += ":";
                 }
@@ -122,19 +130,10 @@ namespace ArnoldVinkCode
                     {
                         diskInfo.Label = volumeNameStringBuilder.ToString();
                     }
-                    else
-                    {
-                        diskInfo.Label = diskPath;
-                    }
                     if (fileSystemNameStringBuilder != null && fileSystemNameStringBuilder.Length > 0)
                     {
                         diskInfo.FileSystem = fileSystemNameStringBuilder.ToString();
                     }
-                }
-                else
-                {
-                    //Debug.WriteLine("Disk not available skipping information.");
-                    diskInfo.Label = diskPath;
                 }
             }
             catch (Exception ex)

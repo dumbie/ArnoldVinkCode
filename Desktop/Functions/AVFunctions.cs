@@ -151,6 +151,16 @@ namespace ArnoldVinkCode
             catch { return stringText; }
         }
 
+        //Replace multiple character occurences in string
+        public static string StringReplaceMulti(string stringText, string searchFor, string replaceWith)
+        {
+            try
+            {
+                return Regex.Replace(stringText, "[" + searchFor + "]+", replaceWith);
+            }
+            catch { return stringText; }
+        }
+
         //Add string to string with character
         public static string StringAdd(string Oldstring, string Addstring, string Character)
         {

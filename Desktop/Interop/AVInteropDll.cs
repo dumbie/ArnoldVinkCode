@@ -823,5 +823,9 @@ namespace ArnoldVinkCode
             SMTO_NOTIMEOUTIFNOTHUNG = 0x0008,
             SMTO_ERRORONEXIT = 0x0020
         }
+
+        //Lock computer
+        [DllImport("user32.dll")]
+        public static extern bool LockWorkStation();
     }
 }
