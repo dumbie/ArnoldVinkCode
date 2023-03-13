@@ -118,6 +118,7 @@
     <Compile Include="Functions\AVAudioDevice\Classes\AudioDeviceSummary.cs" />
     <Compile Include="Functions\AVAudioDevice\IMMDevice\IMMDevice.cs" />
     <Compile Include="Functions\AVAudioDevice\IMMDevice\PolicyConfig.cs" />
+    <Compile Include="Functions\AVDiskInfo.cs" />
     <Compile Include="Functions\AVJsonFunctions.cs" />
     <Compile Include="Functions\AVClassConverters.cs" />
     <Compile Include="Functions\AVDebug.cs" />
