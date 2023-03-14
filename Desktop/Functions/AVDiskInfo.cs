@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -35,6 +36,7 @@ namespace ArnoldVinkCode
         {
             public bool Available { get; set; } = false;
             public string Path { get; set; } = "Unknown";
+            public string PathRoot { get; set; } = "Unknown";
             public DriveTypes Type { get; set; } = DriveTypes.Unknown;
             public string Label { get; set; } = "Unknown";
             public string FileSystem { get; set; } = "Unknown";
@@ -69,6 +71,7 @@ namespace ArnoldVinkCode
                 {
                     Debug.WriteLine("Available: " + Available);
                     Debug.WriteLine("Path: " + Path);
+                    Debug.WriteLine("PathRoot: " + PathRoot);
                     Debug.WriteLine("Type: " + Type);
                     Debug.WriteLine("Label: " + Label);
                     Debug.WriteLine("FileSystem: " + FileSystem);
@@ -105,17 +108,19 @@ namespace ArnoldVinkCode
                 {
                     diskPath += "\\";
                 }
+                string diskPathRoot = Path.GetPathRoot(diskPath);
 
                 //Get disk information
                 diskInfo.Path = diskPath;
-                diskInfo.Available = await CheckDiskAvailable(diskPath);
-                diskInfo.Type = GetDriveType(diskPath);
+                diskInfo.PathRoot = diskPathRoot;
+                diskInfo.Available = await CheckDiskAvailable(diskPathRoot, 100);
+                diskInfo.Type = GetDriveType(diskPathRoot);
                 if (diskInfo.Available)
                 {
                     //Debug.WriteLine("Disk is available reading information:");
 
                     //Get disk space
-                    GetDiskFreeSpaceEx(diskPath, out _, out ulong sizeDisk, out ulong sizeFree);
+                    GetDiskFreeSpaceEx(diskPathRoot, out _, out ulong sizeDisk, out ulong sizeFree);
                     diskInfo.SizeDisk = sizeDisk;
                     diskInfo.SizeFree = sizeFree;
 
@@ -125,7 +130,7 @@ namespace ArnoldVinkCode
                     uint volumeFlags;
                     StringBuilder volumeNameStringBuilder = new StringBuilder(261);
                     StringBuilder fileSystemNameStringBuilder = new StringBuilder(261);
-                    GetVolumeInformation(diskPath, volumeNameStringBuilder, volumeNameStringBuilder.Capacity, out serialNumber, out maximumLength, out volumeFlags, fileSystemNameStringBuilder, fileSystemNameStringBuilder.Capacity);
+                    GetVolumeInformation(diskPathRoot, volumeNameStringBuilder, volumeNameStringBuilder.Capacity, out serialNumber, out maximumLength, out volumeFlags, fileSystemNameStringBuilder, fileSystemNameStringBuilder.Capacity);
                     if (volumeNameStringBuilder != null && volumeNameStringBuilder.Length > 0)
                     {
                         diskInfo.Label = volumeNameStringBuilder.ToString();
@@ -143,16 +148,20 @@ namespace ArnoldVinkCode
             return diskInfo;
         }
 
-        //Check if disk is available by checking if it responds in 100ms
-        private static async Task<bool> CheckDiskAvailable(string diskPath)
+        //Check if disk is available by checking if it responds
+        private static async Task<bool> CheckDiskAvailable(string diskPathRoot, int infoTimeOutMs)
         {
             try
             {
                 void TaskAction()
                 {
-                    GetDiskFreeSpaceEx(diskPath, out _, out _, out _);
+                    try
+                    {
+                        GetDiskFreeSpaceEx(diskPathRoot, out _, out _, out _);
+                    }
+                    catch { }
                 }
-                return await AVActions.TaskStartTimeout(TaskAction, 100);
+                return await AVActions.TaskStartTimeout(TaskAction, infoTimeOutMs);
             }
             catch { }
             return false;
