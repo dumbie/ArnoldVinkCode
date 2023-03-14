@@ -45,6 +45,13 @@ namespace ArnoldVinkCode
                     return false;
                 }
 
+                //Check window handle main
+                if (processMulti.WindowHandleMain == IntPtr.Zero)
+                {
+                    AVDebug.WriteLine("Failed showing process by id: " + processId);
+                    return false;
+                }
+
                 //Show process window
                 return await Show_ProcessByWindowHandle(processMulti.WindowHandleMain);
             }
@@ -74,9 +81,11 @@ namespace ArnoldVinkCode
                 GetWindowPlacement(windowHandle, ref processWindowState);
 
                 //Check current window placement
+                SystemCommand windowSystemCommand = SystemCommand.SC_RESTORE;
                 WindowShowCommand windowShowCommand = WindowShowCommand.Restore;
                 if (processWindowState.windowFlags == WindowFlags.RestoreToMaximized)
                 {
+                    windowSystemCommand = SystemCommand.SC_MAXIMIZE;
                     windowShowCommand = WindowShowCommand.ShowMaximized;
                 }
 
@@ -90,12 +99,12 @@ namespace ArnoldVinkCode
                 {
                     try
                     {
-                        //Show window async
-                        ShowWindowAsync(windowHandle, windowShowCommand);
+                        //Post message window
+                        PostMessageAsync(windowHandle, WindowMessages.WM_SYSCOMMAND, (int)windowSystemCommand, 0);
                         await Task.Delay(showCommandDelay);
 
-                        //Show window normal
-                        ShowWindow(windowHandle, windowShowCommand);
+                        //Show window async
+                        ShowWindowAsync(windowHandle, windowShowCommand);
                         await Task.Delay(showCommandDelay);
 
                         //Set foreground window
@@ -103,7 +112,7 @@ namespace ArnoldVinkCode
                         await Task.Delay(showCommandDelay);
 
                         //Bring window to top
-                        //Locks thread when target process is unresponsive.
+                        //Locks thread when target window is not responding
                         //BringWindowToTop(windowHandle);
                         //await Task.Delay(showCommandDelay);
 

@@ -106,8 +106,6 @@ namespace ArnoldVinkCode
         //Window show
         [DllImport("user32.dll")]
         public static extern bool ShowWindowAsync(IntPtr hWnd, WindowShowCommand nCmdShow);
-        [DllImport("user32.dll")]
-        public static extern bool ShowWindow(IntPtr hWnd, WindowShowCommand nCmdShow);
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
@@ -542,7 +540,7 @@ namespace ArnoldVinkCode
             ASYNCWINDOWPOS = 0x4000
         }
 
-        public enum WindowMessages
+        public enum WindowMessages : int
         {
             WM_MOUSEMOVE = 0x200,
             WM_LBUTTONDOWN = 0x201,
@@ -573,7 +571,7 @@ namespace ArnoldVinkCode
             WM_QUIT = 0x0012
         }
 
-        public enum SysCommands
+        public enum SystemCommand
         {
             SC_SIZE = 0xF000,
             SC_MOVE = 0xF010,
@@ -600,13 +598,13 @@ namespace ArnoldVinkCode
 
         //Send message or key
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        public static extern IntPtr SendMessage(IntPtr hWnd, int Msg, int wParam, uint lParam);
+        public static extern IntPtr SendMessage(IntPtr hWnd, WindowMessages Msg, int wParam, uint lParam);
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        public static extern IntPtr SendMessage(IntPtr hWnd, int Msg, int wParam, ref COPYDATASTRUCT lParam);
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        public static extern bool PostMessage(IntPtr hWnd, int Msg, int wParam, uint lParam);
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        public static extern bool PostMessage(IntPtr hWnd, int Msg, int wParam, ref COPYDATASTRUCT lParam);
+        public static extern IntPtr SendMessage(IntPtr hWnd, WindowMessages Msg, int wParam, ref COPYDATASTRUCT lParam);
+        [DllImport("user32.dll", EntryPoint = "PostMessage", CharSet = CharSet.Auto)]
+        public static extern bool PostMessageAsync(IntPtr hWnd, WindowMessages Msg, int wParam, uint lParam);
+        [DllImport("user32.dll", EntryPoint = "PostMessage", CharSet = CharSet.Auto)]
+        public static extern bool PostMessageAsync(IntPtr hWnd, WindowMessages Msg, int wParam, ref COPYDATASTRUCT lParam);
 
         [StructLayout(LayoutKind.Sequential)]
         public struct COPYDATASTRUCT

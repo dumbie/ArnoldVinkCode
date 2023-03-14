@@ -20,14 +20,15 @@ namespace ArnoldVinkCode
                 int ICON_BIG = 1;
                 int ICON_SMALL2 = 2;
 
-                IntPtr iconHandle = SendMessage(windowHandle, (int)WindowMessages.WM_GETICON, ICON_BIG, 0);
+                //Locks thread when target window is not responding
+                IntPtr iconHandle = SendMessage(windowHandle, WindowMessages.WM_GETICON, ICON_BIG, 0);
                 if (iconHandle == IntPtr.Zero)
                 {
-                    iconHandle = SendMessage(windowHandle, (int)WindowMessages.WM_GETICON, ICON_SMALL, 0);
+                    iconHandle = SendMessage(windowHandle, WindowMessages.WM_GETICON, ICON_SMALL, 0);
                 }
                 if (iconHandle == IntPtr.Zero)
                 {
-                    iconHandle = SendMessage(windowHandle, (int)WindowMessages.WM_GETICON, ICON_SMALL2, 0);
+                    iconHandle = SendMessage(windowHandle, WindowMessages.WM_GETICON, ICON_SMALL2, 0);
                 }
                 if (iconHandle == IntPtr.Zero)
                 {

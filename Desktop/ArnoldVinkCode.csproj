@@ -65,6 +65,7 @@
     <Compile Include="Api\GitHub\GitHub_Paths.cs" />
     <Compile Include="Api\GitHub\GitHub_Version.cs" />
     <Compile Include="Extensions\AVExtensions.cs" />
+    <Compile Include="Functions\ArnoldVinkProcesses\ProcessHide.cs" />
     <Compile Include="Functions\AVActions\AVActions.cs" />
     <Compile Include="Functions\AVActions\Classes\AVTaskDetails.cs" />
     <Compile Include="Functions\AVActions\DispatcherInvoke.cs" />

@@ -155,8 +155,8 @@ namespace ArnoldVinkCode
         {
             try
             {
-                SendMessage(targetWindowHandle, (int)WindowMessages.WM_CLOSE, 0, 0);
-                SendMessage(targetWindowHandle, (int)WindowMessages.WM_QUIT, 0, 0);
+                PostMessageAsync(targetWindowHandle, WindowMessages.WM_CLOSE, 0, 0);
+                PostMessageAsync(targetWindowHandle, WindowMessages.WM_QUIT, 0, 0);
 
                 AVDebug.WriteLine("Closed process by window message: " + targetWindowHandle);
                 return true;

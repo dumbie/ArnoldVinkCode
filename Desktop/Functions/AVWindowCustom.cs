@@ -56,7 +56,7 @@ namespace ArnoldVinkCode
                 //Show window
                 if (windowVisible)
                 {
-                    ShowWindow(windowParent, WindowShowCommand.Show);
+                    ShowWindowAsync(windowParent, WindowShowCommand.Show);
                 }
 
                 Debug.WriteLine("Created custom window: " + windowParent);
@@ -89,7 +89,7 @@ namespace ArnoldVinkCode
                 Debug.WriteLine("Hosting window in parent: " + windowChild);
 
                 //Maximize child window
-                ShowWindow(windowChild, WindowShowCommand.Maximized);
+                ShowWindowAsync(windowChild, WindowShowCommand.Maximized);
 
                 //Update child style
                 WindowStyles windowStyle = WindowStyles.WS_NONE;
@@ -115,7 +115,7 @@ namespace ArnoldVinkCode
                 //IntPtr updatedStyle = new IntPtr((uint)windowStyle);
                 //SetWindowLongAuto(windowParent, (int)WindowLongFlags.GWL_STYLE, updatedStyle);
 
-                ShowWindow(windowParent, WindowShowCommand.Show);
+                ShowWindowAsync(windowParent, WindowShowCommand.Show);
                 Debug.WriteLine("Showed custom window: " + windowParent);
             }
             catch { }
@@ -134,7 +134,7 @@ namespace ArnoldVinkCode
                 //IntPtr updatedStyle = new IntPtr((uint)windowStyle);
                 //SetWindowLongAuto(windowParent, (int)WindowLongFlags.GWL_STYLE, updatedStyle);
 
-                ShowWindow(windowParent, WindowShowCommand.Hide);
+                ShowWindowAsync(windowParent, WindowShowCommand.Hide);
                 Debug.WriteLine("Hidden custom window: " + windowParent);
             }
             catch { }
