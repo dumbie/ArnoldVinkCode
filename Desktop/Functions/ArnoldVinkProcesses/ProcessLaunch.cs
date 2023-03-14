@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using static ArnoldVinkCode.AVInteropDll;
 
 namespace ArnoldVinkCode
@@ -12,6 +14,7 @@ namespace ArnoldVinkCode
         /// <summary>Disables UIAccess from launch process when running as admin.</summary>
         public static bool Launch_ShellExecute(string exePath, string workPath, string arguments, bool asAdmin)
         {
+            IntPtr launchTokenHandle = IntPtr.Zero;
             try
             {
                 //Check execute path
@@ -19,6 +22,18 @@ namespace ArnoldVinkCode
                 {
                     AVDebug.WriteLine("Shell execute failed: execute path is empty.");
                     return false;
+                }
+
+                //Check file executable extension
+                if (asAdmin)
+                {
+                    string[] fileExecutables = { "exe", "bat", "cmd", "com", "pif" };
+                    string fileExtension = Path.GetExtension(exePath).ToLower();
+                    if (!fileExecutables.Contains(fileExtension))
+                    {
+                        Debug.WriteLine("No executable detected, running as normal user.");
+                        asAdmin = false;
+                    }
                 }
 
                 //Set shell execute info
@@ -51,7 +66,7 @@ namespace ArnoldVinkCode
                 if (asAdmin)
                 {
                     //Get current process token
-                    IntPtr launchTokenHandle = Token_Create_Current();
+                    launchTokenHandle = Token_Create_Current();
 
                     //Disable token ui access
                     Token_Adjust_UIAccess(ref launchTokenHandle, false);
@@ -83,6 +98,10 @@ namespace ArnoldVinkCode
             {
                 AVDebug.WriteLine("Shell execute failed: " + exePath + "/" + ex.Message);
                 return false;
+            }
+            finally
+            {
+                CloseHandleAuto(launchTokenHandle);
             }
         }
 
