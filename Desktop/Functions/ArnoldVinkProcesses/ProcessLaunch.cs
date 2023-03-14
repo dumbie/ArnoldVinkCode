@@ -29,7 +29,7 @@ namespace ArnoldVinkCode
                 {
                     string[] fileExecutables = { "exe", "bat", "cmd", "com", "pif" };
                     string fileExtension = Path.GetExtension(exePath).ToLower();
-                    if (!fileExecutables.Contains(fileExtension))
+                    if (!fileExecutables.Any(fileExtension.Contains))
                     {
                         Debug.WriteLine("No executable detected, running as normal user.");
                         asAdmin = false;
