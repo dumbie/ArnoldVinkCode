@@ -449,6 +449,16 @@ namespace ArnoldVinkCode
                 }
             }
 
+            public bool Validate()
+            {
+                try
+                {
+                    return Identifier > 0 && !string.IsNullOrWhiteSpace(ExePath);
+                }
+                catch { }
+                return false;
+            }
+
             public void Debug()
             {
                 try
