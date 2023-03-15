@@ -10,17 +10,31 @@ namespace ArnoldVinkCode
 {
     public partial class AVProcess
     {
+        //Enumerators
+        public enum MultiActions
+        {
+            Launch,
+            Close,
+            CloseAll,
+            Restart,
+            RestartAll,
+            NoAction,
+            Cancel
+        }
+
+        //Classes
+        public class ProcessMultiAction
+        {
+            public MultiActions Action { get; set; } = MultiActions.NoAction;
+            public ProcessMulti ProcessMulti { get; set; } = null;
+        }
+
         public class ProcessMulti
         {
             public ProcessMulti(int identifier, int identifierParent)
             {
                 CachedIdentifier = identifier;
                 CachedIdentifierParent = identifierParent;
-            }
-
-            public ProcessMulti(string action)
-            {
-                Action = action;
             }
 
             private int CachedIdentifier = 0;
@@ -434,8 +448,6 @@ namespace ArnoldVinkCode
                 }
             }
 
-            public string Action { get; set; } = string.Empty;
-
             public void Debug()
             {
                 try
@@ -463,7 +475,6 @@ namespace ArnoldVinkCode
                     AVDebug.WriteLine("Threads: " + Threads.Count);
                     AVDebug.WriteLine("AppPackageName: " + AppPackage.DisplayName);
                     AVDebug.WriteLine("AppxDetailsName: " + AppxDetails.DisplayName);
-                    AVDebug.WriteLine("Action: " + Action);
                 }
                 catch { }
             }
@@ -495,7 +506,6 @@ namespace ArnoldVinkCode
                     _ = Threads;
                     _ = AppPackage;
                     _ = AppxDetails;
-                    _ = Action;
                 }
                 catch { }
             }
