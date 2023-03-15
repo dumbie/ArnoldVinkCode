@@ -11,13 +11,14 @@ namespace ArnoldVinkCode
     public partial class AVProcess
     {
         //Enumerators
-        public enum MultiActions
+        public enum ProcessMultiActions
         {
             Launch,
             Close,
             CloseAll,
             Restart,
             RestartAll,
+            Select,
             NoAction,
             Cancel
         }
@@ -25,7 +26,7 @@ namespace ArnoldVinkCode
         //Classes
         public class ProcessMultiAction
         {
-            public MultiActions Action { get; set; } = MultiActions.NoAction;
+            public ProcessMultiActions Action { get; set; } = ProcessMultiActions.NoAction;
             public ProcessMulti ProcessMulti { get; set; } = null;
         }
 
