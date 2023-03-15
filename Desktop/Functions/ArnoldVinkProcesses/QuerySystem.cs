@@ -11,6 +11,9 @@ namespace ArnoldVinkCode
         [DllImport("ntdll.dll")]
         public static extern uint NtQuerySystemInformation(SYSTEM_INFO_CLASS SystemInformationClass, IntPtr SystemInformation, uint SystemInformationLength, out uint ReturnLength);
 
+        //Constants
+        public const uint STATUS_INFO_LENGTH_MISMATCH = 0xC0000004;
+
         //Structures
         [StructLayout(LayoutKind.Sequential)]
         public struct SYSTEM_THREAD_INFORMATION
@@ -82,9 +85,10 @@ namespace ArnoldVinkCode
                     {
                         systemInfoBufferBegin = Marshal.AllocHGlobal((int)systemOffset);
                         uint queryResult = NtQuerySystemInformation(SYSTEM_INFO_CLASS.SystemProcessInformation, systemInfoBufferBegin, systemOffset, out uint systemLength);
-                        if (queryResult == 3221225476)
+                        if (queryResult == STATUS_INFO_LENGTH_MISMATCH)
                         {
                             systemOffset = Math.Max(systemOffset, systemLength);
+                            CloseMarshalAuto(systemInfoBufferBegin);
                         }
                         else if (queryResult == 0)
                         {

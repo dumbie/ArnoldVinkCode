@@ -30,7 +30,7 @@ namespace ArnoldVinkCode
             public ProcessMulti ProcessMulti { get; set; } = null;
         }
 
-        public class ProcessMulti
+        public class ProcessMulti : IDisposable
         {
             public ProcessMulti(int identifier, int identifierParent)
             {
@@ -517,6 +517,17 @@ namespace ArnoldVinkCode
                     _ = Threads;
                     _ = AppPackage;
                     _ = AppxDetails;
+                }
+                catch { }
+            }
+
+            ~ProcessMulti() { Dispose(); }
+            public void Dispose()
+            {
+                try
+                {
+                    CloseHandleAuto(CachedHandle);
+                    CloseHandleAuto(CachedWindowHandleMain);
                 }
                 catch { }
             }
