@@ -27,18 +27,36 @@ namespace ArnoldVinkCode
         {
             try
             {
-                INPUT[] input = new INPUT[typeString.Length];
-                for (int i = 0; i < input.Length; i++)
+                int stringCurrent = 0;
+                int stringLength = typeString.Length;
+                int stringLengthDouble = stringLength * 2;
+
+                INPUT[] keyInputs = new INPUT[stringLengthDouble];
+
+                INPUT keyInput = new INPUT();
+                keyInput.type = InputTypes.INPUT_KEYBOARD;
+                keyInput.keyboard.wVk = 0;
+                keyInput.keyboard.time = 0;
+                keyInput.keyboard.dwExtraInfo = IntPtr.Zero;
+
+                for (int i = 0; i < stringLength; i++)
                 {
-                    input[i] = new INPUT();
-                    input[i].type = InputTypes.INPUT_KEYBOARD;
-                    input[i].keyboard.wVk = 0;
-                    input[i].keyboard.wScan = (short)typeString[i];
-                    input[i].keyboard.time = 0;
-                    input[i].keyboard.dwFlags = KeyboardEventFlags.KEYEVENTF_UNICODE;
-                    input[i].keyboard.dwExtraInfo = IntPtr.Zero;
+                    //Set input char
+                    keyInput.keyboard.wScan = (short)typeString[i];
+
+                    //Add input down
+                    keyInput.keyboard.dwFlags = KeyboardEventFlags.KEYEVENTF_UNICODE;
+                    keyInputs[stringCurrent] = keyInput;
+                    stringCurrent++;
+
+                    //Add input up
+                    keyInput.keyboard.dwFlags = KeyboardEventFlags.KEYEVENTF_UNICODE | KeyboardEventFlags.KEYEVENTF_KEYUP;
+                    keyInputs[stringCurrent] = keyInput;
+                    stringCurrent++;
                 }
-                SendInput(input.Length, input, Marshal.SizeOf(typeof(INPUT)));
+
+                //Send inputs
+                SendInput(keyInputs.Length, keyInputs, Marshal.SizeOf(typeof(INPUT)));
             }
             catch (Exception ex)
             {
