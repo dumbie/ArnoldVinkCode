@@ -183,6 +183,7 @@
     <Compile Include="Styles\MainStyles.xaml.cs">
       <DependentUpon>MainStyles.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Styles\NullCheckVisibilityCode.cs" />
     <Compile Include="Styles\TextBoxDelayCode.cs" />
     <Compile Include="Styles\SliderDelayCode.cs" />
     <Compile Include="Styles\ScrollViewerLoopCode.cs" />
