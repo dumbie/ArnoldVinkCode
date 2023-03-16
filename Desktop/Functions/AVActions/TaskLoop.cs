@@ -122,10 +122,12 @@ namespace ArnoldVinkCode
 
                 //Wait for task to have stopped
                 Debug.WriteLine("Waiting for task " + avTask.Name + " to stop or timeout...");
+                long stoppedTime = 0;
                 long stopTimeout = GetSystemTicksMs();
                 while (!avTask.TaskCompleted)
                 {
-                    if (taskTimeout > 0 && (GetSystemTicksMs() - stopTimeout) >= taskTimeout)
+                    stoppedTime = GetSystemTicksMs() - stopTimeout;
+                    if (taskTimeout > 0 && stoppedTime >= taskTimeout)
                     {
                         Debug.WriteLine("Stopping task " + avTask.Name + " has timed out...");
                         break;
@@ -136,7 +138,7 @@ namespace ArnoldVinkCode
                 //Dispose and reset task
                 avTask.DisposeReset();
 
-                Debug.WriteLine("Loop task " + avTask.Name + " has been stopped.");
+                Debug.WriteLine("Loop task " + avTask.Name + " has been stopped in " + stoppedTime + "ms");
             }
             catch (Exception ex)
             {
