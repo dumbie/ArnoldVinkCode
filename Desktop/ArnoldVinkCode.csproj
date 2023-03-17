@@ -120,6 +120,8 @@
     <Compile Include="Functions\AVAudioDevice\IMMDevice\IMMDevice.cs" />
     <Compile Include="Functions\AVAudioDevice\IMMDevice\PolicyConfig.cs" />
     <Compile Include="Functions\AVDiskInfo.cs" />
+    <Compile Include="Functions\AVFocus\AVFocusListboxIndex.cs" />
+    <Compile Include="Functions\AVFocus\AVFocusWindow.cs" />
     <Compile Include="Functions\AVJsonFunctions.cs" />
     <Compile Include="Functions\AVClassConverters.cs" />
     <Compile Include="Functions\AVDebug.cs" />
@@ -153,8 +155,11 @@
     <Compile Include="Functions\AVUwpAppx\AVUwpAppx.cs" />
     <Compile Include="Functions\AVUwpAppx\ClassAppxDetails.cs" />
     <Compile Include="Functions\AVUwpAppx\ClassAppxManifest.cs" />
-    <Compile Include="Functions\AVWindowCustom.cs" />
-    <Compile Include="Functions\AVWindowFunctions.cs" />
+    <Compile Include="Functions\AVWindow\AVWindowCustom.cs" />
+    <Compile Include="Functions\AVWindow\AVWindowFunctions.cs" />
+    <Compile Include="Functions\AVFocus\AVFocusElement.cs" />
+    <Compile Include="Functions\AVFocus\AVFocusListboxItem.cs" />
+    <Compile Include="Functions\AVFocus\Classes\AVFocusDetails.cs" />
     <Compile Include="Interop\AVInteropCom.cs" />
     <Compile Include="Interop\AVInteropDll.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

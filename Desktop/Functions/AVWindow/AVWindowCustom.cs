@@ -5,7 +5,7 @@ using static ArnoldVinkCode.AVInteropDll;
 
 namespace ArnoldVinkCode
 {
-    public partial class AVCustomWindow
+    public partial class AVWindowCustom
     {
         //Window variables
         public int windowHeight;
@@ -16,7 +16,7 @@ namespace ArnoldVinkCode
         private IntPtr windowProcPointer;
 
         //Window create
-        public AVCustomWindow(string windowTitle, int windowWidth, int windowHeight, bool windowVisible)
+        public AVWindowCustom(string windowTitle, int windowWidth, int windowHeight, bool windowVisible)
         {
             try
             {

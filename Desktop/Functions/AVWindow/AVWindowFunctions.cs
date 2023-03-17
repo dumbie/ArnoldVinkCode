@@ -47,17 +47,18 @@ namespace ArnoldVinkCode
                 {
                     updatedExStyle |= WindowStylesEx.WS_EX_TRANSPARENT;
                 }
+
                 IntPtr updatedExStyleIntPtr = new IntPtr((uint)updatedExStyle);
                 SetWindowLongAuto(windowHandle, (int)WindowLongFlags.GWL_EXSTYLE, updatedExStyleIntPtr);
 
                 //Redraw the window
                 if (topMost)
                 {
-                    SetWindowPos(windowHandle, (IntPtr)SWP_WindowPosition.TopMost, 0, 0, 0, 0, (int)(SWP_WindowFlags.NOMOVE | SWP_WindowFlags.NOSIZE | SWP_WindowFlags.DRAWFRAME));
+                    SetWindowPos(windowHandle, (IntPtr)SWP_WindowPosition.TopMost, 0, 0, 0, 0, (int)(SWP_WindowFlags.NOMOVE | SWP_WindowFlags.NOSIZE | SWP_WindowFlags.NOCOPYBITS | SWP_WindowFlags.FRAMECHANGED));
                 }
                 else
                 {
-                    SetWindowPos(windowHandle, IntPtr.Zero, 0, 0, 0, 0, (int)(SWP_WindowFlags.NOMOVE | SWP_WindowFlags.NOSIZE | SWP_WindowFlags.DRAWFRAME));
+                    SetWindowPos(windowHandle, IntPtr.Zero, 0, 0, 0, 0, (int)(SWP_WindowFlags.NOMOVE | SWP_WindowFlags.NOSIZE | SWP_WindowFlags.NOCOPYBITS | SWP_WindowFlags.FRAMECHANGED));
                 }
             }
             catch { }
@@ -77,7 +78,7 @@ namespace ArnoldVinkCode
                 SetWindowLongAuto(windowHandle, (int)WindowLongFlags.GWL_EXSTYLE, updatedExStyleIntPtr);
 
                 //Redraw the window
-                SetWindowPos(windowHandle, IntPtr.Zero, 0, 0, 0, 0, (int)(SWP_WindowFlags.NOMOVE | SWP_WindowFlags.NOSIZE | SWP_WindowFlags.DRAWFRAME));
+                SetWindowPos(windowHandle, IntPtr.Zero, 0, 0, 0, 0, (int)(SWP_WindowFlags.NOMOVE | SWP_WindowFlags.NOSIZE | SWP_WindowFlags.NOCOPYBITS | SWP_WindowFlags.FRAMECHANGED));
             }
             catch { }
         }
