@@ -10,6 +10,7 @@ namespace ArnoldVinkCode
 {
     public partial class AVWindowFunctions
     {
+        //Enumerators
         public enum AVWindowPosition : int
         {
             TopLeft = 0,
@@ -24,15 +25,35 @@ namespace ArnoldVinkCode
             FullScreen = 9
         }
 
-        //Update window style to visible
-        public static void WindowUpdateStyleVisible(IntPtr windowHandle, bool topMost, bool noActivate, bool clickThrough)
+        //Update window visibility
+        public static void WindowUpdateVisibility(IntPtr windowHandle, bool visible)
         {
             try
             {
-                //Set window style
-                IntPtr updatedStyle = new IntPtr((uint)WindowStyles.WS_VISIBLE);
-                SetWindowLongAuto(windowHandle, (int)WindowLongFlags.GWL_STYLE, updatedStyle);
+                if (visible)
+                {
+                    //Set window style
+                    IntPtr updatedStyle = new IntPtr((uint)WindowStyles.WS_VISIBLE);
+                    SetWindowLongAuto(windowHandle, (int)WindowLongFlags.GWL_STYLE, updatedStyle);
+                }
+                else
+                {
+                    //Set window style
+                    IntPtr updatedStyle = new IntPtr((uint)WindowStyles.WS_NONE);
+                    SetWindowLongAuto(windowHandle, (int)WindowLongFlags.GWL_STYLE, updatedStyle);
 
+                    //Redraw the window
+                    SetWindowPos(windowHandle, IntPtr.Zero, 0, 0, 0, 0, (int)(SWP_WindowFlags.NOMOVE | SWP_WindowFlags.NOSIZE | SWP_WindowFlags.NOCOPYBITS | SWP_WindowFlags.FRAMECHANGED));
+                }
+            }
+            catch { }
+        }
+
+        //Update window style
+        public static void WindowUpdateStyle(IntPtr windowHandle, bool topMost, bool noActivate, bool clickThrough)
+        {
+            try
+            {
                 //Set window style ex
                 WindowStylesEx updatedExStyle = WindowStylesEx.WS_EX_NONE;
                 if (topMost)
@@ -48,6 +69,7 @@ namespace ArnoldVinkCode
                     updatedExStyle |= WindowStylesEx.WS_EX_TRANSPARENT;
                 }
 
+                //Set window long
                 IntPtr updatedExStyleIntPtr = new IntPtr((uint)updatedExStyle);
                 SetWindowLongAuto(windowHandle, (int)WindowLongFlags.GWL_EXSTYLE, updatedExStyleIntPtr);
 
@@ -60,25 +82,6 @@ namespace ArnoldVinkCode
                 {
                     SetWindowPos(windowHandle, IntPtr.Zero, 0, 0, 0, 0, (int)(SWP_WindowFlags.NOMOVE | SWP_WindowFlags.NOSIZE | SWP_WindowFlags.NOCOPYBITS | SWP_WindowFlags.FRAMECHANGED));
                 }
-            }
-            catch { }
-        }
-
-        //Update window style to hidden
-        public static void WindowUpdateStyleHidden(IntPtr windowHandle)
-        {
-            try
-            {
-                //Set window style
-                IntPtr updatedStyle = new IntPtr((uint)WindowStyles.WS_NONE);
-                SetWindowLongAuto(windowHandle, (int)WindowLongFlags.GWL_STYLE, updatedStyle);
-
-                //Set window style ex
-                IntPtr updatedExStyleIntPtr = new IntPtr((uint)WindowStylesEx.WS_EX_NONE);
-                SetWindowLongAuto(windowHandle, (int)WindowLongFlags.GWL_EXSTYLE, updatedExStyleIntPtr);
-
-                //Redraw the window
-                SetWindowPos(windowHandle, IntPtr.Zero, 0, 0, 0, 0, (int)(SWP_WindowFlags.NOMOVE | SWP_WindowFlags.NOSIZE | SWP_WindowFlags.NOCOPYBITS | SWP_WindowFlags.FRAMECHANGED));
             }
             catch { }
         }
