@@ -12,6 +12,49 @@ namespace ArnoldVinkCode
 {
     public partial class AVFocus
     {
+        //Check if keyboard has focus
+        public static void FocusCheckKeyboard(FrameworkElement windowElement, IntPtr windowHandle)
+        {
+            try
+            {
+                AVActions.DispatcherInvoke(delegate
+                {
+                    FrameworkElement focusedElement = (FrameworkElement)Keyboard.FocusedElement;
+                    //Debug.WriteLine("Keyboard check focused on: " + focusedElement);
+
+                    //Check currently focused element
+                    if (focusedElement == null)
+                    {
+                        Debug.WriteLine("Keyboard is not focused, pressing tab key.");
+                        KeySendSingle(KeysVirtual.Tab, windowHandle);
+                        return;
+                    }
+
+                    //Get focus type
+                    Type focusType = focusedElement.GetType().BaseType;
+
+                    //Check if focused on other window
+                    if (focusType == typeof(Window) && windowElement != focusedElement)
+                    {
+                        Debug.WriteLine("Keyboard is focused on other window, focusing this window.");
+                        FocusWindow(windowElement);
+                    }
+
+                    //Check if focused on window
+                    if (focusType == typeof(Window))
+                    {
+                        Debug.WriteLine("Keyboard is focused on a window, pressing tab key.");
+                        KeySendSingle(KeysVirtual.Tab, windowHandle);
+                        return;
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed checking keyboard focus: " + ex.Message);
+            }
+        }
+
         //Focus framework element
         public static async Task FocusElement(FrameworkElement focusElement, FrameworkElement windowElement, IntPtr windowHandle)
         {
