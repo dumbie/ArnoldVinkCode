@@ -13,7 +13,7 @@ namespace ArnoldVinkCode
     public partial class AVFocus
     {
         //Listbox focus or select an index
-        public static async Task ListBoxFocusOrSelectIndex(ListBox focusListBox, bool lastIndex, int indexNumber, FrameworkElement windowElement, IntPtr windowHandle)
+        public static async Task ListBoxFocusOrSelectIndex(ListBox focusListBox, bool lastIndex, int indexNumber, IntPtr windowHandle)
         {
             try
             {
@@ -28,7 +28,7 @@ namespace ArnoldVinkCode
                     //Focus on the listbox or select index
                     if (disconnectedSource || frameworkElement == focusListBox)
                     {
-                        await ListBoxFocusIndex(focusListBox, lastIndex, indexNumber, windowElement, windowHandle);
+                        await ListBoxFocusIndex(focusListBox, lastIndex, indexNumber, windowHandle);
                     }
                     else
                     {
@@ -40,7 +40,7 @@ namespace ArnoldVinkCode
         }
 
         //Focus on listbox index
-        public static async Task ListBoxFocusIndex(ListBox focusListBox, bool lastIndex, int indexNumber, FrameworkElement windowElement, IntPtr windowHandle)
+        public static async Task ListBoxFocusIndex(ListBox focusListBox, bool lastIndex, int indexNumber, IntPtr windowHandle)
         {
             try
             {
@@ -101,7 +101,7 @@ namespace ArnoldVinkCode
 
                     //Force focus on element
                     ListBoxItem focusListBoxItem = (ListBoxItem)focusListBox.ItemContainerGenerator.ContainerFromInd‌​ex(selectedIndex);
-                    await FocusElement(focusListBoxItem, windowElement, windowHandle);
+                    await FocusElement(focusListBoxItem, windowHandle);
 
                     Debug.WriteLine("Focusing on listbox index: " + selectedIndex);
                 });

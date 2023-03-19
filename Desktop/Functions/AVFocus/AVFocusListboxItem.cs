@@ -13,7 +13,7 @@ namespace ArnoldVinkCode
     public partial class AVFocus
     {
         //Listbox focus or select an item
-        public static async Task ListBoxFocusOrSelectItem(ListBox focusListBox, object selectItem, FrameworkElement windowElement, IntPtr windowHandle)
+        public static async Task ListBoxFocusOrSelectItem(ListBox focusListBox, object selectItem, IntPtr windowHandle)
         {
             try
             {
@@ -28,7 +28,7 @@ namespace ArnoldVinkCode
                     //Focus on the listbox or select index
                     if (disconnectedSource || frameworkElement == focusListBox)
                     {
-                        await ListBoxFocusItem(focusListBox, selectItem, windowElement, windowHandle);
+                        await ListBoxFocusItem(focusListBox, selectItem, windowHandle);
                     }
                     else
                     {
@@ -40,7 +40,7 @@ namespace ArnoldVinkCode
         }
 
         //Focus on listbox item
-        public static async Task ListBoxFocusItem(ListBox focusListBox, object selectItem, FrameworkElement windowElement, IntPtr windowHandle)
+        public static async Task ListBoxFocusItem(ListBox focusListBox, object selectItem, IntPtr windowHandle)
         {
             try
             {
@@ -101,7 +101,7 @@ namespace ArnoldVinkCode
 
                     //Force focus on element
                     ListBoxItem focusListBoxItem = (ListBoxItem)focusListBox.ItemContainerGenerator.ContainerFromInd‌​ex(selectedIndex);
-                    await FocusElement(focusListBoxItem, windowElement, windowHandle);
+                    await FocusElement(focusListBoxItem, windowHandle);
 
                     Debug.WriteLine("Focusing on listbox item: " + selectedIndex);
                 });
@@ -129,8 +129,13 @@ namespace ArnoldVinkCode
                         try
                         {
                             focusListBox.SelectedItem = selectItem;
+                            Debug.WriteLine("Selecting listbox item: " + selectItem);
                         }
                         catch { }
+                    }
+                    else
+                    {
+                        Debug.WriteLine("Select listbox item is null.");
                     }
 
                     //Check the selected index

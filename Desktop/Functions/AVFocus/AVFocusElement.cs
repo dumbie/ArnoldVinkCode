@@ -19,8 +19,9 @@ namespace ArnoldVinkCode
             {
                 AVActions.DispatcherInvoke(delegate
                 {
+                    //Get focused element
                     FrameworkElement focusedElement = (FrameworkElement)Keyboard.FocusedElement;
-                    //Debug.WriteLine("Keyboard check focused on: " + focusedElement);
+                    Debug.WriteLine("Keyboard check focused on: " + focusedElement);
 
                     //Check currently focused element
                     if (focusedElement == null)
@@ -30,18 +31,21 @@ namespace ArnoldVinkCode
                         return;
                     }
 
-                    //Get focus type
-                    Type focusType = focusedElement.GetType().BaseType;
-
                     //Check if focused on other window
-                    if (focusType == typeof(Window) && windowElement != focusedElement)
+                    if (focusedElement.GetType().BaseType == typeof(Window) && windowElement != focusedElement)
                     {
                         Debug.WriteLine("Keyboard is focused on other window, focusing this window.");
+
+                        //Focus on this window
                         FocusWindow(windowElement);
+
+                        //Update focused element
+                        focusedElement = (FrameworkElement)Keyboard.FocusedElement;
+                        Debug.WriteLine("Keyboard check focused on: " + focusedElement);
                     }
 
                     //Check if focused on window
-                    if (focusType == typeof(Window))
+                    if (focusedElement.GetType().BaseType == typeof(Window))
                     {
                         Debug.WriteLine("Keyboard is focused on a window, pressing tab key.");
                         KeySendSingle(KeysVirtual.Tab, windowHandle);
@@ -56,7 +60,7 @@ namespace ArnoldVinkCode
         }
 
         //Focus framework element
-        public static async Task FocusElement(FrameworkElement focusElement, FrameworkElement windowElement, IntPtr windowHandle)
+        public static async Task FocusElement(FrameworkElement focusElement, IntPtr windowHandle)
         {
             try
             {
@@ -102,15 +106,6 @@ namespace ArnoldVinkCode
                         return;
                     }
 
-                    //Focus on window element
-                    if (windowElement != null)
-                    {
-                        FocusWindow(windowElement);
-
-                        //Wait for element focus
-                        await Task.Delay(25);
-                    }
-
                     //Focus on framework element
                     //Update element layout
                     focusElement.UpdateLayout();
@@ -122,12 +117,13 @@ namespace ArnoldVinkCode
                     Keyboard.Focus(focusElement);
 
                     //Wait for element focus
-                    await Task.Delay(25);
+                    await Task.Delay(10);
 
                     //Check focused element
-                    if (Keyboard.FocusedElement == null || Keyboard.FocusedElement != focusElement)
+                    FrameworkElement focusedElement = (FrameworkElement)Keyboard.FocusedElement;
+                    if (focusedElement == null || focusedElement != focusElement)
                     {
-                        Debug.WriteLine("Not focused on element, pressing tab key: " + focusElement);
+                        Debug.WriteLine("Not focused on target element, pressing tab key: " + focusElement);
                         KeySendSingle(KeysVirtual.Tab, windowHandle);
                         return;
                     }
@@ -143,7 +139,7 @@ namespace ArnoldVinkCode
         }
 
         //Focus AVFocusDetails
-        public static async Task AVFocusDetailsFocus(AVFocusDetails focusElement, FrameworkElement windowElement, IntPtr windowHandle)
+        public static async Task AVFocusDetailsFocus(AVFocusDetails focusElement, IntPtr windowHandle)
         {
             try
             {
@@ -153,12 +149,12 @@ namespace ArnoldVinkCode
                     if (focusElement.FocusElement != null)
                     {
                         Debug.WriteLine("Focusing on previous element: " + focusElement.FocusElement);
-                        await FocusElement(focusElement.FocusElement, windowElement, windowHandle);
+                        await FocusElement(focusElement.FocusElement, windowHandle);
                     }
                     else if (focusElement.FocusListBox != null)
                     {
                         Debug.WriteLine("Focusing on previous listbox: " + focusElement.FocusListBox);
-                        await ListBoxFocusIndex(focusElement.FocusListBox, false, focusElement.FocusIndex, windowElement, windowHandle);
+                        await ListBoxFocusIndex(focusElement.FocusListBox, false, focusElement.FocusIndex, windowHandle);
                     }
                     else
                     {
