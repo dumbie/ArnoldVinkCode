@@ -74,14 +74,6 @@ namespace ArnoldVinkCode
                         return;
                     }
 
-                    //Check if focus element is disabled
-                    if (!focusElement.IsEnabled)
-                    {
-                        Debug.WriteLine("Focus element is disabled, pressing tab key.");
-                        KeySendSingle(KeysVirtual.Tab, windowHandle);
-                        return;
-                    }
-
                     //Check if focus element is focusable
                     if (!focusElement.Focusable)
                     {
