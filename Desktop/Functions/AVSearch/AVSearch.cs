@@ -25,7 +25,7 @@ namespace ArnoldVinkCode
                         string loadFileLower = searchFile.ToLower().Trim();
                         if (!loadFileLower.Contains("/") && !loadFileLower.Contains("\\"))
                         {
-                            loadFileLower = string.Join(string.Empty, loadFileLower.Split(Path.GetInvalidFileNameChars()));
+                            loadFileLower = AVFiles.FileNameReplaceInvalidChars(loadFileLower, string.Empty);
                         }
                         Debug.WriteLine("Searching for file: " + loadFileLower);
 

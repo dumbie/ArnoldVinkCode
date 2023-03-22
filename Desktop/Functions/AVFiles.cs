@@ -288,7 +288,7 @@ namespace ArnoldVinkCode
         //Replace invalid file characters
         public static string FileNameReplaceInvalidChars(string fileName, string replaceWith)
         {
-            return string.Join(replaceWith, fileName.Split(Path.GetInvalidFileNameChars()));
+            return string.Join(replaceWith, fileName.Split(Path.GetInvalidFileNameChars())).Trim();
         }
     }
 }
