@@ -12,6 +12,9 @@ namespace ArnoldVinkCode
         private static IntPtr vWindowHookPointer = IntPtr.Zero;
         private static LowLevelKeyboardCallBack vLowLevelKeyboardCallback = LowLevelKeyboardCallbackCode;
 
+        //Settings
+        public static bool BlockGlobalKeyboardPresses = false;
+
         //Lists
         private static List<KeysVirtual> vListKeysPressed = new List<KeysVirtual>();
 
@@ -69,7 +72,15 @@ namespace ArnoldVinkCode
                         //Debug.WriteLine("Keyboard up: " + (KeysVirtual)lParam.vkCode);
                     }
                 }
-                return CallNextHookEx(vWindowHookPointer, nCode, wParam, lParam);
+
+                if (BlockGlobalKeyboardPresses)
+                {
+                    return new IntPtr(1);
+                }
+                else
+                {
+                    return CallNextHookEx(vWindowHookPointer, nCode, wParam, lParam);
+                }
             }
             catch (Exception ex)
             {
