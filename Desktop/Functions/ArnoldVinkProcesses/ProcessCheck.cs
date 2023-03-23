@@ -110,10 +110,29 @@ namespace ArnoldVinkCode
         {
             try
             {
-                return targetClassName == "ApplicationFrameWindow" || targetClassName == "Windows.UI.Core.CoreWindow";
+                string[] classNamesUwp = { "ApplicationFrameWindow", "Windows.UI.Core.CoreWindow" };
+                foreach (string className in classNamesUwp)
+                {
+                    if (targetClassName == className) { return true; }
+                }
             }
             catch { }
             return false;
+        }
+
+        //Check if class name is valid window
+        public static bool Check_ClassNameIsValid(string targetClassName)
+        {
+            try
+            {
+                string[] classNamesInvalid = { "Windows.Internal.Shell.TabProxyWindow" };
+                foreach (string className in classNamesInvalid)
+                {
+                    if (targetClassName == className) { return false; }
+                }
+            }
+            catch { }
+            return true;
         }
 
         //Check if window handle is a window
