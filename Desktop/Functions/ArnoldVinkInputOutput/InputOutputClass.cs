@@ -35,7 +35,7 @@ namespace ArnoldVinkCode
             MOUSEEVENTF_HWHEEL = 0x01000
         }
 
-        public enum KeysModifier : byte
+        public enum KeysVirtualModifier : byte
         {
             None = 0x0000,
             Alt = 0x0001,
@@ -46,6 +46,7 @@ namespace ArnoldVinkCode
 
         public enum KeysVirtual : byte
         {
+            None = 0x00,
             LeftButton = 0x01,
             RightButton = 0x02,
             Break = 0x03,
