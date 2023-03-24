@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using static ArnoldVinkCode.AVInteropDll;
@@ -138,7 +137,7 @@ namespace ArnoldVinkCode
         }
 
         //Check if window handle is a window
-        public static bool Check_WindowHandleValid(IntPtr targetWindowHandle)
+        public static bool Check_WindowHandleValid(IntPtr targetWindowHandle, string targetWindowClassName)
         {
             try
             {
@@ -196,10 +195,13 @@ namespace ArnoldVinkCode
                 }
 
                 //Validate the window class name
-                string windowClassName = Detail_ClassNameByWindowHandle(targetWindowHandle);
-                if (!Check_ClassNameIsValid(windowClassName))
+                if (string.IsNullOrWhiteSpace(targetWindowClassName))
                 {
-                    Debug.WriteLine("Window class name is not valid and can't be shown or hidden.");
+                    targetWindowClassName = Detail_ClassNameByWindowHandle(targetWindowHandle);
+                }
+                if (!Check_ClassNameIsValid(targetWindowClassName))
+                {
+                    //Debug.WriteLine("Window class name is not valid and can't be shown or hidden.");
                     return false;
                 }
 
