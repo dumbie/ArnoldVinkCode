@@ -182,7 +182,7 @@ namespace ArnoldVinkCode
                 {
                     try
                     {
-                        bool windowVisible = IsWindowVisible(windowHandle);
+                        bool windowVisible = Check_WindowHandleValid(windowHandle);
                         bool windowOwner = GetWindow(windowHandle, GetWindowFlags.GW_OWNER) == IntPtr.Zero;
                         if (windowVisible && windowOwner)
                         {
@@ -205,7 +205,7 @@ namespace ArnoldVinkCode
                 {
                     try
                     {
-                        bool windowVisible = IsWindowVisible(windowHandle);
+                        bool windowVisible = Check_WindowHandleValid(windowHandle);
                         bool windowOwner = GetWindow(windowHandle, GetWindowFlags.GW_OWNER) == IntPtr.Zero;
                         if (windowVisible && windowOwner)
                         {
@@ -228,7 +228,7 @@ namespace ArnoldVinkCode
                 {
                     try
                     {
-                        bool windowVisible = IsWindowVisible(windowHandle);
+                        bool windowVisible = Check_WindowHandleValid(windowHandle);
                         bool windowOwner = GetWindow(windowHandle, GetWindowFlags.GW_OWNER) == IntPtr.Zero;
                         if (windowVisible && windowOwner)
                         {

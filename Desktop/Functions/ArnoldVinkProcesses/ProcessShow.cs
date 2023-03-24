@@ -77,13 +77,12 @@ namespace ArnoldVinkCode
                 Close_OpenWindowsPrompts();
 
                 //Get current window placement
-                WindowPlacement processWindowState = new WindowPlacement();
-                GetWindowPlacement(windowHandle, ref processWindowState);
+                GetWindowPlacement(windowHandle, out WindowPlacement windowPlacement);
 
                 //Check current window placement
                 SystemCommand windowSystemCommand = SystemCommand.SC_RESTORE;
                 WindowShowCommand windowShowCommand = WindowShowCommand.Restore;
-                if (processWindowState.windowFlags == WindowFlags.RestoreToMaximized)
+                if (windowPlacement.windowFlags == WindowFlags.RestoreToMaximized)
                 {
                     windowSystemCommand = SystemCommand.SC_MAXIMIZE;
                     windowShowCommand = WindowShowCommand.ShowMaximized;

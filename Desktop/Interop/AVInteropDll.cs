@@ -93,16 +93,6 @@ namespace ArnoldVinkCode
         [DllImport("user32.dll")]
         public static extern IntPtr GetWindow(IntPtr hWnd, GetWindowFlags flags);
 
-        //Get ancestor
-        public enum GetAncestorFlags : int
-        {
-            GetParent = 1,
-            GetRoot = 2,
-            GetRootOwner = 3
-        }
-        [DllImport("user32.dll")]
-        public static extern IntPtr GetAncestor(IntPtr hWnd, GetAncestorFlags flags);
-
         //Window show
         [DllImport("user32.dll")]
         public static extern bool ShowWindowAsync(IntPtr hWnd, WindowShowCommand nCmdShow);
@@ -352,6 +342,39 @@ namespace ArnoldVinkCode
         [DllImport("kernel32.dll")]
         public static extern bool QueryFullProcessImageName([In] IntPtr hProcess, [In] int dwFlags, [Out] StringBuilder lpExeName, ref int lpdwSize);
 
+        //Get window ancestor
+        [DllImport("user32.dll")]
+        public static extern IntPtr GetAncestor(IntPtr hWnd, GetAncestorFlags flags);
+        public enum GetAncestorFlags : int
+        {
+            GetParent = 1,
+            GetRoot = 2,
+            GetRootOwner = 3
+        }
+
+        //Get window dwm attribute
+        [DllImport("dwmapi.dll")]
+        public static extern int DwmGetWindowAttribute(IntPtr hwnd, DWMWINDOWATTRIBUTE dwAttribute, out bool pvAttribute, int cbAttributeSize);
+        public enum DWMWINDOWATTRIBUTE : int
+        {
+            DWMWA_NCRENDERING_ENABLED = 1,
+            DWMWA_NCRENDERING_POLICY = 2,
+            DWMWA_TRANSITIONS_FORCEDISABLED = 3,
+            DWMWA_ALLOW_NCPAINT = 4,
+            DWMWA_CAPTION_BUTTON_BOUNDS = 5,
+            DWMWA_NONCLIENT_RTL_LAYOUT = 6,
+            DWMWA_FORCE_ICONIC_REPRESENTATION = 7,
+            DWMWA_FLIP3D_POLICY = 8,
+            DWMWA_EXTENDED_FRAME_BOUNDS = 9,
+            DWMWA_HAS_ICONIC_BITMAP = 10,
+            DWMWA_DISALLOW_PEEK = 11,
+            DWMWA_EXCLUDED_FROM_PEEK = 12,
+            DWMWA_CLOAK = 13,
+            DWMWA_CLOAKED = 14,
+            DWMWA_FREEZE_REPRESENTATION = 15,
+            DWMWA_LAST = 16
+        }
+
         //Get Class Long
         [DllImport("user32.dll", EntryPoint = "GetClassLong")]
         private static extern uint GetClassLong32(IntPtr hWnd, int nIndex);
@@ -596,6 +619,19 @@ namespace ArnoldVinkCode
             SCF_ISSECURE = 0x00000001
         }
 
+        //Send message with timeout
+        [DllImport("user32.dll")]
+        public static extern IntPtr SendMessageTimeout(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam, SendMessageTimeoutFlags flags, int timeout, out IntPtr pdwResult);
+
+        public enum SendMessageTimeoutFlags : int
+        {
+            SMTO_ABORTIFHUNG = 0x0002,
+            SMTO_BLOCK = 0x0001,
+            SMTO_NORMAL = 0x0000,
+            SMTO_NOTIMEOUTIFNOTHUNG = 0x0008,
+            SMTO_ERRORONEXIT = 0x0020
+        }
+
         //Send message or key
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         public static extern IntPtr SendMessage(IntPtr hWnd, WindowMessages Msg, int wParam, uint lParam);
@@ -667,9 +703,9 @@ namespace ArnoldVinkCode
 
         //Window Placement
         [DllImport("user32.dll")]
-        public static extern bool SetWindowPlacement(IntPtr hWnd, [In] ref WindowPlacement lpwndpl);
+        public static extern bool SetWindowPlacement(IntPtr hWnd, ref WindowPlacement lpwndpl);
         [DllImport("user32.dll")]
-        public static extern bool GetWindowPlacement(IntPtr hWnd, ref WindowPlacement lpwndpl);
+        public static extern bool GetWindowPlacement(IntPtr hWnd, out WindowPlacement lpwndpl);
         public struct WindowPlacement
         {
             public int length;
@@ -811,16 +847,7 @@ namespace ArnoldVinkCode
 
         //Process not responding
         [DllImport("user32.dll")]
-        public static extern IntPtr SendMessageTimeout(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam, SendMessageTimeoutFlags flags, int timeout, out IntPtr pdwResult);
-
-        public enum SendMessageTimeoutFlags : int
-        {
-            SMTO_ABORTIFHUNG = 0x0002,
-            SMTO_BLOCK = 0x0001,
-            SMTO_NORMAL = 0x0000,
-            SMTO_NOTIMEOUTIFNOTHUNG = 0x0008,
-            SMTO_ERRORONEXIT = 0x0020
-        }
+        public static extern bool IsHungAppWindow(IntPtr hWnd);
 
         //Lock computer
         [DllImport("user32.dll")]
