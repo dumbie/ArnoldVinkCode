@@ -193,7 +193,7 @@ namespace ArnoldVinkCode
                 {
                     try
                     {
-                        string foundWindowTitleLower = checkProcess.WindowTitle.ToLower();
+                        string foundWindowTitleLower = checkProcess.WindowTitleMain.ToLower();
                         if (exactName)
                         {
                             if (foundWindowTitleLower == targetWindowTitleLower)

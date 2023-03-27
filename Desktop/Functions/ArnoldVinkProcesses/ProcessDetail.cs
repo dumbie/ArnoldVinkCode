@@ -174,7 +174,7 @@ namespace ArnoldVinkCode
         }
 
         //Get main window handle by process id
-        public static IntPtr Detail_MainWindowHandleByProcessId(int targetProcessId)
+        public static IntPtr Detail_WindowHandleMainByProcessId(int targetProcessId)
         {
             try
             {
@@ -197,7 +197,7 @@ namespace ArnoldVinkCode
         }
 
         //Get main window handle by thread id
-        public static IntPtr Detail_MainWindowHandleByThreadId(int targetThreadId)
+        public static IntPtr Detail_WindowHandleMainByThreadId(int targetThreadId)
         {
             try
             {
@@ -220,7 +220,7 @@ namespace ArnoldVinkCode
         }
 
         //Get main window handle by AppUserModelId
-        public static IntPtr Detail_MainWindowHandleByAppUserModelId(string targetAppUserModelId)
+        public static IntPtr Detail_WindowHandleMainByAppUserModelId(string targetAppUserModelId)
         {
             try
             {

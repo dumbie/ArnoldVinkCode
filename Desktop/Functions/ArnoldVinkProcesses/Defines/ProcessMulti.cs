@@ -96,7 +96,7 @@ namespace ArnoldVinkCode
                         {
                             if (!string.IsNullOrWhiteSpace(AppUserModelId))
                             {
-                                if (Check_ClassNameIsUwpApp(WindowClassName))
+                                if (Check_ClassNameIsUwpApp(WindowClassNameMain))
                                 {
                                     CachedType = ProcessType.UWP;
                                 }
@@ -270,27 +270,24 @@ namespace ArnoldVinkCode
                 }
             }
 
-            private IntPtr CachedWindowHandleMain = IntPtr.Zero;
             public IntPtr WindowHandleMain
             {
                 get
                 {
+                    IntPtr windowHandleMain = IntPtr.Zero;
                     try
                     {
                         if (!string.IsNullOrWhiteSpace(AppUserModelId))
                         {
-                            if (CachedWindowHandleMain == IntPtr.Zero)
-                            {
-                                CachedWindowHandleMain = Detail_MainWindowHandleByAppUserModelId(AppUserModelId);
-                            }
+                            windowHandleMain = Detail_WindowHandleMainByAppUserModelId(AppUserModelId);
                         }
-                        if (CachedWindowHandleMain == IntPtr.Zero)
+                        if (windowHandleMain == IntPtr.Zero)
                         {
-                            CachedWindowHandleMain = Detail_MainWindowHandleByProcessId(Identifier);
+                            windowHandleMain = Detail_WindowHandleMainByProcessId(Identifier);
                         }
                     }
                     catch { }
-                    return CachedWindowHandleMain;
+                    return windowHandleMain;
                 }
             }
 
@@ -314,29 +311,25 @@ namespace ArnoldVinkCode
                 }
             }
 
-            private string CachedWindowClassName = string.Empty;
-            public string WindowClassName
+            public string WindowClassNameMain
             {
                 get
                 {
                     try
                     {
-                        if (CachedWindowClassName == string.Empty)
-                        {
-                            CachedWindowClassName = Detail_ClassNameByWindowHandle(WindowHandleMain);
-                        }
+                        return Detail_ClassNameByWindowHandle(WindowHandleMain);
                     }
                     catch { }
-                    return CachedWindowClassName;
+                    return string.Empty;
                 }
             }
 
-            private string CustomWindowTitle = string.Empty;
-            public string WindowTitle
+            private string CustomWindowTitleMain = string.Empty;
+            public string WindowTitleMain
             {
                 get
                 {
-                    if (string.IsNullOrWhiteSpace(CustomWindowTitle))
+                    if (string.IsNullOrWhiteSpace(CustomWindowTitleMain))
                     {
                         string foundWindowTitle = Detail_WindowTitleByWindowHandle(WindowHandleMain);
                         if (foundWindowTitle == "Unknown")
@@ -350,12 +343,12 @@ namespace ArnoldVinkCode
                     }
                     else
                     {
-                        return CustomWindowTitle;
+                        return CustomWindowTitleMain;
                     }
                 }
                 set
                 {
-                    CustomWindowTitle = value;
+                    CustomWindowTitleMain = value;
                 }
             }
 
@@ -478,8 +471,8 @@ namespace ArnoldVinkCode
                     AVDebug.WriteLine("Argument: " + Argument);
                     AVDebug.WriteLine("WindowHandleMain: " + WindowHandleMain);
                     AVDebug.WriteLine("WindowHandles: " + WindowHandles.Count);
-                    AVDebug.WriteLine("WindowClassName: " + WindowClassName);
-                    AVDebug.WriteLine("WindowTitle: " + WindowTitle);
+                    AVDebug.WriteLine("WindowClassNameMain: " + WindowClassNameMain);
+                    AVDebug.WriteLine("WindowTitleMain: " + WindowTitleMain);
                     AVDebug.WriteLine("StartTime: " + StartTime);
                     AVDebug.WriteLine("RunTime: " + RunTime);
                     AVDebug.WriteLine("Suspended: " + Suspended);
@@ -509,8 +502,8 @@ namespace ArnoldVinkCode
                     _ = Argument;
                     _ = WindowHandleMain;
                     _ = WindowHandles;
-                    _ = WindowClassName;
-                    _ = WindowTitle;
+                    _ = WindowClassNameMain;
+                    _ = WindowTitleMain;
                     _ = StartTime;
                     _ = RunTime;
                     _ = Suspended;
@@ -527,7 +520,6 @@ namespace ArnoldVinkCode
                 try
                 {
                     CloseHandleAuto(CachedHandle);
-                    CloseHandleAuto(CachedWindowHandleMain);
                 }
                 catch { }
             }
