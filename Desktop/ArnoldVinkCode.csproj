@@ -119,6 +119,7 @@
     <Compile Include="Functions\AVAudioDevice\Classes\AudioDeviceSummary.cs" />
     <Compile Include="Functions\AVAudioDevice\IMMDevice\IMMDevice.cs" />
     <Compile Include="Functions\AVAudioDevice\IMMDevice\PolicyConfig.cs" />
+    <Compile Include="Functions\AVShellInfo.cs" />
     <Compile Include="Functions\AVDiskInfo.cs" />
     <Compile Include="Functions\AVFocus\AVFocusListboxIndex.cs" />
     <Compile Include="Functions\AVFocus\AVFocusWindow.cs" />

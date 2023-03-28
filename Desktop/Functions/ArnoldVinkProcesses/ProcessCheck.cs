@@ -126,7 +126,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                string[] classNamesInvalid = { "Windows.Internal.Shell.TabProxyWindow" };
+                string[] classNamesInvalid = { "ApplicationFrameWindow", "ApplicationManager_ImmersiveShellWindow", "Windows.Internal.Shell.TabProxyWindow" };
                 foreach (string className in classNamesInvalid)
                 {
                     if (targetClassName == className) { return false; }
@@ -136,53 +136,28 @@ namespace ArnoldVinkCode
             return true;
         }
 
-        //Check if window handle is a window
-        public static bool Check_WindowHandleValid(IntPtr targetWindowHandle, string targetWindowClassName)
+        //Check if window handle is a valid window
+        public static bool Check_WindowHandleValid(IntPtr targetWindowHandle)
         {
             try
             {
                 //Check if handle is empty
                 if (targetWindowHandle == IntPtr.Zero)
                 {
-                    //AVDebug.WriteLine("Window handle is empty.");
-                    return false;
-                }
-
-                //Check if handle is a window
-                if (!IsWindow(targetWindowHandle))
-                {
-                    //AVDebug.WriteLine("Window handle is not a window.");
-                    return false;
-                }
-
-                //Check if window is visible
-                if (!IsWindowVisible(targetWindowHandle))
-                {
-                    //AVDebug.WriteLine("Window handle is not visible.");
-                    return false;
-                }
-
-                //Check if window is hidden to tray
-                GetWindowPlacement(targetWindowHandle, out WindowPlacement windowPlacement);
-                if (windowPlacement.windowShowCommand <= 0)
-                {
-                    //AVDebug.WriteLine("Window is in the tray and can't be shown or hidden.");
-                    return false;
-                }
-
-                //Check window size
-                GetWindowRect(targetWindowHandle, out WindowRectangle windowRectangle);
-                if (windowRectangle.Width <= 0 || windowRectangle.Height <= 0)
-                {
-                    //AVDebug.WriteLine("Window has no size and can't be shown or hidden.");
+                    //Debug.WriteLine("Window handle is empty.");
                     return false;
                 }
 
                 //Check window styles
                 WindowStyles windowStyle = (WindowStyles)GetWindowLongAuto(targetWindowHandle, (int)WindowLongFlags.GWL_STYLE).ToInt64();
+                if (!windowStyle.HasFlag(WindowStyles.WS_VISIBLE))
+                {
+                    //Debug.WriteLine("Window missing visible style and can't be shown or hidden: " + targetWindowHandle);
+                    return false;
+                }
                 if (windowStyle.HasFlag(WindowStyles.WS_DISABLED))
                 {
-                    //AVDebug.WriteLine("Window has disabled style and can't be shown or hidden.");
+                    //Debug.WriteLine("Window has disabled style and can't be shown or hidden: " + targetWindowHandle);
                     return false;
                 }
 
@@ -190,33 +165,27 @@ namespace ArnoldVinkCode
                 WindowStylesEx windowStyleEx = (WindowStylesEx)GetWindowLongAuto(targetWindowHandle, (int)WindowLongFlags.GWL_EXSTYLE).ToInt64();
                 if (windowStyleEx.HasFlag(WindowStylesEx.WS_EX_TOOLWINDOW))
                 {
-                    //AVDebug.WriteLine("Window has tool style and can't be shown or hidden.");
-                    return false;
-                }
-
-                //Validate the window class name
-                if (string.IsNullOrWhiteSpace(targetWindowClassName))
-                {
-                    targetWindowClassName = Detail_ClassNameByWindowHandle(targetWindowHandle);
-                }
-                if (!Check_ClassNameIsValid(targetWindowClassName))
-                {
-                    //Debug.WriteLine("Window class name is not valid and can't be shown or hidden.");
+                    //Debug.WriteLine("Window has tool style and can't be shown or hidden: " + targetWindowHandle);
                     return false;
                 }
 
                 //Check if window is cloaked
-                int dwmSuccess = DwmGetWindowAttribute(targetWindowHandle, DWMWINDOWATTRIBUTE.DWMWA_CLOAKED, out bool windowCloaked, Marshal.SizeOf(typeof(bool)));
-                if (dwmSuccess == 0 && windowCloaked)
+                int dwmResult = DwmGetWindowAttribute(targetWindowHandle, DWMWINDOWATTRIBUTE.DWMWA_CLOAKED, out DWM_CLOAKED_FLAGS windowCloaked, Marshal.SizeOf(typeof(int)));
+                if (dwmResult >= 0 && windowCloaked != DWM_CLOAKED_FLAGS.DWM_CLOAKED_NONE && windowCloaked != DWM_CLOAKED_FLAGS.DWM_CLOAKED_SHELL)
                 {
-                    //AVDebug.WriteLine("Window is cloaked and can't be shown or hidden.");
+                    //Debug.WriteLine("Window is cloaked and can't be shown or hidden: " + targetWindowHandle);
                     return false;
                 }
 
-                return true;
+                //Check window title length
+                if (GetWindowTextLength(targetWindowHandle) <= 0)
+                {
+                    //Debug.WriteLine("Window has no title and can't be shown or hidden: " + targetWindowHandle);
+                    return false;
+                }
             }
             catch { }
-            return false;
+            return true;
         }
     }
 }

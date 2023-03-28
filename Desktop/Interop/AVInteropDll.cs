@@ -354,7 +354,7 @@ namespace ArnoldVinkCode
 
         //Get window dwm attribute
         [DllImport("dwmapi.dll")]
-        public static extern int DwmGetWindowAttribute(IntPtr hwnd, DWMWINDOWATTRIBUTE dwAttribute, out bool pvAttribute, int cbAttributeSize);
+        public static extern int DwmGetWindowAttribute(IntPtr hwnd, DWMWINDOWATTRIBUTE dwAttribute, out DWM_CLOAKED_FLAGS pvAttribute, int cbAttributeSize);
         public enum DWMWINDOWATTRIBUTE : int
         {
             DWMWA_NCRENDERING_ENABLED = 1,
@@ -373,6 +373,15 @@ namespace ArnoldVinkCode
             DWMWA_CLOAKED = 14,
             DWMWA_FREEZE_REPRESENTATION = 15,
             DWMWA_LAST = 16
+        }
+
+        public enum DWM_CLOAKED_FLAGS : int
+        {
+            DWM_CLOAKED_NONE = 0x0000000,
+            DWM_CLOAKED_APP = 0x0000001,
+            DWM_CLOAKED_SHELL = 0x0000002,
+            DWM_CLOAKED_REDIRECTION = 0x0000003,
+            DWM_CLOAKED_INHERITED = 0x0000004
         }
 
         //Get Class Long
