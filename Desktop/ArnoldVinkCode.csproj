@@ -65,6 +65,14 @@
     <Compile Include="Api\GitHub\GitHub_Paths.cs" />
     <Compile Include="Api\GitHub\GitHub_Version.cs" />
     <Compile Include="Extensions\AVExtensions.cs" />
+    <Compile Include="Functions\ArnoldVinkInputOutput\Classes\EventFlags.cs" />
+    <Compile Include="Functions\ArnoldVinkInputOutput\Classes\HidKeysConvert.cs" />
+    <Compile Include="Functions\ArnoldVinkInputOutput\Classes\HidKeysName.cs" />
+    <Compile Include="Functions\ArnoldVinkInputOutput\Classes\HidMouseNames.cs" />
+    <Compile Include="Functions\ArnoldVinkInputOutput\Classes\HidMouse.cs" />
+    <Compile Include="Functions\ArnoldVinkInputOutput\Classes\HidKeys.cs" />
+    <Compile Include="Functions\ArnoldVinkInputOutput\Classes\FormKeys.cs" />
+    <Compile Include="Functions\ArnoldVinkInputOutput\Classes\VirtualKeysName.cs" />
     <Compile Include="Functions\ArnoldVinkProcesses\ProcessHide.cs" />
     <Compile Include="Functions\AVActions\AVActions.cs" />
     <Compile Include="Functions\AVActions\Classes\AVTaskDetails.cs" />
@@ -74,7 +82,7 @@
     <Compile Include="Functions\AVActions\TaskStartReturn.cs" />
     <Compile Include="Functions\AVActions\TaskStartBackground.cs" />
     <Compile Include="Functions\AVActions\TaskStartTimeout.cs" />
-    <Compile Include="Functions\ArnoldVinkInputOutput\InputOutputClass.cs" />
+    <Compile Include="Functions\ArnoldVinkInputOutput\Classes\VirtualKeys.cs" />
     <Compile Include="Functions\ArnoldVinkInputOutput\InputOutputHotKey.cs" />
     <Compile Include="Functions\ArnoldVinkInputOutput\InputOutputInterop.cs" />
     <Compile Include="Functions\ArnoldVinkInputOutput\InputOutputKeyboard.cs" />

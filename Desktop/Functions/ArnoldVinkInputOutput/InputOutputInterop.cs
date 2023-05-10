@@ -11,6 +11,13 @@ namespace ArnoldVinkCode
         [DllImport("user32.dll")]
         public static extern uint SendInput(int nInputs, INPUT[] pInputs, int cbSize);
 
+        public enum InputTypes : int
+        {
+            INPUT_MOUSE = 0,
+            INPUT_KEYBOARD = 1,
+            INPUT_HARDWARE = 2
+        }
+
         [StructLayout(LayoutKind.Explicit)]
         public struct INPUT
         {
