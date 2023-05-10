@@ -158,6 +158,7 @@
             OEMCloseBracket = 151,
             OEMQuote = 152,
             OEMBackSlash = 154,
+            Play = 167,
             Zoom = 168
         }
     }
