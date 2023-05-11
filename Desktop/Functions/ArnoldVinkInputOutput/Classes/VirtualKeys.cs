@@ -2,6 +2,7 @@
 {
     public partial class AVInputOutputClass
     {
+        //Matches: Windows.System.VirtualKeyModifiers
         public enum KeysModifierVirtual : byte
         {
             None = 0,
@@ -11,6 +12,7 @@
             Windows = 8
         }
 
+        //Matches: System.Windows.Forms.Keys and Windows.System.VirtualKey
         public enum KeysVirtual : byte
         {
             None = 0,
@@ -182,7 +184,7 @@
         }
 
         //Virtual keys that prefer extended
-        public static KeysVirtual[] KeysVirtualExtended =
+        public readonly static KeysVirtual[] KeysVirtualExtended =
         {
             KeysVirtual.ArrowUp,
             KeysVirtual.ArrowDown,

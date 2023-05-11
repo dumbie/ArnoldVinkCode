@@ -2,6 +2,17 @@
 {
     public partial class AVInputOutputClass
     {
+        //Matches: System.Windows.Input.ModifierKeys
+        public enum KeysModifierForm : byte
+        {
+            None = 0,
+            Alt = 1,
+            Ctrl = 2,
+            Shift = 4,
+            Windows = 8
+        }
+
+        //Matches: System.Windows.Input.Key
         public enum KeysForm : byte
         {
             None = 0,
