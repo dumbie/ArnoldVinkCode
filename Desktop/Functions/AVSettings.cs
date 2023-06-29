@@ -109,39 +109,73 @@ namespace ArnoldVinkCode
             }
         }
 
-        //Create or remove startup shortcut
-        public static void ManageStartupShortcut(string executableName)
+        //Check startup shortcut
+        public static bool StartupShortcutCheck()
         {
             try
             {
-                //Set application shortcut paths
-                string targetFilePath = Assembly.GetEntryAssembly().CodeBase.Replace("file:///", string.Empty);
-                if (!string.IsNullOrWhiteSpace(executableName))
-                {
-                    string originalExecutable = Path.GetFileName(targetFilePath);
-                    targetFilePath = targetFilePath.Replace(originalExecutable, executableName);
-                    Debug.WriteLine("Replaced executable: " + targetFilePath);
-                }
-
                 string targetName = Assembly.GetEntryAssembly().GetName().Name;
                 string targetFileShortcut = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), targetName + ".url");
+                return File.Exists(targetFileShortcut);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        //Create or remove startup shortcut
+        public static void StartupShortcutManage(string executableCustomName, bool useLauncher)
+        {
+            try
+            {
+                //Set shortcut details
+                string targetName = Assembly.GetEntryAssembly().GetName().Name;
+                string targetFileShortcut = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), targetName + ".url");
+                string targetFilePath = Assembly.GetEntryAssembly().CodeBase.Replace("file:///", string.Empty);
+                string targetExecutableFile = Path.GetFileName(targetFilePath);
+
+                //Check custom executable
+                if (!string.IsNullOrWhiteSpace(executableCustomName))
+                {
+                    targetFilePath = targetFilePath.Replace(targetExecutableFile, executableCustomName);
+                }
+
+                //Check launcher executable
+                if (useLauncher)
+                {
+                    string executableLauncher = string.Empty;
+                    if (File.Exists(targetName + "-Launcher.exe"))
+                    {
+                        executableLauncher = targetName + "-Launcher.exe";
+                    }
+                    else if (File.Exists("Launcher.exe"))
+                    {
+                        executableLauncher = "Launcher.exe";
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(executableLauncher))
+                    {
+                        targetFilePath = targetFilePath.Replace(targetExecutableFile, executableLauncher);
+                    }
+                }
 
                 //Check if the shortcut already exists
                 if (!File.Exists(targetFileShortcut))
                 {
-                    Debug.WriteLine("Adding application to Windows startup.");
-                    using (StreamWriter StreamWriter = new StreamWriter(targetFileShortcut))
+                    Debug.WriteLine("Adding application to Windows startup: " + targetFilePath);
+                    using (StreamWriter streamWriter = new StreamWriter(targetFileShortcut))
                     {
-                        StreamWriter.WriteLine("[InternetShortcut]");
-                        StreamWriter.WriteLine("URL=" + targetFilePath);
-                        StreamWriter.WriteLine("IconFile=" + targetFilePath);
-                        StreamWriter.WriteLine("IconIndex=0");
-                        StreamWriter.Flush();
+                        streamWriter.WriteLine("[InternetShortcut]");
+                        streamWriter.WriteLine("URL=" + targetFilePath);
+                        streamWriter.WriteLine("IconFile=" + targetFilePath);
+                        streamWriter.WriteLine("IconIndex=0");
+                        streamWriter.Flush();
                     }
                 }
                 else
                 {
-                    Debug.WriteLine("Removing application from Windows startup.");
+                    Debug.WriteLine("Removing application from Windows startup: " + targetFilePath);
                     File.Delete(targetFileShortcut);
                 }
             }
