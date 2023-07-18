@@ -35,9 +35,6 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\ProcessTool\NET\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -64,6 +61,7 @@
     <Compile Include="Api\GitHub\Classes.cs" />
     <Compile Include="Api\GitHub\GitHub_Paths.cs" />
     <Compile Include="Api\GitHub\GitHub_Version.cs" />
+    <Compile Include="Classes\ComboBoxItem.cs" />
     <Compile Include="Extensions\AVExtensions.cs" />
     <Compile Include="Functions\ArnoldVinkInputOutput\Classes\EventFlags.cs" />
     <Compile Include="Functions\ArnoldVinkInputOutput\Classes\HidKeysConvert.cs" />
