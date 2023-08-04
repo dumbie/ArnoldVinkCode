@@ -354,8 +354,11 @@ namespace ArnoldVinkCode
 
         //Get window dwm attribute
         [DllImport("dwmapi.dll")]
-        public static extern int DwmGetWindowAttribute(IntPtr hwnd, DWMWINDOWATTRIBUTE dwAttribute, out DWM_CLOAKED_FLAGS pvAttribute, int cbAttributeSize);
-        public enum DWMWINDOWATTRIBUTE : int
+        public static extern int DwmGetWindowAttribute(IntPtr hwnd, DWM_WINDOW_ATTRIBUTE dwAttribute, out WindowRectangle pvAttribute, int cbAttributeSize);
+        [DllImport("dwmapi.dll")]
+        public static extern int DwmGetWindowAttribute(IntPtr hwnd, DWM_WINDOW_ATTRIBUTE dwAttribute, out DWM_CLOAKED_FLAGS pvAttribute, int cbAttributeSize);
+
+        public enum DWM_WINDOW_ATTRIBUTE : int
         {
             DWMWA_NCRENDERING_ENABLED = 1,
             DWMWA_NCRENDERING_POLICY = 2,
@@ -380,7 +383,6 @@ namespace ArnoldVinkCode
             DWM_CLOAKED_NONE = 0x0000000,
             DWM_CLOAKED_APP = 0x0000001,
             DWM_CLOAKED_SHELL = 0x0000002,
-            DWM_CLOAKED_REDIRECTION = 0x0000003,
             DWM_CLOAKED_INHERITED = 0x0000004
         }
 
@@ -720,9 +722,10 @@ namespace ArnoldVinkCode
             public int length;
             public WindowFlags windowFlags;
             public WindowShowCommand windowShowCommand;
-            public Point ptMinPosition;
-            public Point ptMaxPosition;
-            public Rectangle rcNormalPosition;
+            public WindowPoint ptMinPosition;
+            public WindowPoint ptMaxPosition;
+            public WindowRectangle rcNormalPosition;
+            public WindowRectangle rcDevice;
         }
         public enum WindowFlags : int
         {
