@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Runtime.InteropServices;
 using static ArnoldVinkCode.AVInteropDll;
 
 namespace ArnoldVinkCode
@@ -94,20 +93,38 @@ namespace ArnoldVinkCode
             }
         }
 
-        //Check if window handle is from uwp application
-        public static bool Check_WindowHandleIsUwpApp(IntPtr targetWindowHandle)
+        //Check process is foreground uwp application
+        public static bool Check_ProcessIsForegroundUwpApp(int targetProcessId)
         {
             try
             {
-                string classNamestring = Detail_ClassNameByWindowHandle(targetWindowHandle);
-                return Check_ClassNameIsUwpApp(classNamestring);
+                foreach (IntPtr windowHandle in Get_WindowHandlesByProcessId(targetProcessId))
+                {
+                    string classNameString = Detail_ClassNameByWindowHandle(windowHandle);
+                    if (classNameString == "MSCTFIME UI")
+                    {
+                        return true;
+                    }
+                }
             }
             catch { }
             return false;
         }
 
-        //Check if class name is from uwp application
-        public static bool Check_ClassNameIsUwpApp(string targetClassName)
+        //Check if window class name is from uwp application
+        public static bool Check_WindowClassNameIsUwpApp(IntPtr targetWindowHandle)
+        {
+            try
+            {
+                string classNameString = Detail_ClassNameByWindowHandle(targetWindowHandle);
+                return Check_WindowClassNameIsUwpApp(classNameString);
+            }
+            catch { }
+            return false;
+        }
+
+        //Check if window class name is from uwp application
+        public static bool Check_WindowClassNameIsUwpApp(string targetClassName)
         {
             try
             {
@@ -121,8 +138,20 @@ namespace ArnoldVinkCode
             return false;
         }
 
-        //Check if class name is valid window
-        public static bool Check_ClassNameIsValid(string targetClassName)
+        //Check if window class name is valid
+        public static bool Check_WindowClassNameIsValid(IntPtr targetWindowHandle)
+        {
+            try
+            {
+                string classNameString = Detail_ClassNameByWindowHandle(targetWindowHandle);
+                return Check_WindowClassNameIsValid(classNameString);
+            }
+            catch { }
+            return false;
+        }
+
+        //Check if window class name is valid
+        public static bool Check_WindowClassNameIsValid(string targetClassName)
         {
             try
             {
@@ -169,11 +198,10 @@ namespace ArnoldVinkCode
                     return false;
                 }
 
-                //Check if window is cloaked
-                int dwmResult = DwmGetWindowAttribute(targetWindowHandle, DWMWINDOWATTRIBUTE.DWMWA_CLOAKED, out DWM_CLOAKED_FLAGS windowCloaked, Marshal.SizeOf(typeof(int)));
-                if (dwmResult >= 0 && windowCloaked != DWM_CLOAKED_FLAGS.DWM_CLOAKED_NONE && windowCloaked != DWM_CLOAKED_FLAGS.DWM_CLOAKED_SHELL)
+                //Check window class name
+                if (!Check_WindowClassNameIsValid(targetWindowHandle))
                 {
-                    //Debug.WriteLine("Window is cloaked and can't be shown or hidden: " + targetWindowHandle);
+                    //Debug.WriteLine("Window class name is invalid: " + targetWindowHandle);
                     return false;
                 }
 

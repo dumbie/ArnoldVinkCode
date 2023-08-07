@@ -96,7 +96,7 @@ namespace ArnoldVinkCode
                         {
                             if (!string.IsNullOrWhiteSpace(AppUserModelId))
                             {
-                                if (Check_ClassNameIsUwpApp(WindowClassNameMain))
+                                if (Check_WindowClassNameIsUwpApp(WindowClassNameMain))
                                 {
                                     CachedType = ProcessType.UWP;
                                 }

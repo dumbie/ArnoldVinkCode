@@ -3,8 +3,6 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text;
-using System.Windows;
-using System.Windows.Shapes;
 using static ArnoldVinkCode.AVInteropCom;
 
 namespace ArnoldVinkCode
