@@ -78,7 +78,7 @@ namespace ArnoldVinkCode
             return true;
         }
 
-        //Get window
+        //Window get
         public enum GetWindowFlags : int
         {
             GW_HWNDFIRST = 0,
@@ -90,6 +90,9 @@ namespace ArnoldVinkCode
         }
         [DllImport("user32.dll")]
         public static extern IntPtr GetWindow(IntPtr hWnd, GetWindowFlags flags);
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr GetLastActivePopup(IntPtr hWnd);
 
         //Window show
         [DllImport("user32.dll")]
@@ -800,7 +803,7 @@ namespace ArnoldVinkCode
         internal static extern uint timeSetEvent(uint msDelay, uint msResolution, MultimediaTimerCallback callback, uint userCtx, uint eventType);
 
         [DllImport("winmm.dll")]
-        internal static extern void timeKillEvent(uint uTimerId);
+        internal static extern uint timeKillEvent(uint uTimerId);
 
         //Kernel events
         public const uint INFINITE = 0xFFFFFFFF;

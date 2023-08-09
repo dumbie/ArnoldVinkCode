@@ -155,7 +155,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                string[] classNamesInvalid = { "ApplicationFrameWindow", "ApplicationManager_ImmersiveShellWindow", "Windows.Internal.Shell.TabProxyWindow" };
+                string[] classNamesInvalid = { "ApplicationManager_ImmersiveShellWindow", "Windows.Internal.Shell.TabProxyWindow" };
                 foreach (string className in classNamesInvalid)
                 {
                     if (targetClassName == className) { return false; }
@@ -166,7 +166,7 @@ namespace ArnoldVinkCode
         }
 
         //Check if window handle is a valid window
-        public static bool Check_WindowHandleValid(IntPtr targetWindowHandle)
+        public static bool Check_WindowHandleValid(IntPtr targetWindowHandle, bool checkMainWindow)
         {
             try
             {
@@ -210,6 +210,21 @@ namespace ArnoldVinkCode
                 {
                     //Debug.WriteLine("Window has no title and can't be shown or hidden: " + targetWindowHandle);
                     return false;
+                }
+
+                //Check if window is main or top
+                if (checkMainWindow)
+                {
+                    IntPtr windowOwner = GetWindow(targetWindowHandle, GetWindowFlags.GW_OWNER);
+                    if (windowOwner != IntPtr.Zero)
+                    {
+                        IntPtr windowPopup = GetLastActivePopup(windowOwner);
+                        if (windowPopup != targetWindowHandle)
+                        {
+                            //Debug.WriteLine("Window is not main or top: " + targetWindowHandle);
+                            return false;
+                        }
+                    }
                 }
             }
             catch { }
