@@ -519,7 +519,7 @@ namespace ArnoldVinkCode
             {
                 try
                 {
-                    CloseHandleAuto(CachedHandle);
+                    SafeCloseHandle(CachedHandle);
                 }
                 catch { }
             }

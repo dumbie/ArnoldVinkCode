@@ -88,7 +88,7 @@ namespace ArnoldVinkCode
                         if (queryResult == STATUS_INFO_LENGTH_MISMATCH)
                         {
                             systemOffset = Math.Max(systemOffset, systemLength);
-                            CloseMarshalAuto(systemInfoBufferBegin);
+                            SafeCloseMarshal(systemInfoBufferBegin);
                         }
                         else if (queryResult == 0)
                         {
@@ -188,7 +188,7 @@ namespace ArnoldVinkCode
             }
             finally
             {
-                CloseMarshalAuto(systemInfoBufferQuery);
+                SafeCloseMarshal(systemInfoBufferQuery);
             }
         }
 
@@ -246,7 +246,7 @@ namespace ArnoldVinkCode
             }
             finally
             {
-                CloseMarshalAuto(systemInfoBufferQuery);
+                SafeCloseMarshal(systemInfoBufferQuery);
             }
         }
     }

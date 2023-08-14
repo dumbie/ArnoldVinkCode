@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
+using static ArnoldVinkCode.AVActions;
 using static ArnoldVinkCode.AVInputOutputClass;
 using static ArnoldVinkCode.AVInputOutputInterop;
 using static ArnoldVinkCode.AVInteropDll;
@@ -16,7 +17,7 @@ namespace ArnoldVinkCode
             try
             {
                 PostMessageAsync(windowHandle, WindowMessages.WM_KEYDOWN, (byte)virtualKey, 0); //Key Press
-                AVActions.TaskDelayHighRes(50);
+                AVHighResDelay.Delay(50);
                 PostMessageAsync(windowHandle, WindowMessages.WM_KEYUP, (byte)virtualKey, 0); //Key Release
             }
             catch { }
@@ -112,7 +113,7 @@ namespace ArnoldVinkCode
                 }
 
                 keybd_event(virtualKey, scanByte, KeyFlagsDown, 0); //Key Press
-                AVActions.TaskDelayHighRes(50);
+                AVHighResDelay.Delay(50);
                 keybd_event(virtualKey, scanByte, KeyFlagsUp, 0); //Key Release
                 return true;
             }
@@ -200,7 +201,7 @@ namespace ArnoldVinkCode
 
                 keybd_event(modifierKey, scanByteMod, KeyFlagsDownMod, 0); //Modifier Press
                 keybd_event(virtualKey, scanByteVk, KeyFlagsDownVk, 0); //Key Press
-                AVActions.TaskDelayHighRes(50);
+                AVHighResDelay.Delay(50);
                 keybd_event(virtualKey, scanByteVk, KeyFlagsUpVk, 0); //Key Release
                 keybd_event(modifierKey, scanByteMod, KeyFlagsUpMod, 0); //Modifier Release
                 return true;

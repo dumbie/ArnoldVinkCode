@@ -101,7 +101,7 @@ namespace ArnoldVinkCode
             }
             finally
             {
-                CloseHandleAuto(launchTokenHandle);
+                SafeCloseHandle(launchTokenHandle);
             }
         }
 

@@ -2,11 +2,13 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
+using System.Security;
 using System.Text;
 using static ArnoldVinkCode.AVInteropCom;
 
 namespace ArnoldVinkCode
 {
+    [SuppressUnmanagedCodeSecurity]
     public partial class AVInteropDll
     {
         //Application DllImports
@@ -52,30 +54,61 @@ namespace ArnoldVinkCode
         //Close Handle
         [DllImport("kernel32.dll")]
         public static extern bool CloseHandle(IntPtr hHandle);
-        public static bool CloseHandleAuto(IntPtr hHandle)
-        {
-            try
-            {
-                if (hHandle != IntPtr.Zero)
-                {
-                    return CloseHandle(hHandle);
-                }
-            }
-            catch { }
-            return true;
-        }
-        public static bool CloseMarshalAuto(IntPtr hGlobal)
+
+        //Safe Close
+        public static bool SafeCloseMarshal(IntPtr hGlobal)
         {
             try
             {
                 if (hGlobal != IntPtr.Zero)
                 {
                     Marshal.FreeHGlobal(hGlobal);
-                    return true;
+                    //Debug.WriteLine("Marshal freed: " + hGlobal);
                 }
+                return true;
             }
-            catch { }
-            return true;
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to free marshal: " + ex.Message);
+                return false;
+            }
+        }
+
+        public static bool SafeCloseHandle(IntPtr hHandle)
+        {
+            try
+            {
+                if (hHandle != IntPtr.Zero)
+                {
+                    CloseHandle(hHandle);
+                    //Debug.WriteLine("Closed the handle: " + hHandle);
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to close handle: " + ex.Message);
+                return false;
+            }
+        }
+
+        public static bool SafeCloseEvent(IntPtr hEvent)
+        {
+            try
+            {
+                if (hEvent != IntPtr.Zero)
+                {
+                    SetEvent(hEvent);
+                    SafeCloseHandle(hEvent);
+                    //Debug.WriteLine("Closed the event: " + hEvent);
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to close event: " + ex.Message);
+                return false;
+            }
         }
 
         //Window get
@@ -797,13 +830,19 @@ namespace ArnoldVinkCode
         }
 
         //Time events
-        internal delegate void MultimediaTimerCallback(uint uTimerID, uint uMsg, UIntPtr dwUser, UIntPtr dw1, UIntPtr dw2);
+        [DllImport("winmm.dll")]
+        public static extern uint timeSetEvent(uint uDelay, uint uResolution, MultimediaTimerCallback lpTimeProc, UIntPtr dwUser, TimeSetEventFlags fuEvent);
 
         [DllImport("winmm.dll")]
-        internal static extern uint timeSetEvent(uint msDelay, uint msResolution, MultimediaTimerCallback callback, uint userCtx, uint eventType);
+        public static extern uint timeKillEvent(uint uTimerId);
 
-        [DllImport("winmm.dll")]
-        internal static extern uint timeKillEvent(uint uTimerId);
+        public delegate void MultimediaTimerCallback(uint uTimerId, uint uMsg, UIntPtr dwUser, UIntPtr dw1, UIntPtr dw2);
+
+        public enum TimeSetEventFlags : uint
+        {
+            TIME_ONESHOT = 0,
+            TIME_PERIODIC = 1
+        }
 
         //Kernel events
         public const uint INFINITE = 0xFFFFFFFF;

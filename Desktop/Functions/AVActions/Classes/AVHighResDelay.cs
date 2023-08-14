@@ -9,14 +9,18 @@ namespace ArnoldVinkCode
         {
             public static void Delay(uint milliSecondsDelay)
             {
+                IntPtr createEvent = IntPtr.Zero;
                 try
                 {
                     if (milliSecondsDelay == 0) { milliSecondsDelay = 1; }
-                    IntPtr createEvent = CreateEvent(IntPtr.Zero, true, false, null);
+                    createEvent = CreateEvent(IntPtr.Zero, true, false, null);
                     WaitForSingleObject(createEvent, milliSecondsDelay);
-                    SafeCloseEvent(createEvent);
                 }
                 catch { }
+                finally
+                {
+                    SafeCloseEvent(createEvent);
+                }
             }
         }
     }
