@@ -11,6 +11,7 @@ namespace ArnoldVinkCode
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(targetPath)) { return false; }
                 return !targetPath.Contains("\\") && !targetPath.Contains("/") && targetPath.Contains("!") && targetPath.Contains("_");
             }
             catch { }
