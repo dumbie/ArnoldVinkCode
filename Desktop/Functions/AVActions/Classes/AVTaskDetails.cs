@@ -15,11 +15,25 @@ namespace ArnoldVinkCode
             public string Name { get; set; } = string.Empty;
             public Task Task { get; set; } = null;
             public CancellationTokenSource TokenSource { get; set; } = null;
-            public bool TaskStopRequest { get { return TokenSource.IsCancellationRequested; } }
+            public bool TaskStopRequested { get { return TokenSource != null && TokenSource.IsCancellationRequested; } }
             public bool TaskRunning { get { return Task != null && !Task.IsCompleted; } }
             public bool TaskCompleted { get { return Task != null && Task.IsCompleted; } }
 
-            public void DisposeReset()
+            ///<summary>Signal task to stop</summary>
+            public void Stop()
+            {
+                try
+                {
+                    if (TokenSource != null)
+                    {
+                        TokenSource.Cancel();
+                    }
+                }
+                catch { }
+            }
+
+            ///<summary>Resets task to default state</summary>
+            public void Reset()
             {
                 try
                 {

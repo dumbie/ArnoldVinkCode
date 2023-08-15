@@ -16,8 +16,8 @@ namespace ArnoldVinkCode
             {
                 if (avTask != null)
                 {
-                    //Dispose and reset task
-                    avTask.DisposeReset();
+                    //Reset loop task
+                    avTask.Reset();
 
                     //Create new loop task
                     avTask.TokenSource = new CancellationTokenSource();
@@ -45,8 +45,8 @@ namespace ArnoldVinkCode
             {
                 if (avTask != null)
                 {
-                    //Dispose and reset task
-                    avTask.DisposeReset();
+                    //Reset loop task
+                    avTask.Reset();
 
                     //Create new loop task
                     avTask.TokenSource = new CancellationTokenSource();
@@ -73,7 +73,12 @@ namespace ArnoldVinkCode
             {
                 if (avTask == null)
                 {
-                    Debug.WriteLine("Loop task is null: " + avTask.Name);
+                    Debug.WriteLine("AV task is null.");
+                    return false;
+                }
+                else if (avTask.Task == null)
+                {
+                    Debug.WriteLine("Loop task is null " + avTask.Name);
                     return false;
                 }
                 else if (avTask.TokenSource == null)
@@ -81,12 +86,7 @@ namespace ArnoldVinkCode
                     Debug.WriteLine("Loop token is null: " + avTask.Name);
                     return false;
                 }
-                else if (avTask.TokenSource.IsCancellationRequested)
-                {
-                    Debug.WriteLine("Loop token cancellation requested: " + avTask.Name);
-                    return false;
-                }
-                else if (avTask.TaskStopRequest)
+                else if (avTask.TaskStopRequested)
                 {
                     Debug.WriteLine("Loop task is requested to stop: " + avTask.Name);
                     return false;
@@ -117,8 +117,8 @@ namespace ArnoldVinkCode
                     return;
                 }
 
-                //Signal the loop task to stop
-                avTask.TokenSource.Cancel();
+                //Signal loop task to stop
+                avTask.Stop();
 
                 //Wait for task to have stopped
                 Debug.WriteLine("Waiting for task " + avTask.Name + " to stop or timeout...");
@@ -132,11 +132,11 @@ namespace ArnoldVinkCode
                         Debug.WriteLine("Stopping task " + avTask.Name + " has timed out...");
                         break;
                     }
-                    await Task.Delay(1);
+                    await Task.Delay(100);
                 }
 
-                //Dispose and reset task
-                avTask.DisposeReset();
+                //Reset loop task
+                avTask.Reset();
 
                 Debug.WriteLine("Loop task " + avTask.Name + " has been stopped in " + stoppedTime + "ms");
             }
