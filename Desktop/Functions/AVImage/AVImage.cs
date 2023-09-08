@@ -159,7 +159,10 @@ namespace ArnoldVinkCode
                             try
                             {
                                 string[] foundImages = Search_Files(new string[] { fileName }, searchSources, false);
-                                imageToBitmapImage.UriSource = new Uri(foundImages.FirstOrDefault(), UriKind.RelativeOrAbsolute);
+                                if (foundImages.Any())
+                                {
+                                    imageToBitmapImage.UriSource = new Uri(foundImages.FirstOrDefault(), UriKind.RelativeOrAbsolute);
+                                }
                             }
                             catch { }
                         }
