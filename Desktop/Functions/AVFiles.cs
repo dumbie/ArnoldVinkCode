@@ -144,10 +144,9 @@ namespace ArnoldVinkCode
         //Get files from directory with depth level
         public static List<string> GetFilesLevel(string directory, string searchPattern, int depthLevel)
         {
+            List<string> fileList = new List<string>();
             try
             {
-                List<string> fileList = new List<string>();
-
                 foreach (string fileInfo in Directory.GetFiles(directory, searchPattern, SearchOption.TopDirectoryOnly))
                 {
                     fileList.Add(fileInfo);
@@ -160,14 +159,12 @@ namespace ArnoldVinkCode
                         GetFilesLevel(directoryInfo, searchPattern, depthLevel--);
                     }
                 }
-
-                return fileList;
             }
             catch (Exception ex)
             {
                 Debug.WriteLine("Failed getting files with level: " + ex.Message);
-                return null;
             }
+            return fileList;
         }
 
         //File delete
