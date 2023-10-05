@@ -691,5 +691,19 @@ namespace ArnoldVinkCode
             catch { }
             return 0;
         }
+
+        //Math min from multiple numbers
+        /// <example>MathMinMulti(1,2,3,4,5)</example>
+        public static int MathMinMulti(params int[] numbers)
+        {
+            return numbers.Min();
+        }
+
+        //Math max from multiple numbers
+        /// <example>MathMaxMulti(1,2,3,4,5)</example>
+        public static int MathMaxMulti(params int[] numbers)
+        {
+            return numbers.Max();
+        }
     }
 }
