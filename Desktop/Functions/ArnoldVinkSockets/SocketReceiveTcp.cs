@@ -63,7 +63,10 @@ namespace ArnoldVinkCode
                         {
                             //Debug.WriteLine("Received bytes from tcp client (S): " + bytesReceivedLength);
                             //Signal that bytes have arrived
-                            EventBytesReceived(tcpClient, null, receivedBytes);
+                            if (EventBytesReceived != null)
+                            {
+                                EventBytesReceived(tcpClient, null, receivedBytes);
+                            }
                         }
                         else
                         {

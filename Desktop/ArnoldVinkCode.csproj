@@ -74,6 +74,10 @@
     <Compile Include="Functions\ArnoldVinkInputOutput\Classes\HidKeys.cs" />
     <Compile Include="Functions\ArnoldVinkInputOutput\Classes\FormKeys.cs" />
     <Compile Include="Functions\ArnoldVinkInputOutput\Classes\VirtualKeysName.cs" />
+    <Compile Include="Functions\ArnoldVinkPipes\PipeReceive.cs" />
+    <Compile Include="Functions\ArnoldVinkPipes\PipeClient.cs" />
+    <Compile Include="Functions\ArnoldVinkPipes\PipeVariables.cs" />
+    <Compile Include="Functions\ArnoldVinkPipes\PipeManage.cs" />
     <Compile Include="Functions\ArnoldVinkProcesses\ProcessHide.cs" />
     <Compile Include="Functions\AVActions\AVActions.cs" />
     <Compile Include="Functions\AVActions\Classes\AVHighResTimer.cs" />

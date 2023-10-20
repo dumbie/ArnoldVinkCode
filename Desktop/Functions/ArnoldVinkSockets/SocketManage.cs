@@ -7,7 +7,7 @@ namespace ArnoldVinkCode
 {
     public partial class ArnoldVinkSockets
     {
-        //Create and enable socket server
+        //Initialize sockets
         public ArnoldVinkSockets(string serverIp, int serverPort, bool tcpServer, bool udpServer)
         {
             try

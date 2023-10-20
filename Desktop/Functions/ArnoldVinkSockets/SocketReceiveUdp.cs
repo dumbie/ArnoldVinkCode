@@ -35,7 +35,10 @@ namespace ArnoldVinkCode
                                 vUdpClients.Add(updDetailsNew);
 
                                 //Signal that bytes have arrived
-                                EventBytesReceived(null, updDetailsNew, receivedBytes);
+                                if (EventBytesReceived != null)
+                                {
+                                    EventBytesReceived(null, updDetailsNew, receivedBytes);
+                                }
                             }
                             else
                             {
@@ -43,7 +46,10 @@ namespace ArnoldVinkCode
                                 updDetailsExisting.LastConnection = GetSystemTicksMs();
 
                                 //Signal that bytes have arrived
-                                EventBytesReceived(null, updDetailsExisting, receivedBytes);
+                                if (EventBytesReceived != null)
+                                {
+                                    EventBytesReceived(null, updDetailsExisting, receivedBytes);
+                                }
                             }
                         }
                     }
