@@ -9,10 +9,9 @@ namespace ArnoldVinkCode.Styles
     //Import:
     //xmlns:styles="clr-namespace:ArnoldVinkCode.Styles"
     //Usage:
-    //Visibility="{Binding Name, Converter={styles:CheckVisibility}}"/>
+    //Visibility="{Binding Name, Converter={styles:NullCheckVisibility}}"/>
 
-    //Check if binding is visible or collapsed
-    public class CheckVisibility : MarkupExtension, IValueConverter
+    public class NullCheckVisibility : MarkupExtension, IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

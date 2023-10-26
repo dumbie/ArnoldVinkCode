@@ -197,6 +197,7 @@
     <Compile Include="Styles\AVColors.cs" />
     <Compile Include="Styles\AVAnimations.cs" />
     <Compile Include="Styles\AVGifPlayer.cs" />
+    <Compile Include="Styles\BindingRectConverter.cs" />
     <Compile Include="Styles\ImageCustomCode.cs" />
     <Compile Include="Styles\MainColors.xaml.cs">
       <DependentUpon>MainColors.xaml</DependentUpon>
@@ -204,7 +205,7 @@
     <Compile Include="Styles\MainStyles.xaml.cs">
       <DependentUpon>MainStyles.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Styles\NullCheckVisibilityCode.cs" />
+    <Compile Include="Styles\BindingNullCheckVisibility.cs" />
     <Compile Include="Styles\TextBoxDelayCode.cs" />
     <Compile Include="Styles\SliderDelayCode.cs" />
     <Compile Include="Styles\ScrollViewerLoopCode.cs" />
@@ -248,6 +249,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Styles\ControlTemplates\Scrollbar.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Styles\ControlTemplates\ProgressBar.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
