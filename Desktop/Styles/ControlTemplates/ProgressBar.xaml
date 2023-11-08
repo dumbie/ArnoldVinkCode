@@ -9,7 +9,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ProgressBar}">
                     <Grid x:Name="TemplateRoot" Height="{TemplateBinding Height}" MinHeight="8" MinWidth="{TemplateBinding Width}">
-                        <Grid x:Name="PART_Indicator" Margin="2,1,2,1" HorizontalAlignment="Left">
+                        <Grid x:Name="PART_Indicator" Margin="1" HorizontalAlignment="Left">
                             <Border x:Name="PART_GlowRect" CornerRadius="4" BorderThickness="0" Background="{TemplateBinding Foreground}" HorizontalAlignment="Left" Width="40"/>
                             <Border x:Name="STYLE_Indicator" CornerRadius="4" BorderThickness="0" Background="{TemplateBinding Foreground}"/>
                         </Grid>
