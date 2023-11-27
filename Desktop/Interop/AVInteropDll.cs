@@ -225,6 +225,16 @@ namespace ArnoldVinkCode
             NoFrame = 0x800
         }
 
+        //Window display affinity
+        [DllImport("user32.dll")]
+        public static extern bool SetWindowDisplayAffinity(IntPtr hWnd, DisplayAffinityFlags affinity);
+        public enum DisplayAffinityFlags : uint
+        {
+            WDA_NONE = 0x00,
+            WDA_MONITOR = 0x01,
+            WDA_EXCLUDEFROMCAPTURE = 0x11
+        }
+
         //SHLW Api
         [DllImport("shlwapi.dll", CharSet = CharSet.Unicode)]
         public static extern int SHLoadIndirectString(string pszSource, StringBuilder pszOutBuf, int cchOutBuf, IntPtr ppvReserved);
