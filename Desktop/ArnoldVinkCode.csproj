@@ -134,6 +134,15 @@
     <Compile Include="Functions\AVAudioDevice\Classes\AudioDeviceSummary.cs" />
     <Compile Include="Functions\AVAudioDevice\IMMDevice\IMMDevice.cs" />
     <Compile Include="Functions\AVAudioDevice\IMMDevice\PolicyConfig.cs" />
+    <Compile Include="Functions\AVDevices\Defines\EnumerateClasses.cs" />
+    <Compile Include="Functions\AVDevices\Defines\SetupApiGuids.cs" />
+    <Compile Include="Functions\AVDevices\Defines\SetupApiStructs.cs" />
+    <Compile Include="Functions\AVDevices\Defines\SetupApiEnums.cs" />
+    <Compile Include="Functions\AVDevices\DeviceManager.cs" />
+    <Compile Include="Functions\AVDevices\Extensions.cs" />
+    <Compile Include="Functions\AVDevices\Interop\SetupApi.cs" />
+    <Compile Include="Functions\AVDevices\DeviceEnumerate.cs" />
+    <Compile Include="Functions\AVDisplayMonitor\AVDisplayMonitorState.cs" />
     <Compile Include="Functions\AVShellInfo.cs" />
     <Compile Include="Functions\AVDiskInfo.cs" />
     <Compile Include="Functions\AVFocus\AVFocusListboxIndex.cs" />
@@ -295,5 +304,6 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
