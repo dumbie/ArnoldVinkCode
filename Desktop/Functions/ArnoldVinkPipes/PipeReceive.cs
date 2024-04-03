@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
 using System.Security.AccessControl;
@@ -19,15 +20,25 @@ namespace ArnoldVinkCode
                 {
                     try
                     {
-                        //Allow access from every user
+                        //Check used operating system
+                        if (!OperatingSystem.IsWindows())
+                        {
+                            Debug.WriteLine("Pipes are only supported on Windows.");
+                            return;
+                        }
+
+                        //Create pipe access control
                         PipeSecurity pipeSecurity = new PipeSecurity();
                         SecurityIdentifier pipeSecurityIdentity = new SecurityIdentifier(WellKnownSidType.WorldSid, null);
                         PipeAccessRule pipeAccessRule = new PipeAccessRule(pipeSecurityIdentity, PipeAccessRights.ReadWrite, AccessControlType.Allow);
                         pipeSecurity.AddAccessRule(pipeAccessRule);
 
                         //Start pipe server and wait for connection
-                        using (NamedPipeServerStream pipeServer = new NamedPipeServerStream(vPipeServerName, PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.None, 0, 0, pipeSecurity))
+                        using (NamedPipeServerStream pipeServer = new NamedPipeServerStream(vPipeServerName, PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.None, 0, 0))
                         {
+                            //Set pipe access control
+                            pipeServer.SetAccessControl(pipeSecurity);
+
                             //Wait for connection from client
                             await pipeServer.WaitForConnectionAsync(vTask_PipeReceiveLoop.TokenSource.Token);
 

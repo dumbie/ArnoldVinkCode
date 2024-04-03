@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using System.Runtime.Serialization.Formatters.Binary;
 
 namespace ArnoldVinkCode
@@ -64,32 +63,32 @@ namespace ArnoldVinkCode
             }
         }
 
-        //Convert bytes to hex string
-        public static byte[] GetHexStringToBytes(string value)
-        {
-            try
-            {
-                return SoapHexBinary.Parse(value).Value;
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("Failed to GetHexStringToBytes: " + ex.Message);
-                return null;
-            }
-        }
+        ////Convert bytes to hex string
+        //public static byte[] GetHexStringToBytes(string value)
+        //{
+        //    try
+        //    {
+        //        return SoapHexBinary.Parse(value).Value;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Debug.WriteLine("Failed to GetHexStringToBytes: " + ex.Message);
+        //        return null;
+        //    }
+        //}
 
-        public static string GetBytesToHexString(byte[] value)
-        {
-            try
-            {
-                return new SoapHexBinary(value).ToString();
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("Failed to GetBytesToHexString: " + ex.Message);
-                return null;
-            }
-        }
+        //public static string GetBytesToHexString(byte[] value)
+        //{
+        //    try
+        //    {
+        //        return new SoapHexBinary(value).ToString();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Debug.WriteLine("Failed to GetBytesToHexString: " + ex.Message);
+        //        return null;
+        //    }
+        //}
 
         //Serialize and deserialize class
         public static byte[] SerializeObjectToBytes(object serializeObject)

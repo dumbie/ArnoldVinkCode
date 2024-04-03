@@ -1,291 +1,23 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{478ED5D3-38AF-47FC-AE14-B67976AB952C}</ProjectGuid>
+    <TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ArnoldVinkCode</RootNamespace>
-    <AssemblyName>ArnoldVinkCode</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
-    <TargetFrameworkProfile />
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <UseWindowsForms>true</UseWindowsForms>
+    <UseWPF>true</UseWPF>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Debug\Resources\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
-    <Optimize>true</Optimize>
     <OutputPath>bin\Release\Resources\</OutputPath>
     <DefineConstants>
     </DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="System" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Management" />
-    <Reference Include="System.Windows" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
-    <Reference Include="WindowsBase" />
-    <Reference Include="Windows">
-      <HintPath>C:\Program Files (x86)\Windows Kits\10\UnionMetadata\10.0.19041.0\Windows.winmd</HintPath>
-      <Private>False</Private>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Api\GitHub\Classes.cs" />
-    <Compile Include="Api\GitHub\GitHub_Paths.cs" />
-    <Compile Include="Api\GitHub\GitHub_Version.cs" />
-    <Compile Include="Classes\ComboBoxItem.cs" />
-    <Compile Include="Extensions\AVExtensions.cs" />
-    <Compile Include="Functions\ArnoldVinkInputOutput\Classes\EventFlags.cs" />
-    <Compile Include="Functions\ArnoldVinkInputOutput\Classes\HidKeysConvert.cs" />
-    <Compile Include="Functions\ArnoldVinkInputOutput\Classes\HidKeysName.cs" />
-    <Compile Include="Functions\ArnoldVinkInputOutput\Classes\HidMouseNames.cs" />
-    <Compile Include="Functions\ArnoldVinkInputOutput\Classes\HidMouse.cs" />
-    <Compile Include="Functions\ArnoldVinkInputOutput\Classes\HidKeys.cs" />
-    <Compile Include="Functions\ArnoldVinkInputOutput\Classes\FormKeys.cs" />
-    <Compile Include="Functions\ArnoldVinkInputOutput\Classes\VirtualKeysName.cs" />
-    <Compile Include="Functions\ArnoldVinkPipes\PipeReceive.cs" />
-    <Compile Include="Functions\ArnoldVinkPipes\PipeClient.cs" />
-    <Compile Include="Functions\ArnoldVinkPipes\PipeVariables.cs" />
-    <Compile Include="Functions\ArnoldVinkPipes\PipeManage.cs" />
-    <Compile Include="Functions\ArnoldVinkProcesses\ProcessHide.cs" />
-    <Compile Include="Functions\AVActions\AVActions.cs" />
-    <Compile Include="Functions\AVActions\Classes\AVHighResTimer.cs" />
-    <Compile Include="Functions\AVActions\Classes\AVHighResDelay.cs" />
-    <Compile Include="Functions\AVActions\Classes\AVTaskDetails.cs" />
-    <Compile Include="Functions\AVActions\DispatcherInvoke.cs" />
-    <Compile Include="Functions\AVActions\TaskDelay.cs" />
-    <Compile Include="Functions\AVActions\TaskLoop.cs" />
-    <Compile Include="Functions\AVActions\TaskStartReturn.cs" />
-    <Compile Include="Functions\AVActions\TaskStartBackground.cs" />
-    <Compile Include="Functions\AVActions\TaskStartTimeout.cs" />
-    <Compile Include="Functions\ArnoldVinkInputOutput\Classes\VirtualKeys.cs" />
-    <Compile Include="Functions\ArnoldVinkInputOutput\InputOutputHotKey.cs" />
-    <Compile Include="Functions\ArnoldVinkInputOutput\InputOutputInterop.cs" />
-    <Compile Include="Functions\ArnoldVinkInputOutput\InputOutputKeyboard.cs" />
-    <Compile Include="Functions\ArnoldVinkInputOutput\InputOutputMouse.cs" />
-    <Compile Include="Functions\ArnoldVinkProcesses\Defines\ProcessEnumerators.cs" />
-    <Compile Include="Functions\ArnoldVinkProcesses\Defines\ProcessMulti.cs" />
-    <Compile Include="Functions\ArnoldVinkProcesses\Interop\ProcessUWP.cs" />
-    <Compile Include="Functions\ArnoldVinkProcesses\Interop\ProcessShellUser.cs" />
-    <Compile Include="Functions\ArnoldVinkProcesses\Interop\ProcessToken.cs" />
-    <Compile Include="Functions\ArnoldVinkProcesses\Interop\ProcessShellInherit.cs" />
-    <Compile Include="Functions\ArnoldVinkProcesses\ProcessStatus.cs" />
-    <Compile Include="Functions\ArnoldVinkProcesses\ProcessGet.cs" />
-    <Compile Include="Functions\ArnoldVinkProcesses\ProcessCheck.cs" />
-    <Compile Include="Functions\ArnoldVinkProcesses\ProcessShow.cs" />
-    <Compile Include="Functions\ArnoldVinkProcesses\ProcessRestart.cs" />
-    <Compile Include="Functions\ArnoldVinkProcesses\ProcessLaunch.cs" />
-    <Compile Include="Functions\ArnoldVinkProcesses\QuerySystem.cs" />
-    <Compile Include="Functions\ArnoldVinkProcesses\QueryProcess.cs" />
-    <Compile Include="Functions\ArnoldVinkProcesses\QueryProcess64.cs" />
-    <Compile Include="Functions\ArnoldVinkProcesses\QueryProcessWOW64.cs" />
-    <Compile Include="Functions\ArnoldVinkProcesses\QueryProcess32.cs" />
-    <Compile Include="Functions\ArnoldVinkProcesses\Defines\ProcessClasses.cs" />
-    <Compile Include="Functions\ArnoldVinkProcesses\ProcessClose.cs" />
-    <Compile Include="Functions\ArnoldVinkProcesses\ProcessWindow.cs" />
-    <Compile Include="Functions\ArnoldVinkProcesses\TokenCreate.cs" />
-    <Compile Include="Functions\ArnoldVinkProcesses\TokenAdjust.cs" />
-    <Compile Include="Functions\ArnoldVinkProcesses\ProcessDetail.cs" />
-    <Compile Include="Functions\ArnoldVinkProcesses\TokenSid.cs" />
-    <Compile Include="Functions\ArnoldVinkSockets\SocketClass.cs" />
-    <Compile Include="Functions\ArnoldVinkSockets\SocketCleanTcp.cs" />
-    <Compile Include="Functions\ArnoldVinkSockets\SocketCleanUdp.cs" />
-    <Compile Include="Functions\ArnoldVinkSockets\SocketClientTcp.cs" />
-    <Compile Include="Functions\ArnoldVinkSockets\SocketClientUdp.cs" />
-    <Compile Include="Functions\ArnoldVinkSockets\SocketManage.cs" />
-    <Compile Include="Functions\ArnoldVinkSockets\SocketReceiveTcp.cs" />
-    <Compile Include="Functions\ArnoldVinkSockets\SocketReceiveUdp.cs" />
-    <Compile Include="Functions\ArnoldVinkSockets\SocketServerTcp.cs" />
-    <Compile Include="Functions\ArnoldVinkSockets\SocketServerUdp.cs" />
-    <Compile Include="Functions\ArnoldVinkSockets\SocketVariables.cs" />
-    <Compile Include="Functions\AVAudioDevice\AVAudioDeviceSwitch.cs" />
-    <Compile Include="Functions\AVAudioDevice\AVAudioDeviceVolume.cs" />
-    <Compile Include="Functions\AVAudioDevice\Classes\AudioDeviceSummary.cs" />
-    <Compile Include="Functions\AVAudioDevice\IMMDevice\IMMDevice.cs" />
-    <Compile Include="Functions\AVAudioDevice\IMMDevice\PolicyConfig.cs" />
-    <Compile Include="Functions\AVDevices\Defines\EnumerateClasses.cs" />
-    <Compile Include="Functions\AVDevices\Defines\SetupApiGuids.cs" />
-    <Compile Include="Functions\AVDevices\Defines\SetupApiStructs.cs" />
-    <Compile Include="Functions\AVDevices\Defines\SetupApiEnums.cs" />
-    <Compile Include="Functions\AVDevices\DeviceManager.cs" />
-    <Compile Include="Functions\AVDevices\Extensions.cs" />
-    <Compile Include="Functions\AVDevices\Interop\SetupApi.cs" />
-    <Compile Include="Functions\AVDevices\DeviceEnumerate.cs" />
-    <Compile Include="Functions\AVDisplayMonitor\AVDisplayMonitorState.cs" />
-    <Compile Include="Functions\AVShellInfo.cs" />
-    <Compile Include="Functions\AVDiskInfo.cs" />
-    <Compile Include="Functions\AVFocus\AVFocusListboxIndex.cs" />
-    <Compile Include="Functions\AVFocus\AVFocusWindow.cs" />
-    <Compile Include="Functions\AVJsonFunctions.cs" />
-    <Compile Include="Functions\AVClassConverters.cs" />
-    <Compile Include="Functions\AVDebug.cs" />
-    <Compile Include="Functions\AVDisplayMonitor\AVDisplayMonitorDisplayConfig.cs" />
-    <Compile Include="Functions\AVDisplayMonitor\AVDisplayMonitorEnumDisplay.cs" />
-    <Compile Include="Functions\AVDisplayMonitor\AVDisplayMonitorSwitch.cs" />
-    <Compile Include="Functions\AVDisplayMonitor\Classes\DisplayMonitor.cs" />
-    <Compile Include="Functions\AVDisplayMonitor\Interop\InteropDisplayConfig.cs" />
-    <Compile Include="Functions\AVDisplayMonitor\Interop\InteropEnumDisplay.cs" />
-    <Compile Include="Functions\AVDownloader.cs" />
-    <Compile Include="Functions\AVFiles.cs" />
-    <Compile Include="Functions\AVFirewall.cs" />
-    <Compile Include="Functions\AVFunctions.cs" />
-    <Compile Include="Functions\AVHasher.cs" />
-    <Compile Include="Functions\AVImage\AVImage.cs" />
-    <Compile Include="Functions\AVImage\Classes\IconPackage.cs" />
-    <Compile Include="Functions\AVImage\Enums\IconResourceFlags.cs" />
-    <Compile Include="Functions\AVImage\Enums\IconVersion.cs" />
-    <Compile Include="Functions\AVImage\Enums\LoadLibraryFlags.cs" />
-    <Compile Include="Functions\AVImage\Enums\ResourceTypes.cs" />
-    <Compile Include="Functions\AVImage\ExtractImage\GetIconMemoryStreamFromExeFile.cs" />
-    <Compile Include="Functions\AVImage\ExtractImage\GetIconMemoryStreamFromIcoFile.cs" />
-    <Compile Include="Functions\AVImage\ExtractImage\GetIconMemoryStreamFromWindow.cs" />
-    <Compile Include="Functions\AVImage\Interop\IconResource.cs" />
-    <Compile Include="Functions\AVInterface.cs" />
-    <Compile Include="Functions\AVSearch\AVSearch.cs" />
-    <Compile Include="Functions\AVSearch\Classes\SearchSource.cs" />
-    <Compile Include="Functions\AVSettings.cs" />
-    <Compile Include="Functions\AVTaskbarInformation.cs" />
-    <Compile Include="Functions\AVTimeZones.cs" />
-    <Compile Include="Functions\AVUwpAppx\AVUwpAppx.cs" />
-    <Compile Include="Functions\AVUwpAppx\ClassAppxDetails.cs" />
-    <Compile Include="Functions\AVUwpAppx\ClassAppxManifest.cs" />
-    <Compile Include="Functions\AVWindow\AVWindowCustom.cs" />
-    <Compile Include="Functions\AVWindow\AVWindowFunctions.cs" />
-    <Compile Include="Functions\AVFocus\AVFocusElement.cs" />
-    <Compile Include="Functions\AVFocus\AVFocusListboxItem.cs" />
-    <Compile Include="Functions\AVFocus\Classes\AVFocusDetails.cs" />
-    <Compile Include="Interop\AVInteropCom.cs" />
-    <Compile Include="Interop\AVInteropDll.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Styles\ArnoldVinkColorPickerPreset\ColorPicker.xaml.cs">
-      <DependentUpon>ColorPicker.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Styles\ArnoldVinkColorPicker\ColorPicker.xaml.cs">
-      <DependentUpon>ColorPicker.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Styles\ArnoldVinkColorPicker\ColorSelector.xaml.cs">
-      <DependentUpon>ColorSelector.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Styles\ArnoldVinkMessageBox\MessageBox.xaml.cs">
-      <DependentUpon>MessageBox.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Styles\ArnoldVinkTimePicker\TimePicker.xaml.cs">
-      <DependentUpon>TimePicker.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Styles\AVColors.cs" />
-    <Compile Include="Styles\AVAnimations.cs" />
-    <Compile Include="Styles\AVGifPlayer.cs" />
-    <Compile Include="Styles\BindingRectConverter.cs" />
-    <Compile Include="Styles\ImageCustomCode.cs" />
-    <Compile Include="Styles\MainColors.xaml.cs">
-      <DependentUpon>MainColors.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Styles\MainStyles.xaml.cs">
-      <DependentUpon>MainStyles.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Styles\BindingNullCheckVisibility.cs" />
-    <Compile Include="Styles\TextBoxDelayCode.cs" />
-    <Compile Include="Styles\SliderDelayCode.cs" />
-    <Compile Include="Styles\ScrollViewerLoopCode.cs" />
-    <Compile Include="Styles\TextBoxPlaceholderCode.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="Styles\ArnoldVinkColorPickerPreset\ColorPicker.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Styles\ArnoldVinkColorPicker\ColorPicker.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Styles\ArnoldVinkColorPicker\ColorSelector.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Styles\ArnoldVinkMessageBox\MessageBox.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Styles\ArnoldVinkTimePicker\TimePicker.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Styles\ControlTemplates\Button.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Styles\ControlTemplates\CheckBox.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Styles\ControlTemplates\ComboBox.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Styles\ControlTemplates\ListBox.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Styles\ControlTemplates\Scrollbar.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Styles\ControlTemplates\ProgressBar.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Styles\ControlTemplates\Thumb.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Styles\ControlTemplates\Slider.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Styles\ControlTemplates\TextBox.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Styles\MainColors.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Styles\MainStyles.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-  </ItemGroup>
   <ItemGroup>
     <Content Include="Styles\ArnoldVinkColorPicker\ColorSelector.png" />
     <Content Include="Styles\Readme.txt" />
@@ -302,8 +34,8 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="System.Management" Version="8.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
