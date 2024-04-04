@@ -8,7 +8,7 @@ namespace ArnoldVinkCode
 {
     public partial class AVAssembly
     {
-        public static Assembly AppAssemblyResolveFile(object sender, ResolveEventArgs args)
+        public static Assembly AssemblyResolveFile(object sender, ResolveEventArgs args)
         {
             try
             {
@@ -24,7 +24,7 @@ namespace ArnoldVinkCode
             }
         }
 
-        public static Assembly AppAssemblyResolveEmbedded(object sender, ResolveEventArgs args)
+        public static Assembly AssemblyResolveEmbedded(object sender, ResolveEventArgs args)
         {
             try
             {
