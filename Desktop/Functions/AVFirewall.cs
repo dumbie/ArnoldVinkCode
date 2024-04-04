@@ -81,7 +81,10 @@ namespace ArnoldVinkCode
         {
             try
             {
-                Process.Start("wf.msc");
+                Process process = new Process();
+                process.StartInfo.FileName = "wf.msc";
+                process.StartInfo.UseShellExecute = true;
+                process.Start();
             }
             catch { }
         }
