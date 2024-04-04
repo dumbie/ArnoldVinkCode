@@ -4,13 +4,13 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Security.Principal;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Media;
 using System.Windows.Threading;
-using static ArnoldVinkCode.AVInteropDll;
 
 namespace ArnoldVinkCode
 {
@@ -506,36 +506,6 @@ namespace ArnoldVinkCode
             catch { return false; }
         }
 
-        //Get application form window
-        public static T GetWindowOfType<T>() where T : Window
-        {
-            try
-            {
-                return System.Windows.Application.Current.Windows.OfType<T>().FirstOrDefault();
-            }
-            catch { return null; }
-        }
-
-        //Application window move
-        public static void WindowMove(IntPtr windowHandle, int horLeft, int verTop)
-        {
-            try
-            {
-                SetWindowPos(windowHandle, IntPtr.Zero, horLeft, verTop, 0, 0, (int)SWP_WindowFlags.NOSIZE);
-            }
-            catch { }
-        }
-
-        //Application window resize
-        public static void WindowResize(IntPtr windowHandle, int width, int height)
-        {
-            try
-            {
-                SetWindowPos(windowHandle, IntPtr.Zero, 0, 0, width, height, (int)SWP_WindowFlags.NOMOVE);
-            }
-            catch { }
-        }
-
         //Get screen aspect ratio
         public static string ScreenAspectRatio(int ScreenWidth, int ScreenHeight, bool AutoResolution)
         {
@@ -704,6 +674,37 @@ namespace ArnoldVinkCode
         public static int MathMaxMulti(params int[] numbers)
         {
             return numbers.Max();
+        }
+
+        //Open website in default browser
+        public static void OpenWebsiteBrowser(string websiteUrl)
+        {
+            try
+            {
+                Process process = new Process();
+                process.StartInfo.FileName = websiteUrl;
+                process.StartInfo.UseShellExecute = true;
+                process.Start();
+            }
+            catch { }
+        }
+
+        //Check process administrator permission
+        public static bool ProcessCheckAdminPermission()
+        {
+            try
+            {
+                using (WindowsIdentity identity = WindowsIdentity.GetCurrent())
+                {
+                    WindowsPrincipal principal = new WindowsPrincipal(identity);
+                    return principal.IsInRole(WindowsBuiltInRole.Administrator);
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to check admin permission: " + ex.Message);
+                return false;
+            }
         }
     }
 }

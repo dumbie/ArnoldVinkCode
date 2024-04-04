@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Text.RegularExpressions;
+using System.Windows;
 using System.Windows.Forms;
 using static ArnoldVinkCode.AVDisplayMonitor;
-using static ArnoldVinkCode.AVFunctions;
 using static ArnoldVinkCode.AVInteropDll;
 
 namespace ArnoldVinkCode
@@ -23,6 +24,36 @@ namespace ArnoldVinkCode
             BottomCenter = 7,
             BottomRight = 8,
             FullScreen = 9
+        }
+
+        //Get application form window
+        public static T GetWindowOfType<T>() where T : Window
+        {
+            try
+            {
+                return System.Windows.Application.Current.Windows.OfType<T>().FirstOrDefault();
+            }
+            catch { return null; }
+        }
+
+        //Application window move
+        public static void WindowMove(IntPtr windowHandle, int horLeft, int verTop)
+        {
+            try
+            {
+                SetWindowPos(windowHandle, IntPtr.Zero, horLeft, verTop, 0, 0, (int)SWP_WindowFlags.NOSIZE);
+            }
+            catch { }
+        }
+
+        //Application window resize
+        public static void WindowResize(IntPtr windowHandle, int width, int height)
+        {
+            try
+            {
+                SetWindowPos(windowHandle, IntPtr.Zero, 0, 0, width, height, (int)SWP_WindowFlags.NOMOVE);
+            }
+            catch { }
         }
 
         //Update window visibility
