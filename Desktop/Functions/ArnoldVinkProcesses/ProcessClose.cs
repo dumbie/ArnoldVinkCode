@@ -11,6 +11,12 @@ namespace ArnoldVinkCode
             IntPtr closeProcess = IntPtr.Zero;
             try
             {
+                if (GetCurrentProcessId() == targetProcessId)
+                {
+                    AVDebug.WriteLine("Prevented closing process by id: " + targetProcessId + "/Process is application.");
+                    return false;
+                }
+
                 closeProcess = OpenProcess(PROCESS_DESIRED_ACCESS.PROCESS_TERMINATE, false, targetProcessId);
                 if (closeProcess == IntPtr.Zero)
                 {
