@@ -10,12 +10,25 @@ namespace ArnoldVinkCode
 {
     public partial class AVDownloader
     {
+        //Update security protocol
+        public static void UpdateWebSecurityProtocol()
+        {
+            try
+            {
+                ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to set web security protocol: " + ex.Message);
+            }
+        }
+
         //Download string async with timeout
         public static async Task<string> DownloadStringAsync(int TimeOut, string UserAgent, string[][] Header, Uri DownloadUrl)
         {
             try
             {
-                ServicePointManager.SecurityProtocol |= SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+                UpdateWebSecurityProtocol();
                 using (HttpClient httpClient = new HttpClient())
                 {
                     httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
@@ -49,7 +62,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                ServicePointManager.SecurityProtocol |= SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+                UpdateWebSecurityProtocol();
                 using (HttpClient httpClient = new HttpClient())
                 {
                     httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
@@ -83,7 +96,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                ServicePointManager.SecurityProtocol |= SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+                UpdateWebSecurityProtocol();
                 using (HttpClient httpClient = new HttpClient())
                 {
                     httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
@@ -117,7 +130,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                ServicePointManager.SecurityProtocol |= SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+                UpdateWebSecurityProtocol();
                 using (HttpClient httpClient = new HttpClient())
                 {
                     httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
@@ -151,7 +164,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                ServicePointManager.SecurityProtocol |= SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+                UpdateWebSecurityProtocol();
                 using (HttpClient httpClient = new HttpClient())
                 {
                     httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
@@ -185,7 +198,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                ServicePointManager.SecurityProtocol |= SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+                UpdateWebSecurityProtocol();
                 using (HttpClient httpClient = new HttpClient())
                 {
                     httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
