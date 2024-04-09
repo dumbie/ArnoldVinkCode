@@ -30,7 +30,7 @@ namespace ArnoldVinkCode
             try
             {
                 string jsonFileText = string.Empty;
-                using (Stream stream = assembly.GetManifestResourceStream(resourcePath))
+                using (Stream stream = AVEmbedded.EmbeddedResourceToStream(assembly, resourcePath))
                 {
                     using (StreamReader reader = new StreamReader(stream))
                     {

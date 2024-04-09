@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Security.Principal;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -703,6 +704,72 @@ namespace ArnoldVinkCode
             catch (Exception ex)
             {
                 Debug.WriteLine("Failed to check admin permission: " + ex.Message);
+                return false;
+            }
+        }
+
+        //Get current application name
+        public static string ApplicationName()
+        {
+            try
+            {
+                return Assembly.GetEntryAssembly().GetName().Name;
+            }
+            catch
+            {
+                return string.Empty;
+            }
+        }
+
+        //Get current application version
+        public static string ApplicationVersion()
+        {
+            try
+            {
+                return Assembly.GetEntryAssembly().FullName.Split('=')[1].Split(',')[0];
+            }
+            catch
+            {
+                return string.Empty;
+            }
+        }
+
+        //Get current application root path
+        public static string ApplicationPathRoot()
+        {
+            try
+            {
+                return Path.GetDirectoryName(Environment.ProcessPath);
+            }
+            catch
+            {
+                return string.Empty;
+            }
+        }
+
+        //Get current application executable path
+        public static string ApplicationPathExecutable()
+        {
+            try
+            {
+                return Environment.ProcessPath;
+            }
+            catch
+            {
+                return string.Empty;
+            }
+        }
+
+        //Set working path to application executable path
+        public static bool ApplicationUpdateWorkingPath()
+        {
+            try
+            {
+                Directory.SetCurrentDirectory(ApplicationPathRoot());
+                return true;
+            }
+            catch
+            {
                 return false;
             }
         }

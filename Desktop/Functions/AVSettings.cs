@@ -114,7 +114,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                string targetName = Assembly.GetEntryAssembly().GetName().Name;
+                string targetName = AVFunctions.ApplicationName();
                 string targetFileShortcut = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), targetName + ".url");
                 return File.Exists(targetFileShortcut);
             }
@@ -130,9 +130,9 @@ namespace ArnoldVinkCode
             try
             {
                 //Set shortcut details
-                string targetName = Assembly.GetEntryAssembly().GetName().Name;
+                string targetName = AVFunctions.ApplicationName();
                 string targetFileShortcut = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), targetName + ".url");
-                string targetFilePath = Assembly.GetEntryAssembly().CodeBase.Replace("file:///", string.Empty);
+                string targetFilePath = AVFunctions.ApplicationPathExecutable();
                 string targetExecutableFile = Path.GetFileName(targetFilePath);
 
                 //Check custom executable

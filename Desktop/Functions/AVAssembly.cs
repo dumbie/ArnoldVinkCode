@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
 using System.Reflection;
 using static ArnoldVinkCode.AVEmbedded;
 
@@ -13,7 +12,7 @@ namespace ArnoldVinkCode
             try
             {
                 string fileName = args.Name.Split(',')[0] + ".dll";
-                string filePath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) + "\\Resources\\" + fileName;
+                string filePath = AVFunctions.ApplicationPathRoot() + "\\Resources\\" + fileName;
                 Debug.WriteLine("Resolving resource assembly dll: " + fileName);
                 return Assembly.LoadFrom(filePath);
             }
@@ -29,8 +28,8 @@ namespace ArnoldVinkCode
             try
             {
                 string fileName = args.Name.Split(',')[0] + ".dll";
-                string assemblyPath = Assembly.GetEntryAssembly().GetName().Name + ".Assembly." + fileName;
-                byte[] fileBytes = EmbeddedResourceToBytes(assemblyPath);
+                string assemblyPath = AVFunctions.ApplicationName() + ".Assembly." + fileName;
+                byte[] fileBytes = EmbeddedResourceToBytes(null, assemblyPath);
                 Debug.WriteLine("Resolving embedded assembly dll: " + assemblyPath);
                 return Assembly.Load(fileBytes);
             }

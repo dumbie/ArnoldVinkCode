@@ -7,13 +7,28 @@ namespace ArnoldVinkCode
 {
     public partial class AVEmbedded
     {
-        public static byte[] EmbeddedResourceToBytes(string fileName)
+        public static Stream EmbeddedResourceToStream(Assembly targetAssembly, string resourcePath)
         {
             try
             {
+                if (targetAssembly == null) { targetAssembly = Assembly.GetEntryAssembly(); }
+                return targetAssembly.GetManifestResourceStream(resourcePath);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to get embedded resource stream: " + ex.Message);
+                return null;
+            }
+        }
+
+        public static byte[] EmbeddedResourceToBytes(Assembly targetAssembly, string resourcePath)
+        {
+            try
+            {
+                if (targetAssembly == null) { targetAssembly = Assembly.GetEntryAssembly(); }
                 using (MemoryStream memoryStream = new MemoryStream())
                 {
-                    using (Stream fileStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(fileName))
+                    using (Stream fileStream = targetAssembly.GetManifestResourceStream(resourcePath))
                     {
                         fileStream.CopyTo(memoryStream);
                         return memoryStream.ToArray();
@@ -22,7 +37,7 @@ namespace ArnoldVinkCode
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to convert embedded resource: " + ex.Message);
+                Debug.WriteLine("Failed to get embedded resource bytes: " + ex.Message);
                 return null;
             }
         }
