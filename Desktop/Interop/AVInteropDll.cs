@@ -864,7 +864,11 @@ namespace ArnoldVinkCode
         public static extern bool SetEvent(IntPtr hEvent);
 
         [DllImport("kernel32.dll")]
-        public static extern WaitObjectResult WaitForSingleObject(IntPtr hEvent, uint dwMilliseconds);
+        public static extern WaitObjectResult WaitForSingleObject(IntPtr hHandle, uint dwMilliseconds);
+
+        [DllImport("kernel32.dll")]
+        public static extern WaitObjectResult WaitForMultipleObjects(uint nCount, IntPtr[] lpHandles, bool bWaitAll, uint dwMilliseconds);
+
         public enum WaitObjectResult : uint
         {
             WAIT_OBJECT_0 = 0x00000000,
