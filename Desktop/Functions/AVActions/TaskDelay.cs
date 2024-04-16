@@ -9,17 +9,17 @@ namespace ArnoldVinkCode
         ///Automatically choose between high resolution or regular delay.
         ///High resolution delay, allows to delay under 10 milliseconds.
         ///</summary>
-        public static async Task TaskDelay(int milliSecondsDelay)
+        public static async Task TaskDelay(float milliSecondsDelay)
         {
             try
             {
-                if (milliSecondsDelay < 50)
+                if (milliSecondsDelay <= 50)
                 {
-                    AVHighResDelay.Delay((uint)milliSecondsDelay);
+                    AVHighResDelay.Delay(milliSecondsDelay);
                 }
                 else
                 {
-                    await Task.Delay(milliSecondsDelay);
+                    await Task.Delay((int)milliSecondsDelay);
                 }
             }
             catch { }
@@ -30,17 +30,17 @@ namespace ArnoldVinkCode
         ///Automatically choose between high resolution or regular delay.
         ///High resolution delay, allows to delay under 10 milliseconds.
         ///</summary>
-        public static async Task TaskDelay(int milliSecondsDelay, AVTaskDetails avTask)
+        public static async Task TaskDelay(float milliSecondsDelay, AVTaskDetails avTask)
         {
             try
             {
-                if (milliSecondsDelay < 50)
+                if (milliSecondsDelay <= 50)
                 {
-                    AVHighResDelay.Delay((uint)milliSecondsDelay);
+                    AVHighResDelay.Delay(milliSecondsDelay);
                 }
                 else
                 {
-                    await Task.Delay(milliSecondsDelay, avTask.TokenSource.Token);
+                    await Task.Delay((int)milliSecondsDelay, avTask.TokenSource.Token);
                 }
             }
             catch { }

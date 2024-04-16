@@ -866,9 +866,6 @@ namespace ArnoldVinkCode
         [DllImport("kernel32.dll")]
         public static extern WaitObjectResult WaitForSingleObject(IntPtr hHandle, uint dwMilliseconds);
 
-        [DllImport("kernel32.dll")]
-        public static extern WaitObjectResult WaitForMultipleObjects(uint nCount, IntPtr[] lpHandles, bool bWaitAll, uint dwMilliseconds);
-
         public enum WaitObjectResult : uint
         {
             WAIT_OBJECT_0 = 0x00000000,
@@ -876,6 +873,13 @@ namespace ArnoldVinkCode
             WAIT_TIMEOUT = 0x00000102,
             WAIT_FAILED_INFINITE = 0xFFFFFFFF
         }
+
+        //High resolution delay
+        [DllImport("ntdll.dll")]
+        public static extern unsafe uint NtDelayExecution(bool alertable, ref long nanoSecondsDelay);
+
+        [DllImport("ntdll.dll")]
+        public static extern unsafe void NtSetTimerResolution(uint desiredResolution, bool adjustResolution, out uint currentResolution);
 
         //Prevent sleep or monitor timeout
         [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
