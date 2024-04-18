@@ -874,7 +874,27 @@ namespace ArnoldVinkCode
             WAIT_FAILED_INFINITE = 0xFFFFFFFF
         }
 
-        //High resolution delay
+        //High resolution delay (timer)
+        [DllImport("kernel32.dll")]
+        public static extern IntPtr CreateWaitableTimerEx(IntPtr lpTimerAttributes, IntPtr lpTimerName, CreateWaitableTimerFlags dwFlags, CreateWaitableTimerAccess dwDesiredAccess);
+
+        [DllImport("kernel32.dll")]
+        public static extern bool SetWaitableTimerEx(IntPtr hTimer, ref long lpDueTime, int lPeriod, IntPtr pfnCompletionRoutine, IntPtr lpArgToCompletionRoutine, IntPtr wakeContext, uint tolerableDelay);
+
+        public enum CreateWaitableTimerFlags : uint
+        {
+            TIMER_MANUAL_RESET = 0x00000001,
+            TIMER_HIGH_RESOLUTION = 0x00000002
+        }
+
+        public enum CreateWaitableTimerAccess : uint
+        {
+            TIMER_ALL_ACCESS = 0x1F0003,
+            TIMER_MODIFY_STATE = 0x0002,
+            TIMER_QUERY_STATE = 0x0001
+        }
+
+        //High resolution delay (NT)
         [DllImport("ntdll.dll")]
         public static extern unsafe uint NtDelayExecution(bool alertable, ref long nanoSecondsDelay);
 

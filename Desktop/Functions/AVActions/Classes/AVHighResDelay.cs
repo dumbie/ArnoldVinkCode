@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+﻿using System;
 using static ArnoldVinkCode.AVInteropDll;
 
 namespace ArnoldVinkCode
@@ -7,25 +7,21 @@ namespace ArnoldVinkCode
     {
         public class AVHighResDelay
         {
-            private static bool vSetTimerResolution = false;
-            public static unsafe void Delay(float milliSecondsDelay)
+            public static void Delay(float milliSecondsDelay)
             {
                 try
                 {
-                    if (!vSetTimerResolution)
-                    {
-                        NtSetTimerResolution(5000, true, out uint currentResolution);
-                        Debug.WriteLine("Set timer resolution to: " + currentResolution);
-                        vSetTimerResolution = currentResolution == 5000;
-                    }
-
                     if (milliSecondsDelay < 0.1F)
                     {
                         milliSecondsDelay = 0.1F;
                     }
 
                     long nanoSecondsDelay = (long)(-1.0F * milliSecondsDelay * 10000.0F);
-                    NtDelayExecution(false, ref nanoSecondsDelay);
+                    IntPtr waitableTimer = CreateWaitableTimerEx(IntPtr.Zero, IntPtr.Zero, CreateWaitableTimerFlags.TIMER_MANUAL_RESET | CreateWaitableTimerFlags.TIMER_HIGH_RESOLUTION, CreateWaitableTimerAccess.TIMER_ALL_ACCESS);
+                    if (SetWaitableTimerEx(waitableTimer, ref nanoSecondsDelay, 0, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, 0))
+                    {
+                        WaitForSingleObject(waitableTimer, INFINITE);
+                    }
                 }
                 catch { }
             }
