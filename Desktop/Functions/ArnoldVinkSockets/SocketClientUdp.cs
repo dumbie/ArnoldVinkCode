@@ -50,31 +50,14 @@ namespace ArnoldVinkCode
             }
         }
 
-        //Send sockets bytes to server
-        public async Task<bool> UdpClientSendBytesServer(IPEndPoint endPoint, byte[] targetBytes, int timeOut)
+        //Send sockets bytes to server with timeout
+        public async Task<bool> UdpClientSendBytesServer(IPEndPoint endPoint, byte[] targetBytes, int timeOutMs)
         {
             try
             {
-                async Task TaskAction()
-                {
-                    try
-                    {
-                        await vUdpServer.SendAsync(targetBytes, targetBytes.Length, endPoint);
-                    }
-                    catch { }
-                }
-
-                bool taskRun = await AVActions.TaskStartTimeout(TaskAction, timeOut);
-                if (taskRun)
-                {
-                    //Debug.WriteLine("Sended bytes to the udp server (C): " + endPoint.Address + ":" + endPoint.Port + " / " + targetBytes.Length);
-                    return true;
-                }
-                else
-                {
-                    //Debug.WriteLine("Failed sending bytes to the udp server (C): " + endPoint.Address + ":" + endPoint.Port + " / " + targetBytes.Length);
-                    return false;
-                }
+                int sendBytes = await vUdpServer.SendAsync(targetBytes, targetBytes.Length, endPoint).WaitAsync(TimeSpan.FromMilliseconds(timeOutMs));
+                //Debug.WriteLine("Sended bytes to the udp server (C): " + endPoint.Address + ":" + endPoint.Port + " / " + targetBytes.Length);
+                return sendBytes == targetBytes.Length;
             }
             catch (Exception ex)
             {
@@ -83,33 +66,16 @@ namespace ArnoldVinkCode
             }
         }
 
-        //Send sockets bytes to other
-        public async Task<bool> UdpClientSendBytesOther(string targetIp, int targetPort, byte[] targetBytes, int timeOut)
+        //Send sockets bytes to other with timeout
+        public async Task<bool> UdpClientSendBytesOther(string targetIp, int targetPort, byte[] targetBytes, int timeOutMs)
         {
             try
             {
-                async Task TaskAction()
+                using (UdpClient udpClient = new UdpClient(targetIp, targetPort))
                 {
-                    try
-                    {
-                        using (UdpClient udpClient = new UdpClient(targetIp, targetPort))
-                        {
-                            await udpClient.SendAsync(targetBytes, targetBytes.Length);
-                        }
-                    }
-                    catch { }
-                }
-
-                bool taskRun = await AVActions.TaskStartTimeout(TaskAction, timeOut);
-                if (taskRun)
-                {
+                    int sendBytes = await udpClient.SendAsync(targetBytes, targetBytes.Length).WaitAsync(TimeSpan.FromMilliseconds(timeOutMs));
                     //Debug.WriteLine("Sended bytes to udp other (C): " + targetIp + ":" + targetPort + " / " + targetBytes.Length);
-                    return true;
-                }
-                else
-                {
-                    //Debug.WriteLine("Failed sending bytes to udp other (C): " + targetIp + ":" + targetPort + " / " + targetBytes.Length);
-                    return false;
+                    return sendBytes == targetBytes.Length;
                 }
             }
             catch (Exception ex)

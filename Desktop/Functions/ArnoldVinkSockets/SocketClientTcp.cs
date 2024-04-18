@@ -10,7 +10,7 @@ namespace ArnoldVinkCode
     public partial class ArnoldVinkSockets
     {
         //Tcp client check, create and connect
-        public async Task<TcpClient> TcpClientCheckCreateConnect(string targetIp, int targetPort, int timeOut)
+        public async Task<TcpClient> TcpClientCheckCreateConnect(string targetIp, int targetPort, int timeOutMs)
         {
             try
             {
@@ -34,16 +34,16 @@ namespace ArnoldVinkCode
                     tcpClient.Client.LingerState = new LingerOption(true, 0);
 
                     //Connect the tcp client
-                    bool connectAsync = await TcpClientConnectAsyncTimeout(tcpClient, targetIp, targetPort, timeOut);
+                    bool connectAsync = await TcpClientConnect(tcpClient, targetIp, targetPort, timeOutMs);
                     if (!connectAsync)
                     {
-                        Debug.WriteLine("Failed connecting to the tcp server (C): " + targetIp + ":" + targetPort);
+                        Debug.WriteLine("Failed connecting to tcp server (C): " + targetIp + ":" + targetPort);
                         vCreatingClient = false;
                         return null;
                     }
                     else
                     {
-                        Debug.WriteLine("Connected to the tcp server (C): " + targetIp + ":" + targetPort);
+                        Debug.WriteLine("Connected to tcp server (C): " + targetIp + ":" + targetPort);
                         vTcpClients.Insert(0, tcpClient);
                         vCreatingClient = false;
                         return tcpClient;
@@ -104,8 +104,23 @@ namespace ArnoldVinkCode
             }
         }
 
-        //Send sockets bytes to server
-        public async Task<bool> TcpClientSendBytesServer(TcpClient tcpClient, byte[] targetBytes, int timeOut, bool disconnectClient)
+        //Tcp client connect with timeout
+        private async Task<bool> TcpClientConnect(TcpClient tcpClient, string targetIp, int targetPort, int timeOutMs)
+        {
+            try
+            {
+                await tcpClient.ConnectAsync(targetIp, targetPort).WaitAsync(TimeSpan.FromMilliseconds(timeOutMs));
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to connect tcp client (C): " + ex.Message);
+                return false;
+            }
+        }
+
+        //Send sockets bytes to server with timeout
+        public async Task<bool> TcpClientSendBytesServer(TcpClient tcpClient, byte[] targetBytes, int timeOutMs, bool disconnectClient)
         {
             try
             {
@@ -126,14 +141,14 @@ namespace ArnoldVinkCode
                 NetworkStream networkStream = tcpClient.GetStream();
                 if (networkStream == null || !networkStream.CanRead || !networkStream.CanWrite)
                 {
-                    Debug.WriteLine("Network stream cannot read or write (C)");
+                    Debug.WriteLine("Tcp network stream cannot read or write (C)");
                     return false;
                 }
 
-                bool writeAsync = await NetworkStreamWriteAsyncTimeout(networkStream, targetBytes, 0, targetBytes.Length, timeOut);
+                bool writeAsync = await NetworkStreamWrite(networkStream, targetBytes, 0, targetBytes.Length, timeOutMs);
                 if (!writeAsync)
                 {
-                    //Debug.WriteLine("Failed to write to the tcp server (C): " + endPoint.Address.ToString() + ":" + endPoint.Port + " " + targetBytes.Length + "b");
+                    //Debug.WriteLine("Failed to write to tcp server (C): " + endPoint.Address.ToString() + ":" + endPoint.Port + " " + targetBytes.Length + "b");
                     TcpClientDisconnect(tcpClient);
                     return false;
                 }
@@ -144,7 +159,7 @@ namespace ArnoldVinkCode
                     TcpClientDisconnect(tcpClient);
                 }
 
-                //Debug.WriteLine("Sended bytes to the tcp server (C): " + endTargetIp + ":" + endPoint.Port + " " + targetBytes.Length + "b");
+                //Debug.WriteLine("Sended bytes to tcp server (C): " + endTargetIp + ":" + endPoint.Port + " " + targetBytes.Length + "b");
                 return true;
             }
             catch (Exception ex)
@@ -155,36 +170,19 @@ namespace ArnoldVinkCode
             }
         }
 
-        //Send sockets bytes to other
-        public async Task<bool> TcpClientSendBytesOther(string targetIp, int targetPort, byte[] targetBytes, int timeOut)
+        //Send sockets bytes to other with timeout
+        public async Task<bool> TcpClientSendBytesOther(string targetIp, int targetPort, byte[] targetBytes, int timeOutMs)
         {
             try
             {
-                async Task TaskAction()
+                using (TcpClient tcpClient = new TcpClient(targetIp, targetPort))
                 {
-                    try
+                    using (NetworkStream networkStream = tcpClient.GetStream())
                     {
-                        using (TcpClient tcpClient = new TcpClient(targetIp, targetPort))
-                        {
-                            using (NetworkStream networkStream = tcpClient.GetStream())
-                            {
-                                await networkStream.WriteAsync(targetBytes, 0, targetBytes.Length);
-                            }
-                        }
+                        await networkStream.WriteAsync(targetBytes, 0, targetBytes.Length).WaitAsync(TimeSpan.FromMilliseconds(timeOutMs));
+                        //Debug.WriteLine("Sended bytes to tcp other (C): " + targetIp + ":" + targetPort + " / " + targetBytes.Length);
+                        return true;
                     }
-                    catch { }
-                }
-
-                bool taskRun = await AVActions.TaskStartTimeout(TaskAction, timeOut);
-                if (taskRun)
-                {
-                    //Debug.WriteLine("Sended bytes to tcp other (C): " + targetIp + ":" + targetPort + " / " + targetBytes.Length);
-                    return true;
-                }
-                else
-                {
-                    //Debug.WriteLine("Failed sending bytes to tcp other (C): " + targetIp + ":" + targetPort + " / " + targetBytes.Length);
-                    return false;
                 }
             }
             catch (Exception ex)
@@ -194,48 +192,18 @@ namespace ArnoldVinkCode
             }
         }
 
-        //Tcp client connect with timeout
-        private async Task<bool> TcpClientConnectAsyncTimeout(TcpClient tcpClient, string targetIp, int targetPort, int timeOut)
-        {
-            try
-            {
-                async Task TaskAction()
-                {
-                    try
-                    {
-                        await tcpClient.ConnectAsync(targetIp, targetPort);
-                    }
-                    catch { }
-                }
-
-                return await AVActions.TaskStartTimeout(TaskAction, timeOut);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("Failed to connect tcp client (C): " + ex.Message);
-                return false;
-            }
-        }
-
         //Write network stream with timeout
-        private async Task<bool> NetworkStreamWriteAsyncTimeout(NetworkStream stream, byte[] buffer, int offset, int count, int timeOut)
+        private async Task<bool> NetworkStreamWrite(NetworkStream stream, byte[] targetBytes, int targetOffset, int targetLength, int timeOutMs)
         {
             try
             {
-                async Task TaskAction()
-                {
-                    try
-                    {
-                        await stream.WriteAsync(buffer, offset, count);
-                    }
-                    catch { }
-                }
-
-                return await AVActions.TaskStartTimeout(TaskAction, timeOut);
+                await stream.WriteAsync(targetBytes, targetOffset, targetLength).WaitAsync(TimeSpan.FromMilliseconds(timeOutMs));
+                //Debug.WriteLine("Written bytes to tcp server (C): " + stream.Address.ToString() + ":" + endPoint.Port + " " + targetBytes.Length + "b");
+                return true;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to write network stream (C): " + ex.Message);
+                Debug.WriteLine("Failed writing tcp network stream (C): " + ex.Message);
                 return false;
             }
         }

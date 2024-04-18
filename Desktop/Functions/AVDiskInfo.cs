@@ -113,7 +113,7 @@ namespace ArnoldVinkCode
                 //Get disk information
                 diskInfo.Path = diskPath;
                 diskInfo.PathRoot = diskPathRoot;
-                diskInfo.Available = await CheckDiskAvailable(diskPathRoot, 100);
+                diskInfo.Available = await CheckDiskAvailable(diskPathRoot);
                 diskInfo.Type = GetDriveType(diskPathRoot);
                 if (diskInfo.Available)
                 {
@@ -149,22 +149,23 @@ namespace ArnoldVinkCode
         }
 
         //Check if disk is available by checking if it responds
-        private static async Task<bool> CheckDiskAvailable(string diskPathRoot, int infoTimeOutMs)
+        private static async Task<bool> CheckDiskAvailable(string diskPathRoot)
         {
+            ulong totalDiskSpace = 0;
             try
             {
                 void TaskAction()
                 {
                     try
                     {
-                        GetDiskFreeSpaceEx(diskPathRoot, out _, out _, out _);
+                        GetDiskFreeSpaceEx(diskPathRoot, out _, out totalDiskSpace, out _);
                     }
                     catch { }
                 }
-                return await AVActions.TaskStartTimeout(TaskAction, infoTimeOutMs);
+                await AVActions.TaskStartReturn(TaskAction).WaitAsync(TimeSpan.FromMilliseconds(100));
             }
             catch { }
-            return false;
+            return totalDiskSpace != 0;
         }
     }
 }
