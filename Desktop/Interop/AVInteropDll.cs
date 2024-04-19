@@ -92,25 +92,6 @@ namespace ArnoldVinkCode
             }
         }
 
-        public static bool SafeCloseEvent(IntPtr hEvent)
-        {
-            try
-            {
-                if (hEvent != IntPtr.Zero)
-                {
-                    SetEvent(hEvent);
-                    SafeCloseHandle(hEvent);
-                    //Debug.WriteLine("Closed the event: " + hEvent);
-                }
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("Failed to close event: " + ex.Message);
-                return false;
-            }
-        }
-
         //Window get
         public enum GetWindowFlags : int
         {
@@ -841,7 +822,7 @@ namespace ArnoldVinkCode
 
         //Time events
         [DllImport("winmm.dll")]
-        public static extern uint timeSetEvent(uint uDelay, uint uResolution, MultimediaTimerCallback lpTimeProc, UIntPtr dwUser, TimeSetEventFlags fuEvent);
+        public static extern uint timeSetEvent(uint uDelayMs, uint uResolution, MultimediaTimerCallback lpTimeProc, UIntPtr dwUser, TimeSetEventFlags fuEvent);
 
         [DllImport("winmm.dll")]
         public static extern uint timeKillEvent(uint uTimerId);

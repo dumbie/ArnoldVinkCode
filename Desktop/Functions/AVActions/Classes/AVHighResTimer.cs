@@ -45,7 +45,11 @@ namespace ArnoldVinkCode
                     {
                         timeKillEvent(timeSetEventId);
                     }
-                    SafeCloseEvent(createEvent);
+                    if (createEvent != IntPtr.Zero)
+                    {
+                        SetEvent(createEvent);
+                    }
+                    SafeCloseHandle(createEvent);
                 }
                 catch { }
             }
