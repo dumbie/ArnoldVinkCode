@@ -34,11 +34,8 @@ namespace ArnoldVinkCode
                         pipeSecurity.AddAccessRule(pipeAccessRule);
 
                         //Start pipe server and wait for connection
-                        using (NamedPipeServerStream pipeServer = new NamedPipeServerStream(vPipeServerName, PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.None, 0, 0))
+                        using (NamedPipeServerStream pipeServer = NamedPipeServerStreamAcl.Create(vPipeServerName, PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.None, 0, 0, pipeSecurity))
                         {
-                            //Set pipe access control
-                            pipeServer.SetAccessControl(pipeSecurity);
-
                             //Wait for connection from client
                             await pipeServer.WaitForConnectionAsync(vTask_PipeReceiveLoop.TokenSource.Token);
 
