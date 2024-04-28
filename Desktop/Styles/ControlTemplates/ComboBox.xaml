@@ -24,7 +24,7 @@
     <ControlTemplate x:Key="ComboBoxTemplateAccent" TargetType="{x:Type ComboBox}">
         <Grid>
             <Popup x:Name="PART_Popup" MaxHeight="250" AllowsTransparency="True" Width="{TemplateBinding ActualWidth}" IsOpen="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" Placement="Bottom">
-                <Border x:Name="DropDownBorder" CornerRadius="2" Background="{DynamicResource ApplicationAccentLightBrush}">
+                <Border x:Name="DropDownBorder" CornerRadius="2" Background="{DynamicResource ApplicationAccentDimBrush}">
                     <ScrollViewer x:Name="DropDownScrollViewer">
                         <ItemsPresenter x:Name="ItemsPresenter" KeyboardNavigation.DirectionalNavigation="Contained"/>
                     </ScrollViewer>
