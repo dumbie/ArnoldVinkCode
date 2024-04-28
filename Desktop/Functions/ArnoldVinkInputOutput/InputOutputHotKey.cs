@@ -104,7 +104,7 @@ namespace ArnoldVinkCode
                     AVActions.DispatcherInvoke(delegate
                     {
                         bool unhooked = UnhookWindowsHookEx(vWindowHookPointer);
-                        Debug.WriteLine("Unhooked window keyboard: " + unhooked);
+                        //Debug.WriteLine("Unhooked window keyboard: " + unhooked);
                     });
                     vWindowHookPointer = IntPtr.Zero;
                 }
