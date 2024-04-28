@@ -127,7 +127,6 @@
             ShiftRight = 117,
             ControlLeft = 118,
             ControlRight = 119,
-            Alt = 156,
             AltLeft = 120,
             AltRight = 121,
             BrowserBack = 122,
@@ -159,7 +158,8 @@
             Pipe = 150,
             CloseBracket = 151,
             Quote = 152,
-            BackSlash = 154
+            BackSlash = 154,
+            System = 156
         }
     }
 }
