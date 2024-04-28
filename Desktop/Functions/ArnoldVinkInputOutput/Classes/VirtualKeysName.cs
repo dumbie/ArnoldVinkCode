@@ -38,7 +38,7 @@ namespace ArnoldVinkCode
                     case KeysVirtual.X:
                     case KeysVirtual.Y:
                     case KeysVirtual.Z:
-                        return Enum.GetName(typeof(KeysVirtual), virtualKey);
+                        return Enum.GetName(virtualKey);
 
                     //Digits
                     case KeysVirtual.Digit0:
@@ -97,29 +97,29 @@ namespace ArnoldVinkCode
                         if (shortName) { return "Spc"; } else { return "Spacebar"; }
 
                     //Characters
-                    case KeysVirtual.OEMSemicolon:
+                    case KeysVirtual.Semicolon:
                         return ";";
-                    case KeysVirtual.OEMQuestion:
+                    case KeysVirtual.Question:
                         return "?";
-                    case KeysVirtual.OEMTilde:
+                    case KeysVirtual.Tilde:
                         return "~";
-                    case KeysVirtual.OEMOpenBracket:
+                    case KeysVirtual.OpenBracket:
                         return "[";
-                    case KeysVirtual.OEMCloseBracket:
+                    case KeysVirtual.CloseBracket:
                         return "]";
-                    case KeysVirtual.OEMPipe:
+                    case KeysVirtual.Pipe:
                         return "|";
-                    case KeysVirtual.OEMBackSlash:
+                    case KeysVirtual.BackSlash:
                         return "\\";
-                    case KeysVirtual.OEMQuote:
+                    case KeysVirtual.Quote:
                         return "'";
-                    case KeysVirtual.OEMPlus:
+                    case KeysVirtual.Plus:
                         return "+";
-                    case KeysVirtual.OEMMinus:
+                    case KeysVirtual.Minus:
                         return "-";
-                    case KeysVirtual.OEMComma:
+                    case KeysVirtual.Comma:
                         return ",";
-                    case KeysVirtual.OEMPeriod:
+                    case KeysVirtual.Period:
                         return ".";
 
                     //Function
@@ -147,7 +147,7 @@ namespace ArnoldVinkCode
                     case KeysVirtual.F22:
                     case KeysVirtual.F23:
                     case KeysVirtual.F24:
-                        return Enum.GetName(typeof(KeysVirtual), virtualKey);
+                        return Enum.GetName(virtualKey);
 
                     //Navigation
                     case KeysVirtual.ArrowUp:
@@ -213,8 +213,6 @@ namespace ArnoldVinkCode
                         return "Help";
                     case KeysVirtual.ContextMenu:
                         return "Menu";
-                    case KeysVirtual.Zoom:
-                        return "Zoom";
 
                     //Browser
                     case KeysVirtual.BrowserFavorites:
@@ -260,7 +258,7 @@ namespace ArnoldVinkCode
                 }
             }
             catch { }
-            return Enum.GetName(typeof(KeysVirtual), virtualKey);
+            return Enum.GetName(virtualKey);
         }
     }
 }

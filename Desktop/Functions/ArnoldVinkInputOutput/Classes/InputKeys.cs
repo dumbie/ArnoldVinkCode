@@ -3,17 +3,17 @@
     public partial class AVInputOutputClass
     {
         //Matches: System.Windows.Input.ModifierKeys
-        public enum KeysModifierForm : byte
+        public enum KeysModifierInput : byte
         {
             None = 0,
+            Control = 2,
             Alt = 1,
-            Ctrl = 2,
             Shift = 4,
             Windows = 8
         }
 
         //Matches: System.Windows.Input.Key
-        public enum KeysForm : byte
+        public enum KeysInput : byte
         {
             None = 0,
             Cancel = 1,
@@ -24,17 +24,7 @@
             Enter = 6,
             Pause = 7,
             CapsLock = 8,
-            KanaMode = 9,
-            HangulMode = 9,
-            JunjaMode = 10,
-            FinalMode = 11,
-            HanjaMode = 12,
-            KanjiMode = 12,
             Escape = 13,
-            IMEConvert = 14,
-            IMENonConvert = 15,
-            IMEAccept = 16,
-            IMEModeChange = 17,
             Space = 18,
             PageUp = 19,
             PageDown = 20,
@@ -133,12 +123,13 @@
             F24 = 113,
             NumpadLock = 114,
             ScrollLock = 115,
-            LeftShift = 116,
-            RightShift = 117,
-            LeftCtrl = 118,
-            RightCtrl = 119,
-            LeftAlt = 120,
-            RightAlt = 121,
+            ShiftLeft = 116,
+            ShiftRight = 117,
+            ControlLeft = 118,
+            ControlRight = 119,
+            Alt = 156,
+            AltLeft = 120,
+            AltRight = 121,
             BrowserBack = 122,
             BrowserForward = 123,
             BrowserRefresh = 124,
@@ -157,20 +148,18 @@
             SelectMedia = 137,
             LaunchApplication1 = 138,
             LaunchApplication2 = 139,
-            OEMSemicolon = 140,
-            OEMPlus = 141,
-            OEMComma = 142,
-            OEMMinus = 143,
-            OEMPeriod = 144,
-            OEMQuestion = 145,
-            OEMTilde = 146,
-            OEMOpenBracket = 149,
-            OEMPipe = 150,
-            OEMCloseBracket = 151,
-            OEMQuote = 152,
-            OEMBackSlash = 154,
-            Play = 167,
-            Zoom = 168
+            Semicolon = 140,
+            Plus = 141,
+            Comma = 142,
+            Minus = 143,
+            Period = 144,
+            Question = 145,
+            Tilde = 146,
+            OpenBracket = 149,
+            Pipe = 150,
+            CloseBracket = 151,
+            Quote = 152,
+            BackSlash = 154
         }
     }
 }

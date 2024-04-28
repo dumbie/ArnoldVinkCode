@@ -4,7 +4,7 @@ namespace ArnoldVinkCode
 {
     public partial class AVInputOutputClass
     {
-        public static KeysVirtual ConvertHidToVirtual(KeysHid keyboardKey)
+        public static KeysVirtual ConvertInputToVirtual(KeysInput keyboardKey)
         {
             KeysVirtual returnKey = KeysVirtual.None;
             try
@@ -15,9 +15,9 @@ namespace ArnoldVinkCode
             return returnKey;
         }
 
-        public static KeysInput ConvertHidToInput(KeysHid keyboardKey)
+        public static KeysHid ConvertInputToHid(KeysInput keyboardKey)
         {
-            KeysInput returnKey = KeysInput.None;
+            KeysHid returnKey = KeysHid.None;
             try
             {
                 Enum.TryParse(Enum.GetName(keyboardKey), out returnKey);

@@ -27,7 +27,7 @@ namespace ArnoldVinkCode
                 }
             }
             catch { }
-            return Enum.GetName(typeof(KeysMediaHid), multimediaKey);
+            return Enum.GetName(multimediaKey);
         }
 
         public static string GetKeyboardModifiersName(KeysModifierHid keyboardModifier, bool shortName)
@@ -36,8 +36,8 @@ namespace ArnoldVinkCode
             {
                 switch (keyboardModifier)
                 {
-                    case KeysModifierHid.CtrlLeft:
-                    case KeysModifierHid.CtrlRight:
+                    case KeysModifierHid.ControlLeft:
+                    case KeysModifierHid.ControlRight:
                         if (shortName) { return "Ctrl"; } else { return "Control"; }
                     case KeysModifierHid.ShiftLeft:
                     case KeysModifierHid.ShiftRight:
@@ -51,7 +51,7 @@ namespace ArnoldVinkCode
                 }
             }
             catch { }
-            return Enum.GetName(typeof(KeysModifierHid), keyboardModifier);
+            return Enum.GetName(keyboardModifier);
         }
 
         public static string GetKeyboardKeysName(KeysHid keyboardKey, bool shortName)
@@ -86,7 +86,7 @@ namespace ArnoldVinkCode
                     case KeysHid.X:
                     case KeysHid.Y:
                     case KeysHid.Z:
-                        return Enum.GetName(typeof(KeysHid), keyboardKey);
+                        return Enum.GetName(keyboardKey);
                     case KeysHid.Digit1:
                         return "1";
                     case KeysHid.Digit2:
@@ -153,7 +153,7 @@ namespace ArnoldVinkCode
                     case KeysHid.F10:
                     case KeysHid.F11:
                     case KeysHid.F12:
-                        return Enum.GetName(typeof(KeysHid), keyboardKey);
+                        return Enum.GetName(keyboardKey);
                     case KeysHid.PrintScreen:
                         if (shortName) { return "PrtSc"; } else { return "Print Screen"; }
                     case KeysHid.ScrollLock:
@@ -217,7 +217,7 @@ namespace ArnoldVinkCode
                 }
             }
             catch { }
-            return Enum.GetName(typeof(KeysHid), keyboardKey);
+            return Enum.GetName(keyboardKey);
         }
     }
 }

@@ -23,7 +23,7 @@ namespace ArnoldVinkCode
                 }
             }
             catch { }
-            return Enum.GetName(typeof(MouseHidButtons), mouseButton);
+            return Enum.GetName(mouseButton);
         }
     }
 }
