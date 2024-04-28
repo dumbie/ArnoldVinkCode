@@ -17,11 +17,11 @@
         public enum KeysModifierHid : byte
         {
             None = 0,
-            ControlLeft = 1,
+            CtrlLeft = 1,
             ShiftLeft = 2,
             AltLeft = 4,
             WindowsLeft = 8,
-            ControlRight = 16,
+            CtrlRight = 16,
             ShiftRight = 32,
             AltRight = 64,
             WindowsRight = 128

@@ -180,18 +180,15 @@ namespace ArnoldVinkCode
                         if (shortName) { return "Esc"; } else { return "Escape"; }
                     case KeysVirtual.Enter:
                         return "Enter";
-                    case KeysVirtual.Shift:
                     case KeysVirtual.ShiftLeft:
                     case KeysVirtual.ShiftRight:
                         return "Shift";
-                    case KeysVirtual.Control:
-                    case KeysVirtual.ControlLeft:
-                    case KeysVirtual.ControlRight:
+                    case KeysVirtual.CtrlLeft:
+                    case KeysVirtual.CtrlRight:
                         if (shortName) { return "Ctrl"; } else { return "Control"; }
-                    case KeysVirtual.Alt:
                     case KeysVirtual.AltLeft:
                     case KeysVirtual.AltRight:
-                        return "Alt";
+                        if (shortName) { return "Alt"; } else { return "Alternate"; }
                     case KeysVirtual.Pause:
                         return "Pause";
                     case KeysVirtual.CapsLock:

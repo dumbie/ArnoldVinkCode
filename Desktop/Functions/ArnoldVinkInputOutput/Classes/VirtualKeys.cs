@@ -6,7 +6,7 @@
         public enum KeysModifierVirtual : byte
         {
             None = 0,
-            Control = 1,
+            Ctrl = 1,
             Alt = 2,
             Shift = 4,
             Windows = 8
@@ -16,11 +16,6 @@
         public enum KeysVirtual : byte
         {
             None = 0,
-            MouseLeftButton = 1,
-            MouseRightButton = 2,
-            MouseMiddleButton = 4,
-            MouseSideButton1 = 5,
-            MouseSideButton2 = 6,
             Cancel = 3,
             BackSpace = 8,
             Tab = 9,
@@ -128,13 +123,10 @@
             F24 = 135,
             NumpadLock = 144,
             ScrollLock = 145,
-            Shift = 16,
             ShiftLeft = 160,
             ShiftRight = 161,
-            Control = 17,
-            ControlLeft = 162,
-            ControlRight = 163,
-            Alt = 18,
+            CtrlLeft = 162,
+            CtrlRight = 163,
             AltLeft = 164,
             AltRight = 165,
             BrowserBack = 166,

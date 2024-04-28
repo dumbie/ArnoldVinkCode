@@ -6,7 +6,7 @@
         public enum KeysModifierInput : byte
         {
             None = 0,
-            Control = 2,
+            Ctrl = 2,
             Alt = 1,
             Shift = 4,
             Windows = 8
@@ -125,8 +125,8 @@
             ScrollLock = 115,
             ShiftLeft = 116,
             ShiftRight = 117,
-            ControlLeft = 118,
-            ControlRight = 119,
+            CtrlLeft = 118,
+            CtrlRight = 119,
             AltLeft = 120,
             AltRight = 121,
             BrowserBack = 122,

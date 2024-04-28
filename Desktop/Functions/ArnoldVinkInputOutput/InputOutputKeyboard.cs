@@ -77,7 +77,7 @@ namespace ArnoldVinkCode
                     bool shiftPressed = (scanVirtualKey & (short)VkKeyScanModifiers.SHIFT) > 0;
                     if (shiftPressed)
                     {
-                        KeyPressReleaseCombo(KeysVirtual.Shift, usedVirtualKey);
+                        KeyPressReleaseCombo(KeysVirtual.ShiftLeft, usedVirtualKey);
                     }
                     else
                     {

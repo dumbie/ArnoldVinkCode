@@ -32,7 +32,7 @@ namespace ArnoldVinkCode
             try
             {
                 if (keyboardModifier.HasFlag(KeysModifierVirtual.Alt)) { pressedModifiers |= KeysModifierHid.AltLeft; }
-                if (keyboardModifier.HasFlag(KeysModifierVirtual.Control)) { pressedModifiers |= KeysModifierHid.ControlLeft; }
+                if (keyboardModifier.HasFlag(KeysModifierVirtual.Ctrl)) { pressedModifiers |= KeysModifierHid.CtrlLeft; }
                 if (keyboardModifier.HasFlag(KeysModifierVirtual.Shift)) { pressedModifiers |= KeysModifierHid.ShiftLeft; }
                 if (keyboardModifier.HasFlag(KeysModifierVirtual.Windows)) { pressedModifiers |= KeysModifierHid.WindowsLeft; }
             }

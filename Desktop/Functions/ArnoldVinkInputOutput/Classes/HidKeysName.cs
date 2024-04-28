@@ -36,8 +36,8 @@ namespace ArnoldVinkCode
             {
                 switch (keyboardModifier)
                 {
-                    case KeysModifierHid.ControlLeft:
-                    case KeysModifierHid.ControlRight:
+                    case KeysModifierHid.CtrlLeft:
+                    case KeysModifierHid.CtrlRight:
                         if (shortName) { return "Ctrl"; } else { return "Control"; }
                     case KeysModifierHid.ShiftLeft:
                     case KeysModifierHid.ShiftRight:
