@@ -1,0 +1,14 @@
+﻿<UserControl x:Class="ArnoldVinkHotkeyPicker.HotkeyPicker"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d">
+
+    <StackPanel Orientation="Horizontal">
+        <ComboBox Name="combobox_Hotkey0" IsTextSearchEnabled="False" Width="140" Style="{StaticResource ComboBoxBlack}" SelectionChanged="combobox_Hotkey_SelectionChanged" KeyDown="combobox_Hotkey_KeyDown" PreviewMouseDown="combobox_Hotkey_PreviewMouseDown"/>
+        <ComboBox Name="combobox_Hotkey1" IsTextSearchEnabled="False" Width="140" Margin="10,0,0,0" Style="{StaticResource ComboBoxBlack}" SelectionChanged="combobox_Hotkey_SelectionChanged" KeyDown="combobox_Hotkey_KeyDown" PreviewMouseDown="combobox_Hotkey_PreviewMouseDown"/>
+        <ComboBox Name="combobox_Hotkey2" IsTextSearchEnabled="False" Width="140" Margin="10,0,0,0" Style="{StaticResource ComboBoxBlack}" SelectionChanged="combobox_Hotkey_SelectionChanged" KeyDown="combobox_Hotkey_KeyDown" PreviewMouseDown="combobox_Hotkey_PreviewMouseDown"/>
+        <Button Name="button_Hotkey_Unmap" Margin="10,0,0,0" Content="Unmap" HorizontalAlignment="Left" Style="{StaticResource ButtonAccentBlack}" Click="button_Hotkey_Unmap_Click"/>
+    </StackPanel>
+</UserControl>
