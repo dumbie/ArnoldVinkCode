@@ -164,9 +164,6 @@ namespace ArnoldVinkCode
                         //Remove key press
                         vListKeysPressed.RemoveAll(x => x == (KeysVirtual)lParam.vkCode);
 
-                        //Trigger hotkey event
-                        EventHotKeyPressed(vListKeysPressed);
-
                         //Debug.WriteLine("Keyboard up: " + (KeysVirtual)lParam.vkCode);
                     }
                 }
