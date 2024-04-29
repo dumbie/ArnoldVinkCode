@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using static ArnoldVinkCode.AVActions;
 using static ArnoldVinkCode.AVInputOutputClass;
@@ -8,7 +9,7 @@ using static ArnoldVinkCode.AVInteropDll;
 
 namespace ArnoldVinkCode
 {
-    public partial class AVInputOutputHotKey
+    public partial class AVInputOutputHotkey
     {
         //Variables
         private static IntPtr vWindowHookPointer = IntPtr.Zero;
@@ -21,8 +22,8 @@ namespace ArnoldVinkCode
         private static List<KeysVirtual> vListKeysPressed = new List<KeysVirtual>();
 
         //Events
-        public delegate void HotKeyPressed(List<KeysVirtual> keysPressed);
-        public static event HotKeyPressed EventHotKeyPressed;
+        public delegate void HotkeyPressed(List<KeysVirtual> keysPressed);
+        public static event HotkeyPressed EventHotkeyPressed;
 
         //Tasks
         private static AVTaskDetails vTask_RestartKeyboardHook = new AVTaskDetails("vTask_RestartKeyboardHook");
@@ -141,6 +142,19 @@ namespace ArnoldVinkCode
             catch { }
         }
 
+        //Check if hotkey is pressed
+        public static bool CheckHotkeyPress(List<KeysVirtual> keysPressed, List<KeysVirtual> keysHotkey)
+        {
+            try
+            {
+                return keysHotkey.Any(x => x != KeysVirtual.None) && !keysHotkey.Where(x => x != KeysVirtual.None).Except(keysPressed).Any();
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         //Check received keyboard input
         private static IntPtr LowLevelKeyboardCallbackCode(int nCode, IntPtr wParam, KBDLLHOOKSTRUCT lParam)
         {
@@ -155,7 +169,7 @@ namespace ArnoldVinkCode
                         vListKeysPressed.Add((KeysVirtual)lParam.vkCode);
 
                         //Trigger hotkey event
-                        EventHotKeyPressed(vListKeysPressed);
+                        EventHotkeyPressed(vListKeysPressed);
 
                         //Debug.WriteLine("Keyboard down: " + (KeysVirtual)lParam.vkCode);
                     }
