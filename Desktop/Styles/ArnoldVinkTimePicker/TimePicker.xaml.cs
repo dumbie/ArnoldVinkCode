@@ -239,7 +239,10 @@ namespace ArnoldVinkTimePicker
                     textbox_AmPm.Text = "AM";
                 }
 
-                DateTimeChanged(DateTimeValue);
+                if (DateTimeChanged != null)
+                {
+                    DateTimeChanged(DateTimeValue);
+                }
             }
             catch { }
         }
@@ -285,7 +288,11 @@ namespace ArnoldVinkTimePicker
                 }
 
                 border_TimePicker.BorderBrush = BrushValid;
-                DateTimeChanged(DateTimeValue);
+
+                if (DateTimeChanged != null)
+                {
+                    DateTimeChanged(DateTimeValue);
+                }
             }
             catch { }
             return true;

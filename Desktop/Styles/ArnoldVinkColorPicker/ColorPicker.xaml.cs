@@ -24,7 +24,10 @@ namespace ArnoldVinkColorPicker
             {
                 if (!button_ColorPicker.ContextMenu.IsOpen && !ColorPicker_Selector.Cancelled)
                 {
-                    SelectedColorChanged(ColorPicker_Selector.CustomColor);
+                    if (SelectedColorChanged != null)
+                    {
+                        SelectedColorChanged(ColorPicker_Selector.CustomColor);
+                    }
                     this.Background = new SolidColorBrush(ColorPicker_Selector.CustomColor);
                 }
             }

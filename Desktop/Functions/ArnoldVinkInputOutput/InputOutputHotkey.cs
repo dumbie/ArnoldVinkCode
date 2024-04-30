@@ -22,8 +22,7 @@ namespace ArnoldVinkCode
         private static List<KeysVirtual> vListKeysPressed = new List<KeysVirtual>();
 
         //Events
-        public delegate void HotkeyPressed(List<KeysVirtual> keysPressed);
-        public static event HotkeyPressed EventHotkeyPressed;
+        public static event Action<List<KeysVirtual>> EventHotkeyPressed;
 
         //Tasks
         private static AVTaskDetails vTask_RestartKeyboardHook = new AVTaskDetails("vTask_RestartKeyboardHook");
@@ -169,7 +168,10 @@ namespace ArnoldVinkCode
                         vListKeysPressed.Add((KeysVirtual)lParam.vkCode);
 
                         //Trigger hotkey event
-                        EventHotkeyPressed(vListKeysPressed);
+                        if (EventHotkeyPressed != null)
+                        {
+                            EventHotkeyPressed(vListKeysPressed);
+                        }
 
                         //Debug.WriteLine("Keyboard down: " + (KeysVirtual)lParam.vkCode);
                     }
