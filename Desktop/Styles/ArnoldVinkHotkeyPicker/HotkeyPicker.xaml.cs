@@ -15,6 +15,7 @@ namespace ArnoldVinkHotkeyPicker
         private bool ComboboxSaveEnabled = true;
         public string HotkeyName { get; set; } = string.Empty;
         public Configuration Configuration { get; set; } = null;
+        public bool MonitorKeyboardInput { get; set; } = false;
 
         //Window Initialize
         public HotkeyPicker()
@@ -100,9 +101,12 @@ namespace ArnoldVinkHotkeyPicker
         {
             try
             {
-                ComboBox senderInterface = (ComboBox)sender;
-                senderInterface.SelectedItem = ConvertInputToVirtual((KeysInput)e.Key, (KeysInput)e.SystemKey);
-                e.Handled = true;
+                if (MonitorKeyboardInput)
+                {
+                    ComboBox senderInterface = (ComboBox)sender;
+                    senderInterface.SelectedItem = ConvertInputToVirtual((KeysInput)e.Key, (KeysInput)e.SystemKey);
+                    e.Handled = true;
+                }
             }
             catch { }
         }
