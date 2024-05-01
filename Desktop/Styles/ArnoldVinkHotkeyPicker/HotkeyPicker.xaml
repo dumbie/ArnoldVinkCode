@@ -6,9 +6,9 @@
              mc:Ignorable="d">
 
     <StackPanel Orientation="Horizontal">
-        <ComboBox Name="combobox_Hotkey0" IsTextSearchEnabled="False" Width="140" Style="{StaticResource ComboBoxBlack}" SelectionChanged="combobox_Hotkey_SelectionChanged" KeyDown="combobox_Hotkey_KeyDown" PreviewMouseDown="combobox_Hotkey_PreviewMouseDown"/>
-        <ComboBox Name="combobox_Hotkey1" IsTextSearchEnabled="False" Width="140" Margin="10,0,0,0" Style="{StaticResource ComboBoxBlack}" SelectionChanged="combobox_Hotkey_SelectionChanged" KeyDown="combobox_Hotkey_KeyDown" PreviewMouseDown="combobox_Hotkey_PreviewMouseDown"/>
-        <ComboBox Name="combobox_Hotkey2" IsTextSearchEnabled="False" Width="140" Margin="10,0,0,0" Style="{StaticResource ComboBoxBlack}" SelectionChanged="combobox_Hotkey_SelectionChanged" KeyDown="combobox_Hotkey_KeyDown" PreviewMouseDown="combobox_Hotkey_PreviewMouseDown"/>
+        <ComboBox Name="combobox_Hotkey0" IsTextSearchEnabled="False" Width="140" Style="{StaticResource ComboBoxBlack}" SelectionChanged="combobox_Hotkey_SelectionChanged" PreviewKeyDown="combobox_Hotkey_KeyDown" PreviewMouseDown="combobox_Hotkey_PreviewMouseDown"/>
+        <ComboBox Name="combobox_Hotkey1" IsTextSearchEnabled="False" Width="140" Margin="10,0,0,0" Style="{StaticResource ComboBoxBlack}" SelectionChanged="combobox_Hotkey_SelectionChanged" PreviewKeyDown="combobox_Hotkey_KeyDown" PreviewMouseDown="combobox_Hotkey_PreviewMouseDown"/>
+        <ComboBox Name="combobox_Hotkey2" IsTextSearchEnabled="False" Width="140" Margin="10,0,0,0" Style="{StaticResource ComboBoxBlack}" SelectionChanged="combobox_Hotkey_SelectionChanged" PreviewKeyDown="combobox_Hotkey_KeyDown" PreviewMouseDown="combobox_Hotkey_PreviewMouseDown"/>
         <Button Name="button_Hotkey_Unmap" Margin="10,0,0,0" Content="Unmap" HorizontalAlignment="Left" Style="{StaticResource ButtonAccentBlack}" Click="button_Hotkey_Unmap_Click"/>
     </StackPanel>
 </UserControl>
