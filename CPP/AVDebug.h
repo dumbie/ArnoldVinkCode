@@ -8,9 +8,10 @@ private:
 
 public:
 	template <class T>
-	void operator << (const T& value)
+	AVDebugWriteLine& operator << (const T& value)
 	{
 		stringstream << value;
+		return *this;
 	}
 
 	~AVDebugWriteLine()
