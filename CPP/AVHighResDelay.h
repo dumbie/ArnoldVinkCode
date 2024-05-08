@@ -2,7 +2,7 @@
 #include <windows.h>
 
 //Usage example: AVHighResDelay(1000.0F);
-void AVHighResDelay(float milliSecondsDelay)
+static void AVHighResDelay(float milliSecondsDelay)
 {
 	if (milliSecondsDelay < 0.1F)
 	{
