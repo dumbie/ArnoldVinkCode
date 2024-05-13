@@ -27,7 +27,8 @@ namespace ArnoldVinkCode
         {
             try
             {
-                await Application.Current.Dispatcher.InvokeAsync(actionRun);
+                Task waitTask = await Application.Current.Dispatcher.InvokeAsync(actionRun);
+                await waitTask;
             }
             catch { }
         }
