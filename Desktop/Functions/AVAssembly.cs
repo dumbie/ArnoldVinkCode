@@ -12,6 +12,7 @@ namespace ArnoldVinkCode
             try
             {
                 string fileName = args.Name.Split(',')[0] + ".dll";
+                fileName = fileName.Replace(".resources.dll", ".dll");
                 string filePath = AVFunctions.ApplicationPathRoot() + "\\Resources\\" + fileName;
                 Debug.WriteLine("Resolving resource assembly dll: " + fileName);
                 return Assembly.LoadFrom(filePath);
@@ -28,6 +29,7 @@ namespace ArnoldVinkCode
             try
             {
                 string fileName = args.Name.Split(',')[0] + ".dll";
+                fileName = fileName.Replace(".resources.dll", ".dll");
                 string assemblyPath = AVFunctions.ApplicationName() + ".Assembly." + fileName;
                 byte[] fileBytes = EmbeddedResourceToBytes(null, assemblyPath);
                 Debug.WriteLine("Resolving embedded assembly dll: " + assemblyPath);
