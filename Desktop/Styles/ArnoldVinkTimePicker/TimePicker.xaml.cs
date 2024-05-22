@@ -6,7 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace ArnoldVinkTimePicker
+namespace ArnoldVinkCode.Styles
 {
     public partial class TimePicker : UserControl
     {

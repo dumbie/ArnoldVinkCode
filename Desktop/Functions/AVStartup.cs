@@ -29,7 +29,7 @@ namespace ArnoldVinkCode
                     List<ProcessMulti> activeProcesses = Get_ProcessesMultiByName(currentProcess.ExeNameNoExt, true);
                     if (activeProcesses.Count > 1)
                     {
-                        Debug.WriteLine("Application " + currentProcess.ExeNameNoExt + " is already running, closing the process");
+                        Debug.WriteLine("Application " + currentProcess.ExeNameNoExt + " is already running, closing the process.");
                         Environment.Exit(0);
                         return false;
                     }
