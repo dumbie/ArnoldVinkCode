@@ -5,27 +5,13 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace ArnoldVinkCode
+namespace ArnoldVinkCode.Styles
 {
-    public partial class AVColorPicker : Window
+    public partial class ColorPickerPreset : Window
     {
-        //Window Initialize
-        public AVColorPicker() { InitializeComponent(); }
-
-        //Handle window initialized event
-        protected override void OnSourceInitialized(EventArgs e)
-        {
-            try
-            {
-                //Add colors to the list
-                foreach (uint uintColor in uintColors)
-                {
-                    SolidColorBrush newSolidColorBrush = new SolidColorBrush(Color.FromArgb((byte)(uintColor >> 24), (byte)(uintColor >> 16), (byte)(uintColor >> 8), (byte)(uintColor)));
-                    listbox_ColorPicker.Items.Add(newSolidColorBrush);
-                };
-            }
-            catch { }
-        }
+        //Popup Variables
+        private bool vPopupDone = false;
+        private Color? vPopupResult = null;
 
         //Available color list
         public uint[] uintColors =
@@ -49,42 +35,20 @@ namespace ArnoldVinkCode
             0xFF008080,0xFF217283,0xFF40E0D0,0xFF20B2AA,0xFFA0B3C0,0xFF15B0FC
         };
 
-        //Popup Variables
-        private bool vPopupDone = false;
-        private Color? vPopupResult = null;
+        //Window initialize
+        public ColorPickerPreset() { InitializeComponent(); }
 
-        //Set Popup Results
-        private void button_Cancel_Click(object sender, RoutedEventArgs e)
+        //Window initialized
+        protected override void OnSourceInitialized(EventArgs e)
         {
             try
             {
-                vPopupResult = null;
-                vPopupDone = true;
-            }
-            catch { }
-        }
-        private void listbox_ColorPicker_PreviewKeyUp(object sender, KeyEventArgs e)
-        {
-            try
-            {
-                if (e.Key == Key.Space)
+                //Add colors to the list
+                foreach (uint uintColor in uintColors)
                 {
-                    listbox_ColorPicker_PreviewMouseUp(null, null);
-                }
-            }
-            catch { }
-        }
-        private void listbox_ColorPicker_PreviewMouseUp(object sender, MouseButtonEventArgs e)
-        {
-            try
-            {
-                if (listbox_ColorPicker.SelectedItems.Count > 0 && listbox_ColorPicker.SelectedIndex != -1)
-                {
-                    SolidColorBrush selectedSolidColorBrush = (SolidColorBrush)listbox_ColorPicker.SelectedItem;
-                    vPopupResult = selectedSolidColorBrush.Color;
-                    vPopupDone = true;
-                    Debug.WriteLine("Selected color: " + vPopupResult.ToString());
-                }
+                    SolidColorBrush newSolidColorBrush = new SolidColorBrush(Color.FromArgb((byte)(uintColor >> 24), (byte)(uintColor >> 16), (byte)(uintColor >> 8), (byte)(uintColor)));
+                    listbox_ColorPicker.Items.Add(newSolidColorBrush);
+                };
             }
             catch { }
         }
@@ -123,7 +87,7 @@ namespace ArnoldVinkCode
             return vPopupResult;
         }
 
-        //Drag the window around
+        //Move window
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {
             try
@@ -131,6 +95,42 @@ namespace ArnoldVinkCode
                 if (e.LeftButton == MouseButtonState.Pressed)
                 {
                     this.DragMove();
+                }
+            }
+            catch { }
+        }
+
+        //Set Popup Results
+        private void button_Cancel_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                vPopupResult = null;
+                vPopupDone = true;
+            }
+            catch { }
+        }
+        private void listbox_ColorPicker_PreviewKeyUp(object sender, KeyEventArgs e)
+        {
+            try
+            {
+                if (e.Key == Key.Space)
+                {
+                    listbox_ColorPicker_PreviewMouseUp(null, null);
+                }
+            }
+            catch { }
+        }
+        private void listbox_ColorPicker_PreviewMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                if (listbox_ColorPicker.SelectedItems.Count > 0 && listbox_ColorPicker.SelectedIndex != -1)
+                {
+                    SolidColorBrush selectedSolidColorBrush = (SolidColorBrush)listbox_ColorPicker.SelectedItem;
+                    vPopupResult = selectedSolidColorBrush.Color;
+                    vPopupDone = true;
+                    Debug.WriteLine("Selected color: " + vPopupResult.ToString());
                 }
             }
             catch { }

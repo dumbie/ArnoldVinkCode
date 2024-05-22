@@ -33,7 +33,7 @@
 		</COMReference>
 	</ItemGroup>
 	<ItemGroup>
-		<Content Include="Styles\ArnoldVinkColorPicker\ColorSelector.png" />
+		<Resource Include="Styles\ArnoldVinkColorPickerSelect\ColorSelect.png" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
