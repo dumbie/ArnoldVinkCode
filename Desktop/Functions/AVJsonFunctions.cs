@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -10,27 +9,31 @@ namespace ArnoldVinkCode
     public partial class AVJsonFunctions
     {
         //Read Json from file (Deserialize)
-        public static void JsonLoadFile<T>(ref T deserializeTarget, string filePath)
+        ///Example: JsonLoadFile<List<string>>("JsonFile");
+        public static T JsonLoadFile<T>(string filePath) where T : class
         {
             try
             {
                 string jsonFileText = File.ReadAllText(filePath);
-                deserializeTarget = JsonConvert.DeserializeObject<T>(jsonFileText);
+                T targetDeserialize = JsonConvert.DeserializeObject<T>(jsonFileText);
                 Debug.WriteLine("Completed reading json file: " + filePath);
+                return targetDeserialize;
             }
             catch (Exception ex)
             {
                 Debug.WriteLine("Failed reading json file: " + filePath + "/" + ex.Message);
+                return null;
             }
         }
 
         //Read Json from embedded file (Deserialize)
-        public static void JsonLoadEmbeddedFile<T>(Assembly assembly, ref T deserializeTarget, string resourcePath)
+        ///Example: JsonLoadEmbeddedFile<List<string>>("JsonFile");
+        public static T JsonLoadEmbeddedFile<T>(Assembly resourceAssembly, string resourcePath) where T : class
         {
             try
             {
                 string jsonFileText = string.Empty;
-                using (Stream stream = AVEmbedded.EmbeddedResourceToStream(assembly, resourcePath))
+                using (Stream stream = AVEmbedded.EmbeddedResourceToStream(resourceAssembly, resourcePath))
                 {
                     using (StreamReader reader = new StreamReader(stream))
                     {
@@ -38,38 +41,41 @@ namespace ArnoldVinkCode
                     }
                 }
 
-                deserializeTarget = JsonConvert.DeserializeObject<T>(jsonFileText);
+                T targetDeserialize = JsonConvert.DeserializeObject<T>(jsonFileText);
                 Debug.WriteLine("Completed reading json resource: " + resourcePath);
+                return targetDeserialize;
             }
             catch (Exception ex)
             {
                 Debug.WriteLine("Failed reading json resource: " + resourcePath + "/" + ex.Message);
+                return null;
             }
         }
 
-        //Read Json from multiple files (Deserialize)
-        public static void JsonLoadMulti<T>(ICollection<T> targetCollection, string directoryPath, bool clearCollection)
+        //Read Json files from directory (Deserialize)
+        ///Example: JsonLoadDirectory<List<string>, string>("JsonFilesDirectory");
+        public static T1 JsonLoadDirectory<T1, T2>(string directoryPath) where T1 : class
         {
             try
             {
-                //Clear loaded json collection
-                if (clearCollection)
-                {
-                    targetCollection.Clear();
-                }
+                //Create list collection
+                dynamic targetCollection = Activator.CreateInstance(typeof(T1));
 
                 //Add all found json files
                 string[] jsonFiles = Directory.GetFiles(directoryPath, "*.json");
                 foreach (string jsonFile in jsonFiles)
                 {
                     string jsonFileText = File.ReadAllText(jsonFile);
-                    targetCollection.Add(JsonConvert.DeserializeObject<T>(jsonFileText));
+                    targetCollection.Add(JsonConvert.DeserializeObject<T2>(jsonFileText));
                 }
+
                 Debug.WriteLine("Completed reading json files from: " + directoryPath);
+                return targetCollection;
             }
             catch (Exception ex)
             {
                 Debug.WriteLine("Failed reading json files from: " + directoryPath + "/" + ex.Message);
+                return null;
             }
         }
 
