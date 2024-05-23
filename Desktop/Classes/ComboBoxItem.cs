@@ -1,6 +1,6 @@
 ﻿namespace ArnoldVinkCode
 {
-    public static class AVClasses
+    public partial class AVClasses
     {
         public class ComboBoxItemValue
         {

@@ -154,6 +154,18 @@ namespace ArnoldVinkCode
             }
         }
 
+        public static bool CheckHotkeyPress(List<KeysVirtual> keysPressed, KeysVirtual[] keysHotkey)
+        {
+            try
+            {
+                return keysHotkey.Any(x => x != KeysVirtual.None) && !keysHotkey.Where(x => x != KeysVirtual.None).Except(keysPressed).Any();
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         //Check received keyboard input
         private static IntPtr LowLevelKeyboardCallbackCode(int nCode, IntPtr wParam, KBDLLHOOKSTRUCT lParam)
         {
