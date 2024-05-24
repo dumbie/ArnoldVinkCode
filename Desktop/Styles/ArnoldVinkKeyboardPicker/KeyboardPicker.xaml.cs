@@ -11,7 +11,8 @@ namespace ArnoldVinkCode.Styles
     {
         //Variables
         private bool ComboboxSaveEnabled = true;
-        public event Action<KeysVirtual[]> TriggerChanged;
+        public event Action<KeyboardPicker, KeysVirtual[]> TriggerChanged;
+        public string TriggerName { get; set; } = string.Empty;
         public bool MonitorKeyboardInput { get; set; } = true;
 
         //Window Initialize
@@ -89,7 +90,7 @@ namespace ArnoldVinkCode.Styles
                 //Signal changed event
                 if (TriggerChanged != null)
                 {
-                    TriggerChanged(Get());
+                    TriggerChanged(this, Get());
                 }
             }
             catch { }
@@ -136,7 +137,7 @@ namespace ArnoldVinkCode.Styles
                 //Signal changed event
                 if (TriggerChanged != null)
                 {
-                    TriggerChanged(Get());
+                    TriggerChanged(this, Get());
                 }
             }
             catch { }

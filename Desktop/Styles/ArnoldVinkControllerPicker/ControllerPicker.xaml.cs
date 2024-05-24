@@ -11,7 +11,8 @@ namespace ArnoldVinkCode.Styles
     {
         //Variables
         private bool ComboboxSaveEnabled = true;
-        public event Action<ControllerButtons[]> TriggerChanged;
+        public event Action<ControllerPicker, ControllerButtons[]> TriggerChanged;
+        public string TriggerName { get; set; } = string.Empty;
 
         //Window Initialize
         public ControllerPicker()
@@ -79,7 +80,7 @@ namespace ArnoldVinkCode.Styles
                 //Signal changed event
                 if (TriggerChanged != null)
                 {
-                    TriggerChanged(Get());
+                    TriggerChanged(this, Get());
                 }
             }
             catch { }
@@ -111,7 +112,7 @@ namespace ArnoldVinkCode.Styles
                 //Signal changed event
                 if (TriggerChanged != null)
                 {
-                    TriggerChanged(Get());
+                    TriggerChanged(this, Get());
                 }
             }
             catch { }
