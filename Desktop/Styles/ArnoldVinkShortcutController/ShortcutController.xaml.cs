@@ -3,20 +3,20 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using static ArnoldVinkCode.AVClasses;
 using static ArnoldVinkCode.AVInputOutputClass;
 
 namespace ArnoldVinkCode.Styles
 {
-    public partial class KeyboardPicker : UserControl
+    public partial class ShortcutController : UserControl
     {
         //Variables
         private bool ComboboxSaveEnabled = true;
-        public event Action<KeyboardPicker, KeysVirtual[]> TriggerChanged;
+        public event Action<ShortcutTriggerController> TriggerChanged;
         public string TriggerName { get; set; } = string.Empty;
-        public bool MonitorKeyboardInput { get; set; } = true;
 
         //Window Initialize
-        public KeyboardPicker()
+        public ShortcutController()
         {
             try
             {
@@ -25,42 +25,37 @@ namespace ArnoldVinkCode.Styles
             catch { }
         }
 
-        public void Set(KeysVirtual[] setList)
+        public void Set(ShortcutTriggerController setList)
         {
             try
             {
+                if (setList == null) { return; }
                 ComboboxSaveEnabled = false;
 
                 //Set items source
-                Array keysArray = Enum.GetValues(typeof(KeysVirtual));
+                Array keysArray = Enum.GetValues(typeof(ControllerButtons));
                 combobox_Hotkey0.ItemsSource = keysArray;
                 combobox_Hotkey1.ItemsSource = keysArray;
-                combobox_Hotkey2.ItemsSource = keysArray;
+
+                //Set hold
+                checkbox_Hold.IsChecked = setList.Hold;
 
                 //Select items
-                if (setList.Count() >= 1)
+                if (setList.Trigger.Count() >= 1)
                 {
-                    combobox_Hotkey0.SelectedItem = setList[0];
+                    combobox_Hotkey0.SelectedItem = setList.Trigger[0];
                 }
                 else
                 {
-                    combobox_Hotkey0.SelectedItem = KeysVirtual.None;
+                    combobox_Hotkey0.SelectedItem = ControllerButtons.None;
                 }
-                if (setList.Count() >= 2)
+                if (setList.Trigger.Count() >= 2)
                 {
-                    combobox_Hotkey1.SelectedItem = setList[1];
-                }
-                else
-                {
-                    combobox_Hotkey1.SelectedItem = KeysVirtual.None;
-                }
-                if (setList.Count() >= 3)
-                {
-                    combobox_Hotkey2.SelectedItem = setList[2];
+                    combobox_Hotkey1.SelectedItem = setList.Trigger[1];
                 }
                 else
                 {
-                    combobox_Hotkey2.SelectedItem = KeysVirtual.None;
+                    combobox_Hotkey1.SelectedItem = ControllerButtons.None;
                 }
 
                 ComboboxSaveEnabled = true;
@@ -68,15 +63,22 @@ namespace ArnoldVinkCode.Styles
             catch { }
         }
 
-        public KeysVirtual[] Get()
+        public ShortcutTriggerController Get()
         {
             try
             {
-                return [(KeysVirtual)combobox_Hotkey0.SelectedItem, (KeysVirtual)combobox_Hotkey1.SelectedItem, (KeysVirtual)combobox_Hotkey2.SelectedItem];
+                ShortcutTriggerController shortcutTrigger = new ShortcutTriggerController();
+                shortcutTrigger.Name = TriggerName;
+                shortcutTrigger.Trigger = [(ControllerButtons)combobox_Hotkey0.SelectedItem, (ControllerButtons)combobox_Hotkey1.SelectedItem];
+                shortcutTrigger.Hold = (bool)checkbox_Hold.IsChecked;
+                return shortcutTrigger;
             }
             catch
             {
-                return [KeysVirtual.None, KeysVirtual.None, KeysVirtual.None];
+                ShortcutTriggerController shortcutTrigger = new ShortcutTriggerController();
+                shortcutTrigger.Name = TriggerName;
+                shortcutTrigger.Trigger = [ControllerButtons.None, ControllerButtons.None];
+                return shortcutTrigger;
             }
         }
 
@@ -90,21 +92,7 @@ namespace ArnoldVinkCode.Styles
                 //Signal changed event
                 if (TriggerChanged != null)
                 {
-                    TriggerChanged(this, Get());
-                }
-            }
-            catch { }
-        }
-
-        private void combobox_Hotkey_KeyDown(object sender, KeyEventArgs e)
-        {
-            try
-            {
-                if (MonitorKeyboardInput)
-                {
-                    ComboBox senderInterface = (ComboBox)sender;
-                    senderInterface.SelectedItem = ConvertInputToVirtual((KeysInput)e.Key, (KeysInput)e.SystemKey);
-                    e.Handled = true;
+                    TriggerChanged(Get());
                 }
             }
             catch { }
@@ -117,7 +105,7 @@ namespace ArnoldVinkCode.Styles
                 ComboBox senderInterface = (ComboBox)sender;
                 if (e.RightButton == MouseButtonState.Pressed)
                 {
-                    senderInterface.SelectedItem = KeysVirtual.None;
+                    senderInterface.SelectedItem = ControllerButtons.None;
                 }
             }
             catch { }
@@ -129,15 +117,14 @@ namespace ArnoldVinkCode.Styles
             {
                 //Reset combobox selection
                 ComboboxSaveEnabled = false;
-                combobox_Hotkey0.SelectedItem = KeysVirtual.None;
-                combobox_Hotkey1.SelectedItem = KeysVirtual.None;
-                combobox_Hotkey2.SelectedItem = KeysVirtual.None;
+                combobox_Hotkey0.SelectedItem = ControllerButtons.None;
+                combobox_Hotkey1.SelectedItem = ControllerButtons.None;
                 ComboboxSaveEnabled = true;
 
                 //Signal changed event
                 if (TriggerChanged != null)
                 {
-                    TriggerChanged(this, Get());
+                    TriggerChanged(Get());
                 }
             }
             catch { }
