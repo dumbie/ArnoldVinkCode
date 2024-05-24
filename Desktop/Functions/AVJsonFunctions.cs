@@ -58,6 +58,13 @@ namespace ArnoldVinkCode
         {
             try
             {
+                //Check directory
+                if (!Directory.Exists(directoryPath))
+                {
+                    Directory.CreateDirectory(directoryPath);
+                    Debug.WriteLine("Created json load directory: " + directoryPath);
+                }
+
                 //Create list collection
                 dynamic targetCollection = Activator.CreateInstance(typeof(T1));
 
@@ -96,7 +103,7 @@ namespace ArnoldVinkCode
                 if (!string.IsNullOrWhiteSpace(directoryName) && !Directory.Exists(directoryName))
                 {
                     Directory.CreateDirectory(directoryName);
-                    Debug.WriteLine("Created json file directory: " + directoryName);
+                    Debug.WriteLine("Created json save directory: " + directoryName);
                 }
 
                 //Save to file
