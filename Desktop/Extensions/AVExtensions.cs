@@ -6,20 +6,6 @@ namespace ArnoldVinkCode
 {
     public static class AVExtensions
     {
-        //List sort items
-        public static void ListSort<TSource, TKey>(this IList<TSource> sourceList, Func<TSource, TKey> sortCondition)
-        {
-            try
-            {
-                sourceList.Clear();
-                foreach (TSource sortingItem in sourceList.OrderBy(sortCondition).ToList())
-                {
-                    sourceList.Add(sortingItem);
-                }
-            }
-            catch { }
-        }
-
         //List remove all
         public static void ListRemoveAll<TSource>(this IList<TSource> sourceList, Func<TSource, bool> removeCondition)
         {

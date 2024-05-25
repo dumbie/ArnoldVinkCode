@@ -24,7 +24,7 @@ namespace ArnoldVinkCode
                             //Debug.WriteLine("Received bytes from udp client (S): " + receivedBytes.Length);
 
                             //Add udp endpoint to client list
-                            UdpEndPointDetails updDetailsExisting = vUdpClients.Where(x => x.IPEndPoint.Address.ToString() == receiveResult.RemoteEndPoint.Address.ToString() && x.IPEndPoint.Port == receiveResult.RemoteEndPoint.Port).FirstOrDefault();
+                            UdpEndPointDetails updDetailsExisting = vUdpClients.FirstOrDefault(x => x.IPEndPoint.Address.ToString() == receiveResult.RemoteEndPoint.Address.ToString() && x.IPEndPoint.Port == receiveResult.RemoteEndPoint.Port);
                             if (updDetailsExisting == null)
                             {
                                 Debug.WriteLine("Added new udp client endpoint: " + receiveResult.RemoteEndPoint.Address + ":" + receiveResult.RemoteEndPoint.Port);

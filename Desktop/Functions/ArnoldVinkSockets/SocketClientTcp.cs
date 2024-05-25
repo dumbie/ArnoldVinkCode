@@ -15,7 +15,7 @@ namespace ArnoldVinkCode
             try
             {
                 //Check existing tcp client
-                TcpClient tcpClientExisting = vTcpClients.Where(x => ((IPEndPoint)x.Client.RemoteEndPoint).Address.ToString() == targetIp && ((IPEndPoint)x.Client.RemoteEndPoint).Port == targetPort).FirstOrDefault();
+                TcpClient tcpClientExisting = vTcpClients.FirstOrDefault(x => ((IPEndPoint)x.Client.RemoteEndPoint).Address.ToString() == targetIp && ((IPEndPoint)x.Client.RemoteEndPoint).Port == targetPort);
                 if (tcpClientExisting != null)
                 {
                     //Debug.WriteLine("Reusing tcp client (C): " + targetIp + ":" + targetPort);
