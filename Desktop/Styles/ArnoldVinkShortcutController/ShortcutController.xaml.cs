@@ -98,6 +98,22 @@ namespace ArnoldVinkCode.Styles
             catch { }
         }
 
+        private void checkbox_Hold_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                //Check if combobox saving is enabled
+                if (!ComboboxSaveEnabled) { return; }
+
+                //Signal changed event
+                if (TriggerChanged != null)
+                {
+                    TriggerChanged(Get());
+                }
+            }
+            catch { }
+        }
+
         private void combobox_Hotkey_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             try

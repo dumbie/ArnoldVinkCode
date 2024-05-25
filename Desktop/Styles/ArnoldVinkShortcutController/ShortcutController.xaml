@@ -10,7 +10,7 @@
         <ComboBox Name="combobox_Hotkey1" Width="140" Margin="10,0,0,0" Style="{StaticResource ComboBoxBlack}" SelectionChanged="combobox_Hotkey_SelectionChanged" PreviewMouseDown="combobox_Hotkey_PreviewMouseDown"/>
         <StackPanel Orientation="Vertical" Margin="10,0,0,0">
             <TextBlock HorizontalAlignment="Center" Text="Hold" Style="{StaticResource TextBlockBlack}"/>
-            <CheckBox Name="checkbox_Hold" HorizontalAlignment="Center" Style="{StaticResource CheckBoxBlack}"/>
+            <CheckBox Name="checkbox_Hold" HorizontalAlignment="Center" Style="{StaticResource CheckBoxBlack}" Click="checkbox_Hold_Click"/>
         </StackPanel>
         <Button Name="button_Hotkey_Unmap" Margin="10,0,0,0" Content="Unmap" HorizontalAlignment="Left" Style="{StaticResource ButtonAccentBlack}" Click="button_Hotkey_Unmap_Click"/>
     </StackPanel>
