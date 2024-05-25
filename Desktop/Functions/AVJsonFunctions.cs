@@ -94,6 +94,7 @@ namespace ArnoldVinkCode
                 //Json settings
                 JsonSerializerSettings jsonSettings = new JsonSerializerSettings();
                 jsonSettings.NullValueHandling = NullValueHandling.Ignore;
+                jsonSettings.DefaultValueHandling = DefaultValueHandling.Ignore;
 
                 //Json serialize
                 string serializedObject = JsonConvert.SerializeObject(serializeObject, jsonSettings);
