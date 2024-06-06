@@ -549,6 +549,28 @@ namespace ArnoldVinkCode
             DWLP_DLGPROC = 0x4
         }
 
+        //Show Window
+        [DllImport("user32.dll")]
+        public static extern bool ShowWindow(IntPtr hWnd, ShowWindowFlags nCmdShow);
+        public enum ShowWindowFlags
+        {
+            SW_HIDE = 0,
+            SW_SHOWNORMAL = 1,
+            SW_NORMAL = 1,
+            SW_SHOWMINIMIZED = 2,
+            SW_SHOWMAXIMIZED = 3,
+            SW_MAXIMIZE = 3,
+            SW_SHOWNOACTIVATE = 4,
+            SW_SHOW = 5,
+            SW_MINIMIZE = 6,
+            SW_SHOWMINNOACTIVE = 7,
+            SW_SHOWNA = 8,
+            SW_RESTORE = 9,
+            SW_SHOWDEFAULT = 10,
+            SW_FORCEMINIMIZE = 11,
+            SW_MAX = 11
+        }
+
         //Get Window Position
         [DllImport("user32.dll")]
         public static extern bool GetWindowRect(IntPtr hWnd, out WindowRectangle rectangle);
@@ -580,7 +602,7 @@ namespace ArnoldVinkCode
             NoTopMost = -2
         }
 
-        public enum SWP_WindowFlags : int
+        public enum WindowPosFlags : int
         {
             NOSIZE = 0x0001,
             NOMOVE = 0x0002,
@@ -613,6 +635,10 @@ namespace ArnoldVinkCode
             WM_MBUTTONDBLCLK = 0x209,
             WM_MOUSEWHEEL = 0x20A,
             WM_MOUSEHWHEEL = 0x20E,
+            WM_MOUSEACTIVATE = 0x0021,
+            WM_MOUSEHOVER = 0x02A1,
+            WM_MOUSELEAVE = 0x02A3,
+            WM_SETCURSOR = 0x0020,
             WM_KEYDOWN = 0x100,
             WM_KEYUP = 0x101,
             WM_SYSKEYDOWN = 0x104,
@@ -628,6 +654,14 @@ namespace ArnoldVinkCode
             WM_CLOSE = 0x0010,
             WM_CANCELMODE = 0x001F,
             WM_QUIT = 0x0012
+        }
+
+        public enum WindowReturnMessages : int
+        {
+            MA_ACTIVATE = 0x0001,
+            MA_ACTIVATEANDEAT = 0x0002,
+            MA_NOACTIVATE = 0x0003,
+            MA_NOACTIVATEANDEAT = 0x0004
         }
 
         public enum SystemCommand

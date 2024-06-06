@@ -41,7 +41,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                SetWindowPos(windowHandle, IntPtr.Zero, horLeft, verTop, 0, 0, (int)SWP_WindowFlags.NOSIZE);
+                SetWindowPos(windowHandle, IntPtr.Zero, horLeft, verTop, 0, 0, (int)WindowPosFlags.NOSIZE);
             }
             catch { }
         }
@@ -51,7 +51,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                SetWindowPos(windowHandle, IntPtr.Zero, 0, 0, width, height, (int)SWP_WindowFlags.NOMOVE);
+                SetWindowPos(windowHandle, IntPtr.Zero, 0, 0, width, height, (int)WindowPosFlags.NOMOVE);
             }
             catch { }
         }
@@ -74,7 +74,7 @@ namespace ArnoldVinkCode
                     SetWindowLongAuto(windowHandle, (int)WindowLongFlags.GWL_STYLE, updatedStyle);
 
                     //Redraw the window
-                    SetWindowPos(windowHandle, IntPtr.Zero, 0, 0, 0, 0, (int)(SWP_WindowFlags.NOMOVE | SWP_WindowFlags.NOSIZE | SWP_WindowFlags.NOCOPYBITS | SWP_WindowFlags.FRAMECHANGED));
+                    SetWindowPos(windowHandle, IntPtr.Zero, 0, 0, 0, 0, (int)(WindowPosFlags.NOMOVE | WindowPosFlags.NOSIZE | WindowPosFlags.NOCOPYBITS | WindowPosFlags.FRAMECHANGED));
                 }
             }
             catch { }
@@ -89,14 +89,23 @@ namespace ArnoldVinkCode
                 WindowStylesEx updatedExStyle = WindowStylesEx.WS_EX_NONE;
                 if (topMost)
                 {
+                    //Show window as top most
                     updatedExStyle |= WindowStylesEx.WS_EX_TOPMOST;
                 }
                 if (noActivate)
                 {
+                    //Block window activation
                     updatedExStyle |= WindowStylesEx.WS_EX_NOACTIVATE;
                 }
+                //if (noSwitch)
+                //{
+                //    //Hide from alt+tab and taskbar
+                //    //Note: Window needs to be hidden
+                //    updatedExStyle |= WindowStylesEx.WS_EX_TOOLWINDOW;
+                //}
                 if (clickThrough)
                 {
+                    //Mouse click through window
                     updatedExStyle |= WindowStylesEx.WS_EX_TRANSPARENT;
                 }
 
@@ -107,11 +116,11 @@ namespace ArnoldVinkCode
                 //Redraw the window
                 if (topMost)
                 {
-                    SetWindowPos(windowHandle, (IntPtr)SWP_WindowPosition.TopMost, 0, 0, 0, 0, (int)(SWP_WindowFlags.NOMOVE | SWP_WindowFlags.NOSIZE | SWP_WindowFlags.NOCOPYBITS | SWP_WindowFlags.FRAMECHANGED));
+                    SetWindowPos(windowHandle, (IntPtr)SWP_WindowPosition.TopMost, 0, 0, 0, 0, (int)(WindowPosFlags.NOMOVE | WindowPosFlags.NOSIZE | WindowPosFlags.NOCOPYBITS | WindowPosFlags.FRAMECHANGED));
                 }
                 else
                 {
-                    SetWindowPos(windowHandle, IntPtr.Zero, 0, 0, 0, 0, (int)(SWP_WindowFlags.NOMOVE | SWP_WindowFlags.NOSIZE | SWP_WindowFlags.NOCOPYBITS | SWP_WindowFlags.FRAMECHANGED));
+                    SetWindowPos(windowHandle, IntPtr.Zero, 0, 0, 0, 0, (int)(WindowPosFlags.NOMOVE | WindowPosFlags.NOSIZE | WindowPosFlags.NOCOPYBITS | WindowPosFlags.FRAMECHANGED));
                 }
             }
             catch { }
