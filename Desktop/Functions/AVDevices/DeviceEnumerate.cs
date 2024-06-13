@@ -102,6 +102,7 @@ namespace ArnoldVinkCode.AVDevices
                                 string deviceInstanceId = GetDeviceInstanceId(deviceInfoList, ref deviceInfoData);
                                 string deviceHardwareId = GetDeviceHardwareId(deviceInfoList, ref deviceInfoData);
                                 string deviceDescription = GetBusReportedDeviceDescription(deviceInfoList, ref deviceInfoData);
+                                bool deviceIsWireless = devicePath.ToLower().Contains("00805f9b34fb");
                                 if (string.IsNullOrWhiteSpace(deviceDescription))
                                 {
                                     deviceDescription = GetDeviceDescription(deviceInfoList, ref deviceInfoData);
@@ -113,6 +114,7 @@ namespace ArnoldVinkCode.AVDevices
                                 foundDevice.DeviceInstanceId = deviceInstanceId;
                                 foundDevice.Description = deviceDescription;
                                 foundDevice.HardwareId = deviceHardwareId;
+                                foundDevice.IsWireless = deviceIsWireless;
                                 foundDevice.PowerData = devicePowerData;
                                 enumerateInfoList.Add(foundDevice);
                             }
