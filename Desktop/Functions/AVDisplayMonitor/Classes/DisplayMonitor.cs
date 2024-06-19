@@ -15,6 +15,7 @@
             public float DpiScaleVertical { get; set; } = -1;
             public int RefreshRate { get; set; } = -1;
             public int BitDepth { get; set; } = -1;
+            public string ColorFormat { get; set; } = string.Empty;
             public int BoundsLeft { get; set; } = -1;
             public int BoundsTop { get; set; } = -1;
             public int BoundsRight { get; set; } = -1;

@@ -118,10 +118,10 @@ namespace ArnoldVinkCode
                         {
                             if (!monitorListSummary.Any(x => x.Identifier == pathInfo.targetInfo.id))
                             {
-                                //Get the monitor friendly name
+                                //Get monitor friendly name
                                 string monitorName = GetMonitorFriendlyName(pathInfo.targetInfo.adapterId, pathInfo.targetInfo.id);
 
-                                //Check the monitor friendly name
+                                //Check monitor friendly name
                                 if (monitorName != "Unknown")
                                 {
                                     monitorName = monitorName + " (" + pathInfo.targetInfo.id + ")";
@@ -161,7 +161,7 @@ namespace ArnoldVinkCode
                 DisplayMonitor displayMonitorSettings = new DisplayMonitor();
                 displayMonitorSettings.Identifier = screenNumber;
 
-                //Get the screen name
+                //Get screen name
                 string monitorName = GetMonitorFriendlyName(pathInfoTarget.targetInfo.adapterId, pathInfoTarget.targetInfo.id);
                 if (monitorName != "Unknown")
                 {
@@ -169,31 +169,45 @@ namespace ArnoldVinkCode
                 }
                 displayMonitorSettings.Name = monitorName;
 
-                //Get the device path
+                //Get device path
                 displayMonitorSettings.DevicePath = GetMonitorDevicePath(pathInfoTarget.targetInfo.adapterId, pathInfoTarget.targetInfo.id);
 
-                //Get the screen dpi scale
+                //Get screen dpi scale
                 displayMonitorSettings.DpiScaleHorizontal = (float)GetMonitorDpiScale(pathInfoTarget.targetInfo.adapterId, pathInfoTarget.sourceInfo.id) / (float)100;
                 displayMonitorSettings.DpiScaleVertical = displayMonitorSettings.DpiScaleHorizontal;
 
-                //Get the screen resolution
+                //Get screen resolution
                 displayMonitorSettings.WidthNative = modeInfoTarget.sourceMode.position.y;
                 displayMonitorSettings.HeightNative = modeInfoTarget.desktopImageInfo.PathSourceSize.x;
                 displayMonitorSettings.WidthDpi = (int)(displayMonitorSettings.WidthNative / displayMonitorSettings.DpiScaleHorizontal);
                 displayMonitorSettings.HeightDpi = (int)(displayMonitorSettings.HeightNative / displayMonitorSettings.DpiScaleVertical);
 
-                //Get the screen refresh rate
+                //Get screen refresh rate
                 if (pathInfoTarget.targetInfo.refreshRate.Numerator != 0)
                 {
-                    displayMonitorSettings.RefreshRate = (int)(pathInfoTarget.targetInfo.refreshRate.Numerator / pathInfoTarget.targetInfo.refreshRate.Denominator);
+                    displayMonitorSettings.RefreshRate = (int)pathInfoTarget.targetInfo.refreshRate.Numerator;
                 }
                 else
                 {
                     displayMonitorSettings.RefreshRate = 0;
                 }
 
-                //Get the screen hdr status
-                displayMonitorSettings.HdrEnabled = GetMonitorHdrStatus(pathInfoTarget.targetInfo.adapterId, pathInfoTarget.targetInfo.id);
+                //Get screen advanced color information
+                DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO colorInfo = GetMonitorAdvancedColorInfo(pathInfoTarget.targetInfo.adapterId, pathInfoTarget.targetInfo.id);
+
+                //Update screen color information
+                displayMonitorSettings.HdrEnabled = colorInfo.advancedColorEnabled;
+                displayMonitorSettings.BitDepth = colorInfo.bitsPerColorChannel;
+                if (colorInfo.colorEncoding == DISPLAYCONFIG_COLOR_ENCODING.DISPLAYCONFIG_COLOR_ENCODING_RGB)
+                {
+                    displayMonitorSettings.ColorFormat = "RGB";
+                }
+                else
+                {
+                    displayMonitorSettings.ColorFormat = "YCbCr";
+                }
+
+                //Get screen sdr white level
                 displayMonitorSettings.SdrWhiteLevel = GetMonitorSdrWhiteLevel(pathInfoTarget.targetInfo.adapterId, pathInfoTarget.targetInfo.id);
 
                 return displayMonitorSettings;
@@ -265,11 +279,11 @@ namespace ArnoldVinkCode
             }
         }
 
-        private static bool GetMonitorHdrStatus(LUID adapterId, uint targetId)
+        private static DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO GetMonitorAdvancedColorInfo(LUID adapterId, uint targetId)
         {
+            DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO deviceInfo = new DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO();
             try
             {
-                DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO deviceInfo = new DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO();
                 deviceInfo.header.size = (uint)Marshal.SizeOf(typeof(DISPLAYCONFIG_GET_ADVANCED_COLOR_INFO));
                 deviceInfo.header.adapterId = adapterId;
                 deviceInfo.header.id = targetId;
@@ -278,16 +292,15 @@ namespace ArnoldVinkCode
                 int error = DisplayConfigGetDeviceInfo(ref deviceInfo);
                 if (error != 0)
                 {
-                    Debug.WriteLine("Failed GetMonitorHdrStatus: " + error);
-                    return false;
+                    Debug.WriteLine("Failed GetMonitorAdvancedColorInfo: " + error);
                 }
 
-                return deviceInfo.advancedColorEnabled;
+                return deviceInfo;
             }
             catch
             {
-                Debug.WriteLine("Failed GetMonitorHdrStatus.");
-                return false;
+                Debug.WriteLine("Failed GetMonitorAdvancedColorInfo.");
+                return deviceInfo;
             }
         }
 
