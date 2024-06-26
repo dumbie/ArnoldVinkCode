@@ -10,7 +10,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                uint MONITOR_STATE = 2;
+                int MONITOR_STATE = 2;
                 int SC_MONITORPOWER = 0xF170;
                 IntPtr HWND_BROADCAST = new IntPtr(0xFFFF);
                 IntPtr result = SendMessage(HWND_BROADCAST, WindowMessages.WM_SYSCOMMAND, SC_MONITORPOWER, MONITOR_STATE);

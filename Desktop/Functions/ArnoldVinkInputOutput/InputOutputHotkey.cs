@@ -13,7 +13,7 @@ namespace ArnoldVinkCode
     {
         //Variables
         private static IntPtr vWindowHookPointer = IntPtr.Zero;
-        private static LowLevelKeyboardCallBack vLowLevelKeyboardCallback = LowLevelKeyboardCallbackCode;
+        private static LowLevelCallBackKeyboard vLowLevelKeyboardCallback = LowLevelKeyboardCallbackCode;
 
         //Settings
         public static bool BlockGlobalKeyboardPresses = false;
@@ -22,7 +22,8 @@ namespace ArnoldVinkCode
         private static List<KeysVirtual> vListKeysPressed = new List<KeysVirtual>();
 
         //Events
-        public static event Action<List<KeysVirtual>> EventHotkeyPressed;
+        public static event Action<KeyboardMessage> EventHotkeyPressedMessage;
+        public static event Action<List<KeysVirtual>> EventHotkeyPressedList;
 
         //Tasks
         private static AVTaskDetails vTask_RestartKeyboardHook = new AVTaskDetails("vTask_RestartKeyboardHook");
@@ -176,21 +177,32 @@ namespace ArnoldVinkCode
                     //Update keys pressed list
                     if (wParam == (IntPtr)WindowMessages.WM_KEYDOWN || wParam == (IntPtr)WindowMessages.WM_SYSKEYDOWN)
                     {
-                        //Add key press
-                        vListKeysPressed.Add((KeysVirtual)lParam.vkCode);
+                        //Trigger hotkey event
+                        if (EventHotkeyPressedList != null)
+                        {
+                            //Add key press
+                            vListKeysPressed.Add((KeysVirtual)lParam.vkCode);
+                            EventHotkeyPressedList(vListKeysPressed);
+                        }
 
                         //Trigger hotkey event
-                        if (EventHotkeyPressed != null)
+                        if (EventHotkeyPressedMessage != null)
                         {
-                            EventHotkeyPressed(vListKeysPressed);
+                            KeyboardMessage keyMessage = new KeyboardMessage();
+                            keyMessage.windowMessage = (WindowMessages)wParam;
+                            keyMessage.keyVirtual = (KeysVirtual)lParam.vkCode;
+                            EventHotkeyPressedMessage(keyMessage);
                         }
 
                         //Debug.WriteLine("Keyboard down: " + (KeysVirtual)lParam.vkCode);
                     }
                     else if (wParam == (IntPtr)WindowMessages.WM_KEYUP || wParam == (IntPtr)WindowMessages.WM_SYSKEYUP)
                     {
-                        //Remove key press
-                        vListKeysPressed.RemoveAll(x => x == (KeysVirtual)lParam.vkCode);
+                        if (EventHotkeyPressedList != null)
+                        {
+                            //Remove key press
+                            vListKeysPressed.RemoveAll(x => x == (KeysVirtual)lParam.vkCode);
+                        }
 
                         //Debug.WriteLine("Keyboard up: " + (KeysVirtual)lParam.vkCode);
                     }

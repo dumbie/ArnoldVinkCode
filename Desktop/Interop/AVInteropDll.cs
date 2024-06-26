@@ -702,15 +702,33 @@ namespace ArnoldVinkCode
             SMTO_ERRORONEXIT = 0x0020
         }
 
-        //Send message or key
+        //Send message
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        public static extern IntPtr SendMessage(IntPtr hWnd, WindowMessages Msg, int wParam, uint lParam);
+        public static extern IntPtr SendMessage(IntPtr hWnd, WindowMessages Msg, int wParam, int lParam);
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        public static extern IntPtr SendMessage(IntPtr hWnd, WindowMessages Msg, int wParam, ref COPYDATASTRUCT lParam);
+        public static extern IntPtr SendMessage(IntPtr hWnd, WindowMessages Msg, IntPtr wParam, IntPtr lParam);
+
+        //Post message
         [DllImport("user32.dll", EntryPoint = "PostMessage", CharSet = CharSet.Auto)]
-        public static extern bool PostMessageAsync(IntPtr hWnd, WindowMessages Msg, int wParam, uint lParam);
+        public static extern bool PostMessageAsync(IntPtr hWnd, WindowMessages Msg, int wParam, int lParam);
         [DllImport("user32.dll", EntryPoint = "PostMessage", CharSet = CharSet.Auto)]
-        public static extern bool PostMessageAsync(IntPtr hWnd, WindowMessages Msg, int wParam, ref COPYDATASTRUCT lParam);
+        public static extern bool PostMessageAsync(IntPtr hWnd, WindowMessages Msg, IntPtr wParam, IntPtr lParam);
+
+        //Get message
+        [DllImport("user32.dll")]
+        public static extern bool GetMessage(out WindowMessage lpMsg, IntPtr hWnd, uint wMsgFilterMin, uint wMsgFilterMax);
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct WindowMessage
+        {
+            public IntPtr hwnd { get; set; }
+            public IntPtr lParam { get; set; }
+            public int message { get; set; }
+            public int pt_x { get; set; }
+            public int pt_y { get; set; }
+            public int time { get; set; }
+            public IntPtr wParam { get; set; }
+        }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct COPYDATASTRUCT
@@ -722,15 +740,19 @@ namespace ArnoldVinkCode
 
         //Windows Hook
         [DllImport("user32.dll")]
-        public static extern IntPtr SetWindowsHookEx(WindowHookTypes idHook, LowLevelKeyboardCallBack callBack, IntPtr hInstance, uint threadId);
+        public static extern IntPtr SetWindowsHookEx(WindowHookTypes idHook, Delegate callBack, IntPtr hInstance, uint threadId);
 
         [DllImport("user32.dll")]
         public static extern IntPtr CallNextHookEx(IntPtr idHook, int nCode, IntPtr wParam, KBDLLHOOKSTRUCT lParam);
 
         [DllImport("user32.dll")]
+        public static extern IntPtr CallNextHookEx(IntPtr idHook, int nCode, IntPtr wParam, IntPtr lParam);
+
+        [DllImport("user32.dll")]
         public static extern bool UnhookWindowsHookEx(IntPtr hInstance);
 
-        public delegate IntPtr LowLevelKeyboardCallBack(int nCode, IntPtr wParam, KBDLLHOOKSTRUCT lParam);
+        public delegate IntPtr LowLevelCallBackKeyboard(int nCode, IntPtr wParam, KBDLLHOOKSTRUCT lParam);
+        public delegate IntPtr LowLevelCallBackHook(int nCode, IntPtr wParam, IntPtr lParam);
 
         [StructLayout(LayoutKind.Sequential)]
         public struct KBDLLHOOKSTRUCT

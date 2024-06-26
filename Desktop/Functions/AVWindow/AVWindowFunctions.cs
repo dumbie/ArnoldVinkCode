@@ -95,6 +95,7 @@ namespace ArnoldVinkCode
                 if (noActivate)
                 {
                     //Block window activation
+                    //Note: Breaks keyboard input window messages
                     updatedExStyle |= WindowStylesEx.WS_EX_NOACTIVATE;
                 }
                 //if (noSwitch)
