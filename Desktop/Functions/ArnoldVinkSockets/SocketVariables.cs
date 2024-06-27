@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net.Sockets;
 using static ArnoldVinkCode.AVActions;
 
@@ -13,8 +14,7 @@ namespace ArnoldVinkCode
         public AVTaskDetails vTask_UdpReceiveLoop = new AVTaskDetails("vTask_UdpReceiveLoop");
 
         //Events
-        public delegate void DelegateBytesReceived(TcpClient tcpClient, UdpEndPointDetails endPoint, byte[] bytesReceived);
-        public DelegateBytesReceived EventBytesReceived = null;
+        public event Action<TcpClient, UdpEndPointDetails, byte[]> EventBytesReceived;
 
         //Tcp server and clients
         private TcpListener vTcpServer = null;

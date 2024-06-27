@@ -13,7 +13,6 @@ namespace ArnoldVinkCode
     {
         //Variables
         private static IntPtr vWindowHookPointer = IntPtr.Zero;
-        private static LowLevelCallBackKeyboard vLowLevelKeyboardCallback = LowLevelKeyboardCallbackCode;
 
         //Settings
         public static bool BlockGlobalKeyboardPresses = false;
@@ -87,7 +86,7 @@ namespace ArnoldVinkCode
 
                 AVActions.DispatcherInvoke(delegate
                 {
-                    vWindowHookPointer = SetWindowsHookEx(WindowHookTypes.WH_KEYBOARD_LL, vLowLevelKeyboardCallback, IntPtr.Zero, 0);
+                    vWindowHookPointer = SetWindowsHookEx(WindowHookTypes.WH_KEYBOARD_LL, LowLevelKeyboardDelegate, IntPtr.Zero, 0);
                     Debug.WriteLine("Hooked window keyboard: " + vWindowHookPointer);
                 });
             }
@@ -168,7 +167,7 @@ namespace ArnoldVinkCode
         }
 
         //Check received keyboard input
-        private static IntPtr LowLevelKeyboardCallbackCode(int nCode, IntPtr wParam, KBDLLHOOKSTRUCT lParam)
+        private static IntPtr LowLevelKeyboardDelegate(int nCode, IntPtr wParam, KBDLLHOOKSTRUCT lParam)
         {
             try
             {
@@ -219,7 +218,7 @@ namespace ArnoldVinkCode
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("LowLevelKeyboardCallback error: " + ex.Message);
+                Debug.WriteLine("LowLevelKeyboardDelegate error: " + ex.Message);
                 return IntPtr.Zero;
             }
         }

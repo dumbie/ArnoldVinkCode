@@ -126,7 +126,7 @@ namespace ArnoldVinkCode
 
                 //Enumerate all icon groups
                 List<string> iconGroups = new List<string>();
-                EnumResNameProcDelegate EnumResourceNamesCallback = (IntPtr hModule, ResourceTypes lpType, IntPtr lpEnumFunc, IntPtr lParam) =>
+                EnumResNameProcDelegate EnumResNameProcDelegate = (IntPtr hModule, ResourceTypes lpType, IntPtr lpEnumFunc, IntPtr lParam) =>
                 {
                     try
                     {
@@ -140,7 +140,7 @@ namespace ArnoldVinkCode
                     catch { }
                     return false;
                 };
-                EnumResourceNames(libraryHandle, ResourceTypes.GROUP_ICON, EnumResourceNamesCallback, IntPtr.Zero);
+                EnumResourceNames(libraryHandle, ResourceTypes.GROUP_ICON, EnumResNameProcDelegate, IntPtr.Zero);
 
                 //Select target icon group
                 string iconGroup = string.Empty;

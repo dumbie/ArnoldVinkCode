@@ -1,4 +1,5 @@
-﻿using static ArnoldVinkCode.AVActions;
+﻿using System;
+using static ArnoldVinkCode.AVActions;
 
 namespace ArnoldVinkCode
 {
@@ -8,8 +9,7 @@ namespace ArnoldVinkCode
         public AVTaskDetails vTask_PipeReceiveLoop = new AVTaskDetails("vTask_PipeReceiveLoop");
 
         //Events
-        public delegate void DelegateStringReceived(string bytesReceived);
-        public DelegateStringReceived EventStringReceived = null;
+        public event Action<string> EventStringReceived;
 
         //Variables
         private string vPipeServerName = string.Empty;

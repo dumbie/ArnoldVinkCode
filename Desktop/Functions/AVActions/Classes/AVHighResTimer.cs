@@ -11,7 +11,6 @@ namespace ArnoldVinkCode
             private IntPtr createEvent;
             private uint timeSetEventId;
             public event EventHandler Tick;
-            private MultimediaTimerCallback multimediaTimerCallback;
 
             //Initialize
             public AVHighResTimer(uint milliSecondsTickRate)
@@ -20,14 +19,13 @@ namespace ArnoldVinkCode
                 {
                     if (milliSecondsTickRate == 0) { milliSecondsTickRate = 1; }
                     createEvent = CreateEvent(IntPtr.Zero, true, false, null);
-                    multimediaTimerCallback = new MultimediaTimerCallback(MultimediaTimerCallbackCode);
-                    timeSetEventId = timeSetEvent(milliSecondsTickRate, 0, multimediaTimerCallback, UIntPtr.Zero, TimeSetEventFlags.TIME_PERIODIC);
+                    timeSetEventId = timeSetEvent(milliSecondsTickRate, 0, MultimediaTimerDelegate, UIntPtr.Zero, TimeSetEventFlags.TIME_PERIODIC);
                 }
                 catch { }
             }
 
-            //Callback
-            private void MultimediaTimerCallbackCode(uint uTimerID, uint uMsg, UIntPtr dwUser, UIntPtr dw1, UIntPtr dw2)
+            //Delegate
+            private void MultimediaTimerDelegate(uint uTimerID, uint uMsg, UIntPtr dwUser, UIntPtr dw1, UIntPtr dw2)
             {
                 try
                 {

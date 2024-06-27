@@ -12,13 +12,17 @@ namespace ArnoldVinkCode
             List<IntPtr> monitorHandles = new List<IntPtr>();
             try
             {
-                EnumDisplayMonitors(IntPtr.Zero, IntPtr.Zero,
-                delegate (IntPtr hMonitor, IntPtr hdcMonitor, ref RECT lprcMonitor, IntPtr dwData)
+                EnumMonitorsDelegate EnumMonitorsDelegate = (IntPtr hMonitor, IntPtr hdcMonitor, ref RECT lprcMonitor, IntPtr dwData) =>
                 {
-                    monitorHandles.Add(hMonitor);
-                    return true;
-                },
-                IntPtr.Zero);
+                    try
+                    {
+                        monitorHandles.Add(hMonitor);
+                        return true;
+                    }
+                    catch { }
+                    return false;
+                };
+                EnumDisplayMonitors(IntPtr.Zero, IntPtr.Zero, EnumMonitorsDelegate, IntPtr.Zero);
             }
             catch { }
             return monitorHandles;

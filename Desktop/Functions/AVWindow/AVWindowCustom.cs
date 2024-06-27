@@ -12,8 +12,6 @@ namespace ArnoldVinkCode
         private int windowWidth;
         private IntPtr windowChild;
         private IntPtr windowParent;
-        private static WindowProc windowProc;
-        private IntPtr windowProcPointer;
 
         //Window create
         public AVWindowCustom(string windowTitle, int windowWidth, int windowHeight, bool windowVisible)
@@ -24,16 +22,12 @@ namespace ArnoldVinkCode
                 this.windowWidth = windowWidth;
                 this.windowHeight = windowHeight;
 
-                //Create window procedure
-                windowProc = WindowProcessMessage;
-                windowProcPointer = Marshal.GetFunctionPointerForDelegate(windowProc);
-
                 //Create window class
                 WNDCLASSEX windowClassEx = new WNDCLASSEX
                 {
                     cbSize = WNDCLASSEX.classSize,
                     style = 0,
-                    lpfnWndProc = windowProcPointer,
+                    lpfnWndProc = WindowProcessMessageDelegate,
                     cbClsExtra = 0,
                     cbWndExtra = 0,
                     hInstance = IntPtr.Zero,
@@ -68,8 +62,7 @@ namespace ArnoldVinkCode
         }
 
         //Window process message
-        internal delegate IntPtr WindowProc(IntPtr hWnd, uint uMsg, IntPtr wParam, IntPtr lParam);
-        private IntPtr WindowProcessMessage(IntPtr hWnd, uint uMsg, IntPtr wParam, IntPtr lParam)
+        private IntPtr WindowProcessMessageDelegate(IntPtr hWnd, uint uMsg, IntPtr wParam, IntPtr lParam)
         {
             try
             {

@@ -153,13 +153,15 @@ namespace ArnoldVinkCode
             LWA_OPAQUE = 0x4
         }
 
+        public delegate IntPtr WndProcDelegate(IntPtr hWnd, uint uMsg, IntPtr wParam, IntPtr lParam);
+
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
         public struct WNDCLASSEX
         {
             public static readonly uint classSize = (uint)Marshal.SizeOf(typeof(WNDCLASSEX));
             public uint cbSize;
             public int style;
-            public IntPtr lpfnWndProc;
+            public WndProcDelegate lpfnWndProc;
             public int cbClsExtra;
             public int cbWndExtra;
             public IntPtr hInstance;
@@ -740,7 +742,12 @@ namespace ArnoldVinkCode
 
         //Windows Hook
         [DllImport("user32.dll")]
-        public static extern IntPtr SetWindowsHookEx(WindowHookTypes idHook, Delegate callBack, IntPtr hInstance, uint threadId);
+        public static extern IntPtr SetWindowsHookEx(WindowHookTypes idHook, LowLevelKeyboardDelegate lpfn, IntPtr hMod, uint dwThreadId);
+        public delegate IntPtr LowLevelKeyboardDelegate(int nCode, IntPtr wParam, KBDLLHOOKSTRUCT lParam);
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr SetWindowsHookEx(WindowHookTypes idHook, LowLevelHookDelegate lpfn, IntPtr hMod, uint dwThreadId);
+        public delegate IntPtr LowLevelHookDelegate(int nCode, IntPtr wParam, IntPtr lParam);
 
         [DllImport("user32.dll")]
         public static extern IntPtr CallNextHookEx(IntPtr idHook, int nCode, IntPtr wParam, KBDLLHOOKSTRUCT lParam);
@@ -750,9 +757,6 @@ namespace ArnoldVinkCode
 
         [DllImport("user32.dll")]
         public static extern bool UnhookWindowsHookEx(IntPtr hInstance);
-
-        public delegate IntPtr LowLevelCallBackKeyboard(int nCode, IntPtr wParam, KBDLLHOOKSTRUCT lParam);
-        public delegate IntPtr LowLevelCallBackHook(int nCode, IntPtr wParam, IntPtr lParam);
 
         [StructLayout(LayoutKind.Sequential)]
         public struct KBDLLHOOKSTRUCT
@@ -878,12 +882,11 @@ namespace ArnoldVinkCode
 
         //Time events
         [DllImport("winmm.dll")]
-        public static extern uint timeSetEvent(uint uDelayMs, uint uResolution, MultimediaTimerCallback lpTimeProc, UIntPtr dwUser, TimeSetEventFlags fuEvent);
+        public static extern uint timeSetEvent(uint uDelayMs, uint uResolution, MultimediaTimerDelegate lpTimeProc, UIntPtr dwUser, TimeSetEventFlags fuEvent);
+        public delegate void MultimediaTimerDelegate(uint uTimerId, uint uMsg, UIntPtr dwUser, UIntPtr dw1, UIntPtr dw2);
 
         [DllImport("winmm.dll")]
         public static extern uint timeKillEvent(uint uTimerId);
-
-        public delegate void MultimediaTimerCallback(uint uTimerId, uint uMsg, UIntPtr dwUser, UIntPtr dw1, UIntPtr dw2);
 
         public enum TimeSetEventFlags : uint
         {
