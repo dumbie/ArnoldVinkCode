@@ -120,7 +120,7 @@ namespace ArnoldVinkCode
                 //Loop variables
                 IntPtr previousForegroundWindow = GetForegroundWindow();
 
-                while (TaskCheckLoop(vTask_RestartKeyboardHook))
+                while (await TaskCheckLoop(vTask_RestartKeyboardHook, 1000))
                 {
                     //Get foreground window
                     IntPtr currentForegroundWindow = GetForegroundWindow();
@@ -133,9 +133,6 @@ namespace ArnoldVinkCode
 
                     //Update previous variables
                     previousForegroundWindow = currentForegroundWindow;
-
-                    //Delay the loop task
-                    await TaskDelay(1000, vTask_RestartKeyboardHook);
                 }
             }
             catch { }

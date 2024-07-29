@@ -13,7 +13,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                while (TaskCheckLoop(vTask_UdpReceiveLoop))
+                while (await TaskCheckLoop(vTask_UdpReceiveLoop, 0))
                 {
                     try
                     {

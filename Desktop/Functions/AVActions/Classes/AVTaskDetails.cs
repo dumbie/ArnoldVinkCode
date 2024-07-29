@@ -15,6 +15,7 @@ namespace ArnoldVinkCode
             public string Name { get; set; } = string.Empty;
             public Task Task { get; set; } = null;
             public CancellationTokenSource TokenSource { get; set; } = null;
+            public bool TaskLooped { get; set; } = false;
             public bool TaskStopRequested { get { return TokenSource != null && TokenSource.IsCancellationRequested; } }
             public bool TaskRunning { get { return Task != null && !Task.IsCompleted; } }
             public bool TaskCompleted { get { return Task != null && Task.IsCompleted; } }
@@ -37,6 +38,7 @@ namespace ArnoldVinkCode
             {
                 try
                 {
+                    TaskLooped = false;
                     if (Task != null)
                     {
                         Task.Dispose();

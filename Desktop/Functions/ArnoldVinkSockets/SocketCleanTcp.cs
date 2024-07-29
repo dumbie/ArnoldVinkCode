@@ -16,7 +16,7 @@ namespace ArnoldVinkCode
                 Debug.WriteLine("Tcp client cleaner is now running (L)");
 
                 //Tcp cleaner loop
-                while (TaskCheckLoop(vTask_TcpCleanLoop))
+                while (await TaskCheckLoop(vTask_TcpCleanLoop, 2000))
                 {
                     try
                     {
@@ -55,9 +55,6 @@ namespace ArnoldVinkCode
                         }
                     }
                     catch { }
-
-                    //Delay the loop task
-                    await TaskDelay(2000, vTask_TcpCleanLoop);
                 }
             }
             catch (Exception ex)

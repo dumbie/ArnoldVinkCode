@@ -18,7 +18,7 @@ namespace ArnoldVinkCode
                 Debug.WriteLine("Udp client cleaner is now running (L)");
 
                 //Udp cleaner loop
-                while (TaskCheckLoop(vTask_UdpCleanLoop))
+                while (await TaskCheckLoop(vTask_UdpCleanLoop, 2000))
                 {
                     try
                     {
@@ -61,9 +61,6 @@ namespace ArnoldVinkCode
                         }
                     }
                     catch { }
-
-                    //Delay the loop task
-                    await TaskDelay(2000, vTask_UdpCleanLoop);
                 }
             }
             catch (Exception ex)

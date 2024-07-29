@@ -7,7 +7,7 @@ namespace ArnoldVinkCode
 {
     public partial class AVActions
     {
-        ///<param name="actionRun">void TaskAction() { while (TaskCheckLoop(AVTask)) { void(); } }</param>
+        ///<param name="actionRun">void TaskAction() { while (TaskCheckLoop(AVTask, 1000)) { void(); } }</param>
         ///<example>AVActions.TaskStartLoop(TaskAction, AVTask);</example>
         ///<summary>Don't forget to use try and catch to improve stability</summary>
         public static void TaskStartLoop(Action actionRun, AVTaskDetails avTask)
@@ -36,7 +36,7 @@ namespace ArnoldVinkCode
             }
         }
 
-        ///<param name="actionRun">async Task TaskAction() { while (TaskCheckLoop(AVTask)) { void(); await TaskDelay(1000, AVTask); } }</param>
+        ///<param name="actionRun">async Task TaskAction() { while (TaskCheckLoop(AVTask, 1000)) { void(); } }</param>
         ///<example>AVActions.TaskStartLoop(TaskAction, AVTask);</example>
         ///<summary>Don't forget to use try and catch to improve stability</summary>
         public static void TaskStartLoop(Func<Task> actionRun, AVTaskDetails avTask)
@@ -65,9 +65,72 @@ namespace ArnoldVinkCode
             }
         }
 
-        ///<example>AVActions.TaskCheckLoop(AVTask);</example>
-        ///<summary>Returns true if loop is still allowed to continue</summary>
-        public static bool TaskCheckLoop(AVTaskDetails avTask)
+        ///<example>AVActions.TaskStopLoop(AVTask);</example>
+        public static async Task TaskStopLoop(AVTaskDetails avTask, int taskTimeout)
+        {
+            try
+            {
+                //Check if task is allowed
+                if (!TaskCheck(avTask))
+                {
+                    return;
+                }
+
+                //Signal loop task to stop
+                avTask.Stop();
+
+                //Wait for task to have stopped
+                Debug.WriteLine("Waiting for task " + avTask.Name + " to stop or timeout...");
+                long stoppedTime = 0;
+                long stopTimeout = GetSystemTicksMs();
+                while (!avTask.TaskCompleted)
+                {
+                    stoppedTime = GetSystemTicksMs() - stopTimeout;
+                    if (taskTimeout > 0 && stoppedTime >= taskTimeout)
+                    {
+                        Debug.WriteLine("Stopping task " + avTask.Name + " has timed out...");
+                        break;
+                    }
+                    await Task.Delay(100);
+                }
+
+                //Reset loop task
+                avTask.Reset();
+
+                Debug.WriteLine("Loop task " + avTask.Name + " has been stopped in " + stoppedTime + "ms");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to stop loop task: " + avTask.Name + " / " + ex.Message);
+            }
+        }
+
+        ///<example>AVActions.TaskCheckLoop(AVTask, 1000);</example>
+        ///<summary>Check if task is still allowed and delay loop</summary>
+        public static async Task<bool> TaskCheckLoop(AVTaskDetails avTask, int taskDelayMs)
+        {
+            try
+            {
+                //Delay loop task
+                if (avTask.TaskLooped != false && taskDelayMs > 0)
+                {
+                    await TaskDelay(taskDelayMs, avTask);
+                }
+                else
+                {
+                    avTask.TaskLooped = true;
+                }
+
+                //Check if task is allowed
+                return TaskCheck(avTask);
+            }
+            catch { }
+            return true;
+        }
+
+        ///<example>AVActions.TaskCheck(AVTask);</example>
+        ///<summary>Check if task is still allowed</summary>
+        public static bool TaskCheck(AVTaskDetails avTask)
         {
             try
             {
@@ -104,46 +167,6 @@ namespace ArnoldVinkCode
             }
             catch { }
             return true;
-        }
-
-        ///<example>AVActions.TaskStopLoop(AVTask);</example>
-        public static async Task TaskStopLoop(AVTaskDetails avTask, int taskTimeout)
-        {
-            try
-            {
-                //Check if the task is stopped
-                if (!TaskCheckLoop(avTask))
-                {
-                    return;
-                }
-
-                //Signal loop task to stop
-                avTask.Stop();
-
-                //Wait for task to have stopped
-                Debug.WriteLine("Waiting for task " + avTask.Name + " to stop or timeout...");
-                long stoppedTime = 0;
-                long stopTimeout = GetSystemTicksMs();
-                while (!avTask.TaskCompleted)
-                {
-                    stoppedTime = GetSystemTicksMs() - stopTimeout;
-                    if (taskTimeout > 0 && stoppedTime >= taskTimeout)
-                    {
-                        Debug.WriteLine("Stopping task " + avTask.Name + " has timed out...");
-                        break;
-                    }
-                    await Task.Delay(100);
-                }
-
-                //Reset loop task
-                avTask.Reset();
-
-                Debug.WriteLine("Loop task " + avTask.Name + " has been stopped in " + stoppedTime + "ms");
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("Failed to stop loop task: " + avTask.Name + " / " + ex.Message);
-            }
         }
     }
 }
