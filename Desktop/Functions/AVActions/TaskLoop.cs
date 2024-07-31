@@ -7,7 +7,7 @@ namespace ArnoldVinkCode
 {
     public partial class AVActions
     {
-        ///<param name="actionRun">void TaskAction() { while (TaskCheckLoop(AVTask, 1000)) { void(); } }</param>
+        ///<param name="actionRun">void TaskAction() { while (await TaskCheckLoop(AVTask, 1000)) { void(); } }</param>
         ///<example>AVActions.TaskStartLoop(TaskAction, AVTask);</example>
         ///<summary>Don't forget to use try and catch to improve stability</summary>
         public static void TaskStartLoop(Action actionRun, AVTaskDetails avTask)
@@ -36,7 +36,7 @@ namespace ArnoldVinkCode
             }
         }
 
-        ///<param name="actionRun">async Task TaskAction() { while (TaskCheckLoop(AVTask, 1000)) { void(); } }</param>
+        ///<param name="actionRun">async Task TaskAction() { while (await TaskCheckLoop(AVTask, 1000)) { void(); } }</param>
         ///<example>AVActions.TaskStartLoop(TaskAction, AVTask);</example>
         ///<summary>Don't forget to use try and catch to improve stability</summary>
         public static void TaskStartLoop(Func<Task> actionRun, AVTaskDetails avTask)
@@ -105,16 +105,16 @@ namespace ArnoldVinkCode
             }
         }
 
-        ///<example>AVActions.TaskCheckLoop(AVTask, 1000);</example>
+        ///<example>await AVActions.TaskCheckLoop(AVTask, 1000);</example>
         ///<summary>Check if task is still allowed and delay loop</summary>
-        public static async Task<bool> TaskCheckLoop(AVTaskDetails avTask, int taskDelayMs)
+        public static async Task<bool> TaskCheckLoop(AVTaskDetails avTask, float milliSecondsDelay)
         {
             try
             {
                 //Delay loop task
-                if (avTask.TaskLooped != false && taskDelayMs > 0)
+                if (avTask.TaskLooped != false && milliSecondsDelay > 0)
                 {
-                    await TaskDelay(taskDelayMs, avTask);
+                    await TaskDelay(milliSecondsDelay, avTask);
                 }
                 else
                 {
