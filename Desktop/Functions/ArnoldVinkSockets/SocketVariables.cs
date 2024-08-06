@@ -14,7 +14,7 @@ namespace ArnoldVinkCode
         public AVTaskDetails vTask_UdpReceiveLoop = new AVTaskDetails("vTask_UdpReceiveLoop");
 
         //Events
-        public event Action<TcpClient, UdpEndPointDetails, byte[]> EventBytesReceived;
+        public Action<TcpClient, UdpEndPointDetails, byte[]> EventBytesReceived;
 
         //Tcp server and clients
         private TcpListener vTcpServer = null;

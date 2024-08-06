@@ -11,7 +11,7 @@ namespace ArnoldVinkCode.Styles
     public partial class TimePicker : UserControl
     {
         //It is recommended to make use of CultureInfo.InvariantCulture datetimes.
-        public event Action<DateTime?> DateTimeChanged;
+        public Action<DateTime?> DateTimeChanged;
 
         public TimePicker()
         {

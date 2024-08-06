@@ -12,7 +12,7 @@ namespace ArnoldVinkCode.Styles
     {
         //Variables
         private bool ComboboxSaveEnabled = true;
-        public event Action<ShortcutTriggerController> TriggerChanged;
+        public Action<ShortcutTriggerController> TriggerChanged;
         public string TriggerName { get; set; } = string.Empty;
 
         //Window Initialize

@@ -12,7 +12,7 @@ namespace ArnoldVinkCode.Styles
     {
         //Variables
         private bool ComboboxSaveEnabled = true;
-        public event Action<ShortcutTriggerKeyboard> TriggerChanged;
+        public Action<ShortcutTriggerKeyboard> TriggerChanged;
         public string TriggerName { get; set; } = string.Empty;
         public bool MonitorKeyboardInput { get; set; } = true;
 

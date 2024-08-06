@@ -9,7 +9,7 @@ namespace ArnoldVinkCode
         public AVTaskDetails vTask_PipeReceiveLoop = new AVTaskDetails("vTask_PipeReceiveLoop");
 
         //Events
-        public event Action<string> EventStringReceived;
+        public Action<string> EventStringReceived;
 
         //Variables
         private string vPipeServerName = string.Empty;

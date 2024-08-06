@@ -21,8 +21,8 @@ namespace ArnoldVinkCode
         private static List<KeysVirtual> vListKeysPressed = new List<KeysVirtual>();
 
         //Events
-        public static event Action<KeyboardMessage> EventHotkeyPressedMessage;
-        public static event Action<List<KeysVirtual>> EventHotkeyPressedList;
+        public static Action<KeyboardMessage> EventHotkeyPressedMessage;
+        public static Action<List<KeysVirtual>> EventHotkeyPressedList;
 
         //Tasks
         private static AVTaskDetails vTask_RestartKeyboardHook = new AVTaskDetails("vTask_RestartKeyboardHook");
@@ -122,17 +122,21 @@ namespace ArnoldVinkCode
 
                 while (await TaskCheckLoop(vTask_RestartKeyboardHook, 1000))
                 {
-                    //Get foreground window
-                    IntPtr currentForegroundWindow = GetForegroundWindow();
-
-                    //Check foreground window change
-                    if (previousForegroundWindow != currentForegroundWindow)
+                    try
                     {
-                        Restart();
-                    }
+                        //Get foreground window
+                        IntPtr currentForegroundWindow = GetForegroundWindow();
 
-                    //Update previous variables
-                    previousForegroundWindow = currentForegroundWindow;
+                        //Check foreground window change
+                        if (previousForegroundWindow != currentForegroundWindow)
+                        {
+                            Restart();
+                        }
+
+                        //Update previous variables
+                        previousForegroundWindow = currentForegroundWindow;
+                    }
+                    catch { }
                 }
             }
             catch { }
