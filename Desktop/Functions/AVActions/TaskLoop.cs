@@ -112,11 +112,11 @@ namespace ArnoldVinkCode
             try
             {
                 //Delay loop task
-                if (avTask.TaskLooped != false && milliSecondsDelay > 0)
+                if (avTask.TaskLooped && milliSecondsDelay > 0)
                 {
                     await TaskDelay(milliSecondsDelay, avTask);
                 }
-                else
+                else if (!avTask.TaskLooped)
                 {
                     avTask.TaskLooped = true;
                 }
