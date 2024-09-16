@@ -81,7 +81,7 @@ namespace ArnoldVinkCode
         }
 
         //Update window style
-        public static void WindowUpdateStyle(IntPtr windowHandle, bool topMost, bool noActivate, bool clickThrough, bool noSwitch)
+        public static void WindowUpdateStyle(IntPtr windowHandle, bool topMost, bool noSwitch, bool noActivate, bool clickThrough)
         {
             try
             {
@@ -95,6 +95,7 @@ namespace ArnoldVinkCode
                 if (noActivate)
                 {
                     //Block window activation
+                    //Hide from alt+tab and taskbar
                     //Note: Breaks keyboard input window messages
                     updatedExStyle |= WindowStylesEx.WS_EX_NOACTIVATE;
                 }
