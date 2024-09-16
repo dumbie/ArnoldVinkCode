@@ -81,7 +81,7 @@ namespace ArnoldVinkCode
         }
 
         //Update window style
-        public static void WindowUpdateStyle(IntPtr windowHandle, bool topMost, bool noActivate, bool clickThrough)
+        public static void WindowUpdateStyle(IntPtr windowHandle, bool topMost, bool noActivate, bool clickThrough, bool noSwitch)
         {
             try
             {
@@ -98,12 +98,12 @@ namespace ArnoldVinkCode
                     //Note: Breaks keyboard input window messages
                     updatedExStyle |= WindowStylesEx.WS_EX_NOACTIVATE;
                 }
-                //if (noSwitch)
-                //{
-                //    //Hide from alt+tab and taskbar
-                //    //Note: Window needs to be hidden
-                //    updatedExStyle |= WindowStylesEx.WS_EX_TOOLWINDOW;
-                //}
+                if (noSwitch)
+                {
+                    //Hide from alt+tab and taskbar
+                    //Note: Window needs to be hidden before set
+                    updatedExStyle |= WindowStylesEx.WS_EX_TOOLWINDOW;
+                }
                 if (clickThrough)
                 {
                     //Mouse click through window
