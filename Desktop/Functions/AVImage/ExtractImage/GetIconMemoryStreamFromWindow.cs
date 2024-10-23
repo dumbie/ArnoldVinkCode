@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Interop;
@@ -9,9 +10,10 @@ namespace ArnoldVinkCode
 {
     public partial class AVImage
     {
-        //Get the window icon from process
-        public static MemoryStream GetIconMemoryStreamFromWindow(IntPtr windowHandle, ref MemoryStream imageMemoryStream)
+        //Get window icon from process
+        public static BitmapSource GetIconBitmapSourceFromWindow(IntPtr windowHandle, ref MemoryStream imageMemoryStream)
         {
+            IntPtr iconHandle = IntPtr.Zero;
             try
             {
                 int GCL_HICON = -14;
@@ -21,7 +23,7 @@ namespace ArnoldVinkCode
                 int ICON_SMALL2 = 2;
 
                 //Locks thread when target window is not responding
-                IntPtr iconHandle = SendMessage(windowHandle, WindowMessages.WM_GETICON, ICON_BIG, 0);
+                iconHandle = SendMessage(windowHandle, WindowMessages.WM_GETICON, ICON_BIG, 0);
                 if (iconHandle == IntPtr.Zero)
                 {
                     iconHandle = SendMessage(windowHandle, WindowMessages.WM_GETICON, ICON_SMALL, 0);
@@ -43,15 +45,18 @@ namespace ArnoldVinkCode
                     return null;
                 }
 
-                BitmapFrame windowImage = BitmapFrame.Create(Imaging.CreateBitmapSourceFromHIcon(iconHandle, new Int32Rect(), BitmapSizeOptions.FromEmptyOptions()));
-                PngBitmapEncoder bitmapEncoder = new PngBitmapEncoder();
-                bitmapEncoder.Frames.Add(windowImage);
-                bitmapEncoder.Save(imageMemoryStream);
-                imageMemoryStream.Seek(0, SeekOrigin.Begin);
-                return imageMemoryStream;
+                //Return bitmap source
+                return Imaging.CreateBitmapSourceFromHIcon(iconHandle, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
             }
-            catch { }
-            return null;
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to get icon from window: " + ex.Message);
+                return null;
+            }
+            finally
+            {
+                SafeCloseImage(ref iconHandle);
+            }
         }
     }
 }

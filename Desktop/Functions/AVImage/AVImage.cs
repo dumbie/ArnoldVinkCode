@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Windows.Media.Imaging;
@@ -56,7 +58,78 @@ namespace ArnoldVinkCode
             return null;
         }
 
-        //Convert uri to a BitmapImage
+        //Convert BitmapSource to MemoryStream
+        public static MemoryStream BitmapSourceToMemoryStream(BitmapSource sourceBitmap)
+        {
+            try
+            {
+                //Create memory stream
+                MemoryStream imageMemoryStream = new MemoryStream();
+
+                //Create and save bitmap frame
+                BitmapFrame bitmapFrame = BitmapFrame.Create(sourceBitmap);
+                PngBitmapEncoder bitmapEncoder = new PngBitmapEncoder();
+                bitmapEncoder.Frames.Add(bitmapFrame);
+                bitmapEncoder.Save(imageMemoryStream);
+
+                //Return memory stream
+                return imageMemoryStream;
+            }
+            catch { }
+            return null;
+        }
+
+        //Convert BitmapSource to BitmapImage
+        public static BitmapImage BitmapSourceToBitmapImage(BitmapSource sourceBitmap, int pixelWidth)
+        {
+            try
+            {
+                //Prepare application bitmap image
+                BitmapImage imageToBitmapImage = BeginBitmapImage(pixelWidth);
+                MemoryStream imageMemoryStream = new MemoryStream();
+
+                //Create and save bitmap frame
+                BitmapFrame bitmapFrame = BitmapFrame.Create(sourceBitmap);
+                PngBitmapEncoder bitmapEncoder = new PngBitmapEncoder();
+                bitmapEncoder.Frames.Add(bitmapFrame);
+                bitmapEncoder.Save(imageMemoryStream);
+
+                //Set bitmap image stream source
+                imageToBitmapImage.StreamSource = imageMemoryStream;
+
+                //Return application bitmap image
+                return EndBitmapImage(imageToBitmapImage, ref imageMemoryStream);
+            }
+            catch { }
+            return null;
+        }
+
+        //Convert Bitmap to BitmapImage
+        public static BitmapImage BitmapToBitmapImage(ref Bitmap sourceBitmap, int pixelWidth)
+        {
+            try
+            {
+                //Prepare application bitmap image
+                BitmapImage imageToBitmapImage = BeginBitmapImage(pixelWidth);
+                MemoryStream imageMemoryStream = new MemoryStream();
+
+                //Save bitmap to memorystream
+                sourceBitmap.Save(imageMemoryStream, ImageFormat.Png);
+
+                //Set bitmap image stream source
+                imageToBitmapImage.StreamSource = imageMemoryStream;
+
+                //Dispose source bitmap
+                sourceBitmap.Dispose();
+
+                //Return application bitmap image
+                return EndBitmapImage(imageToBitmapImage, ref imageMemoryStream);
+            }
+            catch { }
+            return null;
+        }
+
+        //Convert uri to BitmapImage
         public static BitmapImage UriToBitmapImage(Uri sourceUri, int pixelWidth)
         {
             try
@@ -65,7 +138,7 @@ namespace ArnoldVinkCode
                 BitmapImage imageToBitmapImage = BeginBitmapImage(pixelWidth);
                 MemoryStream imageMemoryStream = null;
 
-                //Set the stream source
+                //Set bitmap image stream source
                 imageToBitmapImage.UriSource = sourceUri;
 
                 //Return application bitmap image
@@ -75,7 +148,7 @@ namespace ArnoldVinkCode
             return null;
         }
 
-        //Convert bytes to a BitmapImage
+        //Convert bytes to BitmapImage
         public static BitmapImage BytesToBitmapImage(byte[] byteArray, int pixelWidth)
         {
             try
@@ -84,7 +157,7 @@ namespace ArnoldVinkCode
                 BitmapImage imageToBitmapImage = BeginBitmapImage(pixelWidth);
                 MemoryStream imageMemoryStream = new MemoryStream(byteArray);
 
-                //Set the stream source
+                //Set bitmap image stream source
                 imageToBitmapImage.StreamSource = imageMemoryStream;
 
                 //Return application bitmap image
@@ -117,7 +190,7 @@ namespace ArnoldVinkCode
             return false;
         }
 
-        //Convert file to a BitmapImage
+        //Convert file to BitmapImage
         public static BitmapImage FileToBitmapImage(string[] fileNames, SearchSource[] searchSources, string sourceBackup, IntPtr windowHandle, int pixelWidth, int iconIndex)
         {
             try
@@ -190,10 +263,10 @@ namespace ArnoldVinkCode
                 }
                 else
                 {
-                    MemoryStream windowImage = GetIconMemoryStreamFromWindow(windowHandle, ref imageMemoryStream);
-                    if (windowImage != null)
+                    BitmapSource windowIcon = GetIconBitmapSourceFromWindow(windowHandle, ref imageMemoryStream);
+                    if (windowIcon != null)
                     {
-                        imageToBitmapImage.StreamSource = windowImage;
+                        imageToBitmapImage.StreamSource = BitmapSourceToMemoryStream(windowIcon);
                     }
                     else
                     {
