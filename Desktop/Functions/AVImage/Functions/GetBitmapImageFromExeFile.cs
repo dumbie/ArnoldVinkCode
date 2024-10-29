@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Windows.Media.Imaging;
+using static ArnoldVinkCode.AVInteropDll;
 
 namespace ArnoldVinkCode
 {
@@ -109,7 +110,7 @@ namespace ArnoldVinkCode
             return IntPtr.Zero;
         }
 
-        public static MemoryStream GetIconMemoryStreamFromExeFile(string exeFilePath, int iconIndex, ref MemoryStream imageMemoryStream)
+        public static BitmapImage GetBitmapImageFromExeFile(string exeFilePath, int iconIndex, int imageWidth, int imageHeight)
         {
             IntPtr iconHandle = IntPtr.Zero;
             IntPtr libraryHandle = IntPtr.Zero;
@@ -188,26 +189,22 @@ namespace ArnoldVinkCode
                     //Create icon from the resource
                     iconHandle = CreateIconFromResourceEx(iconBytes, (uint)iconBytes.Length, true, IconVersion.Windows3x, iconDirEntry.bWidth, iconDirEntry.bHeight, IconResourceFlags.LR_DEFAULTCOLOR);
 
-                    //Convert image data to bitmap
-                    Bitmap bitmapImage = Icon.FromHandle(iconHandle).ToBitmap();
+                    //Convert to bitmap
+                    Bitmap bitmap = Icon.FromHandle(iconHandle).ToBitmap();
 
-                    //Write bitmap to memorystream
-                    bitmapImage.Save(imageMemoryStream, ImageFormat.Png);
-                    imageMemoryStream.Seek(0, SeekOrigin.Begin);
-                    return imageMemoryStream;
+                    //Convert to bitmap image
+                    return BitmapToBitmapImage(ref bitmap, imageWidth, imageHeight);
                 }
                 else
                 {
                     //Debug.WriteLine("PNG image: " + iconBytes.Length);
-                    using (MemoryStream memoryStream = new MemoryStream(iconBytes))
+                    using (MemoryStream memoryStreamIcon = new MemoryStream(iconBytes))
                     {
                         //Convert image data to bitmap
-                        Bitmap bitmapImage = new Bitmap(memoryStream);
+                        Bitmap bitmap = new Bitmap(memoryStreamIcon);
 
-                        //Write bitmap to memorystream
-                        bitmapImage.Save(imageMemoryStream, ImageFormat.Png);
-                        imageMemoryStream.Seek(0, SeekOrigin.Begin);
-                        return imageMemoryStream;
+                        //Convert to bitmap image
+                        return BitmapToBitmapImage(ref bitmap, imageWidth, imageHeight);
                     }
                 }
             }
@@ -222,10 +219,7 @@ namespace ArnoldVinkCode
                 {
                     FreeLibrary(libraryHandle);
                 }
-                if (iconHandle != IntPtr.Zero)
-                {
-                    DestroyIcon(iconHandle);
-                }
+                SafeCloseImage(ref iconHandle);
             }
         }
     }

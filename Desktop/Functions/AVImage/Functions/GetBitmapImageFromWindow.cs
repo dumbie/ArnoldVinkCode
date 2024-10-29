@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
@@ -10,8 +9,8 @@ namespace ArnoldVinkCode
 {
     public partial class AVImage
     {
-        //Get window icon from process
-        public static BitmapSource GetIconBitmapSourceFromWindow(IntPtr windowHandle, ref MemoryStream imageMemoryStream)
+        //Get window icon from process window
+        public static BitmapImage GetBitmapImageFromWindow(IntPtr windowHandle, int imageWidth, int imageHeight)
         {
             IntPtr iconHandle = IntPtr.Zero;
             try
@@ -45,12 +44,15 @@ namespace ArnoldVinkCode
                     return null;
                 }
 
-                //Return bitmap source
-                return Imaging.CreateBitmapSourceFromHIcon(iconHandle, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+                //Convert to bitmap source
+                BitmapSource bitmapSource = Imaging.CreateBitmapSourceFromHIcon(iconHandle, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+
+                //Convert to bitmap image
+                return BitmapSourceToBitmapImage(bitmapSource, imageWidth, imageHeight);
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to get icon from window: " + ex.Message);
+                Debug.WriteLine("Failed to get icon from window: " + windowHandle + " / " + ex.Message);
                 return null;
             }
             finally

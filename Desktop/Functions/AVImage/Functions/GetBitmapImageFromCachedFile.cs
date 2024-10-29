@@ -11,7 +11,7 @@ namespace ArnoldVinkCode
     public partial class AVImage
     {
         //Functions
-        private static BitmapImage GetBitmapImageFromCachedFile(string filePath, int imageWidth, int imageHeight, bool extractIcon)
+        public static BitmapImage GetBitmapImageFromCachedFile(string filePath, int imageWidth, int imageHeight, bool extractIcon)
         {
             IntPtr bitmapPointer = IntPtr.Zero;
             try
@@ -25,9 +25,9 @@ namespace ArnoldVinkCode
                 }
 
                 //Set bitmap target size
-                SIZEINTEROP bitmapSize = new SIZEINTEROP();
-                bitmapSize.cx = (uint)imageWidth;
-                bitmapSize.cy = (uint)imageHeight;
+                WindowSize bitmapSize = new WindowSize();
+                bitmapSize.cx = imageWidth;
+                bitmapSize.cy = imageHeight;
 
                 //Set bitmap flags
                 SIIGBF extractFlags = SIIGBF.SIIGBF_BIGGERSIZEOK | (extractIcon ? SIIGBF.SIIGBF_ICONONLY : SIIGBF.SIIGBF_THUMBNAILONLY);
@@ -92,7 +92,7 @@ namespace ArnoldVinkCode
         [ComImport, Guid("BCC18B79-BA16-442F-80C4-8A59C30C463B"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
         private interface IShellItemImageFactory
         {
-            WTS_EXCEPTIONS GetImage(SIZEINTEROP size, SIIGBF flags, out IntPtr phbm);
+            WTS_EXCEPTIONS GetImage(WindowSize size, SIIGBF flags, out IntPtr phbm);
         }
 
         //Enumerators
@@ -120,14 +120,6 @@ namespace ArnoldVinkCode
             WTS_E_DATAFILEUNAVAILABLE = 0x8004B204,
             WTS_E_EXTRACTIONPENDING = 0x8004B205,
             WTS_E_EXTRACTIONBLOCKED = 0x8004B205
-        }
-
-        //Structures
-        [StructLayout(LayoutKind.Sequential)]
-        private struct SIZEINTEROP
-        {
-            public uint cx;
-            public uint cy;
         }
     }
 }
