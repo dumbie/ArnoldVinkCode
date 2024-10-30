@@ -215,10 +215,7 @@ namespace ArnoldVinkCode
             }
             finally
             {
-                if (libraryHandle != IntPtr.Zero)
-                {
-                    FreeLibrary(libraryHandle);
-                }
+                SafeCloseLibrary(ref libraryHandle);
                 SafeCloseImage(ref iconHandle);
             }
         }

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Windows.Media.Imaging;
@@ -11,274 +9,96 @@ namespace ArnoldVinkCode
 {
     public partial class AVImage
     {
-        //Begin bitmap image
-        private static BitmapImage BeginBitmapImage(int pixelWidth)
+        //Get BitmapImage from cached file
+        public static BitmapImage FileCacheToBitmapImage(string filePath, string fileBackupPath, int imageWidth, int imageHeight, bool extractIcon)
         {
             try
             {
-                BitmapImage imageToBitmapImage = new BitmapImage();
-                imageToBitmapImage.BeginInit();
-                imageToBitmapImage.CreateOptions = BitmapCreateOptions.None;
-                imageToBitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                //Load BitmapImage from cached file
+                BitmapImage bitmapImage = GetBitmapImageFromCachedFile(filePath, imageWidth, imageHeight, extractIcon);
+                if (bitmapImage != null) { return bitmapImage; }
 
-                if (pixelWidth > 0)
-                {
-                    imageToBitmapImage.DecodePixelWidth = pixelWidth;
-                }
-
-                return imageToBitmapImage;
+                //Image not found, load backup
+                return GetBitmapImageFromUri(new Uri(fileBackupPath, UriKind.RelativeOrAbsolute), imageWidth, imageHeight);
             }
-            catch { }
-            return null;
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed loading image cache: " + filePath + " / " + ex.Message);
+                return null;
+            }
         }
 
-        //End bitmap image
-        private static BitmapImage EndBitmapImage(BitmapImage imageToBitmapImage, ref MemoryStream imageMemoryStream)
+        //Get BitmapImage from file or window
+        public static BitmapImage FileToBitmapImage(string[] filePaths, SearchSource[] searchSources, string fileBackupPath, int imageWidth, int imageHeight, IntPtr windowHandle, int iconIndex)
         {
             try
             {
-                imageToBitmapImage.EndInit();
-
-                //Freeze bitmap image
-                if (imageToBitmapImage.CanFreeze)
-                {
-                    imageToBitmapImage.Freeze();
-                }
-
-                //Clear memory stream
-                if (imageMemoryStream != null)
-                {
-                    imageMemoryStream.Close();
-                    imageMemoryStream.Dispose();
-                }
-
-                return imageToBitmapImage;
-            }
-            catch { }
-            return null;
-        }
-
-        //Convert BitmapSource to MemoryStream
-        public static MemoryStream BitmapSourceToMemoryStream(BitmapSource sourceBitmap)
-        {
-            try
-            {
-                //Create memory stream
-                MemoryStream imageMemoryStream = new MemoryStream();
-
-                //Create and save bitmap frame
-                BitmapFrame bitmapFrame = BitmapFrame.Create(sourceBitmap);
-                PngBitmapEncoder bitmapEncoder = new PngBitmapEncoder();
-                bitmapEncoder.Frames.Add(bitmapFrame);
-                bitmapEncoder.Save(imageMemoryStream);
-
-                //Return memory stream
-                return imageMemoryStream;
-            }
-            catch { }
-            return null;
-        }
-
-        //Convert BitmapSource to BitmapImage
-        public static BitmapImage BitmapSourceToBitmapImage(BitmapSource sourceBitmap, int pixelWidth)
-        {
-            try
-            {
-                //Prepare application bitmap image
-                BitmapImage imageToBitmapImage = BeginBitmapImage(pixelWidth);
-                MemoryStream imageMemoryStream = new MemoryStream();
-
-                //Create and save bitmap frame
-                BitmapFrame bitmapFrame = BitmapFrame.Create(sourceBitmap);
-                PngBitmapEncoder bitmapEncoder = new PngBitmapEncoder();
-                bitmapEncoder.Frames.Add(bitmapFrame);
-                bitmapEncoder.Save(imageMemoryStream);
-
-                //Set bitmap image stream source
-                imageToBitmapImage.StreamSource = imageMemoryStream;
-
-                //Return application bitmap image
-                return EndBitmapImage(imageToBitmapImage, ref imageMemoryStream);
-            }
-            catch { }
-            return null;
-        }
-
-        //Convert Bitmap to BitmapImage
-        public static BitmapImage BitmapToBitmapImage(ref Bitmap sourceBitmap, int pixelWidth)
-        {
-            try
-            {
-                //Prepare application bitmap image
-                BitmapImage imageToBitmapImage = BeginBitmapImage(pixelWidth);
-                MemoryStream imageMemoryStream = new MemoryStream();
-
-                //Save bitmap to memorystream
-                sourceBitmap.Save(imageMemoryStream, ImageFormat.Png);
-
-                //Set bitmap image stream source
-                imageToBitmapImage.StreamSource = imageMemoryStream;
-
-                //Dispose source bitmap
-                sourceBitmap.Dispose();
-
-                //Return application bitmap image
-                return EndBitmapImage(imageToBitmapImage, ref imageMemoryStream);
-            }
-            catch { }
-            return null;
-        }
-
-        //Convert uri to BitmapImage
-        public static BitmapImage UriToBitmapImage(Uri sourceUri, int pixelWidth)
-        {
-            try
-            {
-                //Prepare application bitmap image
-                BitmapImage imageToBitmapImage = BeginBitmapImage(pixelWidth);
-                MemoryStream imageMemoryStream = null;
-
-                //Set bitmap image stream source
-                imageToBitmapImage.UriSource = sourceUri;
-
-                //Return application bitmap image
-                return EndBitmapImage(imageToBitmapImage, ref imageMemoryStream);
-            }
-            catch { }
-            return null;
-        }
-
-        //Convert bytes to BitmapImage
-        public static BitmapImage BytesToBitmapImage(byte[] byteArray, int pixelWidth)
-        {
-            try
-            {
-                //Prepare application bitmap image
-                BitmapImage imageToBitmapImage = BeginBitmapImage(pixelWidth);
-                MemoryStream imageMemoryStream = new MemoryStream(byteArray);
-
-                //Set bitmap image stream source
-                imageToBitmapImage.StreamSource = imageMemoryStream;
-
-                //Return application bitmap image
-                return EndBitmapImage(imageToBitmapImage, ref imageMemoryStream);
-            }
-            catch { }
-            return null;
-        }
-
-        //Convert BitmapImage to png file
-        public static bool BitmapImageToFile(BitmapImage sourceImage, string targetPath, bool overwrite)
-        {
-            try
-            {
-                if (overwrite || !File.Exists(targetPath))
-                {
-                    BitmapFrame bitmapFrame = BitmapFrame.Create(sourceImage);
-                    PngBitmapEncoder bitmapEncoder = new PngBitmapEncoder();
-                    bitmapEncoder.Frames.Add(bitmapFrame);
-
-                    using (FileStream fileStream = new FileStream(targetPath, FileMode.Create))
-                    {
-                        bitmapEncoder.Save(fileStream);
-                    }
-
-                    return true;
-                }
-            }
-            catch { }
-            return false;
-        }
-
-        //Convert file to BitmapImage
-        public static BitmapImage FileToBitmapImage(string[] fileNames, SearchSource[] searchSources, string sourceBackup, IntPtr windowHandle, int pixelWidth, int iconIndex)
-        {
-            try
-            {
-                //Prepare application bitmap image
-                BitmapImage imageToBitmapImage = BeginBitmapImage(pixelWidth);
-                MemoryStream imageMemoryStream = new MemoryStream();
-
-                //Load application bitmap image
-                foreach (string fileName in fileNames)
+                foreach (string filePath in filePaths)
                 {
                     try
                     {
-                        //Validate the file name
-                        if (string.IsNullOrWhiteSpace(fileName)) { continue; }
+                        //Validate file path
+                        if (string.IsNullOrWhiteSpace(filePath)) { continue; }
 
-                        //Adjust the file name
-                        string loadFileLower = fileName.ToLower();
-                        Debug.WriteLine("Loading image: " + loadFileLower);
+                        //Adjust file path
+                        string filePathLower = filePath.ToLower().Trim();
+                        Debug.WriteLine("Loading image: " + filePathLower);
 
-                        if (loadFileLower.StartsWith("pack://"))
+                        //Check file exists
+                        bool fileExists = File.Exists(filePathLower);
+
+                        if (filePathLower.StartsWith("pack://"))
                         {
-                            imageToBitmapImage.UriSource = new Uri(loadFileLower, UriKind.RelativeOrAbsolute);
+                            BitmapImage bitmapImage = GetBitmapImageFromUri(new Uri(filePathLower, UriKind.RelativeOrAbsolute), imageWidth, imageHeight);
+                            if (bitmapImage != null) { return bitmapImage; }
                         }
-                        else if (File.Exists(loadFileLower) && loadFileLower.EndsWith(".ico"))
+                        if (fileExists && filePathLower.EndsWith(".ico"))
                         {
-                            imageToBitmapImage.StreamSource = GetIconMemoryStreamFromIcoFile(loadFileLower, ref imageMemoryStream);
+                            BitmapImage bitmapImage = GetBitmapImageFromIcoFile(filePathLower, imageWidth, imageHeight);
+                            if (bitmapImage != null) { return bitmapImage; }
                         }
-                        else if (File.Exists(loadFileLower) && !loadFileLower.EndsWith(".exe") && !loadFileLower.EndsWith(".dll") && !loadFileLower.EndsWith(".bin") && !loadFileLower.EndsWith(".tmp") && !loadFileLower.EndsWith(".bat"))
+                        if (fileExists && (filePathLower.EndsWith(".exe") || filePathLower.EndsWith(".dll") || filePathLower.EndsWith(".bin")))
                         {
-                            imageToBitmapImage.UriSource = new Uri(loadFileLower, UriKind.RelativeOrAbsolute);
+                            BitmapImage bitmapImage = GetBitmapImageFromExeFile(filePathLower, iconIndex, imageWidth, imageHeight);
+                            if (bitmapImage != null) { return bitmapImage; }
                         }
-                        else if (File.Exists(loadFileLower) && (loadFileLower.EndsWith(".exe") || loadFileLower.EndsWith(".dll") || loadFileLower.EndsWith(".bin") || loadFileLower.EndsWith(".tmp")))
+                        if (fileExists)
                         {
-                            imageToBitmapImage.StreamSource = GetIconMemoryStreamFromExeFile(loadFileLower, iconIndex, ref imageMemoryStream);
+                            BitmapImage bitmapImage = GetBitmapImageFromUri(new Uri(filePathLower, UriKind.RelativeOrAbsolute), imageWidth, imageHeight);
+                            if (bitmapImage != null) { return bitmapImage; }
                         }
-                        else if (searchSources != null)
+                        if (fileExists)
                         {
-                            try
+                            BitmapImage bitmapImage = GetBitmapImageFromCachedFile(filePathLower, imageWidth, imageHeight, true);
+                            if (bitmapImage != null) { return bitmapImage; }
+                        }
+                        if (searchSources != null)
+                        {
+                            string foundImage = Search_Files(new string[] { filePathLower }, searchSources, false).FirstOrDefault();
+                            if (!string.IsNullOrWhiteSpace(foundImage))
                             {
-                                string[] foundImages = Search_Files(new string[] { fileName }, searchSources, false);
-                                if (foundImages.Any())
-                                {
-                                    imageToBitmapImage.UriSource = new Uri(foundImages.FirstOrDefault(), UriKind.RelativeOrAbsolute);
-                                }
+                                return GetBitmapImageFromUri(new Uri(foundImage, UriKind.RelativeOrAbsolute), imageWidth, imageHeight);
                             }
-                            catch { }
-                        }
-
-                        //Return application bitmap image
-                        if (imageToBitmapImage.UriSource != null)
-                        {
-                            return EndBitmapImage(imageToBitmapImage, ref imageMemoryStream);
-                        }
-                        else if (imageToBitmapImage.StreamSource != null && imageToBitmapImage.StreamSource.Length > 75)
-                        {
-                            return EndBitmapImage(imageToBitmapImage, ref imageMemoryStream);
                         }
                     }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine("Failed loading image: " + fileName + "/" + ex.Message);
-                    }
+                    catch { }
                 }
 
-                //Image source not found, loading backup or window icon
-                if (windowHandle == IntPtr.Zero)
+                //Image not found, load window icon
+                if (windowHandle != IntPtr.Zero)
                 {
-                    imageToBitmapImage.UriSource = new Uri(sourceBackup, UriKind.RelativeOrAbsolute);
-                }
-                else
-                {
-                    BitmapSource windowIcon = GetIconBitmapSourceFromWindow(windowHandle, ref imageMemoryStream);
-                    if (windowIcon != null)
-                    {
-                        imageToBitmapImage.StreamSource = BitmapSourceToMemoryStream(windowIcon);
-                    }
-                    else
-                    {
-                        imageToBitmapImage.UriSource = new Uri(sourceBackup, UriKind.RelativeOrAbsolute);
-                    }
+                    BitmapImage bitmapImage = GetBitmapImageFromWindow(windowHandle, imageWidth, imageHeight);
+                    if (bitmapImage != null) { return bitmapImage; }
                 }
 
-                //Return application bitmap image
-                return EndBitmapImage(imageToBitmapImage, ref imageMemoryStream);
+                //Image not found, load backup
+                return GetBitmapImageFromUri(new Uri(fileBackupPath, UriKind.RelativeOrAbsolute), imageWidth, imageHeight);
             }
-            catch { }
-            return null;
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed loading image file: " + ex.Message);
+                return null;
+            }
         }
     }
 }
