@@ -30,7 +30,7 @@ namespace IMMDevice
     [ComImport, Guid("870AF99C-171D-4F9E-AF0D-E63DF40C2BC9")]
     public class PolicyConfig { }
 
-    [Guid("F8679F50-850A-41CF-9C72-430F290290C8"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("F8679F50-850A-41CF-9C72-430F290290C8"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public interface IPolicyConfig
     {
         void GetMixFormat();

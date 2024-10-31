@@ -20,6 +20,13 @@ namespace ArnoldVinkCode
             AppxDetails appxDetails = new AppxDetails();
             try
             {
+                //Check application package
+                if (appPackage == null)
+                {
+                    Debug.WriteLine("Failed reading uwp appx details, package is null.");
+                    return appxDetails;
+                }
+
                 //Get detailed information from app package
                 appxDetails.InstallPath = appPackage.InstalledLocation.Path;
                 string manifestPath = appxDetails.InstallPath + "\\AppXManifest.xml";

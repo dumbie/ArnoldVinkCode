@@ -78,7 +78,7 @@ namespace ArnoldVinkCode
         private interface IShellDispatch2
         {
             void _VtblGap0_24();
-            int ShellExecute([In] string File, [In][Optional] object vArgs, [In][Optional] object vDir, [In][Optional] object vOperation, [In][Optional] object vShow);
+            int ShellExecute([In] string File, [In, Optional] object vArgs, [In, Optional] object vDir, [In, Optional] object vOperation, [In, Optional] object vShow);
         }
 
         //Functions

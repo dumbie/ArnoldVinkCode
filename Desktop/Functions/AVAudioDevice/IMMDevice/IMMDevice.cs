@@ -34,7 +34,7 @@ namespace IMMDevice
         eCommunications = 2
     }
 
-    [Guid("D666063F-1587-4E43-81F1-B948E807363F"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("D666063F-1587-4E43-81F1-B948E807363F"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public interface IMMDevice
     {
         void Activate([MarshalAs(UnmanagedType.LPStruct)] Guid id, uint dwClsCtx, IntPtr pActivationParams, [MarshalAs(UnmanagedType.Interface)] out IAudioEndpointVolume ppInterface);
@@ -48,7 +48,7 @@ namespace IMMDevice
     [ComImport, Guid("BCDE0395-E52F-467C-8E3D-C4579291692E")]
     public class MMDeviceEnumerator { }
 
-    [Guid("A95664D2-9614-4F35-A746-DE8DB63617E6"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("A95664D2-9614-4F35-A746-DE8DB63617E6"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public interface IMMDeviceEnumerator
     {
         [return: MarshalAs(UnmanagedType.Interface)]
@@ -59,7 +59,7 @@ namespace IMMDevice
         IMMDevice GetDevice([MarshalAs(UnmanagedType.LPWStr)] string pwstrId);
     }
 
-    [Guid("0BD7A1BE-7A1A-44DB-8397-CC5392387B5E"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("0BD7A1BE-7A1A-44DB-8397-CC5392387B5E"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public interface IMMDeviceCollection
     {
         uint GetCount();
@@ -67,7 +67,7 @@ namespace IMMDevice
         IMMDevice Item(uint nDevice);
     }
 
-    [Guid("5CDF2C82-841E-4546-9722-0CF74078229A"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport, Guid("5CDF2C82-841E-4546-9722-0CF74078229A"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public interface IAudioEndpointVolume
     {
         int RegisterControlChangeNotify(object pNotify);

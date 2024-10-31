@@ -69,8 +69,8 @@ namespace ArnoldVinkCode.Styles
             try
             {
                 BitmapSource bitmapSource = (BitmapSource)image_ColorSelector.Source;
-                var bitmap = new TransformedBitmap(bitmapSource, new ScaleTransform(image_ColorSelector.Width / bitmapSource.PixelWidth, image_ColorSelector.Height / bitmapSource.PixelHeight));
-                CroppedBitmap croppedBitmap = new CroppedBitmap(bitmap, new Int32Rect(PositionX, PositionY, 1, 1));
+                TransformedBitmap transformedBitmap = new TransformedBitmap(bitmapSource, new ScaleTransform(image_ColorSelector.Width / bitmapSource.PixelWidth, image_ColorSelector.Height / bitmapSource.PixelHeight));
+                CroppedBitmap croppedBitmap = new CroppedBitmap(transformedBitmap, new Int32Rect(PositionX, PositionY, 1, 1));
                 byte[] colorBytes = new byte[4];
                 croppedBitmap.CopyPixels(colorBytes, 4, 0);
 
