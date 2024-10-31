@@ -75,7 +75,7 @@ namespace ArnoldVinkCode
             }
             finally
             {
-                SafeCloseHandle(processTokenHandle);
+                SafeCloseHandle(ref processTokenHandle);
             }
         }
     }

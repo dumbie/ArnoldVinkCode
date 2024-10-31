@@ -37,7 +37,7 @@ namespace ArnoldVinkCode
             }
             finally
             {
-                SafeCloseHandle(closeProcess);
+                SafeCloseHandle(ref closeProcess);
             }
         }
 

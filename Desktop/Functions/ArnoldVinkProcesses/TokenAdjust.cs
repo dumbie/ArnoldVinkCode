@@ -103,7 +103,7 @@ namespace ArnoldVinkCode
             }
             finally
             {
-                SafeCloseMarshal(sidPointer);
+                SafeCloseMarshal(ref sidPointer);
             }
         }
     }

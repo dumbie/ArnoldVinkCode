@@ -23,7 +23,7 @@ namespace ArnoldVinkCode
                     AVDebug.WriteLine("Succesfully duplicated process token: " + hToken + " > " + dToken);
                     if (closeHToken)
                     {
-                        SafeCloseHandle(hToken);
+                        SafeCloseHandle(ref hToken);
                     }
                     return dToken;
                 }
@@ -61,7 +61,7 @@ namespace ArnoldVinkCode
             }
             finally
             {
-                SafeCloseHandle(hProcess);
+                SafeCloseHandle(ref hProcess);
             }
         }
 
@@ -96,7 +96,7 @@ namespace ArnoldVinkCode
             }
             finally
             {
-                SafeCloseHandle(hProcess);
+                SafeCloseHandle(ref hProcess);
             }
         }
 
@@ -135,7 +135,7 @@ namespace ArnoldVinkCode
             }
             finally
             {
-                SafeCloseHandle(hProcess);
+                SafeCloseHandle(ref hProcess);
             }
         }
     }

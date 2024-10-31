@@ -27,7 +27,7 @@ namespace ArnoldVinkCode
                 catch { }
                 finally
                 {
-                    SafeCloseHandle(createEvent);
+                    SafeCloseHandle(ref createEvent);
                 }
             }
         }

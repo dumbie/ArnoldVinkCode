@@ -216,7 +216,7 @@ namespace ArnoldVinkCode
             finally
             {
                 SafeCloseLibrary(ref libraryHandle);
-                SafeCloseImage(ref iconHandle);
+                SafeCloseIcon(ref iconHandle);
             }
         }
     }

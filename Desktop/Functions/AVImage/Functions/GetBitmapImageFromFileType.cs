@@ -53,7 +53,7 @@ namespace ArnoldVinkCode
             }
             finally
             {
-                SafeCloseImage(ref iconHandle);
+                SafeCloseIcon(ref iconHandle);
             }
         }
 

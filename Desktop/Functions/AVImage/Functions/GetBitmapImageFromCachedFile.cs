@@ -74,7 +74,7 @@ namespace ArnoldVinkCode
             }
             finally
             {
-                SafeCloseImage(ref bitmapPointer);
+                SafeCloseObject(ref bitmapPointer);
             }
         }
 
