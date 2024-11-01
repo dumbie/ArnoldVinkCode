@@ -253,26 +253,25 @@ namespace ArnoldVinkCode
         }
 
         //Convert file to a string
-        public static string FileToString(string[] stringSource)
+        public static string FileToString(string[] filePaths)
         {
             try
             {
-                //Load application bitmap image
-                foreach (string loadFile in stringSource)
+                foreach (string filePath in filePaths)
                 {
                     try
                     {
-                        //Validate the load path
-                        if (string.IsNullOrWhiteSpace(loadFile)) { continue; }
+                        //Validate file name
+                        if (string.IsNullOrWhiteSpace(filePath)) { continue; }
 
-                        //Adjust the load path
-                        string loadFileLower = loadFile.ToLower().Trim();
+                        //Adjust file name
+                        string filePathLower = filePath.ToLower().Trim();
                         //Debug.WriteLine("Loading text: " + loadFileLower);
 
                         //Read the text file
-                        if (File.Exists(loadFileLower))
+                        if (File.Exists(filePathLower))
                         {
-                            return File.ReadAllText(loadFileLower);
+                            return File.ReadAllText(filePathLower);
                         }
                     }
                     catch { }
@@ -285,7 +284,30 @@ namespace ArnoldVinkCode
         //Replace invalid file characters
         public static string FileNameReplaceInvalidChars(string fileName, string replaceWith)
         {
-            return string.Join(replaceWith, fileName.Split(Path.GetInvalidFileNameChars())).Trim();
+            try
+            {
+                return string.Join(replaceWith, fileName.Split(Path.GetInvalidFileNameChars())).Trim();
+            }
+            catch { }
+            return fileName;
+        }
+
+        //Convert environment variables in file path
+        public static string ConvertEnvironmentPath(string filePath)
+        {
+            try
+            {
+                //Custom variables
+                filePath = filePath.Replace("%DESKTOPUSER%", Environment.GetFolderPath(Environment.SpecialFolder.Desktop));
+                filePath = filePath.Replace("%DESKTOPPUBLIC%", Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory));
+                filePath = filePath.Replace("%PICTURES%", Environment.GetFolderPath(Environment.SpecialFolder.MyPictures));
+                filePath = filePath.Replace("%VIDEOS%", Environment.GetFolderPath(Environment.SpecialFolder.MyVideos));
+
+                //Windows variables
+                filePath = Environment.ExpandEnvironmentVariables(filePath);
+            }
+            catch { }
+            return filePath;
         }
     }
 }
