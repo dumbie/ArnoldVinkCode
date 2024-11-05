@@ -32,11 +32,13 @@ namespace ArnoldVinkCode
         {
             try
             {
-                //Set the server endpoint
+                //Set server endpoint
                 IPEndPoint serverEndPoint = new IPEndPoint(IPAddress.Any, vSocketServerPort);
 
                 //Start udp server
-                vUdpServer = new UdpClient(serverEndPoint);
+                vUdpServer = new UdpClient();
+                vUdpServer.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+                vUdpServer.Client.Bind(serverEndPoint);
 
                 Debug.WriteLine("Udp server is running on (S): " + serverEndPoint.Address + ":" + serverEndPoint.Port);
 
