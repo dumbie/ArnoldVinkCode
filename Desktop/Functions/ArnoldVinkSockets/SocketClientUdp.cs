@@ -56,7 +56,7 @@ namespace ArnoldVinkCode
             try
             {
                 int sendBytes = await vUdpServer.SendAsync(targetBytes, targetBytes.Length, endPoint).WaitAsync(TimeSpan.FromMilliseconds(timeOutMs));
-                //Debug.WriteLine("Sended bytes to the udp server (C): " + endPoint.Address + ":" + endPoint.Port + " / " + targetBytes.Length);
+                //Debug.WriteLine("Sended bytes to the udp server (C): " + endPoint.Address + ":" + endPoint.Port + " (" + sendBytes + "/" + targetBytes.Length + ")");
                 return sendBytes == targetBytes.Length;
             }
             catch (Exception ex)
@@ -71,16 +71,36 @@ namespace ArnoldVinkCode
         {
             try
             {
-                using (UdpClient udpClient = new UdpClient(targetIp, targetPort))
+                using (UdpClient udpClient = new UdpClient())
                 {
-                    int sendBytes = await udpClient.SendAsync(targetBytes, targetBytes.Length).WaitAsync(TimeSpan.FromMilliseconds(timeOutMs));
-                    //Debug.WriteLine("Sended bytes to udp other (C): " + targetIp + ":" + targetPort + " / " + targetBytes.Length);
+                    int sendBytes = await udpClient.SendAsync(targetBytes, targetBytes.Length, targetIp, targetPort).WaitAsync(TimeSpan.FromMilliseconds(timeOutMs));
+                    //Debug.WriteLine("Sended bytes to udp other (C): " + targetIp + ":" + targetPort + " (" + sendBytes + "/" + targetBytes.Length + ")");
                     return sendBytes == targetBytes.Length;
                 }
             }
             catch (Exception ex)
             {
                 Debug.WriteLine("Failed sending udp bytes other (C): " + ex.Message);
+                return false;
+            }
+        }
+
+        //Send sockets bytes to broadcast with timeout
+        public async Task<bool> UdpClientSendBytesBroadcast(bool broadcastLocal, int targetPort, byte[] targetBytes, int timeOutMs)
+        {
+            try
+            {
+                using (UdpClient udpClient = new UdpClient())
+                {
+                    string targetIp = broadcastLocal ? "127.255.255.255" : "255.255.255.255";
+                    int sendBytes = await udpClient.SendAsync(targetBytes, targetBytes.Length, targetIp, targetPort).WaitAsync(TimeSpan.FromMilliseconds(timeOutMs));
+                    //Debug.WriteLine("Sended bytes to udp broadcast (C): " + targetIp + ":" + targetPort + " (" + sendBytes + "/" + targetBytes.Length + ")");
+                    return sendBytes == targetBytes.Length;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed sending udp bytes broadcast (C): " + ex.Message);
                 return false;
             }
         }
