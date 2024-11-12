@@ -404,8 +404,24 @@ namespace ArnoldVinkCode
         {
             try
             {
-                dispatchTimer.Stop();
-                dispatchTimer.Start();
+                if (dispatchTimer != null)
+                {
+                    dispatchTimer.Stop();
+                    dispatchTimer.Start();
+                }
+            }
+            catch { }
+        }
+
+        //Stop dispatch timer safely
+        public static void TimerStop(DispatcherTimer dispatchTimer)
+        {
+            try
+            {
+                if (dispatchTimer != null)
+                {
+                    dispatchTimer.Stop();
+                }
             }
             catch { }
         }
@@ -429,15 +445,25 @@ namespace ArnoldVinkCode
             {
                 for (int i = 0; i < VisualTreeHelper.GetChildrenCount(objChild); i++)
                 {
-                    DependencyObject child = VisualTreeHelper.GetChild(objChild, i);
-                    if (child != null && child is T)
+                    try
                     {
-                        childrenList.Add((T)child);
+                        DependencyObject child = VisualTreeHelper.GetChild(objChild, i);
+                        if (child != null)
+                        {
+                            if (child is T)
+                            {
+                                childrenList.Add((T)child);
+                            }
+                            else
+                            {
+                                foreach (T childOfChild in FindVisualChildren<T>(child))
+                                {
+                                    childrenList.Add(childOfChild);
+                                }
+                            }
+                        }
                     }
-                    foreach (T childOfChild in FindVisualChildren<T>(child))
-                    {
-                        childrenList.Add(childOfChild);
-                    }
+                    catch { }
                 }
             }
             catch { }
@@ -451,16 +477,23 @@ namespace ArnoldVinkCode
             {
                 for (int i = 0; i < VisualTreeHelper.GetChildrenCount(objChild); i++)
                 {
-                    DependencyObject child = VisualTreeHelper.GetChild(objChild, i);
-                    if (child != null && child is T)
+                    try
                     {
-                        return (T)child;
+                        DependencyObject child = VisualTreeHelper.GetChild(objChild, i);
+                        if (child != null)
+                        {
+                            if (child is T)
+                            {
+                                return (T)child;
+                            }
+                            else
+                            {
+                                T subChild = FindVisualChild<T>(child);
+                                if (subChild != null) { return subChild; }
+                            }
+                        }
                     }
-                    else
-                    {
-                        T subChild = FindVisualChild<T>(child);
-                        if (subChild != null) { return subChild; }
-                    }
+                    catch { }
                 }
             }
             catch { }
