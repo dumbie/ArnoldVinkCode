@@ -9,7 +9,7 @@ using static ArnoldVinkCode.AVInteropDll;
 
 namespace ArnoldVinkCode
 {
-    public partial class AVInputOutputHotkey
+    public partial class AVInputOutputHotkeyHook
     {
         //Variables
         private static IntPtr vWindowHookPointer = IntPtr.Zero;
@@ -18,11 +18,11 @@ namespace ArnoldVinkCode
         public static bool BlockGlobalKeyboardPresses = false;
 
         //Lists
-        private static List<KeysVirtual> vListKeysPressed = new List<KeysVirtual>();
+        private static bool[] vListKeysPressed = new bool[255];
 
         //Events
         public static Action<KeyboardMessage> EventHotkeyPressedMessage;
-        public static Action<List<KeysVirtual>> EventHotkeyPressedList;
+        public static Action<bool[]> EventHotkeyPressedList;
 
         //Tasks
         private static AVTaskDetails vTask_RestartKeyboardHook = new AVTaskDetails("vTask_RestartKeyboardHook");
@@ -33,6 +33,9 @@ namespace ArnoldVinkCode
             bool hooked = false;
             try
             {
+                //Reset pressed keys
+                vListKeysPressed = new bool[255];
+
                 //Set window keyboard hook
                 hooked = WindowKeyboardHook();
 
@@ -51,6 +54,9 @@ namespace ArnoldVinkCode
         {
             try
             {
+                //Reset pressed keys
+                vListKeysPressed = new bool[255];
+
                 //Remove window keyboard hook
                 WindowKeyboardUnhook();
 
@@ -66,7 +72,13 @@ namespace ArnoldVinkCode
             bool hooked = false;
             try
             {
+                //Reset pressed keys
+                vListKeysPressed = new bool[255];
+
+                //Remove window keyboard hook
                 WindowKeyboardUnhook();
+
+                //Set window keyboard hook
                 hooked = WindowKeyboardHook();
             }
             catch { }
@@ -95,21 +107,23 @@ namespace ArnoldVinkCode
         }
 
         //Remove window keyboard hook
-        private static void WindowKeyboardUnhook()
+        private static bool WindowKeyboardUnhook()
         {
+            bool unhooked = false;
             try
             {
                 if (vWindowHookPointer != IntPtr.Zero)
                 {
                     AVActions.DispatcherInvoke(delegate
                     {
-                        bool unhooked = UnhookWindowsHookEx(vWindowHookPointer);
+                        unhooked = UnhookWindowsHookEx(vWindowHookPointer);
                         //Debug.WriteLine("Unhooked window keyboard: " + unhooked);
                     });
                     vWindowHookPointer = IntPtr.Zero;
                 }
             }
             catch { }
+            return unhooked;
         }
 
         //Task detecting window change
@@ -130,11 +144,15 @@ namespace ArnoldVinkCode
                         //Check foreground window change
                         if (previousForegroundWindow != currentForegroundWindow)
                         {
-                            Restart();
-                        }
+                            //Restart window keyboard hook
+                            bool restarted = Restart();
 
-                        //Update previous variables
-                        previousForegroundWindow = currentForegroundWindow;
+                            //Update previous window
+                            if (restarted)
+                            {
+                                previousForegroundWindow = currentForegroundWindow;
+                            }
+                        }
                     }
                     catch { }
                 }
@@ -143,28 +161,24 @@ namespace ArnoldVinkCode
         }
 
         //Check if hotkey is pressed
-        public static bool CheckHotkeyPress(List<KeysVirtual> keysPressed, List<KeysVirtual> keysHotkey)
+        public static bool CheckHotkeyPressed(bool[] keysPressed, List<KeysVirtual> keysHotkey)
         {
             try
             {
-                return keysHotkey.Any(x => x != KeysVirtual.None) && !keysHotkey.Where(x => x != KeysVirtual.None).Except(keysPressed).Any();
+                return keysHotkey.Where(x => x != KeysVirtual.None).All(x => keysPressed[(int)x]);
             }
-            catch
-            {
-                return false;
-            }
+            catch { }
+            return false;
         }
 
-        public static bool CheckHotkeyPress(List<KeysVirtual> keysPressed, KeysVirtual[] keysHotkey)
+        public static bool CheckHotkeyPressed(bool[] keysPressed, KeysVirtual[] keysHotkey)
         {
             try
             {
-                return keysHotkey.Any(x => x != KeysVirtual.None) && !keysHotkey.Where(x => x != KeysVirtual.None).Except(keysPressed).Any();
+                return keysHotkey.Where(x => x != KeysVirtual.None).All(x => keysPressed[(int)x]);
             }
-            catch
-            {
-                return false;
-            }
+            catch { }
+            return false;
         }
 
         //Check received keyboard input
@@ -177,20 +191,23 @@ namespace ArnoldVinkCode
                     //Update keys pressed list
                     if (wParam == (IntPtr)WindowMessages.WM_KEYDOWN || wParam == (IntPtr)WindowMessages.WM_SYSKEYDOWN)
                     {
-                        //Trigger hotkey event
                         if (EventHotkeyPressedList != null)
                         {
-                            //Add key press
-                            vListKeysPressed.Add((KeysVirtual)lParam.vkCode);
+                            //Update key press
+                            vListKeysPressed[lParam.vkCode] = true;
+
+                            //Trigger hotkey event
                             EventHotkeyPressedList(vListKeysPressed);
                         }
 
-                        //Trigger hotkey event
                         if (EventHotkeyPressedMessage != null)
                         {
+                            //Set keyboard message
                             KeyboardMessage keyMessage = new KeyboardMessage();
                             keyMessage.windowMessage = (WindowMessages)wParam;
                             keyMessage.keyVirtual = (KeysVirtual)lParam.vkCode;
+
+                            //Trigger hotkey event
                             EventHotkeyPressedMessage(keyMessage);
                         }
 
@@ -200,8 +217,8 @@ namespace ArnoldVinkCode
                     {
                         if (EventHotkeyPressedList != null)
                         {
-                            //Remove key press
-                            vListKeysPressed.RemoveAll(x => x == (KeysVirtual)lParam.vkCode);
+                            //Update key press
+                            vListKeysPressed[lParam.vkCode] = false;
                         }
 
                         //Debug.WriteLine("Keyboard up: " + (KeysVirtual)lParam.vkCode);
