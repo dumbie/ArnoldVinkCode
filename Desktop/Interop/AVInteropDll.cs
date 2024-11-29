@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Security;
 using System.Text;
+using static ArnoldVinkCode.AVInputOutputClass;
 using static ArnoldVinkCode.AVInteropCom;
 
 namespace ArnoldVinkCode
@@ -53,13 +54,13 @@ namespace ArnoldVinkCode
 
         //Close Handle
         [DllImport("kernel32.dll")]
-        public static extern bool CloseHandle(IntPtr hHandle);
+        private static extern bool CloseHandle(IntPtr hHandle);
 
         [DllImport("gdi32.dll")]
-        public static extern bool DeleteObject(IntPtr hObject);
+        private static extern bool DeleteObject(IntPtr hObject);
 
         [DllImport("user32.dll")]
-        public static extern bool DestroyIcon(IntPtr hIcon);
+        private static extern bool DestroyIcon(IntPtr hIcon);
 
         //Window get
         public enum GetWindowFlags : int
@@ -276,7 +277,7 @@ namespace ArnoldVinkCode
         public static extern IntPtr GetProcAddress(IntPtr hModule, string lpProcName);
 
         [DllImport("kernel32.dll")]
-        public static extern bool FreeLibrary(IntPtr hModule);
+        private static extern bool FreeLibrary(IntPtr hModule);
 
         public enum LoadLibraryFlags : uint
         {
@@ -683,6 +684,12 @@ namespace ArnoldVinkCode
             SC_SEPARATOR = 0xF00F,
             SCF_ISSECURE = 0x00000001
         }
+
+        //Register Hotkeys
+        [DllImport("user32.dll")]
+        public static extern bool RegisterHotKey(IntPtr hWnd, int id, KeysModifierInput keysModifier, KeysVirtual keysVirtual);
+        [DllImport("user32.dll")]
+        public static extern bool UnregisterHotKey(IntPtr hWnd, int id);
 
         //Send message with timeout
         [DllImport("user32.dll")]

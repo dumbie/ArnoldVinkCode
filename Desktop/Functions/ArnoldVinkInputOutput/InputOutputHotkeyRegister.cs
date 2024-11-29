@@ -51,7 +51,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                bool hotkeyRegistered = AVInteropDll.RegisterHotKey(IntPtr.Zero, vHotKeyIdentifierCount, (uint)keysModifier, (uint)keysVirtual);
+                bool hotkeyRegistered = AVInteropDll.RegisterHotKey(IntPtr.Zero, vHotKeyIdentifierCount, keysModifier, keysVirtual);
                 if (hotkeyRegistered)
                 {
                     Debug.WriteLine("Registered hotkey: " + keysModifier + "/" + keysVirtual + "/ID" + vHotKeyIdentifierCount);
