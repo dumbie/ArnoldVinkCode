@@ -39,6 +39,7 @@ namespace ArnoldVinkCode
                 }
                 catch (COMException ex)
                 {
+                    //Fix WTS_E_FAILEDEXTRACTION error when loading files from OneDrive
                     //Fix retry to load thumbnail when result is WTS_E_EXTRACTIONPENDING
                     Debug.WriteLine("Thumbnail failed to extract: " + (WTS_EXCEPTIONS)ex.HResult + " / " + filePath);
                 }
@@ -74,7 +75,7 @@ namespace ArnoldVinkCode
             }
             finally
             {
-                SafeCloseObject(ref bitmapPointer);
+                SafeCloseIcon(ref bitmapPointer);
             }
         }
 
