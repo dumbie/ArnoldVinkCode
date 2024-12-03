@@ -28,7 +28,7 @@ namespace ArnoldVinkCode
             }
         }
 
-        void UninstallCertificate(string issuedTo)
+        public static bool UninstallCertificate(string issuedTo)
         {
             try
             {
@@ -50,10 +50,12 @@ namespace ArnoldVinkCode
                 }
 
                 certificateStore.Close();
+                return true;
             }
             catch (Exception ex)
             {
                 Debug.WriteLine("Failed to uninstall certificate: " + ex.Message);
+                return false;
             }
         }
     }
