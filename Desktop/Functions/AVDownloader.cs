@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Net;
 using System.Net.Http;
+using System.Security.Authentication;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,16 +10,20 @@ namespace ArnoldVinkCode
 {
     public partial class AVDownloader
     {
-        //Update security protocol
-        public static void UpdateWebSecurityProtocol()
+        //Get default http client handler
+        public static HttpClientHandler GetDefaultHttpClientHandler()
         {
             try
             {
-                ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13;
+                HttpClientHandler httpClientHandler = new HttpClientHandler();
+                httpClientHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+                httpClientHandler.SslProtocols = SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12 | SslProtocols.Tls13;
+                return httpClientHandler;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed to set web security protocol: " + ex.Message);
+                Debug.WriteLine("Failed to get default http client handler: " + ex.Message);
+                return null;
             }
         }
 
@@ -28,8 +32,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                UpdateWebSecurityProtocol();
-                using (HttpClient httpClient = new HttpClient())
+                using (HttpClient httpClient = new HttpClient(GetDefaultHttpClientHandler()))
                 {
                     httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
                     httpClient.DefaultRequestHeaders.Add("Cache-Control", "no-cache, no-store");
@@ -62,8 +65,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                UpdateWebSecurityProtocol();
-                using (HttpClient httpClient = new HttpClient())
+                using (HttpClient httpClient = new HttpClient(GetDefaultHttpClientHandler()))
                 {
                     httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
                     httpClient.DefaultRequestHeaders.Add("Cache-Control", "no-cache, no-store");
@@ -96,8 +98,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                UpdateWebSecurityProtocol();
-                using (HttpClient httpClient = new HttpClient())
+                using (HttpClient httpClient = new HttpClient(GetDefaultHttpClientHandler()))
                 {
                     httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
                     httpClient.DefaultRequestHeaders.Add("Cache-Control", "no-cache, no-store");
@@ -130,8 +131,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                UpdateWebSecurityProtocol();
-                using (HttpClient httpClient = new HttpClient())
+                using (HttpClient httpClient = new HttpClient(GetDefaultHttpClientHandler()))
                 {
                     httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
                     httpClient.DefaultRequestHeaders.Add("Cache-Control", "no-cache, no-store");
@@ -164,8 +164,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                UpdateWebSecurityProtocol();
-                using (HttpClient httpClient = new HttpClient())
+                using (HttpClient httpClient = new HttpClient(GetDefaultHttpClientHandler()))
                 {
                     httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
                     httpClient.DefaultRequestHeaders.Add("Cache-Control", "no-cache, no-store");
@@ -198,8 +197,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                UpdateWebSecurityProtocol();
-                using (HttpClient httpClient = new HttpClient())
+                using (HttpClient httpClient = new HttpClient(GetDefaultHttpClientHandler()))
                 {
                     httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
                     httpClient.DefaultRequestHeaders.Add("Cache-Control", "no-cache, no-store");
