@@ -185,7 +185,7 @@ namespace ArnoldVinkCode
                 //Get screen refresh rate
                 if (pathInfoTarget.targetInfo.refreshRate.Numerator != 0)
                 {
-                    displayMonitorSettings.RefreshRate = (int)pathInfoTarget.targetInfo.refreshRate.Numerator;
+                    displayMonitorSettings.RefreshRate = (int)(pathInfoTarget.targetInfo.refreshRate.Numerator / pathInfoTarget.targetInfo.refreshRate.Denominator);
                 }
                 else
                 {
