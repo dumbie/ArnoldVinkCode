@@ -162,6 +162,16 @@ namespace ArnoldVinkCode
             catch { return stringText; }
         }
 
+        //Replace in string if whole word only
+        public static string StringReplaceWholeWord(string stringText, string searchFor, string replaceWith)
+        {
+            try
+            {
+                return Regex.Replace(stringText, "\\b" + searchFor + "\\b", replaceWith);
+            }
+            catch { return stringText; }
+        }
+
         //Add string to string with character
         public static string StringAdd(string Oldstring, string Addstring, string Character)
         {
