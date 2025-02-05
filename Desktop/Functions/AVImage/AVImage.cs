@@ -47,7 +47,7 @@ namespace ArnoldVinkCode
                         //Check file exists
                         bool fileExists = File.Exists(filePathLower);
 
-                        if (filePathLower.StartsWith("pack://"))
+                        if (filePathLower.StartsWith("pack://") || filePathLower.StartsWith("http"))
                         {
                             BitmapImage bitmapImage = GetBitmapImageFromUri(new Uri(filePathLower, UriKind.RelativeOrAbsolute), imageWidth, imageHeight);
                             if (bitmapImage != null) { return bitmapImage; }
