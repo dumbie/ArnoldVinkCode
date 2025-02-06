@@ -358,6 +358,25 @@ namespace ArnoldVinkCode
             }
         }
 
+        //Directory exists check with file path support
+        public static bool DirectoryExists(string targetPath)
+        {
+            try
+            {
+                string directoryPath = Path.GetDirectoryName(targetPath);
+                if (string.IsNullOrWhiteSpace(directoryPath)) { return false; }
+                if (!Directory.Exists(directoryPath))
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            catch { return false; }
+        }
+
         //Check if device is mobile
         public static bool DevMobile()
         {
