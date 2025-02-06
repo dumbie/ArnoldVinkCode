@@ -100,16 +100,8 @@ namespace ArnoldVinkCode
                 //Json serialize
                 string serializedObject = JsonConvert.SerializeObject(serializeObject, jsonSettings);
 
-                //Check directory
-                string directoryName = Path.GetDirectoryName(filePath);
-                if (!string.IsNullOrWhiteSpace(directoryName) && !Directory.Exists(directoryName))
-                {
-                    Directory.CreateDirectory(directoryName);
-                    Debug.WriteLine("Created json save directory: " + directoryName);
-                }
-
                 //Save to file
-                File.WriteAllText(filePath, serializedObject);
+                AVFiles.StringToFile(filePath, serializedObject);
                 Debug.WriteLine("Completed saving json file: " + filePath);
             }
             catch (Exception ex)

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using static ArnoldVinkCode.AVFunctions;
 
 namespace ArnoldVinkCode
 {
@@ -279,6 +280,54 @@ namespace ArnoldVinkCode
             }
             catch { }
             return string.Empty;
+        }
+
+        //Write string to file
+        public static bool StringToFile(string filePath, string writeString)
+        {
+            try
+            {
+                //Check and create directory
+                if (!DirectoryExists(filePath))
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+                }
+
+                //Write to file
+                File.WriteAllText(filePath, writeString);
+
+                //Return result
+                return true;
+            }
+            catch
+            {
+                //Return result
+                return false;
+            }
+        }
+
+        //Write bytes to file
+        public static bool BytesToFile(string filePath, byte[] writeBytes)
+        {
+            try
+            {
+                //Check and create directory
+                if (!DirectoryExists(filePath))
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+                }
+
+                //Write to file
+                File.WriteAllBytes(filePath, writeBytes);
+
+                //Return result
+                return true;
+            }
+            catch
+            {
+                //Return result
+                return false;
+            }
         }
 
         //Replace invalid file characters
