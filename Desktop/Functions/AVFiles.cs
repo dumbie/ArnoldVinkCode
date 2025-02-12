@@ -2,12 +2,30 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using static ArnoldVinkCode.AVFunctions;
 
 namespace ArnoldVinkCode
 {
     public partial class AVFiles
     {
+        //Directory exists check with file path support
+        public static bool Directory_Exists(string targetPath)
+        {
+            try
+            {
+                string directoryPath = Path.GetDirectoryName(targetPath);
+                if (string.IsNullOrWhiteSpace(directoryPath)) { return false; }
+                if (!Directory.Exists(directoryPath))
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            catch { return false; }
+        }
+
         //Directory create
         public static bool Directory_Create(string createDirectoryPath, bool overWrite)
         {
@@ -288,7 +306,7 @@ namespace ArnoldVinkCode
             try
             {
                 //Check and create directory
-                if (!DirectoryExists(filePath))
+                if (!Directory_Exists(filePath))
                 {
                     Directory.CreateDirectory(Path.GetDirectoryName(filePath));
                 }
@@ -312,7 +330,7 @@ namespace ArnoldVinkCode
             try
             {
                 //Check and create directory
-                if (!DirectoryExists(filePath))
+                if (!Directory_Exists(filePath))
                 {
                     Directory.CreateDirectory(Path.GetDirectoryName(filePath));
                 }
