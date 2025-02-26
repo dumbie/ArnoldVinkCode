@@ -9,10 +9,10 @@
 class AVDebugWriteLineInternal
 {
 private:
-	std::ostringstream stringstream;
+	std::wostringstream stringstream;
 
 public:
-	template <class T>
+	template <typename T>
 	AVDebugWriteLineInternal& operator << (const T& value)
 	{
 		stringstream << value;
@@ -22,7 +22,7 @@ public:
 	~AVDebugWriteLineInternal()
 	{
 		stringstream << "\n";
-		std::cout << stringstream.str() << std::flush;
-		OutputDebugStringA(stringstream.str().c_str());
+		OutputDebugStringW(stringstream.str().c_str());
+		std::wcout << stringstream.str().c_str() << std::flush;
 	}
 };
