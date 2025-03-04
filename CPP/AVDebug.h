@@ -2,16 +2,15 @@
 #include <sstream>
 #include <iostream>
 #include <windows.h>
-#define AVDebugWriteLine(message) (AVDebugWriteLineInternal() << message)
+#define AVDebugWriteLine(message) AVDebugWriteLineInternal() << message
 
 //Usage example: AVDebugWriteLine("Hello " << "World " << 1);
 //Usage example: AVDebugWriteLineInternal() << "Hello " << "World " << 1;
-class AVDebugWriteLineInternal
+//Description: Show string in both console and debug output
+struct AVDebugWriteLineInternal
 {
-private:
 	std::wostringstream stringstream;
 
-public:
 	template <typename T>
 	AVDebugWriteLineInternal& operator << (const T& value)
 	{
