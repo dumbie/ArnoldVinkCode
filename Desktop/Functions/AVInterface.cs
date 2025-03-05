@@ -30,6 +30,7 @@ namespace ArnoldVinkCode
             try
             {
                 if (!targetElement.IsVisible) { return false; }
+                targetElement.UpdateLayout();
                 Rect rectTargetRender = new Rect(targetElement.RenderSize);
                 if (rectTargetRender.Height == 0 || rectTargetRender.Width == 0) { return false; }
                 Rect rectParentRender = new Rect(parentElement.RenderSize);
