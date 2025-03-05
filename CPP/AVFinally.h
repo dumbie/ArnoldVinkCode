@@ -1,4 +1,5 @@
 #define AVFinally(callback) AVFinallyInternal x([&]{ callback });
+#define AVFinallySafe(callback) AVFinallyInternal x([&]{ try { callback } catch (...) {} });
 
 //Usage example: AVFinally(void(););
 //Usage example: AVFinally({ void1(); void2(); });
