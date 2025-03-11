@@ -63,8 +63,14 @@ namespace ArnoldVinkCode
             return containsResult;
         }
 
+        //Check if string is numeric
+        public static bool StringIsNumeric(string targetString)
+        {
+            return float.TryParse(targetString, out _);
+        }
+
         //Convert string To Title Case
-        public static string ToTitleCase(string ToTitleCase)
+        public static string StringToTitleCase(string ToTitleCase)
         {
             char[] TitleCase = ToTitleCase.ToLower().ToCharArray();
             for (int i = 0; i < TitleCase.Count(); i++) { TitleCase[i] = i == 0 || TitleCase[i - 1] == ' ' ? char.ToUpper(TitleCase[i]) : TitleCase[i]; }
@@ -182,6 +188,28 @@ namespace ArnoldVinkCode
                 return Oldstring;
             }
             catch { return Oldstring; }
+        }
+
+        //Join strings with separator and strings
+        public static string StringJoin(string[] stringArray, string addSeparator, string addLeft, string addRight)
+        {
+            string stringJoined = string.Empty;
+            try
+            {
+                for (int i = 0; i < stringArray.Length; i++)
+                {
+                    if (i == 0)
+                    {
+                        stringJoined += addLeft + stringArray[i] + addRight;
+                    }
+                    else
+                    {
+                        stringJoined += addSeparator + addLeft + stringArray[i] + addRight;
+                    }
+                }
+            }
+            catch { }
+            return stringJoined;
         }
 
         //Remove unicode characters from string
@@ -356,25 +384,6 @@ namespace ArnoldVinkCode
                 Debug.WriteLine("Failed to get filename no extension: " + ex.Message);
                 return path;
             }
-        }
-
-        //Directory exists check with file path support
-        public static bool DirectoryExists(string targetPath)
-        {
-            try
-            {
-                string directoryPath = Path.GetDirectoryName(targetPath);
-                if (string.IsNullOrWhiteSpace(directoryPath)) { return false; }
-                if (!Directory.Exists(directoryPath))
-                {
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
-            }
-            catch { return false; }
         }
 
         //Check if device is mobile
@@ -630,13 +639,6 @@ namespace ArnoldVinkCode
             }
             catch { }
             return "Unknown";
-        }
-
-        //Linear Interpolation Math
-        public static float MathLerp(float aFloat, float bFloat, float amountFloat)
-        {
-            //return aFloat * (1.0F - amountFloat) + bFloat * amountFloat;
-            return aFloat + (bFloat - aFloat) * amountFloat;
         }
 
         //Count decimals in number
