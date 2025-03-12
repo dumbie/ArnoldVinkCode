@@ -10,7 +10,7 @@
 
     <ControlTemplate x:Key="ThumbVertical" TargetType="{x:Type Thumb}">
         <Border Width="10" HorizontalAlignment="Right" Background="Transparent">
-            <Border CornerRadius="2" x:Name="Slider" Background="{DynamicResource ApplicationAccentLightBrush}" Opacity="0.50" Width="3" HorizontalAlignment="Right"/>
+            <Border CornerRadius="2" x:Name="Slider" Background="{DynamicResource ApplicationAccentLightBrush}" Opacity="0.50" Width="4" HorizontalAlignment="Right"/>
         </Border>
         <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
@@ -24,7 +24,7 @@
                 <Trigger.ExitActions>
                     <BeginStoryboard>
                         <Storyboard>
-                            <DoubleAnimation To="3" Storyboard.TargetName="Slider" Storyboard.TargetProperty="Width" Duration="0:0:0.25"/>
+                            <DoubleAnimation To="4" Storyboard.TargetName="Slider" Storyboard.TargetProperty="Width" Duration="0:0:0.25"/>
                         </Storyboard>
                     </BeginStoryboard>
                 </Trigger.ExitActions>
@@ -50,7 +50,7 @@
 
     <ControlTemplate x:Key="ThumbHorizontal" TargetType="{x:Type Thumb}">
         <Border Height="10" VerticalAlignment="Bottom" Background="Transparent">
-            <Border CornerRadius="2" x:Name="Slider" Background="{DynamicResource ApplicationAccentLightBrush}" Opacity="0.50" Height="3" VerticalAlignment="Bottom"/>
+            <Border CornerRadius="2" x:Name="Slider" Background="{DynamicResource ApplicationAccentLightBrush}" Opacity="0.50" Height="4" VerticalAlignment="Bottom"/>
         </Border>
         <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
@@ -64,7 +64,7 @@
                 <Trigger.ExitActions>
                     <BeginStoryboard>
                         <Storyboard>
-                            <DoubleAnimation To="3" Storyboard.TargetName="Slider" Storyboard.TargetProperty="Height" Duration="0:0:0.25"/>
+                            <DoubleAnimation To="4" Storyboard.TargetName="Slider" Storyboard.TargetProperty="Height" Duration="0:0:0.25"/>
                         </Storyboard>
                     </BeginStoryboard>
                 </Trigger.ExitActions>
@@ -120,11 +120,11 @@
         <Setter Property="SnapsToDevicePixels" Value="True"/>
         <Style.Triggers>
             <Trigger Property="Orientation" Value="Horizontal">
-                <Setter Property="Margin" Value="0,-17,0,0"/>
+                <Setter Property="Margin" Value="0,-16,0,0"/>
                 <Setter Property="Template" Value="{StaticResource HorizontalTemplateAccent}"/>
             </Trigger>
             <Trigger Property="Orientation" Value="Vertical">
-                <Setter Property="Margin" Value="-17,0,0,0"/>
+                <Setter Property="Margin" Value="-16,0,0,0"/>
                 <Setter Property="Template" Value="{StaticResource VerticalTemplateAccent}"/>
             </Trigger>
         </Style.Triggers>

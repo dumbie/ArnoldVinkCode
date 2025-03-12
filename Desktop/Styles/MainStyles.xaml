@@ -244,12 +244,12 @@
 
     <!--Border Styles-->
     <Style x:Key="BorderHorizontalAccentLight" TargetType="Border">
-        <Setter Property="Height" Value="2"/>
+        <Setter Property="Height" Value="4"/>
         <Setter Property="CornerRadius" Value="2"/>
         <Setter Property="Background" Value="{DynamicResource ApplicationAccentLightBrush}"/>
     </Style>
     <Style x:Key="BorderVerticalAccentLight" TargetType="Border">
-        <Setter Property="Width" Value="2"/>
+        <Setter Property="Width" Value="4"/>
         <Setter Property="CornerRadius" Value="2"/>
         <Setter Property="Background" Value="{DynamicResource ApplicationAccentLightBrush}"/>
     </Style>

@@ -15,7 +15,7 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <ScrollViewer Grid.Row="0" x:Name="PART_ContentHost" Focusable="False" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
-                <Border Grid.Row="1" x:Name="bottomBorder" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Height="3" CornerRadius="0,0,2,2" Background="{TemplateBinding BorderBrush}"/>
+                <Border Grid.Row="1" x:Name="bottomBorder" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Height="4" CornerRadius="0,0,2,2" Background="{TemplateBinding BorderBrush}"/>
             </Grid>
         </Border>
         <ControlTemplate.Triggers>
@@ -31,6 +31,7 @@
             </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
+
     <ControlTemplate x:Key="TextBoxTemplateBlack" TargetType="{x:Type TextBox}">
         <Border x:Name="border" CornerRadius="2" BorderThickness="2" BorderBrush="Transparent" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
             <Border.Background>
@@ -42,7 +43,7 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <ScrollViewer Grid.Row="0" x:Name="PART_ContentHost" Focusable="False" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
-                <Border Grid.Row="1" x:Name="bottomBorder" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Height="3" CornerRadius="0,0,2,2" Background="{TemplateBinding BorderBrush}"/>
+                <Border Grid.Row="1" x:Name="bottomBorder" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Height="4" CornerRadius="0,0,2,2" Background="{TemplateBinding BorderBrush}"/>
             </Grid>
         </Border>
         <ControlTemplate.Triggers>
@@ -71,7 +72,7 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <ScrollViewer Grid.Row="0" x:Name="PART_ContentHost" Focusable="False" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
-                <Border x:Name="bottomBorder" Grid.Row="1" HorizontalAlignment="Stretch" Height="3" CornerRadius="0,0,2,2" Background="{TemplateBinding BorderBrush}"/>
+                <Border x:Name="bottomBorder" Grid.Row="1" HorizontalAlignment="Stretch" Height="4" CornerRadius="0,0,2,2" Background="{TemplateBinding BorderBrush}"/>
             </Grid>
         </Border>
         <ControlTemplate.Triggers>
@@ -87,6 +88,7 @@
             </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
+
     <ControlTemplate x:Key="PasswordBoxTemplateBlack" TargetType="{x:Type PasswordBox}">
         <Border x:Name="border" CornerRadius="2" BorderThickness="2" BorderBrush="Transparent" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
             <Border.Background>
@@ -98,7 +100,7 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <ScrollViewer Grid.Row="0" x:Name="PART_ContentHost" Focusable="False" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
-                <Border x:Name="bottomBorder" Grid.Row="1" HorizontalAlignment="Stretch" Height="3" CornerRadius="0,0,2,2" Background="{TemplateBinding BorderBrush}"/>
+                <Border x:Name="bottomBorder" Grid.Row="1" HorizontalAlignment="Stretch" Height="4" CornerRadius="0,0,2,2" Background="{TemplateBinding BorderBrush}"/>
             </Grid>
         </Border>
         <ControlTemplate.Triggers>
