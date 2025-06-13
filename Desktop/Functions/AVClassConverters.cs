@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Diagnostics;
-using System.IO;
 using System.Reflection;
-using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
 
 namespace ArnoldVinkCode
 {
@@ -25,38 +26,18 @@ namespace ArnoldVinkCode
             }
         }
 
-        //Deep clone object
-        public static bool CloneObjectDeep<T>(T cloneObject, out T outObject)
-        {
-            try
-            {
-                using (MemoryStream memoryStream = new MemoryStream())
-                {
-                    BinaryFormatter formatter = new BinaryFormatter();
-                    formatter.Serialize(memoryStream, cloneObject);
-                    memoryStream.Position = 0;
-                    outObject = (T)formatter.Deserialize(memoryStream);
-                    return true;
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine("Failed to deep clone object: " + ex.Message);
-                outObject = default(T);
-                return false;
-            }
-        }
-
-        //Serialize and deserialize class
+        //Serialize object to bytes
         public static byte[] SerializeObjectToBytes(object serializeObject)
         {
             try
             {
-                using (MemoryStream memoryStream = new MemoryStream())
+                JsonSerializerSettings jsonSettings = new JsonSerializerSettings
                 {
-                    new BinaryFormatter().Serialize(memoryStream, serializeObject);
-                    return memoryStream.ToArray();
-                }
+                    //TypeNameHandling = TypeNameHandling.Objects
+                };
+
+                string jsonString = JsonConvert.SerializeObject(serializeObject, jsonSettings);
+                return Encoding.UTF8.GetBytes(jsonString);
             }
             catch (Exception ex)
             {
@@ -65,21 +46,52 @@ namespace ArnoldVinkCode
             }
         }
 
+        //Deserialize bytes to object
         public static bool DeserializeBytesToObject<T>(byte[] bytesObject, out T outObject)
         {
             try
             {
-                using (MemoryStream memoryStream = new MemoryStream(bytesObject))
+                JsonSerializerSettings jsonSettings = new JsonSerializerSettings
                 {
-                    outObject = (T)new BinaryFormatter().Deserialize(memoryStream);
-                    return true;
-                }
+                    //TypeNameHandling = TypeNameHandling.Objects
+                };
+
+                string jsonString = Encoding.UTF8.GetString(bytesObject);
+                outObject = JsonConvert.DeserializeObject<T>(jsonString, jsonSettings);
+                return true;
             }
             catch (Exception ex)
             {
                 Debug.WriteLine("Failed to DeserializeBytesToObject: " + ex.Message);
                 outObject = default(T);
                 return false;
+            }
+        }
+
+        //Convert object to type
+        public static T ConvertObjectToType<T>(object obj)
+        {
+            try
+            {
+                //Check for json object
+                if (obj is JObject || obj is JArray)
+                {
+                    JsonSerializerSettings jsonSettings = new JsonSerializerSettings
+                    {
+                        //TypeNameHandling = TypeNameHandling.Objects
+                    };
+
+                    return JsonConvert.DeserializeObject<T>(obj.ToString(), jsonSettings);
+                }
+                else
+                {
+                    return (T)obj;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to ConvertObjectToType: " + ex.Message);
+                return default(T);
             }
         }
     }

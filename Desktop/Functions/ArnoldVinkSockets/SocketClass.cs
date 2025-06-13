@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using static ArnoldVinkCode.AVClassConverters;
 
 namespace ArnoldVinkCode
 {
@@ -10,7 +11,19 @@ namespace ArnoldVinkCode
         {
             public string SourceIp = "127.0.0.1";
             public int SourcePort = 1000;
-            public object Object = null;
+            public string SendType = string.Empty;
+            public object SendObject = null;
+
+            public void SetObject(object obj)
+            {
+                SendObject = obj;
+                SendType = obj.GetType().ToString();
+            }
+
+            public T GetObjectAsType<T>()
+            {
+                return ConvertObjectToType<T>(SendObject);
+            }
         }
 
         [Serializable]
