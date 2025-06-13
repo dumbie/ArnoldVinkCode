@@ -10,10 +10,9 @@
 		<GenerateAssemblyInfo>False</GenerateAssemblyInfo>
 		<ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-		<EnableUnsafeBinaryFormatterSerialization>True</EnableUnsafeBinaryFormatterSerialization>
 		<AppendTargetFrameworkToOutputPath>False</AppendTargetFrameworkToOutputPath>
 		<AppendRuntimeIdentifierToOutputPath>False</AppendRuntimeIdentifierToOutputPath>
-		<OutputPath>$(SolutionDir)Build\$(Configuration)\</OutputPath>
+		<OutputPath>$(SolutionDir)Build\$(Configuration)\$(AssemblyName)</OutputPath>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<Optimize>True</Optimize>
@@ -38,7 +37,8 @@
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-		<PackageReference Include="System.Management" Version="9.0.4" />
-		<PackageReference Include="System.Runtime.Serialization.Formatters" Version="9.0.4" />
+		<PackageReference Include="System.Management" Version="9.0.6" />
+		<PackageReference Include="System.Runtime.Serialization.Formatters" Version="9.0.6" />
+		<PackageReference Include="TaskScheduler" Version="2.12.1" />
 	</ItemGroup>
 </Project>
