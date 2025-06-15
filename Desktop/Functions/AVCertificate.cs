@@ -11,12 +11,14 @@ namespace ArnoldVinkCode
         {
             try
             {
-                X509Certificate2 certificateFile = new X509Certificate2(certificateBytes);
-                X509Store certificateStore = new X509Store(StoreName.Root, StoreLocation.LocalMachine);
-
-                certificateStore.Open(OpenFlags.ReadWrite);
-                certificateStore.Add(certificateFile);
-                certificateStore.Close();
+                using (X509Certificate2 certificateFile = new X509Certificate2(certificateBytes))
+                {
+                    using (X509Store certificateStore = new X509Store(StoreName.Root, StoreLocation.LocalMachine))
+                    {
+                        certificateStore.Open(OpenFlags.ReadWrite);
+                        certificateStore.Add(certificateFile);
+                    }
+                }
 
                 Debug.WriteLine("Installed certificate to store root.");
                 return true;
@@ -32,24 +34,23 @@ namespace ArnoldVinkCode
         {
             try
             {
-                X509Store certificateStore = new X509Store(StoreName.Root, StoreLocation.LocalMachine);
-
-                certificateStore.Open(OpenFlags.ReadWrite);
-                foreach (X509Certificate2 cert in certificateStore.Certificates.Cast<X509Certificate2>())
+                using (X509Store certificateStore = new X509Store(StoreName.Root, StoreLocation.LocalMachine))
                 {
-                    try
+                    certificateStore.Open(OpenFlags.ReadWrite);
+                    foreach (X509Certificate2 cert in certificateStore.Certificates.Cast<X509Certificate2>())
                     {
-                        string certIssuedTo = cert.GetNameInfo(X509NameType.SimpleName, false);
-                        if (certIssuedTo == issuedTo)
+                        try
                         {
-                            certificateStore.Remove(cert);
-                            Debug.WriteLine("Removed certificate from the store root: " + issuedTo);
+                            string certIssuedTo = cert.GetNameInfo(X509NameType.SimpleName, false);
+                            if (certIssuedTo == issuedTo)
+                            {
+                                certificateStore.Remove(cert);
+                                Debug.WriteLine("Removed certificate from the store root: " + issuedTo);
+                            }
                         }
+                        catch { }
                     }
-                    catch { }
                 }
-
-                certificateStore.Close();
                 return true;
             }
             catch (Exception ex)
