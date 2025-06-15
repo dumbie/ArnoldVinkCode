@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <vector>
 
 static std::string char_to_string(const char* str)
 {
@@ -28,14 +29,35 @@ static std::string wstring_to_string(std::wstring str)
 	return std::string(str.begin(), str.end());
 }
 
+static std::string hstring_to_string(hstring str)
+{
+	return std::string(str.begin(), str.end());
+}
+
+static hstring string_to_hstring(std::string str)
+{
+	return to_hstring(str);
+}
+
 static std::wstring string_to_wstring(std::string str)
 {
 	return std::wstring(str.begin(), str.end());
 }
 
+static int string_to_int(std::string str)
+{
+	return std::stoi(str);
+}
+
+static int wstring_to_int(std::wstring str)
+{
+	return std::stoi(str);
+}
+
 static int hstring_to_int(hstring str)
 {
-	return std::stoi(winrt::to_string(str));
+	std::string s(winrt::to_string(str));
+	return std::stoi(s);
 }
 
 template<typename T>
@@ -54,4 +76,48 @@ template<typename T>
 static hstring number_to_hstring(T value)
 {
 	return winrt::to_hstring(value);
+}
+
+static std::string vector_to_string(std::vector<std::string> list, std::string split)
+{
+	std::string stringReturn;
+	for (auto stringVector : list)
+	{
+		stringReturn += stringVector;
+		if (!stringReturn.empty() && !split.empty())
+		{
+			stringReturn += split;
+		}
+	}
+	return stringReturn;
+}
+
+static std::vector<std::string> string_to_vector(std::string str)
+{
+	std::string stringLine;
+	std::stringstream stringLines(str);
+	std::vector<std::string> stringVector;
+	while (std::getline(stringLines, stringLine))
+	{
+		if (!stringLine.empty())
+		{
+			stringVector.push_back(stringLine);
+		}
+	}
+	return stringVector;
+}
+
+static std::vector<std::string> string_split(std::string str, char split)
+{
+	std::string stringLine;
+	std::stringstream stringLines(str);
+	std::vector<std::string> stringVector;
+	while (std::getline(stringLines, stringLine, split))
+	{
+		if (!stringLine.empty())
+		{
+			stringVector.push_back(stringLine);
+		}
+	}
+	return stringVector;
 }
