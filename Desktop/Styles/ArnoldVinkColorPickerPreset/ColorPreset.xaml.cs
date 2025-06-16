@@ -48,7 +48,7 @@ namespace ArnoldVinkCode.Styles
                 {
                     SolidColorBrush newSolidColorBrush = new SolidColorBrush(Color.FromArgb((byte)(uintColor >> 24), (byte)(uintColor >> 16), (byte)(uintColor >> 8), (byte)(uintColor)));
                     listbox_ColorPicker.Items.Add(newSolidColorBrush);
-                };
+                }
             }
             catch { }
         }

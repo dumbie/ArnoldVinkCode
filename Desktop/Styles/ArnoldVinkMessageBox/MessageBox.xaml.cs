@@ -56,11 +56,13 @@ namespace ArnoldVinkCode
                 {
                     grid_MessageBox_Description.Text = Description;
                     grid_MessageBox_Description.Visibility = Visibility.Visible;
+                    grid_MessageBox_Border.Visibility = Visibility.Visible;
                 }
                 else
                 {
                     grid_MessageBox_Description.Text = string.Empty;
                     grid_MessageBox_Description.Visibility = Visibility.Collapsed;
+                    grid_MessageBox_Border.Visibility = Visibility.Collapsed;
                 }
 
                 //Set the messagebox answers
