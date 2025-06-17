@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32.TaskScheduler;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 
@@ -8,20 +9,46 @@ namespace ArnoldVinkCode
     public partial class AVTaskScheduler
     {
         //Run service task
-        public static void TaskRun(string taskName)
+        public static async System.Threading.Tasks.Task<bool> TaskRun(string taskName, string appName, bool silentRun)
         {
             try
             {
                 Debug.WriteLine("Running service task: " + taskName);
-                using (TaskService taskService = new TaskService())
+
+                //Check task
+                TaskStatus taskStatus = TaskCheck(taskName, string.Empty);
+                if (taskStatus != TaskStatus.TaskOk)
                 {
-                    using (Task task = taskService.GetTask(taskName))
+                    //Show dialog
+                    if (!silentRun)
                     {
-                        task.Run();
+                        List<string> messageBoxAnswers = new List<string>();
+                        messageBoxAnswers.Add("Ok");
+
+                        await new AVMessageBox().Popup(null, "Failed to start", "Please run the " + appName + " launcher manually once.", messageBoxAnswers);
                     }
+
+                    return false;
+                }
+                else
+                {
+                    //Run task
+                    using (TaskService taskService = new TaskService())
+                    {
+                        using (Task task = taskService.GetTask(taskName))
+                        {
+                            task.Run();
+                        }
+                    }
+
+                    return true;
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to run service task: " + ex.Message);
+                return false;
+            }
         }
 
         //Check service task
@@ -47,19 +74,19 @@ namespace ArnoldVinkCode
                             //Check if application executable exists
                             if (!File.Exists(executePath))
                             {
-                                Debug.WriteLine("Execute file does not exist.");
+                                Debug.WriteLine("Task execute file does not exist.");
                                 return TaskStatus.ExeNotFound;
                             }
 
                             //Check if application path has changed
-                            if (!executePath.Contains(taskExePath))
+                            if (!string.IsNullOrWhiteSpace(taskExePath) && !executePath.Contains(taskExePath))
                             {
-                                Debug.WriteLine("Application path has changed.");
+                                Debug.WriteLine("Task execute path has changed.");
                                 return TaskStatus.PathChanged;
                             }
 
                             //Return task status
-                            Debug.WriteLine("Task should be working.");
+                            Debug.WriteLine("Task " + taskName + " should be working.");
                             return TaskStatus.TaskOk;
                         }
                     }
