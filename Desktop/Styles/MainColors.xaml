@@ -4,12 +4,12 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <!-- Accent Color -->
-    <Color x:Key="ApplicationAccentLightColor">#00C7FF</Color>
-    <SolidColorBrush x:Key="ApplicationAccentLightBrush">#00C7FF</SolidColorBrush>
-    <Color x:Key="ApplicationAccentDimColor">#009FCC</Color>
-    <SolidColorBrush x:Key="ApplicationAccentDimBrush">#009FCC</SolidColorBrush>
-    <Color x:Key="ApplicationAccentDarkColor">#00637F</Color>
-    <SolidColorBrush x:Key="ApplicationAccentDarkBrush">#00637F</SolidColorBrush>
+    <Color x:Key="ApplicationAccentLightColor">#1E90FF</Color>
+    <SolidColorBrush x:Key="ApplicationAccentLightBrush">#1E90FF</SolidColorBrush>
+    <Color x:Key="ApplicationAccentDimColor">#1873CC</Color>
+    <SolidColorBrush x:Key="ApplicationAccentDimBrush">#1873CC</SolidColorBrush>
+    <Color x:Key="ApplicationAccentDarkColor">#0F487F</Color>
+    <SolidColorBrush x:Key="ApplicationAccentDarkBrush">#0F487F</SolidColorBrush>
 
     <!-- Basic Color -->
     <Color x:Key="ApplicationWhiteColor">#F1F1F1</Color>
