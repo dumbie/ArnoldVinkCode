@@ -9,6 +9,7 @@ using Windows.ApplicationModel;
 using Windows.Foundation;
 using Windows.Management.Deployment;
 using static ArnoldVinkCode.AVInteropDll;
+using static ArnoldVinkCode.AVXml;
 
 namespace ArnoldVinkCode
 {
@@ -35,9 +36,12 @@ namespace ArnoldVinkCode
                 //Open uwp application manifest file
                 AppxManifest appxManifest = null;
                 XmlSerializer xmlSerializer = new XmlSerializer(typeof(AppxManifest));
-                using (FileStream myFileStream = new FileStream(manifestPath, FileMode.Open, FileAccess.Read))
+                using (FileStream fileStream = new FileStream(manifestPath, FileMode.Open, FileAccess.Read))
                 {
-                    appxManifest = (AppxManifest)xmlSerializer.Deserialize(myFileStream);
+                    using (XmlTextReaderSkipNamespace xmlTextReader = new XmlTextReaderSkipNamespace(fileStream))
+                    {
+                        appxManifest = (AppxManifest)xmlSerializer.Deserialize(xmlTextReader);
+                    }
                 }
 
                 //Get and set device family
@@ -121,6 +125,22 @@ namespace ArnoldVinkCode
                 {
                     appxDetails.SquareLargestLogoPath = Path.Combine(appxDetails.InstallPath, applicationInfo.VisualElements.DefaultTile.Square44x44Logo);
                 }
+                else if (!string.IsNullOrWhiteSpace(applicationInfo.VisualElements.SquareLogo))
+                {
+                    appxDetails.SquareLargestLogoPath = Path.Combine(appxDetails.InstallPath, applicationInfo.VisualElements.SquareLogo);
+                }
+                else if (!string.IsNullOrWhiteSpace(applicationInfo.VisualElements.DefaultTile.SquareLogo))
+                {
+                    appxDetails.SquareLargestLogoPath = Path.Combine(appxDetails.InstallPath, applicationInfo.VisualElements.DefaultTile.SquareLogo);
+                }
+                else if (!string.IsNullOrWhiteSpace(applicationInfo.VisualElements.Logo))
+                {
+                    appxDetails.SquareLargestLogoPath = Path.Combine(appxDetails.InstallPath, applicationInfo.VisualElements.Logo);
+                }
+                else if (!string.IsNullOrWhiteSpace(applicationInfo.VisualElements.DefaultTile.Logo))
+                {
+                    appxDetails.SquareLargestLogoPath = Path.Combine(appxDetails.InstallPath, applicationInfo.VisualElements.DefaultTile.Logo);
+                }
                 string originalSquareLargestLogoPath = appxDetails.SquareLargestLogoPath;
                 appxDetails.SquareLargestLogoPath = GetUwpImageSizePath(appxDetails.SquareLargestLogoPath);
 
@@ -150,6 +170,14 @@ namespace ArnoldVinkCode
                 else if (!string.IsNullOrWhiteSpace(applicationInfo.VisualElements.DefaultTile.Wide310x150Logo))
                 {
                     appxDetails.WideLargestLogoPath = Path.Combine(appxDetails.InstallPath, applicationInfo.VisualElements.DefaultTile.Wide310x150Logo);
+                }
+                else if (!string.IsNullOrWhiteSpace(applicationInfo.VisualElements.WideLogo))
+                {
+                    appxDetails.WideLargestLogoPath = Path.Combine(appxDetails.InstallPath, applicationInfo.VisualElements.WideLogo);
+                }
+                else if (!string.IsNullOrWhiteSpace(applicationInfo.VisualElements.DefaultTile.WideLogo))
+                {
+                    appxDetails.WideLargestLogoPath = Path.Combine(appxDetails.InstallPath, applicationInfo.VisualElements.DefaultTile.WideLogo);
                 }
                 string originalWideLargestLogoPath = appxDetails.WideLargestLogoPath;
                 appxDetails.WideLargestLogoPath = GetUwpImageSizePath(appxDetails.WideLargestLogoPath);

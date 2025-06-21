@@ -5,12 +5,7 @@ namespace ArnoldVinkCode
 {
     public partial class AVUwpAppx
     {
-        private const string nameSpace_Windows = "http://schemas.microsoft.com/appx/manifest/foundation/windows10";
-        private const string nameSpace_Desktop = "http://schemas.microsoft.com/appx/manifest/desktop/windows10";
-        private const string nameSpace_UAP = "http://schemas.microsoft.com/appx/manifest/uap/windows10";
-        private const string nameSpace_UAP3 = "http://schemas.microsoft.com/appx/manifest/uap/windows10/3";
-
-        [XmlRoot(ElementName = "Package", Namespace = nameSpace_Windows)]
+        [XmlRoot(ElementName = "Package")]
         public class AppxManifest
         {
             public Identity Identity { get; set; } = new Identity();
@@ -65,13 +60,12 @@ namespace ArnoldVinkCode
             [XmlAttribute(AttributeName = "EntryPoint")]
             public string EntryPoint { get; set; }
             public Extensions Extensions { get; set; } = new Extensions();
-            [XmlElement(Namespace = nameSpace_UAP)]
             public VisualElements VisualElements { get; set; } = new VisualElements();
         }
 
         public class Extensions
         {
-            [XmlElement(ElementName = "Extension", Namespace = nameSpace_UAP3)]
+            [XmlElement(ElementName = "Extension")]
             public List<ExtensionUAP3> ExtensionUAP3 { get; set; }
         }
 
@@ -92,12 +86,15 @@ namespace ArnoldVinkCode
 
         public class AppExecutionAlias
         {
-            [XmlElement(Namespace = nameSpace_Desktop)]
             public ExecutionAlias ExecutionAlias { get; set; } = new ExecutionAlias();
         }
 
         public class DefaultTile
         {
+            [XmlAttribute(AttributeName = "Logo")]
+            public string Logo { get; set; }
+            [XmlAttribute(AttributeName = "SquareLogo")]
+            public string SquareLogo { get; set; }
             [XmlAttribute(AttributeName = "Square44x44Logo")]
             public string Square44x44Logo { get; set; }
             [XmlAttribute(AttributeName = "Square71x71Logo")]
@@ -106,6 +103,8 @@ namespace ArnoldVinkCode
             public string Square150x150Logo { get; set; }
             [XmlAttribute(AttributeName = "Square310x310Logo")]
             public string Square310x310Logo { get; set; }
+            [XmlAttribute(AttributeName = "WideLogo")]
+            public string WideLogo { get; set; }
             [XmlAttribute(AttributeName = "Wide310x150Logo")]
             public string Wide310x150Logo { get; set; }
         }
@@ -117,6 +116,10 @@ namespace ArnoldVinkCode
             public string DisplayName { get; set; }
             [XmlAttribute(AttributeName = "BackgroundColor")]
             public string BackgroundColor { get; set; }
+            [XmlAttribute(AttributeName = "Logo")]
+            public string Logo { get; set; }
+            [XmlAttribute(AttributeName = "SquareLogo")]
+            public string SquareLogo { get; set; }
             [XmlAttribute(AttributeName = "Square44x44Logo")]
             public string Square44x44Logo { get; set; }
             [XmlAttribute(AttributeName = "Square71x71Logo")]
@@ -125,6 +128,8 @@ namespace ArnoldVinkCode
             public string Square150x150Logo { get; set; }
             [XmlAttribute(AttributeName = "Square310x310Logo")]
             public string Square310x310Logo { get; set; }
+            [XmlAttribute(AttributeName = "WideLogo")]
+            public string WideLogo { get; set; }
             [XmlAttribute(AttributeName = "Wide310x150Logo")]
             public string Wide310x150Logo { get; set; }
         }
