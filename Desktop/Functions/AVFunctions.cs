@@ -77,6 +77,12 @@ namespace ArnoldVinkCode
             return new string(TitleCase);
         }
 
+        //Convert first character of string to upper case
+        public static string StringFirstToUpper(string targetString)
+        {
+            return targetString.FirstOrDefault().ToString().ToUpper() + targetString.Substring(1);
+        }
+
         //Replace first text occurence in string
         public static string StringReplaceFirst(string stringText, string SearchFor, string ReplaceWith, bool StartsWith)
         {
