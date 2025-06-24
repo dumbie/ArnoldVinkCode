@@ -42,12 +42,16 @@ namespace ArnoldVinkCode
 
                         //Adjust file path
                         string filePathLower = filePath.ToLower().Trim();
+                        if (filePathLower.Contains("/") && filePathLower.Contains("\\"))
+                        {
+                            filePathLower = filePathLower.Replace("/", "\\");
+                        }
                         Debug.WriteLine("Loading image: " + filePathLower);
 
                         //Check file exists
                         bool fileExists = File.Exists(filePathLower);
 
-                        if (filePathLower.StartsWith("pack://") || filePathLower.StartsWith("http"))
+                        if (filePathLower.StartsWith("pack://") || filePathLower.StartsWith("http://") || filePathLower.StartsWith("https://"))
                         {
                             BitmapImage bitmapImage = GetBitmapImageFromUri(new Uri(filePathLower, UriKind.RelativeOrAbsolute), imageWidth, imageHeight);
                             if (bitmapImage != null) { return bitmapImage; }
