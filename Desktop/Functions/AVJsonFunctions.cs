@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -107,6 +109,36 @@ namespace ArnoldVinkCode
             catch (Exception ex)
             {
                 Debug.WriteLine("Failed saving json file: " + filePath + "/" + ex.Message);
+            }
+        }
+
+        //Find tokens by key name
+        public static void JsonFindTokens(string keyName, JToken targetToken, ref List<JToken> foundTokens)
+        {
+            try
+            {
+                if (targetToken.Type == JTokenType.Object)
+                {
+                    foreach (JProperty child in targetToken.Children<JProperty>())
+                    {
+                        if (child.Name == keyName)
+                        {
+                            foundTokens.Add(child.Value);
+                        }
+                        JsonFindTokens(keyName, child.Value, ref foundTokens);
+                    }
+                }
+                else if (targetToken.Type == JTokenType.Array || targetToken.Type == JTokenType.Property)
+                {
+                    foreach (JToken child in targetToken.Children())
+                    {
+                        JsonFindTokens(keyName, child, ref foundTokens);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed finding json tokens: " + ex.Message);
             }
         }
     }
