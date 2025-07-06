@@ -8,7 +8,7 @@ using System.Xml.Serialization;
 using Windows.ApplicationModel;
 using Windows.Foundation;
 using Windows.Management.Deployment;
-using static ArnoldVinkCode.AVInteropDll;
+using static ArnoldVinkCode.AVShell;
 using static ArnoldVinkCode.AVXml;
 
 namespace ArnoldVinkCode

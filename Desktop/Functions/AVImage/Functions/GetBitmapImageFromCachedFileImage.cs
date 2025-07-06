@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 using static ArnoldVinkCode.AVInteropDll;
+using static ArnoldVinkCode.AVShell;
 
 namespace ArnoldVinkCode
 {
@@ -17,12 +18,15 @@ namespace ArnoldVinkCode
             try
             {
                 //Create shellitem instance
-                SHCreateItemFromParsingName(filePath, IntPtr.Zero, typeof(IShellItemImageFactory).GUID, out IShellItemImageFactory shellItemImageInstance);
-                if (shellItemImageInstance == null)
+                SHCreateItemFromParsingName(filePath, IntPtr.Zero, typeof(IShellItemImageFactory).GUID, out object shellObject);
+                if (shellObject == null)
                 {
                     Debug.WriteLine("Thumbnail failed to create shellitem image instance.");
                     return null;
                 }
+
+                //Cast shellitem instance
+                IShellItemImageFactory shellItem = (IShellItemImageFactory)shellObject;
 
                 //Set bitmap target size
                 WindowSize bitmapSize = new WindowSize();
@@ -35,7 +39,7 @@ namespace ArnoldVinkCode
                 //Get bitmap pointer
                 try
                 {
-                    shellItemImageInstance.GetImage(bitmapSize, extractFlags, out bitmapPointer);
+                    shellItem.GetImage(bitmapSize, extractFlags, out bitmapPointer);
                 }
                 catch (COMException ex)
                 {
@@ -50,7 +54,7 @@ namespace ArnoldVinkCode
                     try
                     {
                         extractFlags = SIIGBF.SIIGBF_BIGGERSIZEOK | SIIGBF.SIIGBF_ICONONLY;
-                        shellItemImageInstance.GetImage(bitmapSize, extractFlags, out bitmapPointer);
+                        shellItem.GetImage(bitmapSize, extractFlags, out bitmapPointer);
                     }
                     catch { }
                 }
@@ -78,16 +82,6 @@ namespace ArnoldVinkCode
                 SafeCloseIcon(ref bitmapPointer);
             }
         }
-
-        //Interop
-        [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
-        private static extern void SHCreateItemFromParsingName
-        (
-            [In, MarshalAs(UnmanagedType.LPWStr)] string pszPath,
-            [In] IntPtr pbc,
-            [In, MarshalAs(UnmanagedType.LPStruct)] Guid riid,
-            [Out, MarshalAs(UnmanagedType.Interface)] out IShellItemImageFactory ppv
-        );
 
         //Interfaces
         [ComImport, Guid("BCC18B79-BA16-442F-80C4-8A59C30C463B"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]

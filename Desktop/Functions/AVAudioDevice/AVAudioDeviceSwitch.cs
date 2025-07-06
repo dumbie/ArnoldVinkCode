@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using static ArnoldVinkCode.AVInteropCom;
+using static ArnoldVinkCode.AVShell;
 
 namespace ArnoldVinkCode
 {
@@ -39,7 +39,7 @@ namespace ArnoldVinkCode
                 //Get the audio device name
                 PropertyVariant propertyVariant = new PropertyVariant();
                 IPropertyStore propertyStore = deviceItem.OpenPropertyStore(STGM.STGM_READ);
-                propertyStore.GetValue(ref PKEY_Device_FriendlyName, out propertyVariant);
+                propertyStore.GetValue(PKEY_Device_FriendlyName, out propertyVariant);
                 string deviceName = Marshal.PtrToStringUni(propertyVariant.pwszVal);
 
                 return new AudioDeviceSummary() { Identifier = deviceId, Name = deviceName };
@@ -71,7 +71,7 @@ namespace ArnoldVinkCode
                     //Get the audio device name
                     PropertyVariant propertyVariant = new PropertyVariant();
                     IPropertyStore propertyStore = deviceItem.OpenPropertyStore(STGM.STGM_READ);
-                    propertyStore.GetValue(ref PKEY_Device_FriendlyName, out propertyVariant);
+                    propertyStore.GetValue(PKEY_Device_FriendlyName, out propertyVariant);
                     string deviceName = Marshal.PtrToStringUni(propertyVariant.pwszVal);
 
                     //Add device to summary list

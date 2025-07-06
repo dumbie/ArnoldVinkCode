@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.ComTypes;
 using System.Security;
 using System.Text;
 using static ArnoldVinkCode.AVInputOutputClass;
-using static ArnoldVinkCode.AVInteropCom;
 
 namespace ArnoldVinkCode
 {
@@ -47,8 +45,6 @@ namespace ArnoldVinkCode
         public static extern bool IsIconic(IntPtr hWnd);
         [DllImport("user32.dll")]
         public static extern bool IsWindow(IntPtr hWnd);
-        [DllImport("Shell32.dll", CharSet = CharSet.Unicode)]
-        public static extern int SHGetPropertyStoreForWindow(IntPtr hwnd, ref Guid iid, out IPropertyStore propertyStore);
         [DllImport("kernel32.dll")]
         public static extern bool IsWow64Process(IntPtr processHandle, out bool wow64Process);
 
@@ -79,8 +75,6 @@ namespace ArnoldVinkCode
         public static extern IntPtr GetLastActivePopup(IntPtr hWnd);
 
         //Window show
-        [DllImport("user32.dll")]
-        public static extern bool ShowWindowAsync(IntPtr hWnd, WindowShowCommand nCmdShow);
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
@@ -186,78 +180,6 @@ namespace ArnoldVinkCode
             WDA_NONE = 0x00,
             WDA_MONITOR = 0x01,
             WDA_EXCLUDEFROMCAPTURE = 0x11
-        }
-
-        //SHLW Api
-        [DllImport("shlwapi.dll", CharSet = CharSet.Unicode)]
-        public static extern int SHLoadIndirectString(string pszSource, StringBuilder pszOutBuf, int cchOutBuf, IntPtr ppvReserved);
-        [DllImport("shlwapi.dll", CharSet = CharSet.Unicode)]
-        public static extern int SHCreateStreamOnFileEx(string pszFile, STGM_MODES grfMode, int dwAttributes, bool fCreate, IntPtr pstmTemplate, out IStream ppstm);
-        [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
-        public static extern int SHFileOperation(ref SHFILEOPSTRUCT shFileOpstruct);
-        [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
-        public static extern uint SHEmptyRecycleBin(IntPtr hWnd, string pszRootPath, RecycleBin_FLAGS dwFlags);
-
-        public enum RecycleBin_FLAGS : uint
-        {
-            SHRB_NOCONFIRMATION = 0x00000001,
-            SHRB_NOPROGRESSUI = 0x00000002,
-            SHRB_NOSOUND = 0x00000004
-        }
-
-        public enum FILEOP_FUNC : uint
-        {
-            FO_MOVE = 0x0001,
-            FO_COPY = 0x0002,
-            FO_DELETE = 0x0003,
-            FO_RENAME = 0x0004
-        }
-
-        public enum FILEOP_FLAGS : ushort
-        {
-            FOF_MULTIDESTFILES = 0x1,
-            FOF_CONFIRMMOUSE = 0x2,
-            FOF_SILENT = 0x4,
-            FOF_RENAMEONCOLLISION = 0x8,
-            FOF_NOCONFIRMATION = 0x10,
-            FOF_WANTMAPPINGHANDLE = 0x20,
-            FOF_ALLOWUNDO = 0x40,
-            FOF_FILESONLY = 0x80,
-            FOF_SIMPLEPROGRESS = 0x100,
-            FOF_NOCONFIRMMKDIR = 0x200,
-            FOF_NOERRORUI = 0x400,
-            FOF_NOCOPYSECURITYATTRIBS = 0x800,
-            FOF_NORECURSION = 0x1000,
-            FOF_NO_CONNECTED_ELEMENTS = 0x2000,
-            FOF_WANTNUKEWARNING = 0x4000,
-            FOF_NORECURSEREPARSE = 0x8000
-        }
-
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-        public struct SHFILEOPSTRUCT
-        {
-            public IntPtr hWnd;
-            [MarshalAs(UnmanagedType.U4)]
-            public FILEOP_FUNC wFunc;
-            public string pFrom;
-            public string pTo;
-            public FILEOP_FLAGS fFlags;
-            [MarshalAs(UnmanagedType.Bool)]
-            public bool fAnyOperationsAborted;
-            public IntPtr hNameMappings;
-            public string lpszProgressTitle;
-        }
-
-        public enum STGM_MODES : int
-        {
-            STGM_READ = 0x00000000,
-            STGM_WRITE = 0x00000001,
-            STGM_READWRITE = 0x00000002,
-            STGM_READWRITE_Bits = 0x00000003,
-            STGM_SHARE_DENY_NONE = 0x00000040,
-            STGM_SHARE_DENY_READ = 0x00000030,
-            STGM_SHARE_DENY_WRITE = 0x00000020,
-            STGM_SHARE_EXCLUSIVE = 0x00000010
         }
 
         //UWP interop
@@ -540,6 +462,8 @@ namespace ArnoldVinkCode
         //Show Window
         [DllImport("user32.dll")]
         public static extern bool ShowWindow(IntPtr hWnd, ShowWindowFlags nCmdShow);
+        [DllImport("user32.dll")]
+        public static extern bool ShowWindowAsync(IntPtr hWnd, WindowShowCommand nCmdShow);
         public enum ShowWindowFlags
         {
             SW_HIDE = 0,

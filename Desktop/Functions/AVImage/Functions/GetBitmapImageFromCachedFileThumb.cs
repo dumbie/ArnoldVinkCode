@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 using static ArnoldVinkCode.AVInteropDll;
+using static ArnoldVinkCode.AVShell;
 
 namespace ArnoldVinkCode
 {
@@ -17,12 +18,15 @@ namespace ArnoldVinkCode
             try
             {
                 //Create shellitem instance
-                SHCreateItemFromParsingName(filePath, IntPtr.Zero, typeof(IShellItem).GUID, out IShellItem shellItemInstance);
-                if (shellItemInstance == null)
+                SHCreateItemFromParsingName(filePath, IntPtr.Zero, typeof(IShellItem2).GUID, out object shellObject);
+                if (shellObject == null)
                 {
                     Debug.WriteLine("Thumbnail failed to create shellitem instance.");
                     return null;
                 }
+
+                //Cast shellitem instance
+                IShellItem2 shellItem = (IShellItem2)shellObject;
 
                 //Create thumbnail instance
                 IThumbnailCache thumbnailCacheInstance = (IThumbnailCache)Activator.CreateInstance(Type.GetTypeFromCLSID(CLSID_LocalThumbnailCache));
@@ -33,7 +37,7 @@ namespace ArnoldVinkCode
                 }
 
                 //Get bitmap instance
-                thumbnailCacheInstance.GetThumbnail(shellItemInstance, imageWidth, WTS_FLAGS.WTS_EXTRACT, out ISharedBitmap sharedBitmapInstance, out _, out _);
+                thumbnailCacheInstance.GetThumbnail(shellItem, imageWidth, WTS_FLAGS.WTS_EXTRACT, out ISharedBitmap sharedBitmapInstance, out _, out _);
                 if (sharedBitmapInstance == null)
                 {
                     Debug.WriteLine("Thumbnail failed to create bitmap instance.");
@@ -68,24 +72,11 @@ namespace ArnoldVinkCode
         //Guids
         private static readonly Guid CLSID_LocalThumbnailCache = new Guid("50EF4544-AC9F-4A8E-B21B-8A26180DB13F");
 
-        //Interop
-        [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
-        private static extern void SHCreateItemFromParsingName
-        (
-            [In, MarshalAs(UnmanagedType.LPWStr)] string pszPath,
-            [In] IntPtr pbc,
-            [In, MarshalAs(UnmanagedType.LPStruct)] Guid riid,
-            [Out, MarshalAs(UnmanagedType.Interface)] out IShellItem ppv
-        );
-
         //Interfaces
-        [ComImport, Guid("43826D1E-E718-42EE-BC55-A1E261C37BFE"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-        private interface IShellItem { };
-
         [ComImport, Guid("F676C15D-596A-4CE2-8234-33996F445DB1"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
         private interface IThumbnailCache
         {
-            uint GetThumbnail([In] IShellItem pShellItem, [In] int cxyRequestedThumbSize, [In] WTS_FLAGS flags, [Out, MarshalAs(UnmanagedType.Interface)] out ISharedBitmap ppvThumb, [Out] out WTS_CACHEFLAGS pOutFlags, [Out] out WTS_THUMBNAILID pThumbnailID);
+            uint GetThumbnail([In] IShellItem2 pShellItem, [In] int cxyRequestedThumbSize, [In] WTS_FLAGS flags, [Out, MarshalAs(UnmanagedType.Interface)] out ISharedBitmap ppvThumb, [Out] out WTS_CACHEFLAGS pOutFlags, [Out] out WTS_THUMBNAILID pThumbnailID);
             uint GetThumbnailByID([In, MarshalAs(UnmanagedType.Struct)] WTS_THUMBNAILID thumbnailID, [In] uint cxyRequestedThumbSize, [Out, MarshalAs(UnmanagedType.Interface)] out ISharedBitmap ppvThumb, [Out] out WTS_CACHEFLAGS pOutFlags);
         }
 

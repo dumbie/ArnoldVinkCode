@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Text;
-using static ArnoldVinkCode.AVInteropCom;
 using static ArnoldVinkCode.AVInteropDll;
+using static ArnoldVinkCode.AVShell;
 
 namespace ArnoldVinkCode
 {
@@ -162,7 +162,7 @@ namespace ArnoldVinkCode
             {
                 Guid propertyStoreGuid = typeof(IPropertyStore).GUID;
                 SHGetPropertyStoreForWindow(targetWindowHandle, ref propertyStoreGuid, out IPropertyStore propertyStore);
-                propertyStore.GetValue(ref PKEY_AppUserModel_ID, out PropertyVariant propertyVariant);
+                propertyStore.GetValue(PKEY_AppUserModel_ID, out PropertyVariant propertyVariant);
                 string appUserModelId = Marshal.PtrToStringUni(propertyVariant.pwszVal);
                 if (Check_PathUwpApplication(appUserModelId))
                 {
