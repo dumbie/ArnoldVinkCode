@@ -82,39 +82,5 @@ namespace ArnoldVinkCode
                 SafeCloseIcon(ref bitmapPointer);
             }
         }
-
-        //Interfaces
-        [ComImport, Guid("BCC18B79-BA16-442F-80C4-8A59C30C463B"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-        private interface IShellItemImageFactory
-        {
-            WTS_EXCEPTIONS GetImage(WindowSize size, SIIGBF flags, out IntPtr phbm);
-        }
-
-        //Enumerators
-        private enum SIIGBF : uint
-        {
-            SIIGBF_RESIZETOFIT = 0x00000000,
-            SIIGBF_BIGGERSIZEOK = 0x00000001,
-            SIIGBF_MEMORYONLY = 0x00000002,
-            SIIGBF_ICONONLY = 0x00000004,
-            SIIGBF_THUMBNAILONLY = 0x00000008,
-            SIIGBF_INCACHEONLY = 0x00000010,
-            SIIGBF_CROPTOSQUARE = 0x00000020,
-            SIIGBF_WIDETHUMBNAILS = 0x00000040,
-            SIIGBF_ICONBACKGROUND = 0x00000080,
-            SIIGBF_SCALEUP = 0x00000100
-        }
-
-        private enum WTS_EXCEPTIONS : uint
-        {
-            WTS_E_SUCCESSFULEXTRACTION = 0x00000000,
-            WTS_E_FAILEDEXTRACTION = 0x8004B200,
-            WTS_E_EXTRACTIONTIMEDOUT = 0x8004B201,
-            WTS_E_SURROGATEUNAVAILABLE = 0x8004B202,
-            WTS_E_FASTEXTRACTIONNOTSUPPORTED = 0x8004B203,
-            WTS_E_DATAFILEUNAVAILABLE = 0x8004B204,
-            WTS_E_EXTRACTIONPENDING = 0x8004B205,
-            WTS_E_EXTRACTIONBLOCKED = 0x8004B205
-        }
     }
 }

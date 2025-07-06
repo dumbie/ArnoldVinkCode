@@ -11,7 +11,7 @@ namespace ArnoldVinkCode
     public partial class AVImage
     {
         //Functions
-        public static BitmapImage GetBitmapImageFromCachedFileThumb(string filePath, int imageWidth, int imageHeight)
+        public static BitmapImage GetBitmapImageFromCachedFileThumbId(string filePath, int imageWidth, int imageHeight)
         {
             IntPtr bitmapPointer = IntPtr.Zero;
             try
@@ -27,6 +27,13 @@ namespace ArnoldVinkCode
                 //Cast shellitem instance
                 IShellItem2 shellItem = (IShellItem2)shellObject;
 
+                //Get property variant
+                PropertyVariant propVariant = shellItem.GetProperty(PKEY_ThumbnailCacheId);
+
+                //Set rgb key from property variant
+                WTS_THUMBNAILID thumbnailId = new WTS_THUMBNAILID();
+                thumbnailId.RgbKey = propVariant.ulVal;
+
                 //Create thumbnail instance
                 IThumbnailCache thumbnailCacheInstance = (IThumbnailCache)Activator.CreateInstance(Type.GetTypeFromCLSID(CLSID_LocalThumbnailCache));
                 if (thumbnailCacheInstance == null)
@@ -36,7 +43,7 @@ namespace ArnoldVinkCode
                 }
 
                 //Get bitmap instance
-                thumbnailCacheInstance.GetThumbnail(shellItem, imageWidth, WTS_FLAGS.WTS_EXTRACT, out ISharedBitmap sharedBitmapInstance, out _, out _);
+                thumbnailCacheInstance.GetThumbnailByID(thumbnailId, imageWidth, out ISharedBitmap sharedBitmapInstance, out _);
                 if (sharedBitmapInstance == null)
                 {
                     Debug.WriteLine("Thumbnail failed to create bitmap instance.");
