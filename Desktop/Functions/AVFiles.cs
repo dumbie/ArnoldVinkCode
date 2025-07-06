@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
+using static ArnoldVinkCode.AVShell;
 
 namespace ArnoldVinkCode
 {
@@ -268,6 +270,24 @@ namespace ArnoldVinkCode
             {
                 Debug.WriteLine("Failed copying file: " + oldFilePath + " to" + newFilePath);
                 return false;
+            }
+        }
+
+        //Check if file or folder is in cloud storage
+        //Example: C:\Windows = False and C:\OneDrive\File.txt = True
+        public static bool? Path_InCloudStorage(string filePath)
+        {
+            try
+            {
+                Guid propertyStoreGuid = typeof(IPropertyStore).GUID;
+                SHGetPropertyStoreFromParsingName(filePath, IntPtr.Zero, GETPROPERTYSTORE_FLAGS.GPS_DEFAULT, ref propertyStoreGuid, out IPropertyStore propertyStore);
+                propertyStore.GetValue(PKEY_StorageProviderId, out PropertyVariant propertyVariant);
+                string storageProviderId = Marshal.PtrToStringUni(propertyVariant.pwszVal);
+                return storageProviderId != "computer";
+            }
+            catch
+            {
+                return null;
             }
         }
 
