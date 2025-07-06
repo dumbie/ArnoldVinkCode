@@ -4,12 +4,8 @@ using System.Runtime.InteropServices;
 
 namespace ArnoldVinkCode
 {
-    public partial class AVProcess
+    public partial class AVShell
     {
-        //Guids
-        private static readonly Guid CLSID_ShellWindows = new Guid("9BA05972-F6A8-11CF-A442-00A0C90A8F39");
-        private static readonly Guid SID_STopLevelBrowser = new Guid("4C96BE40-915C-11CF-99D3-00AA004AE837");
-
         //Enumerators
         private enum ShellWindowTypeConstants : int
         {

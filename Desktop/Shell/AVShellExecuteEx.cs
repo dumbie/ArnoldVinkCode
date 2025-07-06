@@ -4,7 +4,7 @@ using static ArnoldVinkCode.AVInteropDll;
 
 namespace ArnoldVinkCode
 {
-    public partial class AVProcess
+    public partial class AVShell
     {
         //Enumerators
         public enum SHELL_EXECUTE_SEE_MASK : int

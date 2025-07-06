@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using static ArnoldVinkCode.AVInteropDll;
+using static ArnoldVinkCode.AVShell;
 
 namespace ArnoldVinkCode
 {

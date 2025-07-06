@@ -6,9 +6,6 @@ namespace ArnoldVinkCode
 {
     public partial class AVShell
     {
-        //Guids
-        public static readonly Guid CLSID_LocalThumbnailCache = new Guid("50EF4544-AC9F-4A8E-B21B-8A26180DB13F");
-
         //Interfaces
         [ComImport, Guid("BCC18B79-BA16-442F-80C4-8A59C30C463B"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
         public interface IShellItemImageFactory
