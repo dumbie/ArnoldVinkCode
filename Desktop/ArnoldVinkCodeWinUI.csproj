@@ -1,11 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+		<TargetFramework>net8.0-windows10.0.26100.0</TargetFramework>
 		<NoWarn>CA1416;SYSLIB0011;SYSLIB0039</NoWarn>
 		<OutputType>Library</OutputType>
+		<RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+		<ProjectPriFileName>resourcesx.pri</ProjectPriFileName>
 	</PropertyGroup>
 	<PropertyGroup>
 		<UseWPF>True</UseWPF>
+		<UseWinUI>True</UseWinUI>
 		<UseWindowsForms>True</UseWindowsForms>
 		<GenerateAssemblyInfo>False</GenerateAssemblyInfo>
 		<ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
@@ -22,12 +25,12 @@
 		<DebugType>none</DebugType>
 	</PropertyGroup>
 	<ItemGroup>
-		<Compile Remove="StylesWinUI\**" />
-		<Content Remove="StylesWinUI\**" />
-		<None Remove="StylesWinUI\**" />
-		<Page Remove="StylesWinUI\**" />
-		<PRIResource Remove="StylesWinUI\**" />
-		<EmbeddedResource Remove="StylesWinUI\**" />
+		<Compile Remove="Styles\**" />
+		<Content Remove="Styles\**" />
+		<None Remove="Styles\**" />
+		<Page Remove="Styles\**" />
+		<PRIResource Remove="Styles\**" />
+		<EmbeddedResource Remove="Styles\**" />
 	</ItemGroup>
 	<ItemGroup>
 		<COMReference Include="NetFwTypeLib">
@@ -41,12 +44,24 @@
 		</COMReference>
 	</ItemGroup>
 	<ItemGroup>
-		<Resource Include="Styles\ArnoldVinkColorPickerSelect\ColorSelect.png" />
-	</ItemGroup>
-	<ItemGroup>
+		<PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.2.0" />
+		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.3233" />
+		<PackageReference Include="Microsoft.Windows.SDK.BuildTools.MSIX" Version="1.3.20250314.1">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Mile.Xaml" Version="2.5.1250" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+		<PackageReference Include="System.Drawing.Common" Version="9.0.6" />
 		<PackageReference Include="System.Management" Version="9.0.6" />
 		<PackageReference Include="System.Runtime.Serialization.Formatters" Version="9.0.6" />
 		<PackageReference Include="TaskScheduler" Version="2.12.1" />
 	</ItemGroup>
+
+	<!-- Remove Mile.Xaml.Managed WinForms Backend -->
+	<Target Name="RemoveMileXamlManaged" BeforeTargets="MarkupCompilePass1">
+		<ItemGroup>
+			<ReferencePath Remove="@(ReferencePath)" Condition="'%(Filename)' == 'Mile.Xaml.Managed'" />
+		</ItemGroup>
+	</Target>
 </Project>
