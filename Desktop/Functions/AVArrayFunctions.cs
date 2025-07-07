@@ -151,5 +151,15 @@ namespace ArnoldVinkCode
                 Debug.WriteLine("Failed to move object in array right: " + ex.Message);
             }
         }
+
+        //Convert enum to array
+        public static T[] EnumToEnumArray<T>()
+        {
+            try
+            {
+                return (T[])Enum.GetValues(typeof(T));
+            }
+            catch { return null; }
+        }
     }
 }
