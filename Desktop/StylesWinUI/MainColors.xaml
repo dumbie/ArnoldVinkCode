@@ -3,11 +3,20 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+    <!-- System Color -->
+    <Color x:Key="SystemAccentColor">#1E90FF</Color>
+    <Color x:Key="SystemAccentColorDark1">#166CBF</Color>
+    <Color x:Key="SystemAccentColorDark2">#0F487F</Color>
+    <Color x:Key="SystemAccentColorDark3">#07243F</Color>
+    <Color x:Key="SystemAccentColorLight1">#29bcff</Color>
+    <Color x:Key="SystemAccentColorLight2">#38deff</Color>
+    <Color x:Key="SystemAccentColorLight3">#4df5ff</Color>
+
     <!-- Accent Color -->
     <Color x:Key="ApplicationAccentLightColor">#1E90FF</Color>
     <SolidColorBrush x:Key="ApplicationAccentLightBrush">#1E90FF</SolidColorBrush>
-    <Color x:Key="ApplicationAccentDimColor">#1873CC</Color>
-    <SolidColorBrush x:Key="ApplicationAccentDimBrush">#1873CC</SolidColorBrush>
+    <Color x:Key="ApplicationAccentDimColor">#166CBF</Color>
+    <SolidColorBrush x:Key="ApplicationAccentDimBrush">#166CBF</SolidColorBrush>
     <Color x:Key="ApplicationAccentDarkColor">#0F487F</Color>
     <SolidColorBrush x:Key="ApplicationAccentDarkBrush">#0F487F</SolidColorBrush>
 
