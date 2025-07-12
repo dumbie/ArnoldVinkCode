@@ -22,14 +22,6 @@
 		<DebugType>none</DebugType>
 	</PropertyGroup>
 	<ItemGroup>
-		<Compile Remove="StylesWinUI\**" />
-		<Content Remove="StylesWinUI\**" />
-		<None Remove="StylesWinUI\**" />
-		<Page Remove="StylesWinUI\**" />
-		<PRIResource Remove="StylesWinUI\**" />
-		<EmbeddedResource Remove="StylesWinUI\**" />
-	</ItemGroup>
-	<ItemGroup>
 		<COMReference Include="NetFwTypeLib">
 			<VersionMinor>0</VersionMinor>
 			<VersionMajor>1</VersionMajor>
@@ -45,8 +37,8 @@
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-		<PackageReference Include="System.Management" Version="9.0.6" />
-		<PackageReference Include="System.Runtime.Serialization.Formatters" Version="9.0.6" />
-		<PackageReference Include="TaskScheduler" Version="2.12.1" />
+		<PackageReference Include="System.Management" Version="9.0.7" />
+		<PackageReference Include="System.Runtime.Serialization.Formatters" Version="9.0.7" />
+		<PackageReference Include="TaskScheduler" Version="2.12.2" />
 	</ItemGroup>
 </Project>
