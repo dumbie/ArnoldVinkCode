@@ -630,13 +630,21 @@ namespace ArnoldVinkCode
 
         //Send message
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        public static extern IntPtr SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
         public static extern IntPtr SendMessage(IntPtr hWnd, WindowMessages Msg, int wParam, int lParam);
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        public static extern IntPtr SendMessage(IntPtr hWnd, IntPtr Msg, IntPtr wParam, IntPtr lParam);
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         public static extern IntPtr SendMessage(IntPtr hWnd, WindowMessages Msg, IntPtr wParam, IntPtr lParam);
 
         //Post message
         [DllImport("user32.dll", EntryPoint = "PostMessage", CharSet = CharSet.Auto)]
+        public static extern bool PostMessageAsync(IntPtr hWnd, int Msg, int wParam, int lParam);
+        [DllImport("user32.dll", EntryPoint = "PostMessage", CharSet = CharSet.Auto)]
         public static extern bool PostMessageAsync(IntPtr hWnd, WindowMessages Msg, int wParam, int lParam);
+        [DllImport("user32.dll", EntryPoint = "PostMessage", CharSet = CharSet.Auto)]
+        public static extern bool PostMessageAsync(IntPtr hWnd, IntPtr Msg, IntPtr wParam, IntPtr lParam);
         [DllImport("user32.dll", EntryPoint = "PostMessage", CharSet = CharSet.Auto)]
         public static extern bool PostMessageAsync(IntPtr hWnd, WindowMessages Msg, IntPtr wParam, IntPtr lParam);
 
