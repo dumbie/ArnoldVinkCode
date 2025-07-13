@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace ArnoldVinkCode.Styles
+namespace ArnoldVinkStyles
 {
     public partial class ImageRound : UserControl
     {

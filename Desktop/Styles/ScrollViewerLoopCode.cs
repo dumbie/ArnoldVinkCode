@@ -1,13 +1,13 @@
 ﻿using System.Threading.Tasks;
 using System.Windows.Controls;
 
-namespace ArnoldVinkCode.Styles
+namespace ArnoldVinkStyles
 {
     //Import:
-    //xmlns:styles="clr-namespace:ArnoldVinkCode.Styles"
+    //xmlns:AVStyles="clr-namespace:ArnoldVinkStyles"
     //Usage:
-    //<styles:ScrollViewerLoopVertical ScrollLoopSpeed="60" ScrollLoopStep="0.50"/>
-    //<styles:ScrollViewerLoopHorizontal ScrollLoopSpeed="60" ScrollLoopStep="0.50"/>
+    //<AVStyles:ScrollViewerLoopVertical ScrollLoopSpeed="60" ScrollLoopStep="0.50"/>
+    //<AVStyles:ScrollViewerLoopHorizontal ScrollLoopSpeed="60" ScrollLoopStep="0.50"/>
     public class ScrollViewerLoopHorizontal : ScrollViewer
     {
         private bool MovingToEnding = false;

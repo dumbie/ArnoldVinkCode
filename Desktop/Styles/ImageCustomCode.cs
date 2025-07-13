@@ -3,12 +3,12 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 
-namespace ArnoldVinkCode.Styles
+namespace ArnoldVinkStyles
 {
     //Import:
-    //xmlns:styles="clr-namespace:ArnoldVinkCode.Styles"
+    //xmlns:AVStyles="clr-namespace:ArnoldVinkStyles"
     //Usage:
-    //<Image styles:SourceCustom.Source="Assets/Image.png"/>
+    //<Image AVStyles:SourceCustom.Source="Assets/Image.png"/>
     public class SourceCustom
     {
         public static readonly DependencyProperty SourceProperty = DependencyProperty.RegisterAttached("Source", typeof(string), typeof(SourceCustom), new PropertyMetadata(default(string), SourceChanged));

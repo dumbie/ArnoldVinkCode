@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Media;
 
-namespace ArnoldVinkCode.Styles
+namespace ArnoldVinkStyles
 {
     public partial class MainColors : ResourceDictionary
     {

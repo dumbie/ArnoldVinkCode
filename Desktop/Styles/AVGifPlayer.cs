@@ -4,12 +4,12 @@ using System.Windows.Controls;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 
-namespace ArnoldVinkCode.Styles
+namespace ArnoldVinkStyles
 {
     //Import:
-    //xmlns:styles="clr-namespace:ArnoldVinkCode.Styles"
+    //xmlns:AVStyles="clr-namespace:ArnoldVinkStyles"
     //Usage:
-    //<styles:AVGifPlayer GifSource="Assets/Icons/Loading.gif"/>
+    //<AVStyles:AVGifPlayer GifSource="Assets/Icons/Loading.gif"/>
     public class AVGifPlayer : Image
     {
         //GifPlayer variables

@@ -3,6 +3,8 @@
     <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/ArnoldVinkCode;component/Styles/MainColors.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/ArnoldVinkCode;component/Styles/MainFocus.xaml"/>
+        <ResourceDictionary Source="pack://application:,,,/ArnoldVinkCode;component/Styles/MainFonts.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/ArnoldVinkCode;component/Styles/ControlTemplates/Button.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/ArnoldVinkCode;component/Styles/ControlTemplates/CheckBox.xaml"/>
         <ResourceDictionary Source="pack://application:,,,/ArnoldVinkCode;component/Styles/ControlTemplates/ComboBox.xaml"/>

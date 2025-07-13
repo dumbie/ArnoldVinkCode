@@ -3,14 +3,14 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace ArnoldVinkCode.Styles
+namespace ArnoldVinkStyles
 {
     //Import:
-    //xmlns:styles="clr-namespace:ArnoldVinkCode.Styles"
+    //xmlns:AVStyles="clr-namespace:ArnoldVinkStyles"
     //Usage:
     //<MultiBinding>
     //    <MultiBinding.Converter>
-    //        <styles:RectConverter/>
+    //        <AVStyles:RectConverter/>
     //    </MultiBinding.Converter>
     //    <Binding Path="ActualWidth" RelativeSource="{RelativeSource TemplatedParent}"/>
     //    <Binding Path="ActualHeight" RelativeSource="{RelativeSource TemplatedParent}"/>

@@ -1,8 +1,9 @@
-﻿using System.Windows;
+﻿using ArnoldVinkCode;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace ArnoldVinkCode.Styles
+namespace ArnoldVinkStyles
 {
     public partial class MainStyles : ResourceDictionary
     {

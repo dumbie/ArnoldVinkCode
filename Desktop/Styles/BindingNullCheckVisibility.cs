@@ -4,12 +4,12 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Markup;
 
-namespace ArnoldVinkCode.Styles
+namespace ArnoldVinkStyles
 {
     //Import:
-    //xmlns:styles="clr-namespace:ArnoldVinkCode.Styles"
+    //xmlns:AVStyles="clr-namespace:ArnoldVinkStyles"
     //Usage:
-    //Visibility="{Binding Name, Converter={styles:NullCheckVisibility}}"/>
+    //Visibility="{Binding Name, Converter={AVStyles:NullCheckVisibility}}"/>
 
     public class NullCheckVisibility : MarkupExtension, IValueConverter
     {

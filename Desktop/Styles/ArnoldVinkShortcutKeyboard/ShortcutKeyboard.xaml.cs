@@ -6,7 +6,7 @@ using System.Windows.Input;
 using static ArnoldVinkCode.AVClasses;
 using static ArnoldVinkCode.AVInputOutputClass;
 
-namespace ArnoldVinkCode.Styles
+namespace ArnoldVinkStyles
 {
     public partial class ShortcutKeyboard : UserControl
     {

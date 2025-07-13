@@ -1,10 +1,10 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace ArnoldVinkCode.Styles
+namespace ArnoldVinkStyles
 {
     //Import:
-    //xmlns:AVStyles="clr-namespace:ArnoldVinkCode.Styles;assembly=ArnoldVinkCode"
+    //xmlns:AVStyles="clr-namespace:ArnoldVinkStyles;assembly=ArnoldVinkCode"
     //Usage:
     //<AVStyles:TextBoxNoResize/>
 

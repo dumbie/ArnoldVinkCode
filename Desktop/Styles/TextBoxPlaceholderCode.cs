@@ -1,12 +1,12 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace ArnoldVinkCode.Styles
+namespace ArnoldVinkStyles
 {
     //Import:
-    //xmlns:styles="clr-namespace:ArnoldVinkCode.Styles"
+    //xmlns:AVStyles="clr-namespace:ArnoldVinkStyles"
     //Usage:
-    //<Textbox Text="Hello" styles:TextboxPlaceholder.Placeholder="Hello"/>
+    //<Textbox AVStyles:TextboxPlaceholder.Placeholder="Hello"/>
     public class TextboxPlaceholder
     {
         public static readonly DependencyProperty PlaceholderProperty = DependencyProperty.RegisterAttached("Placeholder", typeof(string), typeof(TextboxPlaceholder), new PropertyMetadata(default(string), PlaceholderChanged));

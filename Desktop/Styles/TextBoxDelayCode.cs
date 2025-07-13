@@ -1,11 +1,12 @@
-﻿using System;
+﻿using ArnoldVinkCode;
+using System;
 using System.Windows.Controls;
 using System.Windows.Threading;
 
-namespace ArnoldVinkCode.Styles
+namespace ArnoldVinkStyles
 {
     //Import:
-    //xmlns:AVStyles="clr-namespace:ArnoldVinkCode.Styles;assembly=ArnoldVinkCode"
+    //xmlns:AVStyles="clr-namespace:ArnoldVinkStyles;assembly=ArnoldVinkCode"
     //Usage:
     //<AVStyles:TextBoxDelay/>
 
