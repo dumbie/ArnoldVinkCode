@@ -15,7 +15,8 @@
         Background="Transparent"
         MaxHeight="400"
         MinWidth="350"
-        MouseDown="Window_MouseDown">
+        MouseDown="Window_MouseDown"
+        Closing="Window_Closing">
 
     <!-- Window Resources -->
     <Window.Resources>
@@ -30,7 +31,7 @@
             <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
         </Style>
 
-        <ControlTemplate x:Key="MessageControlTemplate" TargetType="{x:Type ListBoxItem}">
+        <ControlTemplate x:Key="MessageControlTemplate" TargetType="ListBoxItem">
             <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
         </ControlTemplate>
 

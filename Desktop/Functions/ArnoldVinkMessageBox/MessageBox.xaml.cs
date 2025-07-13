@@ -32,6 +32,7 @@ namespace ArnoldVinkCode
 
         //Popup Variables
         private string vPopupResult = string.Empty;
+        private bool vPopupAllowClose = false;
 
         //Show popup
         public string Popup(dynamic disableElement, string Question, string Description, List<string> Answers)
@@ -87,6 +88,7 @@ namespace ArnoldVinkCode
 
                 //Reset popup variables
                 vPopupResult = string.Empty;
+                vPopupAllowClose = false;
 
                 //Show messagebox popup
                 ShowDialog();
@@ -116,6 +118,9 @@ namespace ArnoldVinkCode
                 //Get pressed button
                 Button originalSource = (Button)e.OriginalSource;
 
+                //Allow closing popup
+                vPopupAllowClose = true;
+
                 //Set selected answer
                 vPopupResult = originalSource.Content.ToString();
 
@@ -133,6 +138,19 @@ namespace ArnoldVinkCode
                 if (e.LeftButton == MouseButtonState.Pressed)
                 {
                     this.DragMove();
+                }
+            }
+            catch { }
+        }
+
+        //Prevent popup closing
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            try
+            {
+                if (!vPopupAllowClose)
+                {
+                    e.Cancel = true;
                 }
             }
             catch { }
