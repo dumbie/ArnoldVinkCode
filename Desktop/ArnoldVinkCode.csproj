@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
+		<OutputType>Library</OutputType>
 		<TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
 		<NoWarn>CA1416;SYSLIB0011;SYSLIB0039</NoWarn>
-		<OutputType>Library</OutputType>
 	</PropertyGroup>
 	<PropertyGroup>
 		<UseWPF>True</UseWPF>
@@ -33,12 +33,8 @@
 		</COMReference>
 	</ItemGroup>
 	<ItemGroup>
-		<Resource Include="Styles\ArnoldVinkColorPickerSelect\ColorSelect.png" />
-	</ItemGroup>
-	<ItemGroup>
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="System.Management" Version="9.0.7" />
-		<PackageReference Include="System.Runtime.Serialization.Formatters" Version="9.0.7" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="TaskScheduler" Version="2.12.2" />
 	</ItemGroup>
 </Project>
