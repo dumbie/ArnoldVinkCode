@@ -1,16 +1,24 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace ArnoldVinkCode
 {
-    public partial class AVMessageBox : Window
+    public class AVMessageBox
+    {
+        public static string Popup(dynamic disableElement, string Question, string Description, List<string> Answers)
+        {
+            return new AVMessageBoxPrivate().Popup(disableElement, Question, Description, Answers);
+        }
+    }
+
+    public partial class AVMessageBoxPrivate : Window
     {
         //Window Initialize
-        public AVMessageBox()
+        public AVMessageBoxPrivate()
         {
             try
             {
@@ -18,20 +26,19 @@ namespace ArnoldVinkCode
             }
             catch
             {
-                Debug.WriteLine("Failed to initialize messagebox, check app.xaml styles.");
+                Debug.WriteLine("Failed to initialize messagebox.");
             }
         }
 
         //Popup Variables
-        private bool vPopupDone = false;
         private string vPopupResult = string.Empty;
 
-        //Show and close popup
-        public async Task<string> Popup(FrameworkElement disableElement, string Question, string Description, List<string> Answers)
+        //Show popup
+        public string Popup(dynamic disableElement, string Question, string Description, List<string> Answers)
         {
             try
             {
-                //Disable the source frameworkelement
+                //Disable source framework element
                 if (disableElement != null)
                 {
                     disableElement.IsEnabled = false;
@@ -65,47 +72,60 @@ namespace ArnoldVinkCode
                     grid_MessageBox_Border.Visibility = Visibility.Collapsed;
                 }
 
-                //Set the messagebox answers
+                //Check messagebox answers
+                if (Answers == null || Answers.Count == 0)
+                {
+                    Answers = ["Close"];
+                }
+
+                //Set messagebox answers
                 listbox_MessageBox.ItemsSource = Answers;
                 listbox_MessageBox.SelectedIndex = 0;
 
+                //Focus on listbox
+                listbox_MessageBox.Focus();
+
                 //Reset popup variables
                 vPopupResult = string.Empty;
-                vPopupDone = false;
 
-                //Show the popup
-                Show();
+                //Show messagebox popup
+                ShowDialog();
 
-                //Wait for user messagebox input
-                while (string.IsNullOrWhiteSpace(vPopupResult) && !vPopupDone && this.IsVisible) { await Task.Delay(500); }
-
-                //Enable the source frameworkelement
+                //Enable source framework element
                 if (disableElement != null)
                 {
                     disableElement.IsEnabled = true;
                 }
 
-                //Close the messagebox popup
-                Close();
+                //Return result
+                Debug.WriteLine("Selected messagebox answer: " + vPopupResult);
+                return vPopupResult;
             }
-            catch { }
-            return vPopupResult;
+            catch (Exception ex)
+            {
+                Debug.WriteLine("AVMessageBox failed: " + ex.Message);
+                return string.Empty;
+            }
         }
 
-        //Set the popup result
-        private void listbox_MessageBox_Click(object sender, RoutedEventArgs e)
+        //Set popup result
+        private void Listbox_MessageBox_Click(object sender, RoutedEventArgs e)
         {
             try
             {
+                //Get pressed button
                 Button originalSource = (Button)e.OriginalSource;
+
+                //Set selected answer
                 vPopupResult = originalSource.Content.ToString();
-                vPopupDone = true;
-                Debug.WriteLine("Selected messagebox answer: " + vPopupResult);
+
+                //Close messagebox popup
+                Close();
             }
             catch { }
         }
 
-        //Drag the window around
+        //Drag window around
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {
             try
