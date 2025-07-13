@@ -34,7 +34,7 @@ namespace ArnoldVinkCode
         }
 
         //Pipe server exception
-        async Task PipeServerException(Exception ex)
+        void PipeServerException(Exception ex)
         {
             try
             {
@@ -44,7 +44,7 @@ namespace ArnoldVinkCode
                 messageAnswers.Add("Restart server");
                 messageAnswers.Add("Cancel");
 
-                string messageResult = await new AVMessageBox().Popup(null, "Pipe server error", ex.Message, messageAnswers);
+                string messageResult = AVMessageBox.Popup(null, "Pipe server error", ex.Message, messageAnswers);
                 if (messageResult == "Restart server")
                 {
                     PipeServerEnable();

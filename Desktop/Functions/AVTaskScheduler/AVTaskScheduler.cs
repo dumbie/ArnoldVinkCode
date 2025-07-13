@@ -9,7 +9,7 @@ namespace ArnoldVinkCode
     public partial class AVTaskScheduler
     {
         //Run service task
-        public static async System.Threading.Tasks.Task<bool> TaskRun(string taskName, string appName, bool silentRun)
+        public static bool TaskRun(string taskName, string appName, bool silentRun)
         {
             try
             {
@@ -25,7 +25,7 @@ namespace ArnoldVinkCode
                         List<string> messageBoxAnswers = new List<string>();
                         messageBoxAnswers.Add("Ok");
 
-                        await new AVMessageBox().Popup(null, "Failed to start", "Please run the " + appName + " launcher manually once.", messageBoxAnswers);
+                        AVMessageBox.Popup(null, "Failed to start", "Please run the " + appName + " launcher manually once.", messageBoxAnswers);
                     }
 
                     return false;

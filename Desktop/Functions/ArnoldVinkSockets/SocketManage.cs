@@ -90,7 +90,7 @@ namespace ArnoldVinkCode
                 messageAnswers.Add("Restart server");
                 messageAnswers.Add("Cancel");
 
-                string messageResult = await new AVMessageBox().Popup(null, "Socket server error", ex.Message, messageAnswers);
+                string messageResult = AVMessageBox.Popup(null, "Socket server error", ex.Message, messageAnswers);
                 if (messageResult == "Restart server")
                 {
                     await SocketServerRestart();

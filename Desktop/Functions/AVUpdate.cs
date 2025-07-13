@@ -56,7 +56,7 @@ namespace ArnoldVinkCode
                     messageBoxAnswers.Add("Update");
                     messageBoxAnswers.Add("Cancel");
 
-                    string MsgBoxResult = await new AVMessageBox().Popup(null, "Newer version has been found: " + onlineVersion, "Would you like to update the application to the newest version available?", messageBoxAnswers);
+                    string MsgBoxResult = AVMessageBox.Popup(null, "Newer version has been found: " + onlineVersion, "Would you like to update the application to the newest version available?", messageBoxAnswers);
                     if (MsgBoxResult == "Update")
                     {
                         UpdateRestart();
@@ -71,7 +71,7 @@ namespace ArnoldVinkCode
                         List<string> messageBoxAnswers = new List<string>();
                         messageBoxAnswers.Add("Ok");
 
-                        await new AVMessageBox().Popup(null, "No new application update has been found.", "", messageBoxAnswers);
+                        AVMessageBox.Popup(null, "No new application update has been found.", "", messageBoxAnswers);
                     }
 
                     return false;
