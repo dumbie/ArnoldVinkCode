@@ -39,7 +39,11 @@ namespace ArnoldVinkCode
                 AVFunctions.ApplicationUpdateWorkingPath();
 
                 //Set application shutdown mode
-                Application.Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+                try
+                {
+                    Application.Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+                }
+                catch { }
 
                 //Set application priority level
                 currentProcess.Priority = priorityLevel;

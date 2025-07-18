@@ -15,12 +15,9 @@ namespace ArnoldVinkCode
             try
             {
                 Uri soundFileUri = new Uri(soundFilePath, UriKind.RelativeOrAbsolute);
-                AVActions.DispatcherInvoke(delegate
-                {
-                    windowsMediaPlayer.Volume = soundVolume;
-                    windowsMediaPlayer.Open(soundFileUri);
-                    windowsMediaPlayer.Play();
-                });
+                windowsMediaPlayer.Volume = soundVolume;
+                windowsMediaPlayer.Open(soundFileUri);
+                windowsMediaPlayer.Play();
             }
             catch (Exception ex)
             {

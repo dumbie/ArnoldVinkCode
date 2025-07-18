@@ -96,11 +96,8 @@ namespace ArnoldVinkCode
                     return false;
                 }
 
-                AVActions.DispatcherInvoke(delegate
-                {
-                    vWindowHookPointer = SetWindowsHookEx(WindowHookTypes.WH_KEYBOARD_LL, LowLevelKeyboardDelegate, IntPtr.Zero, 0);
-                    Debug.WriteLine("Hooked window keyboard: " + vWindowHookPointer);
-                });
+                vWindowHookPointer = SetWindowsHookEx(WindowHookTypes.WH_KEYBOARD_LL, LowLevelKeyboardDelegate, IntPtr.Zero, 0);
+                Debug.WriteLine("Hooked window keyboard: " + vWindowHookPointer);
             }
             catch { }
             return vWindowHookPointer != IntPtr.Zero;
@@ -114,11 +111,8 @@ namespace ArnoldVinkCode
             {
                 if (vWindowHookPointer != IntPtr.Zero)
                 {
-                    AVActions.DispatcherInvoke(delegate
-                    {
-                        unhooked = UnhookWindowsHookEx(vWindowHookPointer);
-                        //Debug.WriteLine("Unhooked window keyboard: " + unhooked);
-                    });
+                    unhooked = UnhookWindowsHookEx(vWindowHookPointer);
+                    //Debug.WriteLine("Unhooked window keyboard: " + unhooked);
                     vWindowHookPointer = IntPtr.Zero;
                 }
             }
