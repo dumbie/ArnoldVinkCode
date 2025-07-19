@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using static ArnoldVinkCode.AVInteropDll;
 
 namespace ArnoldVinkCode
@@ -12,14 +13,15 @@ namespace ArnoldVinkCode
                 IntPtr createEvent = IntPtr.Zero;
                 try
                 {
-                    if (milliSecondsDelay < 0.1F)
+                    if (milliSecondsDelay <= 0)
                     {
-                        milliSecondsDelay = 0.1F;
+                        Debug.WriteLine("Invalid delay time.");
+                        return;
                     }
 
                     long nanoSecondsDelay = (long)(-1.0F * milliSecondsDelay * 10000.0F);
                     createEvent = CreateWaitableTimerEx(IntPtr.Zero, IntPtr.Zero, CreateWaitableTimerFlags.TIMER_MANUAL_RESET | CreateWaitableTimerFlags.TIMER_HIGH_RESOLUTION, CreateWaitableTimerAccess.TIMER_ALL_ACCESS);
-                    if (SetWaitableTimerEx(createEvent, ref nanoSecondsDelay, 0, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, 0))
+                    if (SetWaitableTimerEx(createEvent, ref nanoSecondsDelay, 0, null, IntPtr.Zero, IntPtr.Zero, 0))
                     {
                         WaitForSingleObject(createEvent, INFINITE);
                     }
