@@ -37,6 +37,13 @@ namespace ArnoldVinkCode
                     intervalNanoSeconds = (long)(-1.0F * value * 10000.0F);
                 }
             }
+            /// <summary>
+            /// Check if timer is currently running.
+            /// </summary>
+            public bool IsRunning
+            {
+                get { return timerWaitable != IntPtr.Zero; }
+            }
 
             //Initialize
             public AVHighResTimer() { }
@@ -114,6 +121,7 @@ namespace ArnoldVinkCode
                             catch { }
                         }
                     });
+                    timerThread.IsBackground = true;
                     timerThread.Start();
 
                     //Return result
