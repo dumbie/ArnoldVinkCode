@@ -812,18 +812,22 @@ namespace ArnoldVinkCode
             SPIF_SENDCHANGE = 0x02
         }
 
-        //Time events
+        //Timer events
         [DllImport("winmm.dll")]
-        public static extern uint timeSetEvent(uint uDelayMs, uint uResolution, MultimediaTimerDelegate lpTimeProc, UIntPtr dwUser, TimeSetEventFlags fuEvent);
-        public delegate void MultimediaTimerDelegate(uint uTimerId, uint uMsg, UIntPtr dwUser, UIntPtr dw1, UIntPtr dw2);
+        public static extern uint timeSetEvent(uint uDelay, uint uResolution, IntPtr lpTimeProc, UIntPtr dwUser, TimerEventFlags fuEvent);
+        public delegate void LPTIMECALLBACK(uint uTimerID, uint uMsg, UIntPtr dwUser, UIntPtr dw1, UIntPtr dw2);
 
         [DllImport("winmm.dll")]
-        public static extern uint timeKillEvent(uint uTimerId);
+        public static extern uint timeKillEvent(uint uTimerID);
 
-        public enum TimeSetEventFlags : uint
+        public enum TimerEventFlags : uint
         {
-            TIME_ONESHOT = 0,
-            TIME_PERIODIC = 1
+            TIME_ONESHOT = 0x0000,
+            TIME_PERIODIC = 0x0001,
+            TIME_CALLBACK_FUNCTION = 0x0000,
+            TIME_CALLBACK_EVENT_SET = 0x0010,
+            TIME_CALLBACK_EVENT_PULSE = 0x0020,
+            TIME_KILL_SYNCHRONOUS = 0x0100
         }
 
         //Kernel events
@@ -840,18 +844,21 @@ namespace ArnoldVinkCode
 
         public enum WaitObjectResult : uint
         {
-            WAIT_OBJECT_0 = 0x00000000,
+            WAIT_OBJECT = 0x00000000,
             WAIT_ABANDONED = 0x00000080,
             WAIT_TIMEOUT = 0x00000102,
-            WAIT_FAILED_INFINITE = 0xFFFFFFFF
+            WAIT_PENDING = 0x00000103,
+            WAIT_FAILED = 0xFFFFFFFF
         }
 
-        //High resolution delay (timer)
         [DllImport("kernel32.dll")]
         public static extern IntPtr CreateWaitableTimerEx(IntPtr lpTimerAttributes, IntPtr lpTimerName, CreateWaitableTimerFlags dwFlags, CreateWaitableTimerAccess dwDesiredAccess);
 
         [DllImport("kernel32.dll")]
-        public static extern bool SetWaitableTimerEx(IntPtr hTimer, ref long lpDueTime, int lPeriod, IntPtr pfnCompletionRoutine, IntPtr lpArgToCompletionRoutine, IntPtr wakeContext, uint tolerableDelay);
+        public static extern bool SetWaitableTimerEx(IntPtr hTimer, ref long lpDueTime, long lPeriod, IntPtr pfnCompletionRoutine, IntPtr lpArgToCompletionRoutine, IntPtr wakeContext, ulong tolerableDelay);
+
+        [DllImport("kernel32.dll")]
+        public static extern bool CancelWaitableTimer(IntPtr hTimer);
 
         public enum CreateWaitableTimerFlags : uint
         {
@@ -861,9 +868,9 @@ namespace ArnoldVinkCode
 
         public enum CreateWaitableTimerAccess : uint
         {
-            TIMER_ALL_ACCESS = 0x1F0003,
+            TIMER_QUERY_STATE = 0x0001,
             TIMER_MODIFY_STATE = 0x0002,
-            TIMER_QUERY_STATE = 0x0001
+            TIMER_ALL_ACCESS = 0x1F0003
         }
 
         //High resolution delay (NT)
