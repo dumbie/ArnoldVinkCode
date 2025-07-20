@@ -10,21 +10,28 @@ namespace ArnoldVinkCode
     {
         public class AVHighResTimer
         {
-            //Private cariables
+            //Variables
             private bool timerAllowed = false;
             private IntPtr timerWaitable = IntPtr.Zero;
+            private event EventHandler timerTick = null;
             private long intervalNanoSeconds = 0;
             private uint intervalMilliSeconds = 0;
 
-            //Public variables
             /// <summary>
             /// Set action to run on timer tick.
             /// </summary>
-            public event Action Tick;
+            public EventHandler Tick
+            {
+                set
+                {
+                    timerTick = null;
+                    timerTick += value;
+                }
+            }
             /// <summary>
             /// Stop timer after one tick trigger.
             /// </summary>
-            public bool TickOnce = false;
+            public bool TickOnce { get; set; } = false;
             /// <summary>
             /// Time in milliseconds between triggering tick.
             /// </summary>
@@ -56,13 +63,13 @@ namespace ArnoldVinkCode
             public AVHighResTimer(uint milliSecondsInterval, Action tickAction)
             {
                 Interval = milliSecondsInterval;
-                Tick += tickAction;
+                Tick = delegate { tickAction(); };
             }
 
             public AVHighResTimer(uint milliSecondsInterval, Func<Task> tickAction)
             {
                 Interval = milliSecondsInterval;
-                Tick += async delegate { await tickAction(); };
+                Tick = async delegate { await tickAction(); };
             }
 
             //Functions
@@ -110,7 +117,7 @@ namespace ArnoldVinkCode
                                     WaitForSingleObject(timerWaitable, INFINITE);
                                     if (timerAllowed)
                                     {
-                                        Tick();
+                                        timerTick(null, null);
                                         if (TickOnce)
                                         {
                                             Stop();
