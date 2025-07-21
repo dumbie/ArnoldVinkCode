@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 using static ArnoldVinkCode.AVInteropDll;
 
 namespace ArnoldVinkCode
@@ -28,10 +29,6 @@ namespace ArnoldVinkCode
                     timerTick += value;
                 }
             }
-            /// <summary>
-            /// Stop timer after one tick trigger.
-            /// </summary>
-            public bool TickOnce { get; set; } = false;
             /// <summary>
             /// Time in milliseconds between triggering tick.
             /// </summary>
@@ -83,6 +80,12 @@ namespace ArnoldVinkCode
                         return false;
                     }
 
+                    if (timerTick == null)
+                    {
+                        Debug.WriteLine("Invalid timer action tick.");
+                        return false;
+                    }
+
                     if (timerWaitable != IntPtr.Zero)
                     {
                         Debug.WriteLine("Timer is already running, extending.");
@@ -117,11 +120,7 @@ namespace ArnoldVinkCode
                                     WaitForSingleObject(timerWaitable, INFINITE);
                                     if (timerAllowed)
                                     {
-                                        timerTick(null, null);
-                                        if (TickOnce)
-                                        {
-                                            Stop();
-                                        }
+                                        timerTick(this, null);
                                     }
                                 }
                             }
