@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Threading;
 using static ArnoldVinkCode.AVInteropDll;
 
 namespace ArnoldVinkCode
@@ -88,7 +87,7 @@ namespace ArnoldVinkCode
 
                     if (timerWaitable != IntPtr.Zero)
                     {
-                        Debug.WriteLine("Timer is already running, extending.");
+                        //Debug.WriteLine("Timer is already running, extending.");
                         SetWaitableTimerEx(timerWaitable, ref intervalNanoSeconds, 0, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, 0);
                         return false;
                     }

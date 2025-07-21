@@ -291,7 +291,7 @@ namespace ArnoldVinkCode
             }
         }
 
-        //Convert file to a string
+        //Convert file to string
         public static string FileToString(string[] filePaths)
         {
             try
@@ -307,7 +307,7 @@ namespace ArnoldVinkCode
                         string filePathLower = filePath.ToLower().Trim();
                         //Debug.WriteLine("Loading text: " + loadFileLower);
 
-                        //Read the text file
+                        //Read text file
                         if (File.Exists(filePathLower))
                         {
                             return File.ReadAllText(filePathLower);
@@ -318,6 +318,35 @@ namespace ArnoldVinkCode
             }
             catch { }
             return string.Empty;
+        }
+
+        //Convert file to bytes
+        public static byte[] FileToBytes(string[] filePaths)
+        {
+            try
+            {
+                foreach (string filePath in filePaths)
+                {
+                    try
+                    {
+                        //Validate file name
+                        if (string.IsNullOrWhiteSpace(filePath)) { continue; }
+
+                        //Adjust file name
+                        string filePathLower = filePath.ToLower().Trim();
+                        //Debug.WriteLine("Loading bytes: " + loadFileLower);
+
+                        //Read file bytes
+                        if (File.Exists(filePathLower))
+                        {
+                            return File.ReadAllBytes(filePathLower);
+                        }
+                    }
+                    catch { }
+                }
+            }
+            catch { }
+            return null;
         }
 
         //Write string to file
