@@ -13,8 +13,8 @@ namespace ArnoldVinkCode
         //Application DllImports
         [DllImport("kernel32.dll")]
         public static extern bool Wow64DisableWow64FsRedirection(IntPtr ptr);
-        [DllImport("user32.dll")]
-        public static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        public static extern int GetClassName(IntPtr hWnd, [MarshalAs(UnmanagedType.LPWStr)] StringBuilder lpClassName, int nMaxCount);
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         public static extern int GetWindowText(IntPtr hWnd, [MarshalAs(UnmanagedType.LPWStr)] StringBuilder caption, int count);
         [DllImport("user32.dll")]
@@ -189,10 +189,7 @@ namespace ArnoldVinkCode
         public static extern int GetPackageFullName(IntPtr hProcess, ref int packageFullNameLength, [MarshalAs(UnmanagedType.LPWStr)] StringBuilder sbPackageFullName);
 
         //Load library
-        [DllImport("kernel32.dll")]
-        public static extern IntPtr LoadLibrary(string lpFileName);
-
-        [DllImport("kernel32.dll")]
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
         public static extern IntPtr LoadLibraryEx(string lpFileName, IntPtr hFile, LoadLibraryFlags dwFlags);
 
         [DllImport("kernel32.dll")]
@@ -272,9 +269,9 @@ namespace ArnoldVinkCode
         public delegate bool EnumWindowsDelegate(IntPtr hWnd, IntPtr lParam);
 
         //Get process details
-        [DllImport("psapi.dll")]
+        [DllImport("psapi.dll", CharSet = CharSet.Unicode)]
         public static extern uint GetModuleFileNameEx(IntPtr hProcess, IntPtr hModule, [Out] StringBuilder lpBaseName, [In, MarshalAs(UnmanagedType.U4)] int nSize);
-        [DllImport("kernel32.dll")]
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
         public static extern bool QueryFullProcessImageName([In] IntPtr hProcess, [In] int dwFlags, [Out] StringBuilder lpExeName, ref int lpdwSize);
 
         //Get window ancestor
@@ -793,7 +790,7 @@ namespace ArnoldVinkCode
         //SystemParametersInfo
         [DllImport("user32.dll")]
         public static extern bool SystemParametersInfo(SPI uiAction, uint uiParam, uint pvParam, SPIF fWinIni);
-        [DllImport("user32.dll")]
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         public static extern bool SystemParametersInfo(SPI uiAction, uint uiParam, string pvParam, SPIF fWinIni);
         public enum SPI : int
         {
@@ -833,7 +830,7 @@ namespace ArnoldVinkCode
         //Kernel events
         public const uint INFINITE = 0xFFFFFFFF;
 
-        [DllImport("kernel32.dll")]
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
         public static extern IntPtr CreateEvent(IntPtr lpEventAttributes, bool bManualReset, bool bInitialState, string lpName);
 
         [DllImport("kernel32.dll")]
