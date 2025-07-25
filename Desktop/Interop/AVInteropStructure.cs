@@ -12,7 +12,7 @@ namespace ArnoldVinkCode
         {
             public uint cbSize;
             public ClassStyles style;
-            public WndProcDelegate lpfnWndProc;
+            public WindowProcedureDelegate lpfnWndProc;
             public int cbClsExtra;
             public int cbWndExtra;
             public IntPtr hInstance;
@@ -97,6 +97,13 @@ namespace ArnoldVinkCode
             public KBDLLHOOKSTRUCTFLAGS flags;
             public int time;
             public IntPtr dwExtraInfo;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct CHANGEFILTERSTRUCT
+        {
+            public uint cbSize;
+            public MessageFilterStatus ExtStatus;
         }
     }
 }

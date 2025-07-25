@@ -127,6 +127,7 @@ namespace ArnoldVinkCode
             WM_WINDOWPOSCHANGING = 0x0046,
             WM_WINDOWPOSCHANGED = 0x0047,
             WM_POWER = 0x0048,
+            WM_COPYGLOBALDATA = 0x0049,
             WM_COPYDATA = 0x004A,
             WM_CANCELJOURNAL = 0x004B,
             WM_NOTIFY = 0x004E,
@@ -741,6 +742,21 @@ namespace ArnoldVinkCode
             PROCESS_MODE_BACKGROUND_BEGIN = 0x100000,
             PROCESS_MODE_BACKGROUND_END = 0x200000,
             REALTIME_PRIORITY_CLASS = 0x100
+        }
+
+        public enum MessageFilterStatus : uint
+        {
+            MSGFLTINFO_NONE = 0,
+            MSGFLTINFO_ALREADYALLOWED = 1,
+            MSGFLTINFO_ALREADYDISALLOWED = 2,
+            MSGFLTINFO_ALLOWED_HIGHER = 3
+        }
+
+        public enum ChangeWindowMessageFilterAction : uint
+        {
+            MSGFLT_RESET = 0,
+            MSGFLT_ALLOW = 1,
+            MSGFLT_DISALLOW = 2
         }
     }
 }

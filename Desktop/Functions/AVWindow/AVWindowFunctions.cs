@@ -61,6 +61,8 @@ namespace ArnoldVinkCode
         {
             try
             {
+                return;
+
                 if (visible)
                 {
                     //Set window style
@@ -85,12 +87,14 @@ namespace ArnoldVinkCode
         {
             try
             {
+                return;
+
                 //Set window style ex
                 WindowStylesEx updatedExStyle = WindowStylesEx.WS_EX_NONE;
                 if (topMost)
                 {
                     //Show window as top most
-                    updatedExStyle |= WindowStylesEx.WS_EX_TOPMOST;
+                    //FixStyleupdatedExStyle |= WindowStylesEx.WS_EX_TOPMOST;
                 }
                 if (noActivate)
                 {
@@ -118,7 +122,7 @@ namespace ArnoldVinkCode
                 //Redraw the window
                 if (topMost)
                 {
-                    SetWindowPos(windowHandle, SetWindowPosOrder.HWND_TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.SWP_NOMOVE | SetWindowPosFlags.SWP_NOSIZE | SetWindowPosFlags.SWP_NOCOPYBITS | SetWindowPosFlags.SWP_FRAMECHANGED);
+                    //FixStyle SetWindowPos(windowHandle, SetWindowPosOrder.HWND_TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.SWP_NOMOVE | SetWindowPosFlags.SWP_NOSIZE | SetWindowPosFlags.SWP_NOCOPYBITS | SetWindowPosFlags.SWP_FRAMECHANGED);
                 }
                 else
                 {

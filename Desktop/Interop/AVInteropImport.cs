@@ -93,8 +93,6 @@ namespace ArnoldVinkCode
         public static extern bool UpdateWindow(IntPtr hWnd);
         [DllImport("user32.dll")]
         public static extern bool DestroyWindow(IntPtr hWnd);
-        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-        public static extern IntPtr DefWindowProc(IntPtr hWnd, uint uMsg, IntPtr wParam, IntPtr lParam);
         [DllImport("user32.dll")]
         public static extern bool SetLayeredWindowAttributes(IntPtr hWnd, uint crKey, byte bAlpha, LayeredWindowAttributes dwFlags);
 
@@ -115,18 +113,6 @@ namespace ArnoldVinkCode
 
         [DllImport("user32.dll")]
         public static extern IntPtr CallWindowProcW(IntPtr lpPrevWndFunc, IntPtr hWnd, IntPtr uMsg, IntPtr wParam, IntPtr lParam);
-
-        [DllImport("user32.dll")]
-        public static extern bool GetMessageW(out WindowMessage lpMsg, IntPtr hWnd, uint wMsgFilterMin, uint wMsgFilterMax);
-
-        [DllImport("user32.dll")]
-        public static extern bool TranslateMessage(ref WindowMessage lpMsg);
-
-        [DllImport("user32.dll")]
-        public static extern IntPtr DispatchMessageW(ref WindowMessage lpMsg);
-
-        [DllImport("user32.dll")]
-        public static extern void PostQuitMessage(int nExitCode);
 
         [DllImport("user32.dll")]
         public static extern bool GetClientRect(IntPtr hWnd, out WindowRectangle lpRect);
@@ -298,6 +284,24 @@ namespace ArnoldVinkCode
         //Get message
         [DllImport("user32.dll")]
         public static extern bool GetMessage(out WindowMessage lpMsg, IntPtr hWnd, uint wMsgFilterMin, uint wMsgFilterMax);
+
+        [DllImport("user32.dll")]
+        public static extern bool GetMessageW(out WindowMessage lpMsg, IntPtr hWnd, uint wMsgFilterMin, uint wMsgFilterMax);
+
+        [DllImport("user32.dll")]
+        public static extern bool TranslateMessage(ref WindowMessage lpMsg);
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr DispatchMessageW(ref WindowMessage lpMsg);
+
+        [DllImport("user32.dll")]
+        public static extern void PostQuitMessage(int nExitCode);
+
+        [DllImport("user32.dll")]
+        public static extern bool ChangeWindowMessageFilterEx(IntPtr hWnd, WindowMessages message, ChangeWindowMessageFilterAction action, IntPtr pChangeFilterStruct);
+
+        [DllImport("shell32.dll")]
+        public static extern void DragAcceptFiles(IntPtr hWnd, bool fAccept);
 
         //Windows Hook
         [DllImport("user32.dll")]
