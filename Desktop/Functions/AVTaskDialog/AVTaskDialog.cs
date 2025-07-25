@@ -97,10 +97,8 @@ namespace ArnoldVinkCode
                 SendMessage(windowHandle, TDM_UPDATE_ICON, IntPtr.Zero, (IntPtr)targetIcon);
 
                 //Reset window icon
-                int ICON_SMALL = 0;
-                int ICON_BIG = 1;
-                SendMessage(windowHandle, WindowMessages.WM_SETICON, ICON_SMALL, new IntPtr(0));
-                SendMessage(windowHandle, WindowMessages.WM_SETICON, ICON_BIG, new IntPtr(0));
+                SendMessage(windowHandle, WindowMessages.WM_SETICON, (int)GetSetIconFlags.ICON_SMALL, IntPtr.Zero);
+                SendMessage(windowHandle, WindowMessages.WM_SETICON, (int)GetSetIconFlags.ICON_BIG, IntPtr.Zero);
             }
             catch { }
         }

@@ -186,10 +186,10 @@ namespace ArnoldVinkCode
 
         //Get Class Long
         [DllImport("user32.dll", EntryPoint = "GetClassLong")]
-        private static extern IntPtr GetClassLong32(IntPtr hWnd, ClassLong nIndex);
+        private static extern IntPtr GetClassLong32(IntPtr hWnd, ClassLongFlags nIndex);
         [DllImport("user32.dll", EntryPoint = "GetClassLongPtr")]
-        private static extern IntPtr GetClassLongPtr64(IntPtr hWnd, ClassLong nIndex);
-        public static IntPtr GetClassLongAuto(IntPtr hWnd, ClassLong nIndex)
+        private static extern IntPtr GetClassLongPtr64(IntPtr hWnd, ClassLongFlags nIndex);
+        public static IntPtr GetClassLongAuto(IntPtr hWnd, ClassLongFlags nIndex)
         {
             if (IntPtr.Size > 4)
             {
