@@ -66,7 +66,7 @@ namespace ArnoldVinkCode
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-        public static extern IntPtr FindWindowEx(IntPtr hWndParent, IntPtr hwndChildAfter, string lpszClass, string lpszWindow);
+        public static extern IntPtr FindWindowEx(IntPtr hWndParent, IntPtr hWndChildAfter, string lpszClass, string lpszWindow);
         [DllImport("user32.dll")]
         public static extern void SwitchToThisWindow(IntPtr hWnd, bool fAltTab);
         [DllImport("user32.dll")]
@@ -180,11 +180,11 @@ namespace ArnoldVinkCode
 
         //Get window dwm attribute
         [DllImport("dwmapi.dll")]
-        public static extern int DwmGetWindowAttribute(IntPtr hwnd, DWM_WINDOW_ATTRIBUTE dwAttribute, out WindowRectangle pvAttribute, int cbAttributeSize);
+        public static extern int DwmGetWindowAttribute(IntPtr hWnd, DWM_WINDOW_ATTRIBUTE dwAttribute, out WindowRectangle pvAttribute, int cbAttributeSize);
         [DllImport("dwmapi.dll")]
-        public static extern int DwmGetWindowAttribute(IntPtr hwnd, DWM_WINDOW_ATTRIBUTE dwAttribute, out DWM_CLOAKED_FLAGS pvAttribute, int cbAttributeSize);
+        public static extern int DwmGetWindowAttribute(IntPtr hWnd, DWM_WINDOW_ATTRIBUTE dwAttribute, out DWM_CLOAKED_FLAGS pvAttribute, int cbAttributeSize);
 
-        //Get Class Long
+        //Get and Set Class Long
         [DllImport("user32.dll", EntryPoint = "GetClassLong")]
         private static extern IntPtr GetClassLong32(IntPtr hWnd, ClassLongFlags nIndex);
         [DllImport("user32.dll", EntryPoint = "GetClassLongPtr")]
@@ -198,6 +198,22 @@ namespace ArnoldVinkCode
             else
             {
                 return GetClassLong32(hWnd, nIndex);
+            }
+        }
+
+        [DllImport("user32.dll", EntryPoint = "SetClassLong")]
+        private static extern IntPtr SetClassLong(IntPtr hWnd, ClassLongFlags nIndex, IntPtr dwNewLong);
+        [DllImport("user32.dll", EntryPoint = "SetClassLongPtr")]
+        private static extern IntPtr SetClassLongPtr64(IntPtr hWnd, ClassLongFlags nIndex, IntPtr dwNewLong);
+        public static IntPtr SetClassLongAuto(IntPtr hWnd, ClassLongFlags nIndex, IntPtr dwNewLong)
+        {
+            if (IntPtr.Size > 4)
+            {
+                return SetClassLongPtr64(hWnd, nIndex, dwNewLong);
+            }
+            else
+            {
+                return SetClassLong(hWnd, nIndex, dwNewLong);
             }
         }
 
