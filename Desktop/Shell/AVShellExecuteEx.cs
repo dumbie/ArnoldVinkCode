@@ -49,7 +49,7 @@ namespace ArnoldVinkCode
             public string lpFile { get; set; }
             public string lpParameters { get; set; }
             public string lpDirectory { get; set; }
-            public WindowShowCommand nShow { get; set; }
+            public ShowWindowFlags nShow { get; set; }
             public IntPtr hInstApp { get; set; }
             public IntPtr lpIDList { get; set; }
             public string lpClass { get; set; }

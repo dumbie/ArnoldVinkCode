@@ -11,7 +11,7 @@ namespace ArnoldVinkCode
     public partial class AVStartup
     {
         //Setup application defaults
-        public static bool SetupDefaults(ProcessPriority priorityLevel, bool checkDoubleProcess)
+        public static bool SetupDefaults(ProcessPriorityClasses priorityLevel, bool checkDoubleProcess)
         {
             try
             {

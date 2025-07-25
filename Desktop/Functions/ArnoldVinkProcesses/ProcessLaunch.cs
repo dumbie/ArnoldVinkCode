@@ -39,7 +39,7 @@ namespace ArnoldVinkCode
 
                 //Set shell execute info
                 ShellExecuteInfo shellExecuteInfo = new ShellExecuteInfo();
-                shellExecuteInfo.nShow = WindowShowCommand.Show;
+                shellExecuteInfo.nShow = ShowWindowFlags.SW_SHOW;
                 shellExecuteInfo.fMask = SHELL_EXECUTE_SEE_MASK.SEE_MASK_NOCLOSEPROCESS;
                 shellExecuteInfo.lpVerb = asAdmin ? "runas" : "open";
                 shellExecuteInfo.lpFile = exePath;

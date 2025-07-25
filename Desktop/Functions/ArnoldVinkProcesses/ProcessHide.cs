@@ -53,11 +53,11 @@ namespace ArnoldVinkCode
                 int showCommandDelay = 25;
 
                 //Post message window
-                PostMessageAsync(windowHandle, WindowMessages.WM_SYSCOMMAND, (int)SystemCommand.SC_MINIMIZE, 0);
+                PostMessage(windowHandle, WindowMessages.WM_SYSCOMMAND, (int)SystemCommand.SC_MINIMIZE, 0);
                 await Task.Delay(showCommandDelay);
 
                 //Hide window async
-                ShowWindowAsync(windowHandle, WindowShowCommand.Minimize);
+                ShowWindowAsync(windowHandle, ShowWindowFlags.SW_MINIMIZE);
                 await Task.Delay(showCommandDelay);
 
                 AVDebug.WriteLine("Hidden process window handle: " + windowHandle);

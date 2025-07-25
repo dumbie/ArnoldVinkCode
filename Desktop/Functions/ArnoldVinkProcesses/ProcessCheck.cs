@@ -179,7 +179,7 @@ namespace ArnoldVinkCode
                 }
 
                 //Check window styles
-                WindowStyles windowStyle = (WindowStyles)GetWindowLongAuto(targetWindowHandle, (int)WindowLongFlags.GWL_STYLE).ToInt64();
+                WindowStyles windowStyle = (WindowStyles)GetWindowLongAuto(targetWindowHandle, WindowLongFlags.GWL_STYLE).ToInt64();
                 if (!windowStyle.HasFlag(WindowStyles.WS_VISIBLE))
                 {
                     //Debug.WriteLine("Window missing visible style and can't be shown or hidden: " + targetWindowHandle);
@@ -192,7 +192,7 @@ namespace ArnoldVinkCode
                 }
 
                 //Check window styles ex
-                WindowStylesEx windowStyleEx = (WindowStylesEx)GetWindowLongAuto(targetWindowHandle, (int)WindowLongFlags.GWL_EXSTYLE).ToInt64();
+                WindowStylesEx windowStyleEx = (WindowStylesEx)GetWindowLongAuto(targetWindowHandle, WindowLongFlags.GWL_EXSTYLE).ToInt64();
                 if (windowStyleEx.HasFlag(WindowStylesEx.WS_EX_TOOLWINDOW))
                 {
                     //Debug.WriteLine("Window has tool style and can't be shown or hidden: " + targetWindowHandle);

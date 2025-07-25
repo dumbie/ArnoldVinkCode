@@ -88,7 +88,7 @@ namespace ArnoldVinkCode
                     if (timerWaitable != IntPtr.Zero)
                     {
                         //Debug.WriteLine("Timer is already running, extending.");
-                        SetWaitableTimerEx(timerWaitable, ref intervalNanoSeconds, 0, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, 0);
+                        SetWaitableTimerEx(timerWaitable, ref intervalNanoSeconds, 0, null, IntPtr.Zero, IntPtr.Zero, 0);
                         return false;
                     }
 
@@ -114,7 +114,7 @@ namespace ArnoldVinkCode
                         {
                             try
                             {
-                                if (SetWaitableTimerEx(timerWaitable, ref intervalNanoSeconds, 0, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, 0))
+                                if (SetWaitableTimerEx(timerWaitable, ref intervalNanoSeconds, 0, null, IntPtr.Zero, IntPtr.Zero, 0))
                                 {
                                     WaitForSingleObject(timerWaitable, INFINITE);
                                     if (timerAllowed)
@@ -156,7 +156,7 @@ namespace ArnoldVinkCode
 
                     //Set waitable timer to stop wait
                     long intervalZero = 0;
-                    SetWaitableTimerEx(timerWaitable, ref intervalZero, 0, IntPtr.Zero, IntPtr.Zero, IntPtr.Zero, 0);
+                    SetWaitableTimerEx(timerWaitable, ref intervalZero, 0, null, IntPtr.Zero, IntPtr.Zero, 0);
 
                     //Cancel waitable timer
                     CancelWaitableTimer(timerWaitable);

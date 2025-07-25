@@ -93,16 +93,14 @@ namespace ArnoldVinkCode
                 IntPtr windowHandle = boundDialog.Handle;
 
                 //Set task dialog icon
-                var WM_USER = 0x0400;
-                var TDM_UPDATE_ICON = WM_USER + 116;
+                WindowMessages TDM_UPDATE_ICON = WindowMessages.WM_USER + 116;
                 SendMessage(windowHandle, TDM_UPDATE_ICON, IntPtr.Zero, (IntPtr)targetIcon);
 
                 //Reset window icon
-                var WM_SETICON = 0x0080;
-                var ICON_SMALL = 0;
-                var ICON_BIG = 1;
-                SendMessage(windowHandle, WM_SETICON, ICON_SMALL, new IntPtr(0));
-                SendMessage(windowHandle, WM_SETICON, ICON_BIG, new IntPtr(0));
+                int ICON_SMALL = 0;
+                int ICON_BIG = 1;
+                SendMessage(windowHandle, WindowMessages.WM_SETICON, ICON_SMALL, new IntPtr(0));
+                SendMessage(windowHandle, WindowMessages.WM_SETICON, ICON_BIG, new IntPtr(0));
             }
             catch { }
         }

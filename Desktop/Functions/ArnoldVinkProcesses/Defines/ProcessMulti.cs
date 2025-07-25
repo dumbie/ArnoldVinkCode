@@ -146,7 +146,7 @@ namespace ArnoldVinkCode
                 }
             }
 
-            public ProcessPriority Priority
+            public ProcessPriorityClasses Priority
             {
                 get
                 {
@@ -155,7 +155,7 @@ namespace ArnoldVinkCode
                         return GetPriorityClass(Handle);
                     }
                     catch { }
-                    return ProcessPriority.Unknown;
+                    return ProcessPriorityClasses.UNKNOWN_CLASS;
                 }
                 set
                 {

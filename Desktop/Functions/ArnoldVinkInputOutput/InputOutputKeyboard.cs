@@ -16,9 +16,9 @@ namespace ArnoldVinkCode
         {
             try
             {
-                PostMessageAsync(windowHandle, WindowMessages.WM_KEYDOWN, (byte)virtualKey, 0); //Key Press
+                PostMessage(windowHandle, WindowMessages.WM_KEYDOWN, (byte)virtualKey, 0); //Key Press
                 AVHighResDelay.Delay(50);
-                PostMessageAsync(windowHandle, WindowMessages.WM_KEYUP, (byte)virtualKey, 0); //Key Release
+                PostMessage(windowHandle, WindowMessages.WM_KEYUP, (byte)virtualKey, 0); //Key Release
             }
             catch { }
         }

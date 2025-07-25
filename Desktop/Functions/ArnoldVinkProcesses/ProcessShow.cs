@@ -81,11 +81,11 @@ namespace ArnoldVinkCode
 
                 //Check current window placement
                 SystemCommand windowSystemCommand = SystemCommand.SC_RESTORE;
-                WindowShowCommand windowShowCommand = WindowShowCommand.Restore;
-                if (windowPlacement.windowFlags == WindowFlags.RestoreToMaximized)
+                ShowWindowFlags windowShowCommand = ShowWindowFlags.SW_RESTORE;
+                if (windowPlacement.windowFlags == WindowPlacementFlags.WPF_RESTORETOMAXIMIZED)
                 {
                     windowSystemCommand = SystemCommand.SC_MAXIMIZE;
-                    windowShowCommand = WindowShowCommand.ShowMaximized;
+                    windowShowCommand = ShowWindowFlags.SW_SHOWMAXIMIZED;
                 }
 
                 //Allow set foreground window
@@ -99,7 +99,7 @@ namespace ArnoldVinkCode
                     try
                     {
                         //Post message window
-                        PostMessageAsync(windowHandle, WindowMessages.WM_SYSCOMMAND, (int)windowSystemCommand, 0);
+                        PostMessage(windowHandle, WindowMessages.WM_SYSCOMMAND, (int)windowSystemCommand, 0);
                         await Task.Delay(showCommandDelay);
 
                         //Show window async

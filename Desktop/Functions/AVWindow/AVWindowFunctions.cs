@@ -41,7 +41,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                SetWindowPos(windowHandle, IntPtr.Zero, horLeft, verTop, 0, 0, (int)WindowPosFlags.NOSIZE);
+                SetWindowPos(windowHandle, SetWindowPosOrder.HWND_TOP, horLeft, verTop, 0, 0, SetWindowPosFlags.SWP_NOSIZE);
             }
             catch { }
         }
@@ -51,7 +51,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                SetWindowPos(windowHandle, IntPtr.Zero, 0, 0, width, height, (int)WindowPosFlags.NOMOVE);
+                SetWindowPos(windowHandle, SetWindowPosOrder.HWND_TOP, 0, 0, width, height, SetWindowPosFlags.SWP_NOMOVE);
             }
             catch { }
         }
@@ -65,16 +65,16 @@ namespace ArnoldVinkCode
                 {
                     //Set window style
                     IntPtr updatedStyle = new IntPtr((uint)WindowStyles.WS_VISIBLE);
-                    SetWindowLongAuto(windowHandle, (int)WindowLongFlags.GWL_STYLE, updatedStyle);
+                    SetWindowLongAuto(windowHandle, WindowLongFlags.GWL_STYLE, updatedStyle);
                 }
                 else
                 {
                     //Set window style
                     IntPtr updatedStyle = new IntPtr((uint)WindowStyles.WS_NONE);
-                    SetWindowLongAuto(windowHandle, (int)WindowLongFlags.GWL_STYLE, updatedStyle);
+                    SetWindowLongAuto(windowHandle, WindowLongFlags.GWL_STYLE, updatedStyle);
 
                     //Redraw the window
-                    SetWindowPos(windowHandle, IntPtr.Zero, 0, 0, 0, 0, (int)(WindowPosFlags.NOMOVE | WindowPosFlags.NOSIZE | WindowPosFlags.NOCOPYBITS | WindowPosFlags.FRAMECHANGED));
+                    SetWindowPos(windowHandle, SetWindowPosOrder.HWND_TOP, 0, 0, 0, 0, SetWindowPosFlags.SWP_NOMOVE | SetWindowPosFlags.SWP_NOSIZE | SetWindowPosFlags.SWP_NOCOPYBITS | SetWindowPosFlags.SWP_FRAMECHANGED);
                 }
             }
             catch { }
@@ -113,16 +113,16 @@ namespace ArnoldVinkCode
 
                 //Set window long
                 IntPtr updatedExStyleIntPtr = new IntPtr((uint)updatedExStyle);
-                SetWindowLongAuto(windowHandle, (int)WindowLongFlags.GWL_EXSTYLE, updatedExStyleIntPtr);
+                SetWindowLongAuto(windowHandle, WindowLongFlags.GWL_EXSTYLE, updatedExStyleIntPtr);
 
                 //Redraw the window
                 if (topMost)
                 {
-                    SetWindowPos(windowHandle, (IntPtr)SWP_WindowPosition.TopMost, 0, 0, 0, 0, (int)(WindowPosFlags.NOMOVE | WindowPosFlags.NOSIZE | WindowPosFlags.NOCOPYBITS | WindowPosFlags.FRAMECHANGED));
+                    SetWindowPos(windowHandle, SetWindowPosOrder.HWND_TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.SWP_NOMOVE | SetWindowPosFlags.SWP_NOSIZE | SetWindowPosFlags.SWP_NOCOPYBITS | SetWindowPosFlags.SWP_FRAMECHANGED);
                 }
                 else
                 {
-                    SetWindowPos(windowHandle, IntPtr.Zero, 0, 0, 0, 0, (int)(WindowPosFlags.NOMOVE | WindowPosFlags.NOSIZE | WindowPosFlags.NOCOPYBITS | WindowPosFlags.FRAMECHANGED));
+                    SetWindowPos(windowHandle, SetWindowPosOrder.HWND_TOP, 0, 0, 0, 0, SetWindowPosFlags.SWP_NOMOVE | SetWindowPosFlags.SWP_NOSIZE | SetWindowPosFlags.SWP_NOCOPYBITS | SetWindowPosFlags.SWP_FRAMECHANGED);
                 }
             }
             catch { }
