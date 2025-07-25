@@ -303,6 +303,12 @@ namespace ArnoldVinkCode
         [DllImport("shell32.dll")]
         public static extern void DragAcceptFiles(IntPtr hWnd, bool fAccept);
 
+        [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
+        public static extern int DragQueryFile(IntPtr hDrop, uint iFile, [MarshalAs(UnmanagedType.LPWStr)] StringBuilder lpszFile, int cch);
+
+        [DllImport("shell32.dll")]
+        public static extern void DragFinish(IntPtr hDrop);
+
         //Windows Hook
         [DllImport("user32.dll")]
         public static extern IntPtr SetWindowsHookEx(WindowHookTypes idHook, LowLevelKeyboardDelegate lpfn, IntPtr hMod, uint dwThreadId);
