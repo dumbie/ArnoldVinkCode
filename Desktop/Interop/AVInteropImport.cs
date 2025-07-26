@@ -109,10 +109,10 @@ namespace ArnoldVinkCode
         public static extern bool SetWindowPos(IntPtr hWnd, SetWindowPosOrder hWndInsertAfter, int X, int Y, int cx, int cy, SetWindowPosFlags uFlags);
 
         [DllImport("user32.dll")]
-        public static extern IntPtr DefWindowProcW(IntPtr hWnd, IntPtr uMsg, IntPtr wParam, IntPtr lParam);
+        public static extern IntPtr DefWindowProc(IntPtr hWnd, IntPtr uMsg, IntPtr wParam, IntPtr lParam);
 
         [DllImport("user32.dll")]
-        public static extern IntPtr CallWindowProcW(IntPtr lpPrevWndFunc, IntPtr hWnd, IntPtr uMsg, IntPtr wParam, IntPtr lParam);
+        public static extern IntPtr CallWindowProc(IntPtr lpPrevWndFunc, IntPtr hWnd, IntPtr uMsg, IntPtr wParam, IntPtr lParam);
 
         [DllImport("user32.dll")]
         public static extern bool GetClientRect(IntPtr hWnd, out WindowRectangle lpRect);
@@ -302,13 +302,10 @@ namespace ArnoldVinkCode
         public static extern bool GetMessage(out WindowMessage lpMsg, IntPtr hWnd, uint wMsgFilterMin, uint wMsgFilterMax);
 
         [DllImport("user32.dll")]
-        public static extern bool GetMessageW(out WindowMessage lpMsg, IntPtr hWnd, uint wMsgFilterMin, uint wMsgFilterMax);
-
-        [DllImport("user32.dll")]
         public static extern bool TranslateMessage(ref WindowMessage lpMsg);
 
         [DllImport("user32.dll")]
-        public static extern IntPtr DispatchMessageW(ref WindowMessage lpMsg);
+        public static extern IntPtr DispatchMessage(ref WindowMessage lpMsg);
 
         [DllImport("user32.dll")]
         public static extern void PostQuitMessage(int nExitCode);

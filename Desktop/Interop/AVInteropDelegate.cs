@@ -6,7 +6,7 @@ namespace ArnoldVinkCode
     [SuppressUnmanagedCodeSecurity]
     public partial class AVInteropDll
     {
-        public delegate IntPtr WindowProcedureDelegate(IntPtr hWnd, IntPtr messageCode, IntPtr wParam, IntPtr lParam);
+        public delegate IntPtr WindowProcedureDelegate(IntPtr hWnd, IntPtr message, IntPtr wParam, IntPtr lParam);
         public delegate void WinEventDelegate(IntPtr hWinEventHook, uint eventType, IntPtr hWnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime);
         public delegate bool EnumWindowsDelegate(IntPtr hWnd, IntPtr lParam);
         public delegate IntPtr LowLevelKeyboardDelegate(int nCode, IntPtr wParam, KBDLLHOOKSTRUCT lParam);
