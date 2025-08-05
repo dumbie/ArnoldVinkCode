@@ -18,13 +18,23 @@ namespace ArnoldVinkCode
             private uint intervalMilliSeconds = 0;
 
             /// <summary>
-            /// Set action to run on timer tick.
+            /// Set action to run on timer tick and remove previous events
             /// </summary>
-            public EventHandler Tick
+            public EventHandler TickSet
             {
                 set
                 {
                     timerTick = null;
+                    timerTick += value;
+                }
+            }
+            /// <summary>
+            /// Set action to run on timer tick and keep previous events
+            /// </summary>
+            public EventHandler TickAdd
+            {
+                set
+                {
                     timerTick += value;
                 }
             }
@@ -59,13 +69,13 @@ namespace ArnoldVinkCode
             public AVHighResTimer(uint milliSecondsInterval, Action tickAction)
             {
                 Interval = milliSecondsInterval;
-                Tick = delegate { tickAction(); };
+                TickSet = delegate { tickAction(); };
             }
 
             public AVHighResTimer(uint milliSecondsInterval, Func<Task> tickAction)
             {
                 Interval = milliSecondsInterval;
-                Tick = async delegate { await tickAction(); };
+                TickSet = async delegate { await tickAction(); };
             }
 
             //Functions
