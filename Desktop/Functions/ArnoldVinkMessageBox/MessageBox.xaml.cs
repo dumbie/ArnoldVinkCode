@@ -10,7 +10,7 @@ namespace ArnoldVinkCode
 {
     public class AVMessageBox
     {
-        public static string Popup(dynamic disableElement, string Question, string Description, List<string> Answers, string ColorHex="")
+        public static string Popup(dynamic disableElement, string Question, string Description, List<string> Answers, string ColorHex = "")
         {
             return new AVMessageBoxPrivate().Popup(disableElement, Question, Description, Answers, ColorHex);
         }

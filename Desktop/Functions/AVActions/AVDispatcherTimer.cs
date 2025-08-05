@@ -33,6 +33,22 @@ namespace ArnoldVinkCode
             }
 
             /// <summary>
+            /// Add tick and keep previous tick events
+            /// </summary>
+            public void AddTick(EventHandler tickEvent)
+            {
+                try
+                {
+                    //Add tick event
+                    this.Tick += tickEvent;
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine("Failed to add timer tick: " + ex.Message);
+                }
+            }
+
+            /// <summary>
             /// Set timer interval in milliseconds
             /// </summary>
             public void SetInterval(uint intervalMs)
