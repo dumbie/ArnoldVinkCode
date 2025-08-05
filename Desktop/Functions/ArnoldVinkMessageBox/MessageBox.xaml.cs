@@ -4,14 +4,15 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace ArnoldVinkCode
 {
     public class AVMessageBox
     {
-        public static string Popup(dynamic disableElement, string Question, string Description, List<string> Answers)
+        public static string Popup(dynamic disableElement, string Question, string Description, List<string> Answers, string ColorHex="")
         {
-            return new AVMessageBoxPrivate().Popup(disableElement, Question, Description, Answers);
+            return new AVMessageBoxPrivate().Popup(disableElement, Question, Description, Answers, ColorHex);
         }
     }
 
@@ -35,7 +36,7 @@ namespace ArnoldVinkCode
         private bool vPopupAllowClose = false;
 
         //Show popup
-        public string Popup(dynamic disableElement, string Question, string Description, List<string> Answers)
+        public string Popup(dynamic disableElement, string Question, string Description, List<string> Answers, string ColorHex = "")
         {
             try
             {
@@ -43,6 +44,12 @@ namespace ArnoldVinkCode
                 if (disableElement != null)
                 {
                     disableElement.IsEnabled = false;
+                }
+
+                //Set messagebox color
+                if (!string.IsNullOrWhiteSpace(ColorHex))
+                {
+                    this.Resources["MessageAccentBrush"] = new BrushConverter().ConvertFrom(ColorHex) as SolidColorBrush;
                 }
 
                 //Set messagebox question
