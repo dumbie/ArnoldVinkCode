@@ -25,6 +25,30 @@
         <SolidColorBrush x:Key="MessageBlackBrush">#1D1D1D</SolidColorBrush>
         <SolidColorBrush x:Key="MessageGrayBrush">#787878</SolidColorBrush>
 
+        <Style x:Key="ButtonStyle" TargetType="Button">
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Foreground" Value="{DynamicResource MessageWhiteBrush}"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="Border" CornerRadius="4" BorderThickness="0" Padding="0,5,0,5" Background="{DynamicResource MessageAccentBrush}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Opacity" Value="0.70" TargetName="Border"/>
+                            </Trigger>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter Property="Opacity" Value="0.70" TargetName="Border"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <Style x:Key="MessageListBoxStyle" TargetType="ListBox">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderThickness" Value="0"/>
@@ -47,9 +71,7 @@
         </Style>
 
         <DataTemplate x:Key="MessageDataTemplate">
-            <Border CornerRadius="4" BorderThickness="2" BorderBrush="{DynamicResource MessageAccentBrush}" Background="{DynamicResource MessageAccentBrush}">
-                <Button Content="{Binding}" FontSize="18" Foreground="{DynamicResource MessageWhiteBrush}" BorderBrush="Transparent" Background="Transparent" Padding="0,5,0,5" Cursor="Hand"/>
-            </Border>
+            <Button Content="{Binding}" Style="{DynamicResource ButtonStyle}"/>
         </DataTemplate>
     </Window.Resources>
 
