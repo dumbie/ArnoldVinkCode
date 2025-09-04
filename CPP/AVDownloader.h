@@ -1,6 +1,7 @@
 #pragma once
 #include <wininet.h>
 #include "AVFinally.h"
+#include "AVString.h"
 
 static std::string DownloadString(std::string targetHost, std::string targetPath, std::string targetUserAgent, std::string targetHeader)
 {
@@ -32,9 +33,23 @@ static std::string SendPostRequest(std::string targetHost, std::string targetPat
 			return "";
 		}
 
+		//Check target host
+		DWORD internetFlags = 0x00000000;
+		DWORD internetPort = INTERNET_INVALID_PORT_NUMBER;
+		if (targetHost.starts_with("http://"))
+		{
+			string_replace_all(targetHost, "http://", "");
+			internetPort = INTERNET_DEFAULT_HTTP_PORT;
+		}
+		else
+		{
+			string_replace_all(targetHost, "https://", "");
+			internetPort = INTERNET_DEFAULT_HTTPS_PORT;
+			internetFlags |= INTERNET_FLAG_SECURE;
+		}
+
 		//Internet Connect
-		//Fix if url starts with https INTERNET_DEFAULT_HTTPS_PORT + INTERNET_FLAG_SECURE else INTERNET_DEFAULT_HTTP_PORT + NULL
-		handleConnect = InternetConnectA(handleOpen, targetHost.c_str(), INTERNET_DEFAULT_HTTPS_PORT, NULL, NULL, INTERNET_SERVICE_HTTP, NULL, NULL);
+		handleConnect = InternetConnectA(handleOpen, targetHost.c_str(), internetPort, NULL, NULL, INTERNET_SERVICE_HTTP, NULL, NULL);
 		if (handleConnect == NULL)
 		{
 			AVDebugWriteLine("SendPostRequest connect handle empty.");
@@ -43,7 +58,7 @@ static std::string SendPostRequest(std::string targetHost, std::string targetPat
 
 		//Internet Request Open
 		PCSTR acceptTypes[] = { "*/*" };
-		handleRequest = HttpOpenRequestA(handleConnect, "POST", targetPath.c_str(), NULL, NULL, acceptTypes, INTERNET_FLAG_SECURE, NULL);
+		handleRequest = HttpOpenRequestA(handleConnect, "POST", targetPath.c_str(), NULL, NULL, acceptTypes, internetFlags, NULL);
 		if (handleRequest == NULL)
 		{
 			AVDebugWriteLine("SendPostRequest request handle empty.");
