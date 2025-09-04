@@ -1,3 +1,4 @@
+#pragma once
 #define AVFinally(callback) AVFinallyInternal x([&]{ callback });
 #define AVFinallySafe(callback) AVFinallyInternal x([&]{ try { callback } catch (...) {} });
 
