@@ -3,12 +3,12 @@
 static std::string GetVersionFromResource(HINSTANCE hInstance)
 {
 	//Set default version string
-	std::string stringVersion = "V?.?.?.?";
+	std::string stringVersion = "?.?.?.?";
 
 	//Check empty hinstance
-	if (hInstance == nullptr)
+	if (hInstance == NULL)
 	{
-		hInstance = GetModuleHandleW(nullptr);
+		hInstance = GetModuleHandleW(NULL);
 	}
 
 	//Find file version resource
@@ -22,7 +22,7 @@ static std::string GetVersionFromResource(HINSTANCE hInstance)
 			if (hResourceLock)
 			{
 				UINT resourceLength = 0;
-				VS_FIXEDFILEINFO* resourceBuffer = nullptr;
+				VS_FIXEDFILEINFO* resourceBuffer = NULL;
 				if (VerQueryValueW(hResourceLock, L"\\", (LPVOID*)&resourceBuffer, &resourceLength))
 				{
 					if (resourceBuffer)
@@ -36,7 +36,7 @@ static std::string GetVersionFromResource(HINSTANCE hInstance)
 						DWORD dwRevision = LOWORD(dwFileVersionLS);
 
 						//Format version string
-						stringVersion = "V" + number_to_string(dwMajor) + "." + number_to_string(dwMinor) + "." + number_to_string(dwPatch) + "." + number_to_string(dwRevision);
+						stringVersion = number_to_string(dwMajor) + "." + number_to_string(dwMinor) + "." + number_to_string(dwPatch) + "." + number_to_string(dwRevision);
 					}
 				}
 			}
