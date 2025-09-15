@@ -74,7 +74,7 @@ namespace ArnoldVinkCode
                     SetWindowLongAuto(windowHandle, WindowLongFlags.GWL_STYLE, updatedStyle);
 
                     //Redraw window
-                    SetWindowPos(windowHandle, SetWindowPosOrder.HWND_TOP, 0, 0, 0, 0, SetWindowPosFlags.SWP_NOMOVE | SetWindowPosFlags.SWP_NOSIZE);
+                    SetWindowPos(windowHandle, SetWindowPosOrder.HWND_TOP, 0, 0, 0, 0, SetWindowPosFlags.SWP_NOMOVE | SetWindowPosFlags.SWP_NOSIZE | SetWindowPosFlags.SWP_FRAMECHANGED);
                 }
             }
             catch { }
@@ -118,11 +118,11 @@ namespace ArnoldVinkCode
                 //Redraw window
                 if (topMost)
                 {
-                    SetWindowPos(windowHandle, SetWindowPosOrder.HWND_TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.SWP_NOMOVE | SetWindowPosFlags.SWP_NOSIZE);
+                    SetWindowPos(windowHandle, SetWindowPosOrder.HWND_TOPMOST, 0, 0, 0, 0, SetWindowPosFlags.SWP_NOMOVE | SetWindowPosFlags.SWP_NOSIZE | SetWindowPosFlags.SWP_FRAMECHANGED);
                 }
                 else
                 {
-                    SetWindowPos(windowHandle, SetWindowPosOrder.HWND_NOTOPMOST, 0, 0, 0, 0, SetWindowPosFlags.SWP_NOMOVE | SetWindowPosFlags.SWP_NOSIZE);
+                    SetWindowPos(windowHandle, SetWindowPosOrder.HWND_NOTOPMOST, 0, 0, 0, 0, SetWindowPosFlags.SWP_NOMOVE | SetWindowPosFlags.SWP_NOSIZE | SetWindowPosFlags.SWP_FRAMECHANGED);
                 }
             }
             catch { }
