@@ -1,4 +1,5 @@
 #pragma once
+#pragma comment(lib, "wininet.lib")
 #include <wininet.h>
 #include "AVFinally.h"
 #include "AVString.h"
