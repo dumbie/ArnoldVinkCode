@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using static ArnoldVinkCode.AVActions;
 using static ArnoldVinkCode.AVInputOutputClass;
 using static ArnoldVinkCode.AVInteropDll;
 
@@ -12,7 +11,8 @@ namespace ArnoldVinkCode
     public partial class AVInputOutputHotkeyHook
     {
         //Variables
-        private static IntPtr vWindowHookPointer = IntPtr.Zero;
+        private static IntPtr vHookKeyboard = IntPtr.Zero;
+        private static IntPtr vHookChange = IntPtr.Zero;
 
         //Settings
         public static bool BlockGlobalKeyboardPresses = false;
@@ -24,9 +24,6 @@ namespace ArnoldVinkCode
         public static Action<KeyboardMessage> EventHotkeyPressedMessage;
         public static Action<bool[]> EventHotkeyPressedList;
 
-        //Tasks
-        private static AVTaskDetails vTask_RestartKeyboardHook = new AVTaskDetails("vTask_RestartKeyboardHook");
-
         //Start receiving key input
         public static bool Start()
         {
@@ -37,12 +34,12 @@ namespace ArnoldVinkCode
                 vListKeysPressed = new bool[255];
 
                 //Set window keyboard hook
-                hooked = WindowKeyboardHook();
+                hooked = WindowHookKeyboard();
 
-                //Start task detecting window change
+                //Set window change hook
                 if (hooked)
                 {
-                    TaskStartLoop(vTaskLoop_RestartKeyboardHook, vTask_RestartKeyboardHook);
+                    WindowHookChange();
                 }
             }
             catch { }
@@ -50,7 +47,7 @@ namespace ArnoldVinkCode
         }
 
         //Stop receiving key input
-        public static async Task Stop()
+        public static void Stop()
         {
             try
             {
@@ -58,10 +55,10 @@ namespace ArnoldVinkCode
                 vListKeysPressed = new bool[255];
 
                 //Remove window keyboard hook
-                WindowKeyboardUnhook();
+                WindowUnhookKeyboard();
 
-                //Stop task detecting window change
-                await TaskStopLoop(vTask_RestartKeyboardHook, 5000);
+                //Remove window change hook
+                WindowUnhookChange();
             }
             catch { }
         }
@@ -76,82 +73,83 @@ namespace ArnoldVinkCode
                 vListKeysPressed = new bool[255];
 
                 //Remove window keyboard hook
-                WindowKeyboardUnhook();
+                WindowUnhookKeyboard();
 
                 //Set window keyboard hook
-                hooked = WindowKeyboardHook();
+                hooked = WindowHookKeyboard();
             }
             catch { }
             return hooked;
         }
 
         //Set window keyboard hook
-        private static bool WindowKeyboardHook()
+        private static bool WindowHookKeyboard()
         {
             try
             {
-                if (vWindowHookPointer != IntPtr.Zero)
+                if (vHookKeyboard != IntPtr.Zero)
                 {
                     Debug.WriteLine("Window keyboard hook already set, unhook first.");
                     return false;
                 }
 
-                vWindowHookPointer = SetWindowsHookEx(WindowHookTypes.WH_KEYBOARD_LL, LowLevelKeyboardDelegate, IntPtr.Zero, 0);
-                Debug.WriteLine("Hooked window keyboard: " + vWindowHookPointer);
+                vHookKeyboard = SetWindowsHookEx(WindowHookTypes.WH_KEYBOARD_LL, WindowHookKeyboardDelegate, IntPtr.Zero, 0);
+                Debug.WriteLine("Hooked window keyboard: " + vHookKeyboard);
             }
             catch { }
-            return vWindowHookPointer != IntPtr.Zero;
+            return vHookKeyboard != IntPtr.Zero;
         }
 
         //Remove window keyboard hook
-        private static bool WindowKeyboardUnhook()
+        private static bool WindowUnhookKeyboard()
         {
             bool unhooked = false;
             try
             {
-                if (vWindowHookPointer != IntPtr.Zero)
+                if (vHookKeyboard != IntPtr.Zero)
                 {
-                    unhooked = UnhookWindowsHookEx(vWindowHookPointer);
+                    unhooked = UnhookWindowsHookEx(vHookKeyboard);
                     //Debug.WriteLine("Unhooked window keyboard: " + unhooked);
-                    vWindowHookPointer = IntPtr.Zero;
+                    vHookKeyboard = IntPtr.Zero;
                 }
             }
             catch { }
             return unhooked;
         }
 
-        //Task detecting window change
-        private static async Task vTaskLoop_RestartKeyboardHook()
+        //Set window change hook
+        private static bool WindowHookChange()
         {
             try
             {
-                //Loop variables
-                IntPtr previousForegroundWindow = GetForegroundWindow();
-
-                while (await TaskCheckLoop(vTask_RestartKeyboardHook, 1000))
+                if (vHookChange != IntPtr.Zero)
                 {
-                    try
-                    {
-                        //Get foreground window
-                        IntPtr currentForegroundWindow = GetForegroundWindow();
+                    Debug.WriteLine("Window change hook already set, unhook first.");
+                    return false;
+                }
 
-                        //Check foreground window change
-                        if (previousForegroundWindow != currentForegroundWindow)
-                        {
-                            //Restart window keyboard hook
-                            bool restarted = Restart();
+                vHookChange = SetWinEventHook(WinEventHooks.EVENT_SYSTEM_FOREGROUND, WinEventHooks.EVENT_SYSTEM_FOREGROUND, IntPtr.Zero, WinEventHookDelegate, 0, 0, WinEventFlags.WINEVENT_OUTOFCONTEXT);
+                Debug.WriteLine("Hooked window change: " + vHookChange);
+            }
+            catch { }
+            return vHookChange != IntPtr.Zero;
+        }
 
-                            //Update previous window
-                            if (restarted)
-                            {
-                                previousForegroundWindow = currentForegroundWindow;
-                            }
-                        }
-                    }
-                    catch { }
+        //Remove window change hook
+        private static bool WindowUnhookChange()
+        {
+            bool unhooked = false;
+            try
+            {
+                if (vHookChange != IntPtr.Zero)
+                {
+                    unhooked = UnhookWinEvent(vHookChange);
+                    //Debug.WriteLine("Unhooked window change: " + unhooked);
+                    vHookChange = IntPtr.Zero;
                 }
             }
             catch { }
+            return unhooked;
         }
 
         //Check if hotkey is pressed
@@ -175,8 +173,25 @@ namespace ArnoldVinkCode
             return false;
         }
 
+        //Restart hook on window change
+        private static async void WinEventHookDelegate(IntPtr hWinEventHook, uint eventType, IntPtr hWnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
+        {
+            try
+            {
+                //Wait for window events that may unhook
+                await Task.Delay(1000);
+
+                //Restart window keyboard hook
+                Restart();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("WinEventHookDelegate error: " + ex.Message);
+            }
+        }
+
         //Check received keyboard input
-        private static IntPtr LowLevelKeyboardDelegate(int nCode, IntPtr wParam, KBDLLHOOKSTRUCT lParam)
+        private static IntPtr WindowHookKeyboardDelegate(int nCode, IntPtr wParam, KBDLLHOOKSTRUCT lParam)
         {
             try
             {
@@ -225,12 +240,12 @@ namespace ArnoldVinkCode
                 }
                 else
                 {
-                    return CallNextHookEx(vWindowHookPointer, nCode, wParam, lParam);
+                    return CallNextHookEx(vHookKeyboard, nCode, wParam, lParam);
                 }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("LowLevelKeyboardDelegate error: " + ex.Message);
+                Debug.WriteLine("WindowHookKeyboardDelegate error: " + ex.Message);
                 return IntPtr.Zero;
             }
         }

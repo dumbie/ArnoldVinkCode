@@ -122,7 +122,10 @@ namespace ArnoldVinkCode
 
         //Window event hook
         [DllImport("user32.dll")]
-        public static extern IntPtr SetWinEventHook(WinEventHooks eventMin, WinEventHooks eventMax, IntPtr hmodWinEventProc, WinEventDelegate lpfnWinEventProc, uint idProcess, uint idThread, WinEventFlags dwFlags);
+        public static extern IntPtr SetWinEventHook(WinEventHooks eventMin, WinEventHooks eventMax, IntPtr hmodWinEventProc, WinEventHookDelegate lpfnWinEventProc, uint idProcess, uint idThread, WinEventFlags dwFlags);
+
+        [DllImport("user32.dll")]
+        public static extern bool UnhookWinEvent(IntPtr hWinEventHook);
 
         //Window redraw
         [DllImport("user32.dll")]
@@ -324,10 +327,10 @@ namespace ArnoldVinkCode
 
         //Windows Hook
         [DllImport("user32.dll")]
-        public static extern IntPtr SetWindowsHookEx(WindowHookTypes idHook, LowLevelKeyboardDelegate lpfn, IntPtr hMod, uint dwThreadId);
+        public static extern IntPtr SetWindowsHookEx(WindowHookTypes idHook, WindowHookKeyboardDelegate lpfn, IntPtr hMod, uint dwThreadId);
 
         [DllImport("user32.dll")]
-        public static extern IntPtr SetWindowsHookEx(WindowHookTypes idHook, LowLevelHookDelegate lpfn, IntPtr hMod, uint dwThreadId);
+        public static extern IntPtr SetWindowsHookEx(WindowHookTypes idHook, WindowHookGeneralDelegate lpfn, IntPtr hMod, uint dwThreadId);
 
         [DllImport("user32.dll")]
         public static extern IntPtr CallNextHookEx(IntPtr idHook, int nCode, IntPtr wParam, KBDLLHOOKSTRUCT lParam);
