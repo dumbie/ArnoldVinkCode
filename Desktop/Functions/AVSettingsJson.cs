@@ -69,13 +69,13 @@ namespace ArnoldVinkCode
                 File.WriteAllText(vSettingFilePath, jsonString);
 
                 //Return result
-                Debug.WriteLine("Saved settings file.");
+                Debug.WriteLine("Saved settings file: " + vSettingFilePath);
                 return true;
             }
             catch (Exception ex)
             {
                 //Return result
-                Debug.WriteLine("Failed saving settings file: " + ex.Message);
+                Debug.WriteLine("Failed saving settings file: " + vSettingFilePath + " / " + ex.Message);
                 return false;
             }
         }
@@ -91,7 +91,7 @@ namespace ArnoldVinkCode
             catch (Exception ex)
             {
                 //Return result
-                Debug.WriteLine("Failed checking setting: "+ settingName + " / " + ex.Message);
+                Debug.WriteLine("Failed checking setting: " + settingName + " / " + ex.Message);
                 return false;
             }
         }

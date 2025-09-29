@@ -59,13 +59,13 @@ namespace ArnoldVinkCode
                 ConfigurationManager.RefreshSection("appSettings");
 
                 //Return result
-                Debug.WriteLine("Saved settings file.");
+                Debug.WriteLine("Saved settings file: " + vConfigName);
                 return true;
             }
             catch (Exception ex)
             {
                 //Return result
-                Debug.WriteLine("Failed saving settings file: " + ex.Message);
+                Debug.WriteLine("Failed saving settings file: " + vConfigName + " / " + ex.Message);
                 return false;
             }
         }
@@ -81,7 +81,7 @@ namespace ArnoldVinkCode
             catch (Exception ex)
             {
                 //Return result
-                Debug.WriteLine("Failed checking setting: "+ settingName + " / " + ex.Message);
+                Debug.WriteLine("Failed checking setting: " + settingName + " / " + ex.Message);
                 return false;
             }
         }
