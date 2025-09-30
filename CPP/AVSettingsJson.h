@@ -2,6 +2,7 @@
 #include "AVDebug.h"
 #include "AVFiles.h"
 #include "nlohmann_json.hpp"
+#include <optional>
 
 class AVSettingsJson
 {
@@ -119,21 +120,22 @@ public:
 
 	//Load setting value
 	/// <summary>
-	/// Load("SettingName", typeid(Type));
+	/// Type var = set.Load<Type>("SettingName");
+	/// if (var.has_value()) { var.value(); }
 	/// </summary>
 	template<typename T>
-	T Load(std::string settingName, T settingType)
+	std::optional<T> Load(std::string settingName)
 	{
 		try
 		{
 			//Return result
-			return (T)vJToken[settingName];
+			return vJToken[settingName];
 		}
 		catch (...)
 		{
 			//Return result
 			AVDebugWriteLine("Failed loading setting: " << settingName.c_str());
-			return NULL;
+			return std::nullopt;
 		}
 	}
 
