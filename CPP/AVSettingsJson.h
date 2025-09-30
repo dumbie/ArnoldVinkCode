@@ -66,6 +66,7 @@ private:
 
 public:
 	//Initialize
+	AVSettingsJson() {};
 	AVSettingsJson(std::string settingFilePath)
 	{
 		try
