@@ -121,7 +121,7 @@ public:
 
 	//Load setting value
 	/// <summary>
-	/// Type var = set.Load<Type>("SettingName");
+	/// std::optional<Type> var = set.Load<Type>("SettingName");
 	/// if (var.has_value()) { var.value(); }
 	/// </summary>
 	template<typename T>
