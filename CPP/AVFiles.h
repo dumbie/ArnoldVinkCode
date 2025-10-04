@@ -80,3 +80,27 @@ static std::wstring PathGetExecutableDirectory()
 		return std::wstring(L"");
 	}
 }
+
+static std::vector<std::wstring> PathListFiles(std::wstring pathList, bool recursive)
+{
+	std::vector<std::wstring> list;
+	try
+	{
+		if (recursive)
+		{
+			for (auto file : std::filesystem::recursive_directory_iterator(pathList, std::filesystem::directory_options::skip_permission_denied))
+			{
+				list.push_back(file.path().wstring());
+			}
+		}
+		else
+		{
+			for (auto file : std::filesystem::directory_iterator(pathList, std::filesystem::directory_options::skip_permission_denied))
+			{
+				list.push_back(file.path().wstring());
+			}
+		}
+	}
+	catch (...) {}
+	return list;
+}
