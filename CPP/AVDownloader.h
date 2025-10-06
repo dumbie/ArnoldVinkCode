@@ -27,7 +27,7 @@ static std::string DownloadString(std::string targetHost, std::string targetPath
 
 		//Check target host
 		DWORD internetFlags = 0x00000000;
-		DWORD internetPort = INTERNET_INVALID_PORT_NUMBER;
+		INTERNET_PORT internetPort = INTERNET_INVALID_PORT_NUMBER;
 		if (targetHost.starts_with("http://"))
 		{
 			string_replace_all(targetHost, "http://", "");
@@ -49,7 +49,7 @@ static std::string DownloadString(std::string targetHost, std::string targetPath
 		}
 
 		//Internet Request Open
-		PCSTR acceptTypes[] = { "*/*" };
+		PCSTR acceptTypes[] = { "*/*", NULL };
 		handleRequest = HttpOpenRequestA(handleConnect, "GET", targetPath.c_str(), NULL, NULL, acceptTypes, internetFlags, NULL);
 		if (handleRequest == NULL)
 		{
