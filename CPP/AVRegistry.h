@@ -35,6 +35,37 @@ static bool RegistrySet(HKEY hKey, std::wstring subKey, std::wstring valueName, 
 	return false;
 }
 
+//Set dword registry value
+static bool RegistrySet(HKEY hKey, std::wstring subKey, std::wstring valueName, DWORD valueSet)
+{
+	try
+	{
+		//Open registry
+		HKEY pRes;
+		LSTATUS lRes = RegOpenKeyExW(hKey, subKey.c_str(), NULL, KEY_WRITE, &pRes);
+		if (lRes != ERROR_SUCCESS)
+		{
+			AVDebugWriteLine("Failed to open registry key: " << subKey);
+			return false;
+		}
+
+		//Set value to registry
+		DWORD valueSize = sizeof(valueSet);
+		lRes = RegSetValueExW(pRes, valueName.c_str(), NULL, REG_DWORD, (BYTE*)&valueSet, valueSize);
+		if (lRes != ERROR_SUCCESS)
+		{
+			AVDebugWriteLine("Failed to set value to registry: " << valueName << " / " << valueSet);
+			return false;
+		}
+
+		//Return result
+		AVDebugWriteLine("Set registry value: " << valueName << " / " << valueSet);
+		return true;
+	}
+	catch (...) {}
+	return false;
+}
+
 //Set binary registry value
 static bool RegistrySet(HKEY hKey, std::wstring subKey, std::wstring valueName, std::vector<BYTE> valueSet)
 {
@@ -98,6 +129,40 @@ static std::wstring RegistryGetString(HKEY hKey, std::wstring subKey, std::wstri
 	}
 	catch (...) {}
 	return L"";
+}
+
+//Get dword registry value
+static DWORD RegistryGetDword(HKEY hKey, std::wstring subKey, std::wstring valueName)
+{
+	try
+	{
+		//Open registry
+		HKEY pRes;
+		LSTATUS lRes = RegOpenKeyExW(hKey, subKey.c_str(), NULL, KEY_READ, &pRes);
+		if (lRes != ERROR_SUCCESS)
+		{
+			AVDebugWriteLine("Failed to open registry key: " << subKey);
+			return 0;
+		}
+
+		//Get value from registry
+		DWORD buffer = 0;
+		DWORD bufferSize = sizeof(buffer);
+		lRes = RegQueryValueExW(pRes, valueName.c_str(), NULL, NULL, (BYTE*)&buffer, &bufferSize);
+		if (lRes != ERROR_SUCCESS)
+		{
+			AVDebugWriteLine("Failed to get value from registry: " << valueName);
+			return 0;
+		}
+
+		//Close registry
+		RegCloseKey(pRes);
+
+		//Return result
+		return buffer;
+	}
+	catch (...) {}
+	return 0;
 }
 
 //Get binary registry value
