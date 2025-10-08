@@ -1,26 +1,94 @@
 #pragma once
 //HKEY_CLASSES_ROOT, HKEY_CURRENT_USER, HKEY_LOCAL_MACHINE, HKEY_USERS, HKEY_CURRENT_CONFIG
 
+//Check registry key exists
+static bool RegistryCheck(HKEY hKey, std::wstring subKey)
+{
+	HKEY hOpenKey;
+	AVFinallySafe(
+		{
+			RegCloseKey(hOpenKey);
+		});
+	try
+	{
+		//Open registry
+		LSTATUS lRes = RegOpenKeyExW(hKey, subKey.c_str(), NULL, KEY_READ, &hOpenKey);
+		if (lRes != ERROR_SUCCESS)
+		{
+			//Return result
+			AVDebugWriteLine("Failed to open registry key: " << lRes << " / " << subKey);
+			return false;
+		}
+		else
+		{
+			//Return result
+			AVDebugWriteLine("Registry key exists: " << subKey);
+			return true;
+		}
+	}
+	catch (...) {}
+	return false;
+}
+
 //Check registry value exists
-static bool RegistryCheck() {}
+static bool RegistryCheck(HKEY hKey, std::wstring subKey, std::wstring valueName)
+{
+	HKEY hOpenKey;
+	AVFinallySafe(
+		{
+			RegCloseKey(hOpenKey);
+		});
+	try
+	{
+		//Open registry
+		LSTATUS lRes = RegOpenKeyExW(hKey, subKey.c_str(), NULL, KEY_READ, &hOpenKey);
+		if (lRes != ERROR_SUCCESS)
+		{
+			//Return result
+			AVDebugWriteLine("Failed to open registry key: " << lRes << " / " << subKey);
+			return false;
+		}
+
+		//Get value from registry
+		lRes = RegQueryValueExW(hOpenKey, valueName.c_str(), NULL, NULL, NULL, NULL);
+		if (lRes != ERROR_SUCCESS)
+		{
+			//Return result
+			AVDebugWriteLine("Failed to get value from registry: " << valueName);
+			return false;
+		}
+		else
+		{
+			//Return result
+			AVDebugWriteLine("Registry value exists: " << valueName);
+			return true;
+		}
+	}
+	catch (...) {}
+	return false;
+}
 
 //Set string registry value
 static bool RegistrySet(HKEY hKey, std::wstring subKey, std::wstring valueName, std::wstring valueSet)
 {
+	HKEY hOpenKey;
+	AVFinallySafe(
+		{
+			RegCloseKey(hOpenKey);
+		});
 	try
 	{
 		//Open registry
-		HKEY pRes;
-		LSTATUS lRes = RegOpenKeyExW(hKey, subKey.c_str(), NULL, KEY_WRITE, &pRes);
+		LSTATUS lRes = RegOpenKeyExW(hKey, subKey.c_str(), NULL, KEY_WRITE, &hOpenKey);
 		if (lRes != ERROR_SUCCESS)
 		{
-			AVDebugWriteLine("Failed to open registry key: " << subKey);
+			AVDebugWriteLine("Failed to open registry key: " << lRes << " / " << subKey);
 			return false;
 		}
 
 		//Set value to registry
 		DWORD valueSize = valueSet.size() * sizeof(WCHAR);
-		lRes = RegSetValueExW(pRes, valueName.c_str(), NULL, REG_SZ, (BYTE*)valueSet.c_str(), valueSize);
+		lRes = RegSetValueExW(hOpenKey, valueName.c_str(), NULL, REG_SZ, (BYTE*)valueSet.c_str(), valueSize);
 		if (lRes != ERROR_SUCCESS)
 		{
 			AVDebugWriteLine("Failed to set value to registry: " << valueName << " / " << valueSet);
@@ -38,20 +106,24 @@ static bool RegistrySet(HKEY hKey, std::wstring subKey, std::wstring valueName, 
 //Set dword registry value
 static bool RegistrySet(HKEY hKey, std::wstring subKey, std::wstring valueName, DWORD valueSet)
 {
+	HKEY hOpenKey;
+	AVFinallySafe(
+		{
+			RegCloseKey(hOpenKey);
+		});
 	try
 	{
 		//Open registry
-		HKEY pRes;
-		LSTATUS lRes = RegOpenKeyExW(hKey, subKey.c_str(), NULL, KEY_WRITE, &pRes);
+		LSTATUS lRes = RegOpenKeyExW(hKey, subKey.c_str(), NULL, KEY_WRITE, &hOpenKey);
 		if (lRes != ERROR_SUCCESS)
 		{
-			AVDebugWriteLine("Failed to open registry key: " << subKey);
+			AVDebugWriteLine("Failed to open registry key: " << lRes << " / " << subKey);
 			return false;
 		}
 
 		//Set value to registry
 		DWORD valueSize = sizeof(valueSet);
-		lRes = RegSetValueExW(pRes, valueName.c_str(), NULL, REG_DWORD, (BYTE*)&valueSet, valueSize);
+		lRes = RegSetValueExW(hOpenKey, valueName.c_str(), NULL, REG_DWORD, (BYTE*)&valueSet, valueSize);
 		if (lRes != ERROR_SUCCESS)
 		{
 			AVDebugWriteLine("Failed to set value to registry: " << valueName << " / " << valueSet);
@@ -69,20 +141,24 @@ static bool RegistrySet(HKEY hKey, std::wstring subKey, std::wstring valueName, 
 //Set binary registry value
 static bool RegistrySet(HKEY hKey, std::wstring subKey, std::wstring valueName, std::vector<BYTE> valueSet)
 {
+	HKEY hOpenKey;
+	AVFinallySafe(
+		{
+			RegCloseKey(hOpenKey);
+		});
 	try
 	{
 		//Open registry
-		HKEY pRes;
-		LSTATUS lRes = RegOpenKeyExW(hKey, subKey.c_str(), NULL, KEY_WRITE, &pRes);
+		LSTATUS lRes = RegOpenKeyExW(hKey, subKey.c_str(), NULL, KEY_WRITE, &hOpenKey);
 		if (lRes != ERROR_SUCCESS)
 		{
-			AVDebugWriteLine("Failed to open registry key: " << subKey);
+			AVDebugWriteLine("Failed to open registry key: " << lRes << " / " << subKey);
 			return false;
 		}
 
 		//Set value to registry
 		DWORD valueSize = valueSet.size();
-		lRes = RegSetValueExW(pRes, valueName.c_str(), NULL, REG_BINARY, valueSet.data(), valueSize);
+		lRes = RegSetValueExW(hOpenKey, valueName.c_str(), NULL, REG_BINARY, valueSet.data(), valueSize);
 		if (lRes != ERROR_SUCCESS)
 		{
 			AVDebugWriteLine("Failed to set value to registry: " << valueName);
@@ -100,29 +176,30 @@ static bool RegistrySet(HKEY hKey, std::wstring subKey, std::wstring valueName, 
 //Get string registry value
 static std::wstring RegistryGetString(HKEY hKey, std::wstring subKey, std::wstring valueName)
 {
+	HKEY hOpenKey;
+	AVFinallySafe(
+		{
+			RegCloseKey(hOpenKey);
+		});
 	try
 	{
 		//Open registry
-		HKEY pRes;
-		LSTATUS lRes = RegOpenKeyExW(hKey, subKey.c_str(), NULL, KEY_READ, &pRes);
+		LSTATUS lRes = RegOpenKeyExW(hKey, subKey.c_str(), NULL, KEY_READ, &hOpenKey);
 		if (lRes != ERROR_SUCCESS)
 		{
-			AVDebugWriteLine("Failed to open registry key: " << subKey);
+			AVDebugWriteLine("Failed to open registry key: " << lRes << " / " << subKey);
 			return L"";
 		}
 
 		//Get value from registry
 		WCHAR buffer[1024];
 		DWORD bufferSize = sizeof(buffer);
-		lRes = RegQueryValueExW(pRes, valueName.c_str(), NULL, NULL, (BYTE*)buffer, &bufferSize);
+		lRes = RegQueryValueExW(hOpenKey, valueName.c_str(), NULL, NULL, (BYTE*)buffer, &bufferSize);
 		if (lRes != ERROR_SUCCESS)
 		{
 			AVDebugWriteLine("Failed to get value from registry: " << valueName);
 			return L"";
 		}
-
-		//Close registry
-		RegCloseKey(pRes);
 
 		//Return result
 		return std::wstring(buffer);
@@ -134,29 +211,30 @@ static std::wstring RegistryGetString(HKEY hKey, std::wstring subKey, std::wstri
 //Get dword registry value
 static DWORD RegistryGetDword(HKEY hKey, std::wstring subKey, std::wstring valueName)
 {
+	HKEY hOpenKey;
+	AVFinallySafe(
+		{
+			RegCloseKey(hOpenKey);
+		});
 	try
 	{
 		//Open registry
-		HKEY pRes;
-		LSTATUS lRes = RegOpenKeyExW(hKey, subKey.c_str(), NULL, KEY_READ, &pRes);
+		LSTATUS lRes = RegOpenKeyExW(hKey, subKey.c_str(), NULL, KEY_READ, &hOpenKey);
 		if (lRes != ERROR_SUCCESS)
 		{
-			AVDebugWriteLine("Failed to open registry key: " << subKey);
+			AVDebugWriteLine("Failed to open registry key: " << lRes << " / " << subKey);
 			return 0;
 		}
 
 		//Get value from registry
 		DWORD buffer = 0;
 		DWORD bufferSize = sizeof(buffer);
-		lRes = RegQueryValueExW(pRes, valueName.c_str(), NULL, NULL, (BYTE*)&buffer, &bufferSize);
+		lRes = RegQueryValueExW(hOpenKey, valueName.c_str(), NULL, NULL, (BYTE*)&buffer, &bufferSize);
 		if (lRes != ERROR_SUCCESS)
 		{
 			AVDebugWriteLine("Failed to get value from registry: " << valueName);
 			return 0;
 		}
-
-		//Close registry
-		RegCloseKey(pRes);
 
 		//Return result
 		return buffer;
@@ -168,21 +246,25 @@ static DWORD RegistryGetDword(HKEY hKey, std::wstring subKey, std::wstring value
 //Get binary registry value
 static std::vector<BYTE> RegistryGetBinary(HKEY hKey, std::wstring subKey, std::wstring valueName)
 {
+	HKEY hOpenKey;
+	AVFinallySafe(
+		{
+			RegCloseKey(hOpenKey);
+		});
 	try
 	{
 		//Open registry
-		HKEY pRes;
-		LSTATUS lRes = RegOpenKeyExW(hKey, subKey.c_str(), NULL, KEY_READ, &pRes);
+		LSTATUS lRes = RegOpenKeyExW(hKey, subKey.c_str(), NULL, KEY_READ, &hOpenKey);
 		if (lRes != ERROR_SUCCESS)
 		{
-			AVDebugWriteLine("Failed to open registry key: " << subKey);
+			AVDebugWriteLine("Failed to open registry key: " << lRes << " / " << subKey);
 			return std::vector<BYTE>();
 		}
 
 		//Get value from registry
 		std::vector<BYTE> buffer = std::vector<BYTE>(1024);
 		DWORD bufferSize = buffer.size();
-		lRes = RegQueryValueExW(pRes, valueName.c_str(), NULL, NULL, buffer.data(), &bufferSize);
+		lRes = RegQueryValueExW(hOpenKey, valueName.c_str(), NULL, NULL, buffer.data(), &bufferSize);
 		if (lRes != ERROR_SUCCESS)
 		{
 			AVDebugWriteLine("Failed to get value from registry: " << valueName);
@@ -191,9 +273,6 @@ static std::vector<BYTE> RegistryGetBinary(HKEY hKey, std::wstring subKey, std::
 
 		//Resize buffer vector
 		buffer.resize(bufferSize);
-
-		//Close registry
-		RegCloseKey(pRes);
 
 		//Return result
 		return buffer;

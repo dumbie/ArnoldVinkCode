@@ -84,7 +84,7 @@ static std::string DownloadString(std::string targetHost, std::string targetPath
 		while (true)
 		{
 			//Read buffer
-			if (!InternetReadFile(handleRequest, &dataBufferRead[0], dataBufferRead.size(), &dataSize)) { break; }
+			if (!InternetReadFile(handleRequest, dataBufferRead.data(), dataBufferRead.size(), &dataSize)) { break; }
 			if (dataSize <= 0) { break; }
 			dataBufferRead.resize(dataSize);
 
@@ -184,7 +184,7 @@ static std::string SendPostRequest(std::string targetHost, std::string targetPat
 		while (true)
 		{
 			//Read buffer
-			if (!InternetReadFile(handleRequest, &dataBufferRead[0], dataBufferRead.size(), &dataSize)) { break; }
+			if (!InternetReadFile(handleRequest, dataBufferRead.data(), dataBufferRead.size(), &dataSize)) { break; }
 			if (dataSize <= 0) { break; }
 			dataBufferRead.resize(dataSize);
 
