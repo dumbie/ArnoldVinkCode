@@ -209,7 +209,7 @@ static std::wstring RegistryGetString(HKEY hKey, std::wstring subKey, std::wstri
 }
 
 //Get dword registry value
-static DWORD RegistryGetDword(HKEY hKey, std::wstring subKey, std::wstring valueName)
+static std::optional<DWORD> RegistryGetDword(HKEY hKey, std::wstring subKey, std::wstring valueName)
 {
 	HKEY hOpenKey;
 	AVFinallySafe(
@@ -223,7 +223,7 @@ static DWORD RegistryGetDword(HKEY hKey, std::wstring subKey, std::wstring value
 		if (lRes != ERROR_SUCCESS)
 		{
 			AVDebugWriteLine("Failed to open registry key: " << lRes << " / " << subKey);
-			return 0;
+			return std::nullopt;
 		}
 
 		//Get value from registry
@@ -233,14 +233,14 @@ static DWORD RegistryGetDword(HKEY hKey, std::wstring subKey, std::wstring value
 		if (lRes != ERROR_SUCCESS)
 		{
 			AVDebugWriteLine("Failed to get value from registry: " << valueName);
-			return 0;
+			return std::nullopt;
 		}
 
 		//Return result
 		return buffer;
 	}
 	catch (...) {}
-	return 0;
+	return std::nullopt;
 }
 
 //Get binary registry value
