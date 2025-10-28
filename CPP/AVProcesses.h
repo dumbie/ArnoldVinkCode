@@ -17,16 +17,15 @@ static PSYSTEM_PROCESS_INFORMATION Query_SystemProcessInformation()
 			try
 			{
 				ULONG systemLength = 0;
-				std::vector<BYTE> spiBuffer(systemOffset);
-				NTSTATUS status = NtQuerySystemInformation(SYSTEM_INFORMATION_CLASS::SystemProcessInformation, spiBuffer.data(), systemOffset, &systemLength);
-				if (status == STATUS_INFO_LENGTH_MISMATCH)
+				systemInfo = (PSYSTEM_PROCESS_INFORMATION)malloc(systemOffset);
+				NTSTATUS queryResult = NtQuerySystemInformation(SYSTEM_INFORMATION_CLASS::SystemProcessInformation, systemInfo, systemOffset, &systemLength);
+				if (queryResult == STATUS_INFO_LENGTH_MISMATCH)
 				{
 					systemOffset = std::max<ULONG>(systemOffset, systemLength);
+					free(systemInfo);
 				}
-				else if (status == STATUS_SUCCESS)
+				else if (queryResult == STATUS_SUCCESS)
 				{
-					//Cast SystemProcessInformation
-					systemInfo = reinterpret_cast<PSYSTEM_PROCESS_INFORMATION>(spiBuffer.data());
 					break;
 				}
 			}
@@ -42,7 +41,7 @@ static HANDLE Get_ProcessHandleByProcessId(int targetProcessId)
 {
 	try
 	{
-		return OpenProcess(PROCESS_QUERY_INFORMATION, false, targetProcessId);
+		return OpenProcess(MAXIMUM_ALLOWED, false, targetProcessId);
 	}
 	catch (...) {}
 	return NULL;
@@ -68,17 +67,28 @@ static std::string Detail_ExecutablePathByProcessHandle(HANDLE targetProcessHand
 class ProcessMulti
 {
 private:
-	HANDLE CachedHandle = NULL;
-	std::string CachedExePath = "";
-
-public:
 	int CachedIdentifier = 0;
 	int CachedIdentifierParent = 0;
+	HANDLE CachedHandle = NULL;
+	std::string CachedExePath = "";
+	std::string CachedExeName = "";
 
-	ProcessMulti(int identifier, int identifierParent)
+public:
+	ProcessMulti(int identifier, int identifierParent, std::string exeName)
 	{
 		CachedIdentifier = identifier;
 		CachedIdentifierParent = identifierParent;
+		CachedExeName = exeName;
+	};
+
+	int Identifier()
+	{
+		return CachedIdentifier;
+	};
+
+	int IdentifierParent()
+	{
+		return CachedIdentifierParent;
 	};
 
 	HANDLE Handle()
@@ -87,7 +97,7 @@ public:
 		{
 			if (CachedHandle == NULL)
 			{
-				CachedHandle = Get_ProcessHandleByProcessId(CachedIdentifier);
+				CachedHandle = Get_ProcessHandleByProcessId(Identifier());
 			}
 		}
 		catch (...) {}
@@ -106,10 +116,15 @@ public:
 		catch (...) {}
 		return CachedExePath;
 	};
+
+	std::string ExeName()
+	{
+		return CachedExeName;
+	};
 };
 
-//List processes
-static std::vector<ProcessMulti> ListProcesses()
+//Get all running processes multi
+static std::vector<ProcessMulti> Get_AllProcessesMulti()
 {
 	std::vector<ProcessMulti> listProcessMulti;
 	try
@@ -120,21 +135,58 @@ static std::vector<ProcessMulti> ListProcesses()
 		//Loop process information
 		while (true)
 		{
-			//Add multi process to list
-			ProcessMulti processMulti = ProcessMulti((int)spi->UniqueProcessId, (int)spi->Reserved2);
-			listProcessMulti.push_back(processMulti);
+			try
+			{
+				//Get executable name
+				std::wstring exeNameW = std::wstring(spi->ImageName.Buffer, spi->ImageName.Length / sizeof(WCHAR));
+				std::string exeNameA = wstring_to_string(exeNameW);
 
-			//Move to next process
-			if (spi->NextEntryOffset != 0)
-			{
-				spi = (PSYSTEM_PROCESS_INFORMATION)((BYTE*)spi + spi->NextEntryOffset);
+				//Add multi process to list
+				ProcessMulti processMulti = ProcessMulti((int)spi->UniqueProcessId, (int)spi->Reserved2, exeNameA);
+				listProcessMulti.push_back(processMulti);
+
+				//Move to next process
+				if (spi->NextEntryOffset != 0)
+				{
+					spi = (PSYSTEM_PROCESS_INFORMATION)((BYTE*)spi + spi->NextEntryOffset);
+				}
+				else
+				{
+					break;
+				}
 			}
-			else
+			catch (...) {}
+		}
+	}
+	catch (...) {}
+	return listProcessMulti;
+}
+
+//Get multi process by executable name
+static std::vector<ProcessMulti> Get_ProcessesMultiByName(std::string executableName)
+{
+	std::vector<ProcessMulti> listProcessMulti;
+	try
+	{
+		//List all processes
+		std::vector<ProcessMulti> processList = Get_AllProcessesMulti();
+
+		//Lowercase executable name
+		std::string exeNameLowerSearch = string_to_lower(executableName);
+
+		//Look for executable name
+		for (ProcessMulti process : processList)
+		{
+			//Lowercase executable name
+			std::string exeNameLowerProcess = string_to_lower(process.ExeName());
+
+			//Add multi process to list
+			if (exeNameLowerProcess == exeNameLowerSearch)
 			{
-				break;
+				listProcessMulti.push_back(process);
 			}
 		}
 	}
 	catch (...) {}
 	return listProcessMulti;
-};
+}
