@@ -39,7 +39,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                return Get_ProcessMultiByProcessId(GetCurrentProcessId(), 0);
+                return Get_ProcessMultiByProcessId(GetCurrentProcessId());
             }
             catch (Exception ex)
             {
@@ -62,7 +62,7 @@ namespace ArnoldVinkCode
                 else
                 {
                     int processId = Detail_ProcessIdByWindowHandle(targetWindowHandle);
-                    return Get_ProcessMultiByProcessId(processId, 0);
+                    return Get_ProcessMultiByProcessId(processId);
                 }
             }
             catch (Exception ex)
@@ -220,11 +220,11 @@ namespace ArnoldVinkCode
         }
 
         //Get multi process by process id
-        public static ProcessMulti Get_ProcessMultiByProcessId(int targetProcessId, int parentProcessId)
+        public static ProcessMulti Get_ProcessMultiByProcessId(int targetProcessId)
         {
             try
             {
-                return new ProcessMulti(targetProcessId, parentProcessId);
+                return new ProcessMulti(targetProcessId, 0, string.Empty);
             }
             catch (Exception ex)
             {

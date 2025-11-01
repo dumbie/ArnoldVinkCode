@@ -13,6 +13,7 @@ namespace ArnoldVinkCode
 
         //Constants
         public const uint STATUS_INFO_LENGTH_MISMATCH = 0xC0000004;
+        public const uint STATUS_SUCCESS = 0x00000000;
 
         //Structures
         [StructLayout(LayoutKind.Sequential)]
@@ -32,6 +33,14 @@ namespace ArnoldVinkCode
             public ProcessThreadWaitReason ThreadWaitReason;
         }
 
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        public struct UNICODE_STRING
+        {
+            public ushort Length;
+            public ushort MaximumLength;
+            [MarshalAs(UnmanagedType.LPWStr)] public string Buffer;
+        }
+
         [StructLayout(LayoutKind.Sequential)]
         public struct SYSTEM_PROCESS_INFORMATION
         {
@@ -43,9 +52,7 @@ namespace ArnoldVinkCode
             public long CreateTime;
             public long UserTime;
             public long KernelTime;
-            public ushort NameLength;
-            public ushort MaximumNameLength;
-            public IntPtr NamePtr;
+            public UNICODE_STRING ImageName;
             public int BasePriority;
             public IntPtr UniqueProcessId;
             public IntPtr ParentProcessId;
@@ -63,7 +70,7 @@ namespace ArnoldVinkCode
             public UIntPtr QuotaNonPagedPoolUsage;
             public UIntPtr PagefileUsage;
             public UIntPtr PeakPagefileUsage;
-            public UIntPtr publicPageCount;
+            public UIntPtr PrivatePageCount;
             public long ReadOperationCount;
             public long WriteOperationCount;
             public long OtherOperationCount;
@@ -76,21 +83,21 @@ namespace ArnoldVinkCode
         private static IntPtr Query_SystemProcessInformation()
         {
             uint systemOffset = 0;
-            IntPtr systemInfoBufferBegin = IntPtr.Zero;
+            IntPtr systemInfo = IntPtr.Zero;
             try
             {
                 while (true)
                 {
                     try
                     {
-                        systemInfoBufferBegin = Marshal.AllocHGlobal((int)systemOffset);
-                        uint queryResult = NtQuerySystemInformation(SYSTEM_INFO_CLASS.SystemProcessInformation, systemInfoBufferBegin, systemOffset, out uint systemLength);
+                        systemInfo = Marshal.AllocHGlobal((int)systemOffset);
+                        uint queryResult = NtQuerySystemInformation(SYSTEM_INFO_CLASS.SystemProcessInformation, systemInfo, systemOffset, out uint systemLength);
                         if (queryResult == STATUS_INFO_LENGTH_MISMATCH)
                         {
                             systemOffset = Math.Max(systemOffset, systemLength);
-                            SafeCloseMarshal(ref systemInfoBufferBegin);
+                            SafeCloseMarshal(ref systemInfo);
                         }
-                        else if (queryResult == 0)
+                        else if (queryResult == STATUS_SUCCESS)
                         {
                             break;
                         }
@@ -99,7 +106,7 @@ namespace ArnoldVinkCode
                 }
             }
             catch { }
-            return systemInfoBufferBegin;
+            return systemInfo;
         }
 
         //Get process thread information by process id
@@ -220,7 +227,7 @@ namespace ArnoldVinkCode
                         SYSTEM_PROCESS_INFORMATION systemProcess = (SYSTEM_PROCESS_INFORMATION)Marshal.PtrToStructure(systemInfoBufferLoop, typeof(SYSTEM_PROCESS_INFORMATION));
 
                         //Add multi process to list
-                        ProcessMulti processMulti = new ProcessMulti(systemProcess.UniqueProcessId.ToInt32(), systemProcess.ParentProcessId.ToInt32());
+                        ProcessMulti processMulti = new ProcessMulti(systemProcess.UniqueProcessId.ToInt32(), systemProcess.ParentProcessId.ToInt32(), systemProcess.ImageName.Buffer);
                         listProcessMulti.Add(processMulti);
 
                         //Move to next process

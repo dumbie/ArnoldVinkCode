@@ -13,7 +13,7 @@ namespace ArnoldVinkCode
                 AVDebug.WriteLine("Restarting process by id: " + processId);
 
                 //Get restart process
-                ProcessMulti restartProcess = Get_ProcessMultiByProcessId(processId, 0);
+                ProcessMulti restartProcess = Get_ProcessMultiByProcessId(processId);
                 if (restartProcess == null)
                 {
                     AVDebug.WriteLine("Failed to get restart process by id: " + processId);

@@ -32,10 +32,11 @@ namespace ArnoldVinkCode
 
         public class ProcessMulti : IDisposable
         {
-            public ProcessMulti(int identifier, int identifierParent)
+            public ProcessMulti(int identifier, int identifierParent, string exeName)
             {
                 CachedIdentifier = identifier;
                 CachedIdentifierParent = identifierParent;
+                CachedExeName = exeName;
             }
 
             private int CachedIdentifier = 0;
@@ -61,10 +62,6 @@ namespace ArnoldVinkCode
                     }
                     catch { }
                     return CachedIdentifierParent;
-                }
-                set
-                {
-                    CachedIdentifierParent = value;
                 }
             }
 
