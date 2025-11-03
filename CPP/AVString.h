@@ -29,14 +29,14 @@ static std::string wstring_to_string(std::wstring str)
 	return std::string(str.begin(), str.end());
 }
 
-static std::string hstring_to_string(hstring str)
+static std::string hstring_to_string(winrt::hstring str)
 {
 	return std::string(str.begin(), str.end());
 }
 
-static hstring string_to_hstring(std::string str)
+static winrt::hstring string_to_hstring(std::string str)
 {
-	return to_hstring(str);
+	return winrt::to_hstring(str);
 }
 
 static std::wstring string_to_wstring(std::string str)
@@ -54,7 +54,7 @@ static int wstring_to_int(std::wstring str)
 	return std::stoi(str);
 }
 
-static int hstring_to_int(hstring str)
+static int hstring_to_int(winrt::hstring str)
 {
 	std::string s(winrt::to_string(str));
 	return std::stoi(s);
@@ -73,7 +73,7 @@ static std::wstring number_to_wstring(T value)
 }
 
 template<typename T>
-static hstring number_to_hstring(T value)
+static winrt::hstring number_to_hstring(T value)
 {
 	return winrt::to_hstring(value);
 }
@@ -142,4 +142,32 @@ static bool string_replace_all(std::string& string, std::string from, std::strin
 		start_pos += to.length();
 	}
 	return true;
+}
+
+static std::string string_to_lower(std::string str)
+{
+	std::string strTemp = str;
+	std::transform(strTemp.begin(), strTemp.end(), strTemp.begin(), tolower);
+	return strTemp;
+}
+
+static std::wstring wstring_to_lower(std::wstring str)
+{
+	std::wstring strTemp = str;
+	std::transform(strTemp.begin(), strTemp.end(), strTemp.begin(), tolower);
+	return strTemp;
+}
+
+static std::string string_to_upper(std::string str)
+{
+	std::string strTemp = str;
+	std::transform(strTemp.begin(), strTemp.end(), strTemp.begin(), toupper);
+	return strTemp;
+}
+
+static std::wstring wstring_to_upper(std::wstring str)
+{
+	std::wstring strTemp = str;
+	std::transform(strTemp.begin(), strTemp.end(), strTemp.begin(), toupper);
+	return strTemp;
 }
