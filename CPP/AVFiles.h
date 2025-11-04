@@ -38,69 +38,26 @@ static bool string_to_file(std::string filePath, std::string string)
 	}
 }
 
-static std::wstring PathMerge(std::wstring pathLeft, std::wstring pathRight)
+static bool FileDelete(std::wstring filePath)
 {
 	try
 	{
-		std::filesystem::path left_path(pathLeft);
-		std::filesystem::path right_path(pathRight);
-		return std::wstring(left_path / right_path);
+		return std::filesystem::remove(filePath);
 	}
 	catch (...)
 	{
-		return std::wstring(L"");
+		return false;
 	}
 }
 
-static std::wstring PathGetExecutableFile()
+static bool FileExists(std::wstring filePath)
 {
 	try
 	{
-		WCHAR exePath[MAX_PATH]{};
-		GetModuleFileNameW(NULL, exePath, MAX_PATH);
-		return std::wstring(exePath);
+		return std::filesystem::exists(filePath);
 	}
 	catch (...)
 	{
-		return std::wstring(L"");
+		return false;
 	}
-}
-
-static std::wstring PathGetExecutableDirectory()
-{
-	try
-	{
-		WCHAR exePath[MAX_PATH]{};
-		GetModuleFileNameW(NULL, exePath, MAX_PATH);
-		PathCchRemoveFileSpec(exePath, MAX_PATH);
-		return std::wstring(exePath);
-	}
-	catch (...)
-	{
-		return std::wstring(L"");
-	}
-}
-
-static std::vector<std::wstring> PathListFiles(std::wstring pathList, bool recursive)
-{
-	std::vector<std::wstring> list;
-	try
-	{
-		if (recursive)
-		{
-			for (auto file : std::filesystem::recursive_directory_iterator(pathList, std::filesystem::directory_options::skip_permission_denied))
-			{
-				list.push_back(file.path().wstring());
-			}
-		}
-		else
-		{
-			for (auto file : std::filesystem::directory_iterator(pathList, std::filesystem::directory_options::skip_permission_denied))
-			{
-				list.push_back(file.path().wstring());
-			}
-		}
-	}
-	catch (...) {}
-	return list;
 }
