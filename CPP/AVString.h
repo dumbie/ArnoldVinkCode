@@ -133,6 +133,17 @@ static bool string_replace(std::string& string, std::string from, std::string to
 	return true;
 }
 
+static bool string_replace(std::wstring& string, std::wstring from, std::wstring to)
+{
+	size_t start_pos = string.find(from);
+	if (start_pos == std::wstring::npos)
+	{
+		return false;
+	}
+	string.replace(start_pos, from.length(), to);
+	return true;
+}
+
 static bool string_replace_all(std::string& string, std::string from, std::string to)
 {
 	size_t start_pos = 0;
