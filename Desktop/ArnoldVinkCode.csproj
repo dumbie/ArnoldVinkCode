@@ -36,7 +36,7 @@
 		</COMReference>
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="System.Management" Version="9.0.9" />
+		<PackageReference Include="System.Management" Version="9.0.10" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
 		<PackageReference Include="TaskScheduler" Version="2.12.2" />
 	</ItemGroup>
