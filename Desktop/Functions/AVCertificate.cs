@@ -11,7 +11,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                using (X509Certificate2 certificateFile = new X509Certificate2(certificateBytes))
+                using (X509Certificate2 certificateFile = X509CertificateLoader.LoadCertificate(certificateBytes))
                 {
                     using (X509Store certificateStore = new X509Store(StoreName.Root, StoreLocation.LocalMachine))
                     {
