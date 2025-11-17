@@ -13,7 +13,7 @@
         ResizeMode="NoResize"
         SizeToContent="WidthAndHeight"
         Background="Transparent"
-        MaxHeight="400"
+        MaxHeight="600"
         MinWidth="350"
         MouseDown="Window_MouseDown"
         Closing="Window_Closing">
@@ -79,15 +79,25 @@
     <Border CornerRadius="2" BorderThickness="2" BorderBrush="{DynamicResource MessageAccentBrush}" Background="{DynamicResource MessageWhiteBrush}" MaxWidth="600">
         <Grid Margin="10,5,10,10">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <StackPanel Grid.Row="0">
-                <TextBlock Name="grid_MessageBox_Question" Foreground="{DynamicResource MessageBlackBrush}" FontSize="28" FontWeight="Light" TextWrapping="Wrap" Text="Question"/>
-                <Border Name="grid_MessageBox_Border" HorizontalAlignment="Stretch" Height="4" CornerRadius="2" Background="{DynamicResource MessageAccentBrush}"  Margin="0,10,0,5"/>
-                <TextBlock Name="grid_MessageBox_Description" Foreground="{DynamicResource MessageGrayBrush}" FontSize="18" TextWrapping="Wrap" Text="Description"/>
-            </StackPanel>
+            <Grid Grid.Row="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Row="0">
+                    <TextBlock Name="grid_MessageBox_Question" Foreground="{DynamicResource MessageBlackBrush}" FontSize="28" FontWeight="Light" TextWrapping="Wrap" Text="Question"/>
+                    <Border Name="grid_MessageBox_Border" HorizontalAlignment="Stretch" Height="4" CornerRadius="2" Background="{DynamicResource MessageAccentBrush}" Margin="0,10,0,5"/>
+                </StackPanel>
+
+                <ScrollViewer Grid.Row="1">
+                    <TextBlock Name="grid_MessageBox_Description" Foreground="{DynamicResource MessageGrayBrush}" FontSize="18" TextWrapping="Wrap" Text="Description"/>
+                </ScrollViewer>
+            </Grid>
 
             <ListBox Grid.Row="1" Name="listbox_MessageBox" SelectionMode="Single" Style="{DynamicResource MessageListBoxStyle}" ItemTemplate="{DynamicResource MessageDataTemplate}" ItemContainerStyle="{DynamicResource MessageItemContainerStyle}" ButtonBase.Click="Listbox_MessageBox_Click"/>
         </Grid>
