@@ -47,7 +47,7 @@ namespace ArnoldVinkCode
             try
             {
                 //Close child processes
-                foreach (ProcessMulti childProcess in Get_AllProcessesMulti())
+                foreach (ProcessMulti childProcess in Get_ProcessesMultiAll())
                 {
                     try
                     {

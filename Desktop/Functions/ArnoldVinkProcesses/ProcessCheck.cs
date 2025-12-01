@@ -36,7 +36,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                return Get_AllProcessesMulti().Any(x => x.Identifier == targetProcessId);
+                return Get_ProcessesMultiAll().Any(x => x.Identifier == targetProcessId);
             }
             catch (Exception ex)
             {
@@ -167,7 +167,7 @@ namespace ArnoldVinkCode
         }
 
         //Check if window handle is a valid window
-        public static bool Check_WindowHandleValid(IntPtr targetWindowHandle, bool checkMainWindow)
+        public static bool Check_WindowHandleValid(IntPtr targetWindowHandle, bool checkMainWindow, bool ignoreVisible)
         {
             try
             {
@@ -180,15 +180,18 @@ namespace ArnoldVinkCode
 
                 //Check window styles
                 WindowStyles windowStyle = (WindowStyles)GetWindowLongAuto(targetWindowHandle, WindowLongFlags.GWL_STYLE).ToInt64();
-                if (!windowStyle.HasFlag(WindowStyles.WS_VISIBLE))
-                {
-                    //Debug.WriteLine("Window missing visible style and can't be shown or hidden: " + targetWindowHandle);
-                    return false;
-                }
                 if (windowStyle.HasFlag(WindowStyles.WS_DISABLED))
                 {
                     //Debug.WriteLine("Window has disabled style and can't be shown or hidden: " + targetWindowHandle);
                     return false;
+                }
+                if (!ignoreVisible)
+                {
+                    if (!windowStyle.HasFlag(WindowStyles.WS_VISIBLE))
+                    {
+                        //Debug.WriteLine("Window missing visible style and can't be shown or hidden: " + targetWindowHandle);
+                        return false;
+                    }
                 }
 
                 //Check window styles ex

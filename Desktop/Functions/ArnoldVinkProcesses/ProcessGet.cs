@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using static ArnoldVinkCode.AVInteropDll;
 
 namespace ArnoldVinkCode
@@ -31,6 +32,64 @@ namespace ArnoldVinkCode
             {
                 AVDebug.WriteLine("Failed to get process handle by id: " + targetProcessId + "/" + ex.Message);
                 return IntPtr.Zero;
+            }
+        }
+
+        //Get all running processes multi
+        public static List<ProcessMulti> Get_ProcessesMultiAll()
+        {
+            List<ProcessMulti> listProcessMulti = new List<ProcessMulti>();
+            IntPtr systemInfoBufferQuery = IntPtr.Zero;
+            try
+            {
+                //AVDebug.WriteLine("Getting all multi processes.");
+
+                //Query process information
+                systemInfoBufferQuery = Query_SystemProcessInformation();
+                if (systemInfoBufferQuery == IntPtr.Zero)
+                {
+                    AVDebug.WriteLine("Failed getting all multi processes: query failed.");
+                    return listProcessMulti;
+                }
+
+                //Loop process information
+                long systemInfoOffsetLoop = systemInfoBufferQuery.ToInt64();
+                while (true)
+                {
+                    try
+                    {
+                        //Read process information
+                        IntPtr systemInfoBufferLoop = new IntPtr(systemInfoOffsetLoop);
+                        SYSTEM_PROCESS_INFORMATION systemProcess = (SYSTEM_PROCESS_INFORMATION)Marshal.PtrToStructure(systemInfoBufferLoop, typeof(SYSTEM_PROCESS_INFORMATION));
+
+                        //Add multi process to list
+                        ProcessMulti processMulti = new ProcessMulti(systemProcess.UniqueProcessId.ToInt32(), systemProcess.ParentProcessId.ToInt32(), systemProcess.ImageName.Buffer);
+                        listProcessMulti.Add(processMulti);
+
+                        //Move to next process
+                        if (systemProcess.NextEntryOffset != 0)
+                        {
+                            systemInfoOffsetLoop += systemProcess.NextEntryOffset;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    catch { }
+                }
+
+                //Return processes
+                return listProcessMulti;
+            }
+            catch (Exception ex)
+            {
+                AVDebug.WriteLine("Failed getting all multi processes: " + ex.Message);
+                return listProcessMulti;
+            }
+            finally
+            {
+                SafeCloseMarshal(ref systemInfoBufferQuery);
             }
         }
 
@@ -84,7 +143,7 @@ namespace ArnoldVinkCode
             try
             {
                 string targetNameLower = targetName.ToLower();
-                foreach (ProcessMulti checkProcess in Get_AllProcessesMulti())
+                foreach (ProcessMulti checkProcess in Get_ProcessesMultiAll())
                 {
                     try
                     {
@@ -126,7 +185,7 @@ namespace ArnoldVinkCode
             try
             {
                 string targetExecutablePathLower = targetExecutablePath.ToLower();
-                foreach (ProcessMulti checkProcess in Get_AllProcessesMulti())
+                foreach (ProcessMulti checkProcess in Get_ProcessesMultiAll())
                 {
                     try
                     {
@@ -157,7 +216,7 @@ namespace ArnoldVinkCode
             try
             {
                 string targetAppUserModelIdLower = targetAppUserModelId.ToLower();
-                foreach (ProcessMulti checkProcess in Get_AllProcessesMulti())
+                foreach (ProcessMulti checkProcess in Get_ProcessesMultiAll())
                 {
                     try
                     {
@@ -189,7 +248,7 @@ namespace ArnoldVinkCode
             try
             {
                 string targetWindowTitleLower = targetWindowTitle.ToLower();
-                foreach (ProcessMulti checkProcess in Get_AllProcessesMulti())
+                foreach (ProcessMulti checkProcess in Get_ProcessesMultiAll())
                 {
                     try
                     {

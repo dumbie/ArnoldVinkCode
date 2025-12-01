@@ -182,7 +182,7 @@ namespace ArnoldVinkCode
                 {
                     try
                     {
-                        if (Check_WindowHandleValid(windowHandle, true))
+                        if (Check_WindowHandleValid(windowHandle, true, true))
                         {
                             return windowHandle;
                         }
@@ -203,7 +203,7 @@ namespace ArnoldVinkCode
                 {
                     try
                     {
-                        if (Check_WindowHandleValid(windowHandle, true))
+                        if (Check_WindowHandleValid(windowHandle, true, false))
                         {
                             return windowHandle;
                         }
@@ -224,7 +224,7 @@ namespace ArnoldVinkCode
                 {
                     try
                     {
-                        if (Check_WindowHandleValid(windowHandle, true))
+                        if (Check_WindowHandleValid(windowHandle, true, false))
                         {
                             return windowHandle;
                         }
