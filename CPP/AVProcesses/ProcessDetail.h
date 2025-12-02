@@ -1,14 +1,12 @@
 #pragma once
-#pragma comment(lib, "ntdll.lib")
-#include <winternl.h>
-#include <ntstatus.h>
-#include <string>
-#include <vector>
+#include <windows.h>
+#include "ProcessWindow.h"
+#include "ProcessCheck.h"
 
-namespace AVProcesses
+namespace ArnoldVinkCode::AVProcesses
 {
 	//Get class name by window handle
-	static std::string Detail_ClassNameByWindowHandle(HWND targetWindowHandle)
+	inline std::string Detail_ClassNameByWindowHandle(HWND targetWindowHandle)
 	{
 		try
 		{
@@ -22,7 +20,7 @@ namespace AVProcesses
 	}
 
 	//Get full exe path by process handle
-	static std::string Detail_ExecutablePathByProcessHandle(HANDLE targetProcessHandle)
+	inline std::string Detail_ExecutablePathByProcessHandle(HANDLE targetProcessHandle)
 	{
 		try
 		{
@@ -38,7 +36,7 @@ namespace AVProcesses
 	}
 
 	//Get main window handle by process id
-	static HWND Detail_WindowHandleMainByProcessId(int targetProcessId)
+	inline HWND Detail_WindowHandleMainByProcessId(int targetProcessId)
 	{
 		try
 		{

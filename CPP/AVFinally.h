@@ -10,7 +10,7 @@ template <typename T>
 struct AVFinallyInternal
 {
 	T runFunction;
-	BOOL runTriggered = false;
+	bool runTriggered = false;
 
 	AVFinallyInternal(T f) : runFunction{ f } {}
 

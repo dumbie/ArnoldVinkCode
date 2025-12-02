@@ -1,165 +1,168 @@
 #pragma once
+#include <optional>
 #include "AVDebug.h"
 #include "AVFiles.h"
 #include "nlohmann_json.hpp"
-#include <optional>
 
-class AVSettingsJson
+namespace ArnoldVinkCode
 {
-private:
-	//Variables
-	std::string vSettingFilePath = "";
-	nlohmann::json vJToken = NULL;
-
-	//Load settings from file
-	bool FileLoad()
+	class AVSettingsJson
 	{
-		try
-		{
-			//Load json settings file
-			std::string jsonText = file_to_string(vSettingFilePath);
+	private:
+		//Variables
+		std::string vSettingFilePath = "";
+		nlohmann::json vJToken = NULL;
 
-			//Check json settings text
-			if (jsonText.empty())
+		//Load settings from file
+		bool FileLoad()
+		{
+			try
 			{
-				AVDebugWriteLine("Failed reading settings file, falling back to empty.");
-				jsonText = "{}";
+				//Load json settings file
+				std::string jsonText = file_to_string(vSettingFilePath);
+
+				//Check json settings text
+				if (jsonText.empty())
+				{
+					AVDebugWriteLine("Failed reading settings file, falling back to empty.");
+					jsonText = "{}";
+				}
+
+				//Parse json settings file
+				vJToken = nlohmann::json::parse(jsonText);
+
+				//Return result
+				AVDebugWriteLine("Loaded settings file: " << vSettingFilePath.c_str());
+				return true;
 			}
-
-			//Parse json settings file
-			vJToken = nlohmann::json::parse(jsonText);
-
-			//Return result
-			AVDebugWriteLine("Loaded settings file: " << vSettingFilePath.c_str());
-			return true;
+			catch (...)
+			{
+				//Return result
+				AVDebugWriteLine("Failed loading settings file: " << vSettingFilePath.c_str());
+				return false;
+			}
 		}
-		catch (...)
+
+		//Save settings to file
+		bool FileSave()
 		{
-			//Return result
-			AVDebugWriteLine("Failed loading settings file: " << vSettingFilePath.c_str());
-			return false;
-		}
-	}
+			try
+			{
+				//Convert json to string
+				std::string jsonString = vJToken.dump();
 
-	//Save settings to file
-	bool FileSave()
-	{
-		try
-		{
-			//Convert json to string
-			std::string jsonString = vJToken.dump();
+				//Save settings file
+				string_to_file(vSettingFilePath, jsonString);
 
-			//Save settings file
-			string_to_file(vSettingFilePath, jsonString);
+				//Return result
+				AVDebugWriteLine("Saved settings file: " << vSettingFilePath.c_str());
+				return true;
+			}
+			catch (...)
+			{
+				//Return result
+				AVDebugWriteLine("Failed saving settings file: " << vSettingFilePath.c_str());
+				return false;
+			}
+		}
 
-			//Return result
-			AVDebugWriteLine("Saved settings file: " << vSettingFilePath.c_str());
-			return true;
-		}
-		catch (...)
+	public:
+		//Initialize
+		AVSettingsJson() {};
+		AVSettingsJson(std::string settingFilePath)
 		{
-			//Return result
-			AVDebugWriteLine("Failed saving settings file: " << vSettingFilePath.c_str());
-			return false;
+			try
+			{
+				vSettingFilePath = settingFilePath;
+				FileLoad();
+			}
+			catch (...)
+			{
+				AVDebugWriteLine("Failed initializing settings.");
+			}
 		}
-	}
 
-public:
-	//Initialize
-	AVSettingsJson() {};
-	AVSettingsJson(std::string settingFilePath)
-	{
-		try
+		//Check if setting exists
+		bool Check(std::string settingName)
 		{
-			vSettingFilePath = settingFilePath;
-			FileLoad();
+			try
+			{
+				//Check setting
+				return vJToken.contains(settingName);
+			}
+			catch (...)
+			{
+				//Return result
+				AVDebugWriteLine("Failed checking setting: " << settingName.c_str());
+				return false;
+			}
 		}
-		catch (...)
-		{
-			AVDebugWriteLine("Failed initializing settings.");
-		}
-	}
 
-	//Check if setting exists
-	bool Check(std::string settingName)
-	{
-		try
+		//Remove setting
+		bool Remove(std::string settingName)
 		{
-			//Check setting
-			return vJToken.contains(settingName);
-		}
-		catch (...)
-		{
-			//Return result
-			AVDebugWriteLine("Failed checking setting: " << settingName.c_str());
-			return false;
-		}
-	}
+			try
+			{
+				//Remove setting
+				vJToken.erase(settingName);
+				AVDebugWriteLine("Removed setting: " << settingName.c_str());
 
-	//Remove setting
-	bool Remove(std::string settingName)
-	{
-		try
-		{
-			//Remove setting
-			vJToken.erase(settingName);
-			AVDebugWriteLine("Removed setting: " << settingName.c_str());
+				//Save setting file
+				FileSave();
 
-			//Save setting file
-			FileSave();
+				//Return result
+				return true;
+			}
+			catch (...)
+			{
+				//Return result
+				AVDebugWriteLine("Failed removing setting: " << settingName.c_str());
+				return false;
+			}
+		}
 
-			//Return result
-			return true;
-		}
-		catch (...)
+		//Load setting value
+		/// <summary>
+		/// std::optional<Type> var = set.Load<Type>("SettingName");
+		/// if (var.has_value()) { var.value(); }
+		/// </summary>
+		template<typename T>
+		std::optional<T> Load(std::string settingName)
 		{
-			//Return result
-			AVDebugWriteLine("Failed removing setting: " << settingName.c_str());
-			return false;
+			try
+			{
+				//Return result
+				return vJToken[settingName];
+			}
+			catch (...)
+			{
+				//Return result
+				AVDebugWriteLine("Failed loading setting: " << settingName.c_str());
+				return std::nullopt;
+			}
 		}
-	}
 
-	//Load setting value
-	/// <summary>
-	/// std::optional<Type> var = set.Load<Type>("SettingName");
-	/// if (var.has_value()) { var.value(); }
-	/// </summary>
-	template<typename T>
-	std::optional<T> Load(std::string settingName)
-	{
-		try
+		//Set setting value
+		bool Set(std::string settingName, auto settingValue)
 		{
-			//Return result
-			return vJToken[settingName];
-		}
-		catch (...)
-		{
-			//Return result
-			AVDebugWriteLine("Failed loading setting: " << settingName.c_str());
-			return std::nullopt;
-		}
-	}
+			try
+			{
+				//Set setting value
+				vJToken[settingName] = settingValue;
+				AVDebugWriteLine("Setted value: " << settingName.c_str());
 
-	//Set setting value
-	bool Set(std::string settingName, auto settingValue)
-	{
-		try
-		{
-			//Set setting value
-			vJToken[settingName] = settingValue;
-			AVDebugWriteLine("Setted value: " << settingName.c_str());
+				//Save setting file
+				FileSave();
 
-			//Save setting file
-			FileSave();
-
-			//Return result
-			return true;
+				//Return result
+				return true;
+			}
+			catch (...)
+			{
+				//Return result
+				AVDebugWriteLine("Failed setting value: " << settingName.c_str());
+				return false;
+			}
 		}
-		catch (...)
-		{
-			//Return result
-			AVDebugWriteLine("Failed setting value: " << settingName.c_str());
-			return false;
-		}
-	}
-};
+	};
+}

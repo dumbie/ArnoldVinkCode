@@ -1,14 +1,17 @@
 #pragma once
+#include <windows.h>
 #pragma comment(lib, "ntdll.lib")
 #include <winternl.h>
 #include <ntstatus.h>
+#include <processthreadsapi.h>
 #include <string>
 #include <vector>
+#include "AVString.h"
 
-namespace AVProcesses
+namespace ArnoldVinkCode::AVProcesses
 {
 	//Query system process information
-	static PSYSTEM_PROCESS_INFORMATION Query_SystemProcessInformation()
+	inline PSYSTEM_PROCESS_INFORMATION Query_SystemProcessInformation()
 	{
 		ULONG systemOffset = 0;
 		PSYSTEM_PROCESS_INFORMATION systemInfo = NULL;
@@ -120,7 +123,7 @@ namespace AVProcesses
 	};
 
 	//Get all running processes multi
-	static std::vector<ProcessMulti> Get_ProcessesMultiAll()
+	inline std::vector<ProcessMulti> Get_ProcessesMultiAll()
 	{
 		std::vector<ProcessMulti> listProcessMulti;
 		try
@@ -159,7 +162,7 @@ namespace AVProcesses
 	}
 
 	//Get multi process by executable name
-	static std::vector<ProcessMulti> Get_ProcessesMultiByName(std::string executableName)
+	inline std::vector<ProcessMulti> Get_ProcessesMultiByName(std::string executableName)
 	{
 		std::vector<ProcessMulti> listProcessMulti;
 		try

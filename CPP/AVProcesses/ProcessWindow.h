@@ -1,14 +1,10 @@
 #pragma once
-#pragma comment(lib, "ntdll.lib")
-#include <winternl.h>
-#include <ntstatus.h>
-#include <string>
-#include <vector>
+#include <windows.h>
 
-namespace AVProcesses
+namespace ArnoldVinkCode::AVProcesses
 {
 	//Enumerate all windows by process id (including uwp and fullscreen)
-	static std::vector<HWND> Get_WindowHandlesByProcessId(int targetProcessId)
+	inline std::vector<HWND> Get_WindowHandlesByProcessId(int targetProcessId)
 	{
 		//AVDebugWriteLine(L"Getting window handles by process id: " << targetProcessId);
 		std::vector<HWND> listWindows{};

@@ -1,18 +1,16 @@
 #pragma once
-#pragma comment(lib, "ntdll.lib")
-#include <winternl.h>
-#include <ntstatus.h>
 #include <string>
 #include <vector>
+#include <wtypes.h>
 
-namespace AVProcesses
+namespace ArnoldVinkCode::AVProcesses
 {
 	//Check if window class name is valid
-	static bool Check_WindowClassNameIsValid(std::string targetClassName)
+	inline bool Check_WindowClassNameIsValid(std::string targetClassName)
 	{
 		try
 		{
-			std::vector<std::string> classNamesInvalid = { L"ApplicationManager_ImmersiveShellWindow", L"Windows.Internal.Shell.TabProxyWindow" };
+			std::vector<std::string> classNamesInvalid{ "ApplicationManager_ImmersiveShellWindow", "Windows.Internal.Shell.TabProxyWindow" };
 			for (std::string className : classNamesInvalid)
 			{
 				if (targetClassName == className) { return false; }
@@ -23,7 +21,7 @@ namespace AVProcesses
 	}
 
 	////Check if window class name is valid
-	//static bool Check_WindowClassNameIsValid(HWND targetWindowHandle)
+	//bool Check_WindowClassNameIsValid(HWND targetWindowHandle)
 	//{
 	//	try
 	//	{
@@ -35,7 +33,7 @@ namespace AVProcesses
 	//}
 
 	//Check if window handle is a valid window
-	static bool Check_WindowHandleValid(HWND targetWindowHandle, bool checkMainWindow, bool ignoreVisible)
+	inline bool Check_WindowHandleValid(HWND targetWindowHandle, bool checkMainWindow, bool ignoreVisible)
 	{
 		try
 		{
