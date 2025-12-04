@@ -21,13 +21,13 @@ namespace ArnoldVinkCode
 			if (lRes != ERROR_SUCCESS)
 			{
 				//Return result
-				AVDebugWriteLine("Failed to open registry key: " << lRes << " / " << subKey);
+				AVDebugWriteLine("Failed to open registry sub key: " << lRes << " / " << subKey);
 				return false;
 			}
 			else
 			{
 				//Return result
-				AVDebugWriteLine("Registry key exists: " << subKey);
+				AVDebugWriteLine("Registry sub key exists: " << subKey);
 				return true;
 			}
 		}
@@ -50,7 +50,7 @@ namespace ArnoldVinkCode
 			if (lRes != ERROR_SUCCESS)
 			{
 				//Return result
-				AVDebugWriteLine("Failed to open registry key: " << lRes << " / " << subKey);
+				AVDebugWriteLine("Failed to open registry sub key: " << lRes << " / " << subKey);
 				return false;
 			}
 
@@ -87,12 +87,67 @@ namespace ArnoldVinkCode
 			LSTATUS lRes = RegCreateKeyW(hKey, subKey.c_str(), &hOpenKey);
 			if (lRes != ERROR_SUCCESS)
 			{
-				AVDebugWriteLine("Failed to create registry key: " << lRes << " / " << subKey);
+				AVDebugWriteLine("Failed to create registry sub key: " << lRes << " / " << subKey);
 				return false;
 			}
 
 			//Return result
 			AVDebugWriteLine("Created registry sub key: " << subKey);
+			return true;
+		}
+		catch (...) {}
+		return false;
+	}
+
+	//Delete registry sub key
+	inline bool RegistryDelete(HKEY hKey, std::wstring subKey)
+	{
+		try
+		{
+			//Delete registry sub key
+			LSTATUS lRes = RegDeleteTreeW(hKey, subKey.c_str());
+			if (lRes != ERROR_SUCCESS)
+			{
+				AVDebugWriteLine("Failed to delete registry sub key: " << lRes << " / " << subKey);
+				return false;
+			}
+
+			//Return result
+			AVDebugWriteLine("Deleted registry sub key: " << subKey);
+			return true;
+		}
+		catch (...) {}
+		return false;
+	}
+
+	//Delete registry value
+	inline bool RegistryDelete(HKEY hKey, std::wstring subKey, std::wstring valueName)
+	{
+		HKEY hOpenKey;
+		AVFinallySafe(
+			{
+				RegCloseKey(hOpenKey);
+			});
+		try
+		{
+			//Open registry
+			LSTATUS lRes = RegOpenKeyExW(hKey, subKey.c_str(), NULL, KEY_WRITE, &hOpenKey);
+			if (lRes != ERROR_SUCCESS)
+			{
+				AVDebugWriteLine("Failed to open registry sub key: " << lRes << " / " << subKey);
+				return false;
+			}
+
+			//Delete registry value
+			lRes = RegDeleteValueW(hOpenKey, valueName.c_str());
+			if (lRes != ERROR_SUCCESS)
+			{
+				AVDebugWriteLine("Failed to delete registry value: " << lRes << " / " << valueName);
+				return false;
+			}
+
+			//Return result
+			AVDebugWriteLine("Deleted registry value: " << valueName);
 			return true;
 		}
 		catch (...) {}
@@ -116,7 +171,7 @@ namespace ArnoldVinkCode
 			LSTATUS lRes = RegOpenKeyExW(hKey, subKey.c_str(), NULL, KEY_WRITE, &hOpenKey);
 			if (lRes != ERROR_SUCCESS)
 			{
-				AVDebugWriteLine("Failed to open registry key: " << lRes << " / " << subKey);
+				AVDebugWriteLine("Failed to open registry sub key: " << lRes << " / " << subKey);
 				return false;
 			}
 
@@ -154,7 +209,7 @@ namespace ArnoldVinkCode
 			LSTATUS lRes = RegOpenKeyExW(hKey, subKey.c_str(), NULL, KEY_WRITE, &hOpenKey);
 			if (lRes != ERROR_SUCCESS)
 			{
-				AVDebugWriteLine("Failed to open registry key: " << lRes << " / " << subKey);
+				AVDebugWriteLine("Failed to open registry sub key: " << lRes << " / " << subKey);
 				return false;
 			}
 
@@ -192,7 +247,7 @@ namespace ArnoldVinkCode
 			LSTATUS lRes = RegOpenKeyExW(hKey, subKey.c_str(), NULL, KEY_WRITE, &hOpenKey);
 			if (lRes != ERROR_SUCCESS)
 			{
-				AVDebugWriteLine("Failed to open registry key: " << lRes << " / " << subKey);
+				AVDebugWriteLine("Failed to open registry sub key: " << lRes << " / " << subKey);
 				return false;
 			}
 
@@ -227,7 +282,7 @@ namespace ArnoldVinkCode
 			LSTATUS lRes = RegOpenKeyExW(hKey, subKey.c_str(), NULL, KEY_READ, &hOpenKey);
 			if (lRes != ERROR_SUCCESS)
 			{
-				AVDebugWriteLine("Failed to open registry key: " << lRes << " / " << subKey);
+				AVDebugWriteLine("Failed to open registry sub key: " << lRes << " / " << subKey);
 				return L"";
 			}
 
@@ -262,7 +317,7 @@ namespace ArnoldVinkCode
 			LSTATUS lRes = RegOpenKeyExW(hKey, subKey.c_str(), NULL, KEY_READ, &hOpenKey);
 			if (lRes != ERROR_SUCCESS)
 			{
-				AVDebugWriteLine("Failed to open registry key: " << lRes << " / " << subKey);
+				AVDebugWriteLine("Failed to open registry sub key: " << lRes << " / " << subKey);
 				return std::nullopt;
 			}
 
@@ -297,7 +352,7 @@ namespace ArnoldVinkCode
 			LSTATUS lRes = RegOpenKeyExW(hKey, subKey.c_str(), NULL, KEY_READ, &hOpenKey);
 			if (lRes != ERROR_SUCCESS)
 			{
-				AVDebugWriteLine("Failed to open registry key: " << lRes << " / " << subKey);
+				AVDebugWriteLine("Failed to open registry sub key: " << lRes << " / " << subKey);
 				return std::vector<BYTE>();
 			}
 
