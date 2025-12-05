@@ -64,4 +64,42 @@ namespace ArnoldVinkCode
 			return false;
 		}
 	}
+
+	inline std::vector<std::filesystem::directory_entry> FileList(std::wstring folderPath, bool listRecursive)
+	{
+		std::vector<std::filesystem::directory_entry> fileList;
+		try
+		{
+			if (listRecursive)
+			{
+				auto iterator = std::filesystem::recursive_directory_iterator(folderPath);
+				for (auto entry : iterator)
+				{
+					fileList.push_back(entry);
+				}
+			}
+			else
+			{
+				auto iterator = std::filesystem::directory_iterator(folderPath);
+				for (auto entry : iterator)
+				{
+					fileList.push_back(entry);
+				}
+			}
+		}
+		catch (...) {}
+		return fileList;
+	}
+
+	inline bool FolderCreate(std::wstring folderPath)
+	{
+		try
+		{
+			return std::filesystem::create_directory(folderPath);
+		}
+		catch (...)
+		{
+			return false;
+		}
+	}
 }
