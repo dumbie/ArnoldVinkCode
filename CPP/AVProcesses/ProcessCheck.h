@@ -10,27 +10,27 @@ namespace ArnoldVinkCode::AVProcesses
 	{
 		try
 		{
-			std::vector<std::string> classNamesInvalid{ "ApplicationManager_ImmersiveShellWindow", "Windows.Internal.Shell.TabProxyWindow" };
+			std::vector<std::string> classNamesInvalid{ "ApplicationManager_ImmersiveShellWindow", "Windows.Internal.Shell.TabProxyWindow", "ADLXEventWindowClass" };
 			for (std::string className : classNamesInvalid)
 			{
-				if (targetClassName == className) { return false; }
+				if (string_contains(targetClassName, className)) { return false; }
 			}
 		}
 		catch (...) {}
 		return true;
 	}
 
-	////Check if window class name is valid
-	//bool Check_WindowClassNameIsValid(HWND targetWindowHandle)
-	//{
-	//	try
-	//	{
-	//		std::string classNameString = Detail_ClassNameByWindowHandle(targetWindowHandle);
-	//		return Check_WindowClassNameIsValid(classNameString);
-	//	}
-	//	catch (...) {}
-	//	return false;
-	//}
+	//Check if window class name is valid
+	inline bool Check_WindowClassNameIsValid(HWND targetWindowHandle)
+	{
+		try
+		{
+			std::string classNameString = Detail_ClassNameByWindowHandle(targetWindowHandle);
+			return Check_WindowClassNameIsValid(classNameString);
+		}
+		catch (...) {}
+		return false;
+	}
 
 	//Check if window handle is a valid window
 	inline bool Check_WindowHandleValid(HWND targetWindowHandle, bool checkMainWindow, bool ignoreVisible)
@@ -68,12 +68,12 @@ namespace ArnoldVinkCode::AVProcesses
 				return false;
 			}
 
-			////Check window class name
-			//if (!Check_WindowClassNameIsValid(targetWindowHandle))
-			//{
-			//	AVDebugWriteLine("Window class name is invalid: " << targetWindowHandle);
-			//	return false;
-			//}
+			//Check window class name
+			if (!Check_WindowClassNameIsValid(targetWindowHandle))
+			{
+				//AVDebugWriteLine("Window class name is invalid: " << targetWindowHandle);
+				return false;
+			}
 
 			//Check window title length
 			if (GetWindowTextLengthW(targetWindowHandle) <= 0)

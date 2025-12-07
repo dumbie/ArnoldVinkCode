@@ -276,11 +276,11 @@ namespace ArnoldVinkCode
                     {
                         if (!string.IsNullOrWhiteSpace(AppUserModelId))
                         {
-                            windowHandleMain = Detail_WindowHandleMainByAppUserModelId(AppUserModelId);
+                            windowHandleMain = Get_WindowHandleMainByAppUserModelId(AppUserModelId);
                         }
                         if (windowHandleMain == IntPtr.Zero)
                         {
-                            windowHandleMain = Detail_WindowHandleMainByProcessId(Identifier);
+                            windowHandleMain = Get_WindowHandleMainByProcessId(Identifier);
                         }
                     }
                     catch { }

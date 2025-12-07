@@ -115,7 +115,7 @@ namespace ArnoldVinkCode::AVProcesses
 			HWND windowHandleMain = NULL;
 			try
 			{
-				windowHandleMain = Detail_WindowHandleMainByProcessId(Identifier());
+				windowHandleMain = Get_WindowHandleMainByProcessId(Identifier());
 			}
 			catch (...) {}
 			return windowHandleMain;

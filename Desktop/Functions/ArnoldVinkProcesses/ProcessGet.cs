@@ -8,6 +8,69 @@ namespace ArnoldVinkCode
 {
     public partial class AVProcess
     {
+        //Get main window handle by process id
+        public static IntPtr Get_WindowHandleMainByProcessId(int targetProcessId)
+        {
+            try
+            {
+                foreach (IntPtr windowHandle in Get_WindowHandlesByProcessId(targetProcessId))
+                {
+                    try
+                    {
+                        if (Check_WindowHandleValid(windowHandle, true, true))
+                        {
+                            return windowHandle;
+                        }
+                    }
+                    catch { }
+                }
+            }
+            catch { }
+            return IntPtr.Zero;
+        }
+
+        //Get main window handle by thread id
+        public static IntPtr Get_WindowHandleMainByThreadId(int targetThreadId)
+        {
+            try
+            {
+                foreach (IntPtr windowHandle in Get_WindowHandlesByThreadId(targetThreadId))
+                {
+                    try
+                    {
+                        if (Check_WindowHandleValid(windowHandle, true, false))
+                        {
+                            return windowHandle;
+                        }
+                    }
+                    catch { }
+                }
+            }
+            catch { }
+            return IntPtr.Zero;
+        }
+
+        //Get main window handle by AppUserModelId
+        public static IntPtr Get_WindowHandleMainByAppUserModelId(string targetAppUserModelId)
+        {
+            try
+            {
+                foreach (IntPtr windowHandle in Get_WindowHandlesByAppUserModelId(targetAppUserModelId))
+                {
+                    try
+                    {
+                        if (Check_WindowHandleValid(windowHandle, true, false))
+                        {
+                            return windowHandle;
+                        }
+                    }
+                    catch { }
+                }
+            }
+            catch { }
+            return IntPtr.Zero;
+        }
+
         /// <summary>
         /// Get process handle by process identifier
         /// </summary>

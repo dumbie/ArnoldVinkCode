@@ -156,10 +156,10 @@ namespace ArnoldVinkCode
         {
             try
             {
-                string[] classNamesInvalid = { "ApplicationManager_ImmersiveShellWindow", "Windows.Internal.Shell.TabProxyWindow" };
+                string[] classNamesInvalid = { "ApplicationManager_ImmersiveShellWindow", "Windows.Internal.Shell.TabProxyWindow", "ADLXEventWindowClass" };
                 foreach (string className in classNamesInvalid)
                 {
-                    if (targetClassName == className) { return false; }
+                    if (targetClassName.Contains(className)) { return false; }
                 }
             }
             catch { }
