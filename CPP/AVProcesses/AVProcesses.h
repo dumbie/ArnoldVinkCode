@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 #include "AVString.h"
+#include "AVFinally.h"
 
 namespace ArnoldVinkCode::AVProcesses
 {
@@ -125,29 +126,35 @@ namespace ArnoldVinkCode::AVProcesses
 	//Get all running processes multi
 	inline std::vector<ProcessMulti> Get_ProcessesMultiAll()
 	{
+		PSYSTEM_PROCESS_INFORMATION spiQueryBuffer;
 		std::vector<ProcessMulti> listProcessMulti;
+		AVFinallySafe(
+			{
+				free(spiQueryBuffer);
+			});
 		try
 		{
 			//Query process information
-			PSYSTEM_PROCESS_INFORMATION spi = Query_SystemProcessInformation();
+			spiQueryBuffer = Query_SystemProcessInformation();
 
 			//Loop process information
+			PSYSTEM_PROCESS_INFORMATION spiQueryBufferLoop = spiQueryBuffer;
 			while (true)
 			{
 				try
 				{
 					//Get executable name
-					std::wstring exeNameW = std::wstring(spi->ImageName.Buffer, spi->ImageName.Length / sizeof(WCHAR));
+					std::wstring exeNameW = std::wstring(spiQueryBufferLoop->ImageName.Buffer, spiQueryBufferLoop->ImageName.Length / sizeof(WCHAR));
 					std::string exeNameA = wstring_to_string(exeNameW);
 
 					//Add multi process to list
-					ProcessMulti processMulti = ProcessMulti((int)spi->UniqueProcessId, (int)spi->Reserved2, exeNameA);
+					ProcessMulti processMulti = ProcessMulti((int)spiQueryBufferLoop->UniqueProcessId, (int)spiQueryBufferLoop->Reserved2, exeNameA);
 					listProcessMulti.push_back(processMulti);
 
 					//Move to next process
-					if (spi->NextEntryOffset != 0)
+					if (spiQueryBufferLoop->NextEntryOffset != 0)
 					{
-						spi = (PSYSTEM_PROCESS_INFORMATION)((BYTE*)spi + spi->NextEntryOffset);
+						spiQueryBufferLoop = (PSYSTEM_PROCESS_INFORMATION)((BYTE*)spiQueryBufferLoop + spiQueryBufferLoop->NextEntryOffset);
 					}
 					else
 					{

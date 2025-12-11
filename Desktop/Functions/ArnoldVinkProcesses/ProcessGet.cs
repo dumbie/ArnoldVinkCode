@@ -101,28 +101,28 @@ namespace ArnoldVinkCode
         //Get all running processes multi
         public static List<ProcessMulti> Get_ProcessesMultiAll()
         {
+            IntPtr spiQueryBuffer = IntPtr.Zero;
             List<ProcessMulti> listProcessMulti = new List<ProcessMulti>();
-            IntPtr systemInfoBufferQuery = IntPtr.Zero;
             try
             {
                 //AVDebug.WriteLine("Getting all multi processes.");
 
                 //Query process information
-                systemInfoBufferQuery = Query_SystemProcessInformation();
-                if (systemInfoBufferQuery == IntPtr.Zero)
+                spiQueryBuffer = Query_SystemProcessInformation();
+                if (spiQueryBuffer == IntPtr.Zero)
                 {
                     AVDebug.WriteLine("Failed getting all multi processes: query failed.");
                     return listProcessMulti;
                 }
 
                 //Loop process information
-                long systemInfoOffsetLoop = systemInfoBufferQuery.ToInt64();
+                long spiQueryBufferLoop = spiQueryBuffer.ToInt64();
                 while (true)
                 {
                     try
                     {
                         //Read process information
-                        IntPtr systemInfoBufferLoop = new IntPtr(systemInfoOffsetLoop);
+                        IntPtr systemInfoBufferLoop = new IntPtr(spiQueryBufferLoop);
                         SYSTEM_PROCESS_INFORMATION systemProcess = (SYSTEM_PROCESS_INFORMATION)Marshal.PtrToStructure(systemInfoBufferLoop, typeof(SYSTEM_PROCESS_INFORMATION));
 
                         //Add multi process to list
@@ -132,7 +132,7 @@ namespace ArnoldVinkCode
                         //Move to next process
                         if (systemProcess.NextEntryOffset != 0)
                         {
-                            systemInfoOffsetLoop += systemProcess.NextEntryOffset;
+                            spiQueryBufferLoop += systemProcess.NextEntryOffset;
                         }
                         else
                         {
@@ -152,7 +152,7 @@ namespace ArnoldVinkCode
             }
             finally
             {
-                SafeCloseMarshal(ref systemInfoBufferQuery);
+                SafeCloseMarshal(ref spiQueryBuffer);
             }
         }
 
