@@ -93,28 +93,49 @@ namespace ArnoldVinkCode::AVProcesses
 		}
 	}
 
-	///// <summary>
-	///// Launch UWP or Win32Store application
-	///// </summary>
-	//public static bool Launch_UwpApplication(string appUserModelId, string arguments)
-	//{
-	//    try
-	//    {
-	//        //Show launching message
-	//        AVDebug.WriteLine("Launching UWP or Win32Store application: " + appUserModelId + "/" + arguments);
+	/// <summary>
+	/// Launch UWP or Win32Store application
+	/// </summary>
+	inline bool Launch_UwpApplication(std::wstring appUserModelId, std::wstring arguments)
+	{
+		IApplicationActivationManager* iActivationManager{};
+		AVFinallySafe(
+			{
+				iActivationManager->Release();
+			});
+		try
+		{
+			//Show launching message
+			AVDebugWriteLine(L"Launching UWP or Win32Store application: " + appUserModelId + L"/" + arguments);
 
-	//        //Start the process
-	//        UWPActivationManager UWPActivationManager = new UWPActivationManager();
-	//        UWPActivationManager.ActivateApplication(appUserModelId, arguments, UWP_ACTIVATEOPTIONS.AO_NONE, out int processId);
+			//Initialize COM library
+			HRESULT hResult = CoInitialize(NULL);
+			if (!SUCCEEDED(hResult))
+			{
+				AVDebugWriteLine(L"Failed to initialize COM library.");
+				return false;
+			}
 
-	//        //Return process id
-	//        AVDebug.WriteLine("Launched UWP or Win32Store process identifier: " + processId);
-	//        return processId > 0;
-	//    }
-	//    catch (...)
-	//    {
-	//        AVDebug.WriteLine("Failed launching UWP or Win32Store: " + appUserModelId + "/" + ex.Message);
-	//        return false;
-	//    }
-	//}
+			//Create activation manager
+			hResult = CoCreateInstance(CLSID_ApplicationActivationManager, NULL, CLSCTX_ALL, IID_IApplicationActivationManager, (void**)&iActivationManager);
+			if (!SUCCEEDED(hResult))
+			{
+				AVDebugWriteLine(L"Failed to create activation manager instance.");
+				return false;
+			}
+
+			//Start uwp application
+			DWORD processId = 0;
+			hResult = iActivationManager->ActivateApplication(appUserModelId.c_str(), arguments.c_str(), AO_NONE, &processId);
+
+			//Return process id
+			AVDebugWriteLine(L"Launched UWP or Win32Store process identifier: " << processId);
+			return processId > 0;
+		}
+		catch (...)
+		{
+			AVDebugWriteLine(L"Failed launching UWP or Win32Store: " + appUserModelId);
+			return false;
+		}
+	}
 }

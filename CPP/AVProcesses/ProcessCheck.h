@@ -5,6 +5,31 @@
 
 namespace ArnoldVinkCode::AVProcesses
 {
+	//Check if path is uwp application
+	inline bool Check_PathUwpApplication(std::wstring targetPath)
+	{
+		try
+		{
+			if (targetPath.empty()) { return false; }
+			return !wstring_contains(targetPath, L"\\") && !wstring_contains(targetPath, L"/") && wstring_contains(targetPath, L"!") && wstring_contains(targetPath, L"_");
+		}
+		catch (...) {}
+		return false;
+	}
+
+	//Check if path is url protocol
+	inline bool Check_PathUrlProtocol(std::wstring targetPath)
+	{
+		try
+		{
+			bool dividerPosition = targetPath.find(L":") > 1;
+			bool urlProtocol = wstring_contains(targetPath, L":/") || wstring_contains(targetPath, L":\\");
+			return urlProtocol && dividerPosition;
+		}
+		catch (...) {}
+		return false;
+	}
+
 	//Check if window class name is valid
 	inline bool Check_WindowClassNameIsValid(std::string targetClassName)
 	{

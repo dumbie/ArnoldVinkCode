@@ -14,7 +14,7 @@ namespace ArnoldVinkCode
 		IShellView* desktopView;
 		IDispatch* dispBackground;
 		IShellFolderViewDual* shellFolderViewDual;
-		IDispatch* dispApplication;
+		IDispatch* dispApplication{};
 		IShellDispatch2* shellDispatch2;
 		AVFinallySafe(
 			{
