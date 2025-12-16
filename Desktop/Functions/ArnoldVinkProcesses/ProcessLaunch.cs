@@ -10,12 +10,10 @@ namespace ArnoldVinkCode
     public partial class AVProcess
     {
         /// <summary>
-        /// Launch application by ShellExecute
+        /// Launch application using ShellExecute
         /// </summary>
-        /// <summary>Disables UIAccess from launch process when running as admin.</summary>
         public static bool Launch_ShellExecute(string exePath, string workPath, string arguments, bool asAdmin)
         {
-            IntPtr launchTokenHandle = IntPtr.Zero;
             try
             {
                 //Check execute path
@@ -57,8 +55,9 @@ namespace ArnoldVinkCode
                     }
                     else
                     {
-                        shellExecuteInfo.lpDirectory = Path.GetDirectoryName(exePath);
-                        AVDebug.WriteLine("Workpath is empty or missing, using exepath.");
+                        string fileFolderPath = Path.GetDirectoryName(exePath);
+                        shellExecuteInfo.lpDirectory = fileFolderPath;
+                        AVDebug.WriteLine("Workpath is empty or missing, using exepath: " + fileFolderPath);
                     }
                 }
 
@@ -66,12 +65,6 @@ namespace ArnoldVinkCode
                 bool shellExecuteResult = false;
                 if (asAdmin)
                 {
-                    //Get current process token
-                    launchTokenHandle = Token_Create_Current();
-
-                    //Disable token ui access
-                    Token_Adjust_UIAccess(ref launchTokenHandle, false);
-
                     //Shell execute inherit user
                     AVDebug.WriteLine("Shell executing with inherited access: " + exePath);
                     shellExecuteResult = ShellExecuteExW(shellExecuteInfo);
@@ -99,10 +92,6 @@ namespace ArnoldVinkCode
             {
                 AVDebug.WriteLine("Shell execute failed: " + exePath + "/" + ex.Message);
                 return false;
-            }
-            finally
-            {
-                SafeCloseHandle(ref launchTokenHandle);
             }
         }
 

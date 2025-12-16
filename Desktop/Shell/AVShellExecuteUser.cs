@@ -124,15 +124,17 @@ namespace ArnoldVinkCode
                 }
 
                 //Get application dispatch
-                shellFolderViewDual.get_Application(out IShellDispatch2 applicationDispatch);
-                if (applicationDispatch == null)
+                shellFolderViewDual.get_Application(out IShellDispatch2 dispApplication);
+                if (dispApplication == null)
                 {
                     Debug.WriteLine("Failed to get application dispatch.");
                     return false;
                 }
 
                 //Shell execute
-                int executeResult = applicationDispatch.ShellExecute(shellExecuteInfo.lpFile, shellExecuteInfo.lpParameters, shellExecuteInfo.lpDirectory, shellExecuteInfo.lpVerb, shellExecuteInfo.nShow);
+                int executeResult = dispApplication.ShellExecute(shellExecuteInfo.lpFile, shellExecuteInfo.lpParameters, shellExecuteInfo.lpDirectory, shellExecuteInfo.lpVerb, shellExecuteInfo.nShow);
+
+                //Return result
                 return executeResult == 0;
             }
             catch
