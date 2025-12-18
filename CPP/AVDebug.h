@@ -1,6 +1,7 @@
 #pragma once
 #include <windows.h>
 #include <iostream>
+#include <sstream>
 #define AVDebugWriteLine(message) AVDebugWriteLineInternal() << message
 
 //Usage example: AVDebugWriteLine("Hello " << "World " << 1);
