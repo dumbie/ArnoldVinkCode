@@ -65,6 +65,35 @@ namespace ArnoldVinkCode
 		}
 	}
 
+	inline bool FileMove(std::wstring oldFilePath, std::wstring newFilePath, bool overWrite)
+	{
+		try
+		{
+			if (oldFilePath == newFilePath)
+			{
+				AVDebugWriteLine(L"Failed moving file: targeting the same path.");
+				return false;
+			}
+
+			if (FileExists(oldFilePath))
+			{
+				AVDebugWriteLine(L"Moving: " + oldFilePath + L" to " + newFilePath);
+				if (overWrite) { FileDelete(newFilePath); }
+				std::filesystem::rename(oldFilePath, newFilePath);
+				return true;
+			}
+			else
+			{
+				AVDebugWriteLine(L"Failed moving file: " + oldFilePath + L" does not exist");
+				return false;
+			}
+		}
+		catch (...)
+		{
+			return false;
+		}
+	}
+
 	inline std::vector<std::filesystem::directory_entry> FileList(std::wstring folderPath, bool listRecursive)
 	{
 		std::vector<std::filesystem::directory_entry> fileList;
@@ -96,6 +125,18 @@ namespace ArnoldVinkCode
 		try
 		{
 			return std::filesystem::create_directory(folderPath);
+		}
+		catch (...)
+		{
+			return false;
+		}
+	}
+
+	inline bool FolderExists(std::wstring folderPath)
+	{
+		try
+		{
+			return std::filesystem::exists(folderPath);
 		}
 		catch (...)
 		{
