@@ -1,5 +1,6 @@
 //Arnold Vink Code
 #pragma once
+#include "AVLinq.h"
 #include "AVAdmin.h"
 #include "AVDebug.h"
 #include "AVDownloader.h"
@@ -8,15 +9,18 @@
 #include "AVFinally.h"
 #include "AVHighResDelay.h"
 #include "AVPaths.h"
+#include "Shell\AVShellExecuteUser.h"
 #include "AVProcesses\ProcessWindow.h"
 #include "AVProcesses\ProcessDetail.h"
 #include "AVProcesses\ProcessGet.h"
 #include "AVProcesses\ProcessCheck.h"
+#include "AVProcesses\ProcessLaunch.h"
 #include "AVProcesses\AVProcesses.h"
 #include "AVRegistry.h"
 #include "AVSettingsJson.h"
 #include "AVSettingsStartup.h"
 #include "AVString.h"
+#include "AVVariant.h"
 #include "AVVersion.h"
 #include "nlohmann_json.hpp"
 using namespace ArnoldVinkCode;
