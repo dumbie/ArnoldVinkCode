@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <winrt/Windows.System.h>
 
 namespace ArnoldVinkCode
 {
@@ -29,6 +30,13 @@ namespace ArnoldVinkCode
 	inline std::string wstring_to_string(std::wstring str)
 	{
 		return std::string(str.begin(), str.end());
+	}
+
+	inline BSTR wchar_to_bstring(const wchar_t* str)
+	{
+		BSTR bString = SysAllocString(str);
+		//SysFreeString(bString);
+		return bString;
 	}
 
 	inline std::string hstring_to_string(winrt::hstring str)
@@ -83,7 +91,7 @@ namespace ArnoldVinkCode
 	inline std::string vector_to_string(std::vector<std::string> list, std::string split)
 	{
 		std::string stringReturn;
-		for (auto stringVector : list)
+		for (std::string stringVector : list)
 		{
 			stringReturn += stringVector;
 			if (!stringReturn.empty() && !split.empty())
@@ -183,5 +191,15 @@ namespace ArnoldVinkCode
 		std::wstring strTemp = str;
 		std::transform(strTemp.begin(), strTemp.end(), strTemp.begin(), toupper);
 		return strTemp;
+	}
+
+	inline bool string_contains(std::string str, std::string contains)
+	{
+		return str.find(contains) != std::string::npos;
+	}
+
+	inline bool wstring_contains(std::wstring str, std::wstring contains)
+	{
+		return str.find(contains) != std::wstring::npos;
 	}
 }
