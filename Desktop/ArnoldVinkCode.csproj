@@ -26,9 +26,9 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<COMReference Include="NetFwTypeLib">
-			<VersionMinor>0</VersionMinor>
+			<Guid>{58FBCF7C-E7A9-467C-80B3-FC65E8FCCA08}</Guid>
 			<VersionMajor>1</VersionMajor>
-			<Guid>58fbcf7c-e7a9-467c-80b3-fc65e8fcca08</Guid>
+			<VersionMinor>0</VersionMinor>
 			<Lcid>0</Lcid>
 			<WrapperTool>tlbimp</WrapperTool>
 			<Isolated>false</Isolated>
@@ -36,7 +36,18 @@
 		</COMReference>
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="System.Management" Version="10.0.0" />
+		<COMReference Include="Shell32">
+			<Guid>{50A7E9B0-70EF-11D1-B75A-00A0C90564FE}</Guid>
+			<VersionMajor>1</VersionMajor>
+			<VersionMinor>0</VersionMinor>
+			<Lcid>0</Lcid>
+			<WrapperTool>tlbimp</WrapperTool>
+			<Isolated>false</Isolated>
+			<EmbedInteropTypes>true</EmbedInteropTypes>
+		</COMReference>
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="System.Management" Version="10.0.1" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
 		<PackageReference Include="TaskScheduler" Version="2.12.2" />
 	</ItemGroup>
