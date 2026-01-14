@@ -11,13 +11,20 @@ namespace ArnoldVinkCode
         {
             try
             {
-                string currentVersion = await AVDownloader.DownloadStringAsync(5000, repoName, null, GetPathLatestReleases(userName, repoName));
+                //Set request headers
+                string[] requestAccept = new[] { "Accept", "application/json" };
+                string[] requestToken = new[] { "Authorization", "token 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" }; //Yes, I know I didn't remove the api key.
+                string[][] requestHeaders = new string[][] { requestAccept, requestToken };
+
+                //Download latest releases
+                string currentVersion = await AVDownloader.DownloadStringAsync(5000, repoName, requestHeaders, GetPathLatestReleases(userName, repoName));
                 if (string.IsNullOrWhiteSpace(currentVersion))
                 {
                     Debug.WriteLine("Failed to get latest GitHub version, empty string.");
                     return string.Empty;
                 }
 
+                //Deserialize latest releases
                 ClassReleases releaseInformation = JsonConvert.DeserializeObject<ClassReleases>(currentVersion);
                 return releaseInformation.name;
             }
