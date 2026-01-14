@@ -3,6 +3,8 @@ obj
 debug
 release
 packages
+ApiTokens.h
+ApiTokens.cs
 *.suo
 *.user
 *.aps

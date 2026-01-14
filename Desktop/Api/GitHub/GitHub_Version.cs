@@ -13,7 +13,7 @@ namespace ArnoldVinkCode
             {
                 //Set request headers
                 string[] requestAccept = new[] { "Accept", "application/json" };
-                string[] requestToken = new[] { "Authorization", "token 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" }; //Yes, I know I didn't remove the api key.
+                string[] requestToken = new[] { "Authorization", "token " + ApiTokens.GitHub };
                 string[][] requestHeaders = new string[][] { requestAccept, requestToken };
 
                 //Download latest releases

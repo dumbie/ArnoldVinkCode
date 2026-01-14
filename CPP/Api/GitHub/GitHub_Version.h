@@ -11,7 +11,7 @@ namespace ArnoldVinkCode::GitHub
 			//Set request headers
 			std::vector<std::string> requestHeaders{};
 			requestHeaders.push_back("Accept: application/json");
-			requestHeaders.push_back("Authorization: token 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"); //Yes, I know I didn't remove the api key.
+			requestHeaders.push_back("Authorization: token " + ApiTokens::GitHub);
 
 			//Download releases from Github
 			std::string releasesJson = DownloadString(GetPathLatestReleases(userName, repoName), repoName, requestHeaders);

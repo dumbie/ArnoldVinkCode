@@ -22,6 +22,9 @@
 #include "AVString.h"
 #include "AVVariant.h"
 #include "AVVersion.h"
+#include "Api\ApiTokens.h"
+#include "Api\GitHub\GitHub_Paths.h"
+#include "Api\GitHub\GitHub_Version.h"
 #include "nlohmann_json.hpp"
 using namespace ArnoldVinkCode;
 using namespace AVProcesses;
