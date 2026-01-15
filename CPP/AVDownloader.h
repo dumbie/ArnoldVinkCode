@@ -8,7 +8,14 @@
 
 namespace ArnoldVinkCode
 {
-	inline std::string DownloadString(std::string targetHost, std::string targetPath, std::string targetUserAgent, std::string targetHeader)
+	class AVUri
+	{
+	public:
+		std::string targetHost;
+		std::string targetPath;
+	};
+
+	inline std::string DownloadString(AVUri avUri, std::string targetUserAgent, std::vector<std::string> targetHeaders)
 	{
 		HINTERNET handleOpen = NULL;
 		HINTERNET handleConnect = NULL;
@@ -32,20 +39,20 @@ namespace ArnoldVinkCode
 			//Check target host
 			DWORD internetFlags = 0x00000000;
 			INTERNET_PORT internetPort = INTERNET_INVALID_PORT_NUMBER;
-			if (targetHost.starts_with("http://"))
+			if (avUri.targetHost.starts_with("http://"))
 			{
-				string_replace_all(targetHost, "http://", "");
+				string_replace_all(avUri.targetHost, "http://", "");
 				internetPort = INTERNET_DEFAULT_HTTP_PORT;
 			}
 			else
 			{
-				string_replace_all(targetHost, "https://", "");
+				string_replace_all(avUri.targetHost, "https://", "");
 				internetPort = INTERNET_DEFAULT_HTTPS_PORT;
 				internetFlags |= INTERNET_FLAG_SECURE;
 			}
 
 			//Internet Connect
-			handleConnect = InternetConnectA(handleOpen, targetHost.c_str(), internetPort, NULL, NULL, INTERNET_SERVICE_HTTP, NULL, NULL);
+			handleConnect = InternetConnectA(handleOpen, avUri.targetHost.c_str(), internetPort, NULL, NULL, INTERNET_SERVICE_HTTP, NULL, NULL);
 			if (handleConnect == NULL)
 			{
 				AVDebugWriteLine("DownloadString connect handle empty.");
@@ -54,15 +61,21 @@ namespace ArnoldVinkCode
 
 			//Internet Request Open
 			PCSTR acceptTypes[] = { "*/*", NULL };
-			handleRequest = HttpOpenRequestA(handleConnect, "GET", targetPath.c_str(), NULL, NULL, acceptTypes, internetFlags, NULL);
+			handleRequest = HttpOpenRequestA(handleConnect, "GET", avUri.targetPath.c_str(), NULL, NULL, acceptTypes, internetFlags, NULL);
 			if (handleRequest == NULL)
 			{
 				AVDebugWriteLine("DownloadString request handle empty.");
 				return "";
 			}
 
+			//Internet Request Headers
+			for (std::string targetHeader : targetHeaders)
+			{
+				HttpAddRequestHeadersA(handleRequest, targetHeader.c_str(), targetHeader.size(), NULL);
+			}
+
 			//Internet Request Send
-			if (!HttpSendRequestA(handleRequest, targetHeader.c_str(), targetHeader.size(), NULL, NULL))
+			if (!HttpSendRequestA(handleRequest, NULL, NULL, NULL, NULL))
 			{
 				AVDebugWriteLine("DownloadString send request failed.");
 				return "";
@@ -97,7 +110,7 @@ namespace ArnoldVinkCode
 			}
 
 			//Return result
-			AVDebugWriteLine("DownloadString succeeded: " << targetHost.c_str() << " | " << targetPath.c_str() << " | " << dataBufferTotal.size() << "bytes");
+			AVDebugWriteLine("DownloadString succeeded: " << avUri.targetHost.c_str() << " | " << avUri.targetPath.c_str() << " | " << dataBufferTotal.size() << "bytes");
 			return dataBufferTotal;
 		}
 		catch (...)
@@ -108,7 +121,7 @@ namespace ArnoldVinkCode
 		}
 	}
 
-	inline std::string SendPostRequest(std::string targetHost, std::string targetPath, std::string targetUserAgent, std::string targetHeader, std::string targetData)
+	inline std::string SendPostRequest(AVUri avUri, std::string targetUserAgent, std::vector<std::string> targetHeaders, std::string targetData)
 	{
 		HINTERNET handleOpen = NULL;
 		HINTERNET handleConnect = NULL;
@@ -132,20 +145,20 @@ namespace ArnoldVinkCode
 			//Check target host
 			DWORD internetFlags = 0x00000000;
 			DWORD internetPort = INTERNET_INVALID_PORT_NUMBER;
-			if (targetHost.starts_with("http://"))
+			if (avUri.targetHost.starts_with("http://"))
 			{
-				string_replace_all(targetHost, "http://", "");
+				string_replace_all(avUri.targetHost, "http://", "");
 				internetPort = INTERNET_DEFAULT_HTTP_PORT;
 			}
 			else
 			{
-				string_replace_all(targetHost, "https://", "");
+				string_replace_all(avUri.targetHost, "https://", "");
 				internetPort = INTERNET_DEFAULT_HTTPS_PORT;
 				internetFlags |= INTERNET_FLAG_SECURE;
 			}
 
 			//Internet Connect
-			handleConnect = InternetConnectA(handleOpen, targetHost.c_str(), internetPort, NULL, NULL, INTERNET_SERVICE_HTTP, NULL, NULL);
+			handleConnect = InternetConnectA(handleOpen, avUri.targetHost.c_str(), internetPort, NULL, NULL, INTERNET_SERVICE_HTTP, NULL, NULL);
 			if (handleConnect == NULL)
 			{
 				AVDebugWriteLine("SendPostRequest connect handle empty.");
@@ -154,15 +167,21 @@ namespace ArnoldVinkCode
 
 			//Internet Request Open
 			PCSTR acceptTypes[] = { "*/*" };
-			handleRequest = HttpOpenRequestA(handleConnect, "POST", targetPath.c_str(), NULL, NULL, acceptTypes, internetFlags, NULL);
+			handleRequest = HttpOpenRequestA(handleConnect, "POST", avUri.targetPath.c_str(), NULL, NULL, acceptTypes, internetFlags, NULL);
 			if (handleRequest == NULL)
 			{
 				AVDebugWriteLine("SendPostRequest request handle empty.");
 				return "";
 			}
 
+			//Internet Request Headers
+			for (std::string targetHeader : targetHeaders)
+			{
+				HttpAddRequestHeadersA(handleRequest, targetHeader.c_str(), targetHeader.size(), NULL);
+			}
+
 			//Internet Request Send
-			if (!HttpSendRequestA(handleRequest, targetHeader.c_str(), targetHeader.size(), (LPVOID)targetData.c_str(), targetData.size()))
+			if (!HttpSendRequestA(handleRequest, NULL, NULL, (LPVOID)targetData.c_str(), targetData.size()))
 			{
 				AVDebugWriteLine("SendPostRequest send request failed.");
 				return "";
@@ -197,7 +216,7 @@ namespace ArnoldVinkCode
 			}
 
 			//Return result
-			AVDebugWriteLine("SendPostRequest succeeded: " << targetHost.c_str() << " | " << targetPath.c_str() << " | " << dataBufferTotal.size() << "bytes");
+			AVDebugWriteLine("SendPostRequest succeeded: " << avUri.targetHost.c_str() << " | " << avUri.targetPath.c_str() << " | " << dataBufferTotal.size() << "bytes");
 			return dataBufferTotal;
 		}
 		catch (...)

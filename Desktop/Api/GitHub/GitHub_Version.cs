@@ -13,7 +13,7 @@ namespace ArnoldVinkCode
             {
                 //Set request headers
                 string[] requestAccept = new[] { "Accept", "application/json" };
-                string[] requestToken = new[] { "Authorization", "token " + ApiTokens.GitHub };
+                string[] requestToken = new[] { "Authorization", ApiTokens.GitHub };
                 string[][] requestHeaders = new string[][] { requestAccept, requestToken };
 
                 //Download latest releases

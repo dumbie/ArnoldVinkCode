@@ -11,7 +11,7 @@ namespace ArnoldVinkCode::GitHub
 			//Set request headers
 			std::vector<std::string> requestHeaders{};
 			requestHeaders.push_back("Accept: application/json");
-			requestHeaders.push_back("Authorization: token " + ApiTokens::GitHub);
+			requestHeaders.push_back("Authorization: " + ApiTokens::GitHub);
 
 			//Download releases from Github
 			std::string releasesJson = DownloadString(GetPathLatestReleases(userName, repoName), repoName, requestHeaders);
