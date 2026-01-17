@@ -46,14 +46,14 @@ namespace ArnoldVinkCode
                 }
 
                 //Check window handle main
-                if (processMulti.WindowHandleMain == IntPtr.Zero)
+                if (processMulti.WindowHandleMain() == IntPtr.Zero)
                 {
                     AVDebug.WriteLine("Failed showing process by id: " + processId);
                     return false;
                 }
 
                 //Show process window
-                return await Show_ProcessByWindowHandle(processMulti.WindowHandleMain);
+                return await Show_ProcessByWindowHandle(processMulti.WindowHandleMain());
             }
             catch { }
             return false;

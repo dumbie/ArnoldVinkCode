@@ -513,6 +513,7 @@ namespace ArnoldVinkCode
             DWM_CLOAKED_NONE = 0x0000000,
             DWM_CLOAKED_APP = 0x0000001,
             DWM_CLOAKED_SHELL = 0x0000002,
+            DWM_CLOAKED_PROXY = 0x0000003,
             DWM_CLOAKED_INHERITED = 0x0000004
         }
 

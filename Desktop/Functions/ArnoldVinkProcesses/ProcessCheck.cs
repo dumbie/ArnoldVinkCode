@@ -144,22 +144,27 @@ namespace ArnoldVinkCode
         {
             try
             {
-                string classNameString = Detail_ClassNameByWindowHandle(targetWindowHandle);
-                return Check_WindowClassNameIsValid(classNameString);
+                string checkString = Detail_ClassNameByWindowHandle(targetWindowHandle).ToLower();
+                string[] invalidStrings = { "ApplicationManager_ImmersiveShellWindow", "Windows.Internal.Shell.TabProxyWindow", "ADLXEventWindowClass" };
+                foreach (string invalidString in invalidStrings)
+                {
+                    if (checkString.Contains(invalidString.ToLower())) { return false; }
+                }
             }
             catch { }
-            return false;
+            return true;
         }
 
-        //Check if window class name is valid
-        public static bool Check_WindowClassNameIsValid(string targetClassName)
+        //Check if window process name is valid
+        public static bool Check_WindowProcessNameIsValid(string targetProcessName)
         {
             try
             {
-                string[] classNamesInvalid = { "ApplicationManager_ImmersiveShellWindow", "Windows.Internal.Shell.TabProxyWindow", "ADLXEventWindowClass" };
-                foreach (string className in classNamesInvalid)
+                string checkString = targetProcessName.ToLower();
+                string[] invalidStrings = { "ApplicationFrameHost.exe", "StartMenuExperienceHost.exe", "WebExperienceHostApp.exe", "SearchHost.exe", "TextInputHost.exe", "backgroundTaskHost.exe", "ShellHost.exe", "ShellExperienceHost.exe", "WWAHost.exe", "StoreDesktopExtension.exe", "msedgewebview2.exe" };
+                foreach (string invalidString in invalidStrings)
                 {
-                    if (targetClassName.Contains(className)) { return false; }
+                    if (checkString.Contains(invalidString.ToLower())) { return false; }
                 }
             }
             catch { }
@@ -167,7 +172,7 @@ namespace ArnoldVinkCode
         }
 
         //Check if window handle is a valid window
-        public static bool Check_WindowHandleValid(IntPtr targetWindowHandle, bool checkMainWindow, bool ignoreVisible)
+        public static bool Check_WindowHandleValid(IntPtr targetWindowHandle, bool checkMainWindow, bool checkVisibility)
         {
             try
             {
@@ -185,7 +190,7 @@ namespace ArnoldVinkCode
                     //Debug.WriteLine("Window has disabled style and can't be shown or hidden: " + targetWindowHandle);
                     return false;
                 }
-                if (!ignoreVisible)
+                if (checkVisibility)
                 {
                     if (!windowStyle.HasFlag(WindowStyles.WS_VISIBLE))
                     {
@@ -199,6 +204,14 @@ namespace ArnoldVinkCode
                 if (windowStyleEx.HasFlag(WindowStylesEx.WS_EX_TOOLWINDOW))
                 {
                     //Debug.WriteLine("Window has tool style and can't be shown or hidden: " + targetWindowHandle);
+                    return false;
+                }
+
+                //Check window is cloaked
+                DwmGetWindowAttribute(targetWindowHandle, DWM_WINDOW_ATTRIBUTE.DWMWA_CLOAKED, out DWM_CLOAKED_FLAGS dwmCloakedFlag, sizeof(DWM_CLOAKED_FLAGS));
+                if (dwmCloakedFlag != DWM_CLOAKED_FLAGS.DWM_CLOAKED_NONE)
+                {
+                    //Debug.WriteLine("Window has cloaked flag: " + targetWindowHandle + " / " + dwmCloakedFlag);
                     return false;
                 }
 

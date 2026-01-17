@@ -10,26 +10,6 @@ namespace ArnoldVinkCode
 {
     public partial class AVProcess
     {
-        //Enumerators
-        public enum ProcessMultiActions
-        {
-            Launch,
-            Close,
-            CloseAll,
-            Restart,
-            RestartAll,
-            Select,
-            NoAction,
-            Cancel
-        }
-
-        //Classes
-        public class ProcessMultiAction
-        {
-            public ProcessMultiActions Action { get; set; } = ProcessMultiActions.NoAction;
-            public ProcessMulti ProcessMulti { get; set; } = null;
-        }
-
         public class ProcessMulti : IDisposable
         {
             public ProcessMulti(int identifier, int identifierParent, string exeName)
@@ -136,7 +116,7 @@ namespace ArnoldVinkCode
                 {
                     try
                     {
-                        return Detail_ProcessRespondingByWindowHandle(WindowHandleMain);
+                        return Detail_ProcessRespondingByWindowHandle(WindowHandleMain());
                     }
                     catch { }
                     return true;
@@ -208,7 +188,7 @@ namespace ArnoldVinkCode
                     {
                         if (string.IsNullOrWhiteSpace(CachedExeNameNoExt))
                         {
-                            CachedExeNameNoExt = Path.GetFileNameWithoutExtension(ExePath);
+                            CachedExeNameNoExt = Path.GetFileNameWithoutExtension(ExeName);
                         }
                     }
                     catch { }
@@ -267,25 +247,29 @@ namespace ArnoldVinkCode
                 }
             }
 
-            public IntPtr WindowHandleMain
+            public IntPtr WindowHandleMain(bool checkVisibility = true)
             {
-                get
+                IntPtr windowHandleMain = IntPtr.Zero;
+                try
                 {
-                    IntPtr windowHandleMain = IntPtr.Zero;
-                    try
+                    //Check process name
+                    if (!Check_WindowProcessNameIsValid(ExeName))
                     {
-                        if (!string.IsNullOrWhiteSpace(AppUserModelId))
-                        {
-                            windowHandleMain = Get_WindowHandleMainByAppUserModelId(AppUserModelId);
-                        }
-                        if (windowHandleMain == IntPtr.Zero)
-                        {
-                            windowHandleMain = Get_WindowHandleMainByProcessId(Identifier);
-                        }
+                        return windowHandleMain;
                     }
-                    catch { }
-                    return windowHandleMain;
+
+                    //Get window handle
+                    if (!string.IsNullOrWhiteSpace(AppUserModelId))
+                    {
+                        windowHandleMain = Get_WindowHandleMainByAppUserModelId(AppUserModelId, checkVisibility);
+                    }
+                    if (windowHandleMain == IntPtr.Zero)
+                    {
+                        windowHandleMain = Get_WindowHandleMainByProcessId(Identifier, checkVisibility);
+                    }
                 }
+                catch { }
+                return windowHandleMain;
             }
 
             public List<IntPtr> WindowHandles
@@ -314,7 +298,7 @@ namespace ArnoldVinkCode
                 {
                     try
                     {
-                        return Detail_ClassNameByWindowHandle(WindowHandleMain);
+                        return Detail_ClassNameByWindowHandle(WindowHandleMain());
                     }
                     catch { }
                     return string.Empty;
@@ -328,7 +312,7 @@ namespace ArnoldVinkCode
                 {
                     if (string.IsNullOrWhiteSpace(CustomWindowTitleMain))
                     {
-                        string foundWindowTitle = Detail_WindowTitleByWindowHandle(WindowHandleMain);
+                        string foundWindowTitle = Detail_WindowTitleByWindowHandle(WindowHandleMain());
                         if (foundWindowTitle == "Unknown")
                         {
                             return ExeNameNoExt + " window";
@@ -466,7 +450,7 @@ namespace ArnoldVinkCode
                     AVDebug.WriteLine("ExePath: " + ExePath);
                     AVDebug.WriteLine("WorkPath: " + WorkPath);
                     AVDebug.WriteLine("Argument: " + Argument);
-                    AVDebug.WriteLine("WindowHandleMain: " + WindowHandleMain);
+                    AVDebug.WriteLine("WindowHandleMain: " + WindowHandleMain());
                     AVDebug.WriteLine("WindowHandles: " + WindowHandles.Count);
                     AVDebug.WriteLine("WindowClassNameMain: " + WindowClassNameMain);
                     AVDebug.WriteLine("WindowTitleMain: " + WindowTitleMain);
@@ -497,7 +481,7 @@ namespace ArnoldVinkCode
                     _ = ExePath;
                     _ = WorkPath;
                     _ = Argument;
-                    _ = WindowHandleMain;
+                    _ = WindowHandleMain();
                     _ = WindowHandles;
                     _ = WindowClassNameMain;
                     _ = WindowTitleMain;

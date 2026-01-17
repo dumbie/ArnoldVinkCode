@@ -24,14 +24,14 @@ namespace ArnoldVinkCode
                 }
 
                 //Check window handle main
-                if (processMulti.WindowHandleMain == IntPtr.Zero)
+                if (processMulti.WindowHandleMain() == IntPtr.Zero)
                 {
                     AVDebug.WriteLine("Failed hiding process by id: " + processId);
                     return false;
                 }
 
                 //Hide process window
-                return await Hide_ProcessByWindowHandle(processMulti.WindowHandleMain);
+                return await Hide_ProcessByWindowHandle(processMulti.WindowHandleMain());
             }
             catch { }
             return false;

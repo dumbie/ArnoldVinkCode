@@ -86,7 +86,7 @@ namespace ArnoldVinkCode
                     return IntPtr.Zero;
                 }
 
-                AVDebug.WriteLine("Got other process token: " + processId + "/" + hToken);
+                //AVDebug.WriteLine("Got other process token: " + processId + "/" + hToken);
                 return hToken;
             }
             catch (Exception ex)
