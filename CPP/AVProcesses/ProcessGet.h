@@ -5,7 +5,7 @@
 namespace ArnoldVinkCode::AVProcesses
 {
 	//Get main window handle by process id
-	inline HWND Get_WindowHandleMainByProcessId(int targetProcessId)
+	inline HWND Get_WindowHandleMainByProcessId(int targetProcessId, bool checkVisibility)
 	{
 		try
 		{
@@ -13,7 +13,28 @@ namespace ArnoldVinkCode::AVProcesses
 			{
 				try
 				{
-					if (Check_WindowHandleValid(windowHandle, true, true))
+					if (Check_WindowHandleValid(windowHandle, true, checkVisibility))
+					{
+						return windowHandle;
+					}
+				}
+				catch (...) {}
+			}
+		}
+		catch (...) {}
+		return NULL;
+	}
+
+	//Get main window handle by AppUserModelId
+	inline HWND Get_WindowHandleMainByAppUserModelId(std::string targetAppUserModelId, bool checkVisibility)
+	{
+		try
+		{
+			for (HWND windowHandle : Get_WindowHandlesByAppUserModelId(targetAppUserModelId))
+			{
+				try
+				{
+					if (Check_WindowHandleValid(windowHandle, true, checkVisibility))
 					{
 						return windowHandle;
 					}

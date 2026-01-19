@@ -17,6 +17,7 @@
 #include "AVProcesses\ProcessCheck.h"
 #include "AVProcesses\ProcessLaunch.h"
 #include "AVProcesses\Defines\ProcessMulti.h"
+#include "AVProcesses\Defines\ProcessMultiAction.h"
 #include "AVProcesses\ProcessGetMulti.h"
 #include "AVRegistry.h"
 #include "AVSettingsJson.h"

@@ -6,40 +6,21 @@
 #include <processthreadsapi.h>
 #include <string>
 #include <vector>
-#include "AVString.h"
-#include "AVFinally.h"
+#include "..\..\AVString.h"
+#include "..\..\AVFinally.h"
 
 namespace ArnoldVinkCode::AVProcesses
 {
-	//Enumerators
-	enum ProcessMultiActions
-	{
-		Launch,
-		Close,
-		CloseAll,
-		Restart,
-		RestartAll,
-		Select,
-		NoAction,
-		Cancel
-	};
-
-	//Classes
-	class ProcessMultiAction
-	{
-	public:
-		ProcessMultiActions Action = ProcessMultiActions::NoAction;
-		//ProcessMulti ProcessMulti = NULL;
-	};
-
 	class ProcessMulti
 	{
 	private:
 		int CachedIdentifier = 0;
 		int CachedIdentifierParent = 0;
 		HANDLE CachedHandle = NULL;
-		std::string CachedExePath = "";
+		std::string CachedAppUserModelId = "";
 		std::string CachedExeName = "";
+		std::string CachedExeNameNoExt = "";
+		std::string CachedExePath = "";
 
 	public:
 		ProcessMulti(int identifier, int identifierParent, std::string exeName)
@@ -72,6 +53,47 @@ namespace ArnoldVinkCode::AVProcesses
 			return CachedHandle;
 		};
 
+		std::string AppUserModelId()
+		{
+			try
+			{
+				if (CachedAppUserModelId.empty())
+				{
+					CachedAppUserModelId = Detail_AppUserModelIdByProcessHandle(Handle());
+				}
+			}
+			catch (...) {}
+			return CachedAppUserModelId;
+		};
+
+		std::string ExeName()
+		{
+			try
+			{
+				if (CachedExeName.empty())
+				{
+					std::filesystem::path filePath(ExePath());
+					CachedExeName = filePath.filename().string();
+				}
+			}
+			catch (...) {}
+			return CachedExeName;
+		};
+
+		std::string ExeNameNoExt()
+		{
+			try
+			{
+				if (CachedExeNameNoExt.empty())
+				{
+					std::filesystem::path filePath(ExeName());
+					CachedExeNameNoExt = filePath.filename().replace_extension().string();
+				}
+			}
+			catch (...) {}
+			return CachedExeNameNoExt;
+		}
+
 		std::string ExePath()
 		{
 			try
@@ -83,11 +105,6 @@ namespace ArnoldVinkCode::AVProcesses
 			}
 			catch (...) {}
 			return CachedExePath;
-		};
-
-		std::string ExeName()
-		{
-			return CachedExeName;
 		};
 
 		std::vector<HWND> WindowHandles()
@@ -106,13 +123,20 @@ namespace ArnoldVinkCode::AVProcesses
 			try
 			{
 				//Check process name
-				if (!Check_MainWindowProcessNameIsValid(ExeName()))
+				if (!Check_WindowProcessNameIsValid(ExeName()))
 				{
 					return windowHandleMain;
 				}
 
 				//Get window handle
-				windowHandleMain = Get_WindowHandleMainByProcessId(Identifier(), checkVisibility);
+				if (!AppUserModelId().empty())
+				{
+					windowHandleMain = Get_WindowHandleMainByAppUserModelId(AppUserModelId(), checkVisibility);
+				}
+				if (windowHandleMain == NULL)
+				{
+					windowHandleMain = Get_WindowHandleMainByProcessId(Identifier(), checkVisibility);
+				}
 			}
 			catch (...) {}
 			return windowHandleMain;
@@ -139,9 +163,9 @@ namespace ArnoldVinkCode::AVProcesses
 				//AVDebugWriteLine("AdminAccess: " << AccessStatus.AdminAccess);
 				//AVDebugWriteLine("Responding: " << Responding);
 				//AVDebugWriteLine("Priority: " << Priority);
-				//AVDebugWriteLine("AppUserModelId: " << AppUserModelId);
+				AVDebugWriteLine("AppUserModelId: " << AppUserModelId().c_str());
 				AVDebugWriteLine("ExeName: " << ExeName().c_str());
-				//AVDebugWriteLine("ExeNameNoExt: " << ExeNameNoExt);
+				AVDebugWriteLine("ExeNameNoExt: " << ExeNameNoExt().c_str());
 				AVDebugWriteLine("ExePath: " << ExePath().c_str());
 				//AVDebugWriteLine("WorkPath: " << WorkPath);
 				//AVDebugWriteLine("Argument: " << Argument);
@@ -170,9 +194,9 @@ namespace ArnoldVinkCode::AVProcesses
 				//auto c5 = AccessStatus;
 				//auto c6 = Responding;
 				//auto c7 = Priority;
-				//auto c8 = AppUserModelId;
+				auto c8 = AppUserModelId();
 				auto c9 = ExeName();
-				//auto c10 = ExeNameNoExt;
+				auto c10 = ExeNameNoExt();
 				auto c11 = ExePath();
 				//auto c12 = WorkPath;
 				//auto c13 = Argument;

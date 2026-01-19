@@ -2,8 +2,8 @@
 #include <windows.h>
 #include <string>
 #include <vector>
-#include "AVString.h"
-#include "AVFinally.h"
+#include "..\AVString.h"
+#include "..\AVFinally.h"
 
 namespace ArnoldVinkCode::AVProcesses
 {
