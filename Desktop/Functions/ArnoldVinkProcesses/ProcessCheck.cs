@@ -113,26 +113,15 @@ namespace ArnoldVinkCode
         }
 
         //Check if window class name is from uwp application
-        public static bool Check_WindowClassNameIsUwpApp(IntPtr targetWindowHandle)
-        {
-            try
-            {
-                string classNameString = Detail_ClassNameByWindowHandle(targetWindowHandle);
-                return Check_WindowClassNameIsUwpApp(classNameString);
-            }
-            catch { }
-            return false;
-        }
-
-        //Check if window class name is from uwp application
         public static bool Check_WindowClassNameIsUwpApp(string targetClassName)
         {
             try
             {
-                string[] classNamesUwp = { "ApplicationFrameWindow", "Windows.UI.Core.CoreWindow" };
-                foreach (string className in classNamesUwp)
+                string checkString = targetClassName.ToLower();
+                string[] matchStrings = { "ApplicationFrameWindow", "Windows.UI.Core.CoreWindow" };
+                foreach (string matchString in matchStrings)
                 {
-                    if (targetClassName == className) { return true; }
+                    if (checkString.Contains(matchString.ToLower())) { return true; }
                 }
             }
             catch { }
@@ -140,15 +129,15 @@ namespace ArnoldVinkCode
         }
 
         //Check if window class name is valid
-        public static bool Check_WindowClassNameIsValid(IntPtr targetWindowHandle)
+        public static bool Check_WindowClassNameIsValid(string targetClassName)
         {
             try
             {
-                string checkString = Detail_ClassNameByWindowHandle(targetWindowHandle).ToLower();
-                string[] invalidStrings = { "ApplicationManager_ImmersiveShellWindow", "Windows.Internal.Shell.TabProxyWindow", "ADLXEventWindowClass" };
-                foreach (string invalidString in invalidStrings)
+                string checkString = targetClassName.ToLower();
+                string[] matchStrings = { "ApplicationManager_ImmersiveShellWindow", "Windows.Internal.Shell.TabProxyWindow", "ADLXEventWindowClass" };
+                foreach (string matchString in matchStrings)
                 {
-                    if (checkString.Contains(invalidString.ToLower())) { return false; }
+                    if (checkString.Contains(matchString.ToLower())) { return false; }
                 }
             }
             catch { }
@@ -161,10 +150,10 @@ namespace ArnoldVinkCode
             try
             {
                 string checkString = targetProcessName.ToLower();
-                string[] invalidStrings = { "ApplicationFrameHost.exe", "StartMenuExperienceHost.exe", "WebExperienceHostApp.exe", "SearchHost.exe", "TextInputHost.exe", "backgroundTaskHost.exe", "ShellHost.exe", "ShellExperienceHost.exe", "WWAHost.exe", "StoreDesktopExtension.exe", "msedgewebview2.exe" };
-                foreach (string invalidString in invalidStrings)
+                string[] matchStrings = { "ApplicationFrameHost.exe", "StartMenuExperienceHost.exe", "WebExperienceHostApp.exe", "SearchHost.exe", "TextInputHost.exe", "backgroundTaskHost.exe", "ShellHost.exe", "ShellExperienceHost.exe", "WWAHost.exe", "StoreDesktopExtension.exe", "msedgewebview2.exe" };
+                foreach (string matchString in matchStrings)
                 {
-                    if (checkString.Contains(invalidString.ToLower())) { return false; }
+                    if (checkString.Contains(matchString.ToLower())) { return false; }
                 }
             }
             catch { }
@@ -216,7 +205,8 @@ namespace ArnoldVinkCode
                 }
 
                 //Check window class name
-                if (!Check_WindowClassNameIsValid(targetWindowHandle))
+                string windowClassName = Detail_ClassNameByWindowHandle(targetWindowHandle);
+                if (!Check_WindowClassNameIsValid(windowClassName))
                 {
                     //Debug.WriteLine("Window class name is invalid: " + targetWindowHandle);
                     return false;
