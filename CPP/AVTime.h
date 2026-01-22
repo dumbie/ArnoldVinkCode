@@ -7,14 +7,20 @@
 
 namespace ArnoldVinkCode
 {
+	//TM is time since epoch (January 1, 1900)
 	//TIME_T is seconds since epoch (January 1, 1970)
 	//FILETIME is 100-nanoseconds since epoch (January 1, 1601)
 
 	inline std::tm tm_empty()
 	{
 		std::tm tm{};
-		tm.tm_year = -1900;
+		tm.tm_year = 1970 - 1900;
+		tm.tm_mon = 0;
 		tm.tm_mday = 1;
+		tm.tm_hour = 0;
+		tm.tm_min = 0;
+		tm.tm_sec = 0;
+		tm.tm_isdst = -1;
 		return tm;
 	}
 
@@ -27,7 +33,17 @@ namespace ArnoldVinkCode
 	{
 		try
 		{
-			if (tm.tm_year <= 0) { return true; }
+			if (tm.tm_year <= 70 && tm.tm_mon <= 0 && tm.tm_mday <= 1) { return true; }
+		}
+		catch (...) {}
+		return false;
+	}
+
+	inline bool tm_is_invalid(std::tm tm)
+	{
+		try
+		{
+			if (tm.tm_year <= 0 && tm.tm_mon <= 0 && tm.tm_mday <= 0) { return true; }
 		}
 		catch (...) {}
 		return false;
@@ -43,7 +59,7 @@ namespace ArnoldVinkCode
 		return false;
 	}
 
-	inline std::tm time_current()
+	inline std::tm tm_current()
 	{
 		try
 		{
@@ -56,22 +72,46 @@ namespace ArnoldVinkCode
 		return tm_empty();
 	}
 
-	inline std::time_t tm_to_timet(std::tm tm)
+	inline std::time_t timet_current()
 	{
 		try
 		{
-			return mktime(&tm);
+			return std::time(NULL);
 		}
 		catch (...) {}
 		return timet_empty();
 	}
 
-	inline std::tm timet_to_tm(std::time_t timeT)
+	inline std::time_t tm_to_timet(std::tm tm)
+	{
+		try
+		{
+			if (tm.tm_isdst)
+			{
+				return _mkgmtime(&tm);
+			}
+			else
+			{
+				return mktime(&tm);
+			}
+		}
+		catch (...) {}
+		return timet_empty();
+	}
+
+	inline std::tm timet_to_tm(std::time_t timeT, bool isDst = false)
 	{
 		try
 		{
 			std::tm tm;
-			localtime_s(&tm, &timeT);
+			if (isDst)
+			{
+				gmtime_s(&tm, &timeT);
+			}
+			else
+			{
+				localtime_s(&tm, &timeT);
+			}
 			return tm;
 		}
 		catch (...) {}
@@ -139,7 +179,7 @@ namespace ArnoldVinkCode
 	{
 		try
 		{
-			if (!tm_is_empty(tm))
+			if (!tm_is_invalid(tm))
 			{
 				char buffer[256];
 				std::strftime(buffer, sizeof(buffer), timeFormat.c_str(), &tm);
@@ -172,6 +212,32 @@ namespace ArnoldVinkCode
 	{
 		try
 		{
+			//Get times
+			std::time_t target_t = tm_to_timet(targetTime);
+			std::time_t value_t = tm_to_timet(valueTime);
+
+			//Calculate
+			std::time_t new_t = target_t + value_t;
+
+			//Convert
+			return timet_to_tm(new_t, targetTime.tm_isdst);
+		}
+		catch (...) {}
+		return tm_empty();
+	}
+
+	inline std::tm time_add(std::tm targetTime, std::time_t valueTime)
+	{
+		try
+		{
+			//Get times
+			std::time_t target_t = tm_to_timet(targetTime);
+
+			//Calculate
+			std::time_t new_t = target_t + valueTime;
+
+			//Convert
+			return timet_to_tm(new_t, targetTime.tm_isdst);
 		}
 		catch (...) {}
 		return tm_empty();
@@ -181,6 +247,32 @@ namespace ArnoldVinkCode
 	{
 		try
 		{
+			//Get times
+			std::time_t target_t = tm_to_timet(targetTime);
+			std::time_t value_t = tm_to_timet(valueTime);
+
+			//Calculate
+			std::time_t new_t = target_t - value_t;
+
+			//Convert
+			return timet_to_tm(new_t, targetTime.tm_isdst);
+		}
+		catch (...) {}
+		return tm_empty();
+	}
+
+	inline std::tm time_subtract(std::tm targetTime, std::time_t valueTime)
+	{
+		try
+		{
+			//Get times
+			std::time_t target_t = tm_to_timet(targetTime);
+
+			//Calculate
+			std::time_t new_t = target_t - valueTime;
+
+			//Convert
+			return timet_to_tm(new_t, targetTime.tm_isdst);
 		}
 		catch (...) {}
 		return tm_empty();
