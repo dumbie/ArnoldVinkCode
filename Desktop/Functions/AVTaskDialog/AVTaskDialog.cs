@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Windows.Forms;
 using static ArnoldVinkCode.AVInteropDll;
 
@@ -10,71 +9,84 @@ namespace ArnoldVinkCode
     public partial class AVTaskDialog
     {
         //Functions
-        public static string Popup(dynamic disableElement, string Title, string Question, string Description, List<string> Answers)
+        public static int Popup(IntPtr parentWindow, string Title, string Question, string Description, List<string> Answers)
         {
             try
             {
-                //Disable source framework element
-                if (disableElement != null)
+                //Check parent window
+                if (parentWindow == IntPtr.Zero)
                 {
-                    disableElement.IsEnabled = false;
+                    parentWindow = GetActiveWindow();
                 }
+                NativeWindow parentWindow32 = new NativeWindow();
+                parentWindow32.AssignHandle(parentWindow);
 
                 //Set dialog page
-                TaskDialogPage page = new TaskDialogPage();
-                page.Caption = Title;
-                page.Heading = Question;
-                page.Text = Description;
+                TaskDialogPage taskDialogConfig = new TaskDialogPage();
+                taskDialogConfig.Caption = Title;
+                taskDialogConfig.Heading = Question;
+                taskDialogConfig.Text = Description;
+
+                //Set bar background
+                taskDialogConfig.Icon = System.Windows.Forms.TaskDialogIcon.ShieldBlueBar;
+
+                //Set target icon
+                taskDialogConfig.Created += (sender, args) => TaskDialogPage_Created(sender, TaskDialogIcon.None);
 
                 //Set answers
-                TaskDialogButtonCollection buttonCollection = new TaskDialogButtonCollection();
-                if (Answers != null)
+                TaskDialogButtonCollection taskDialogButtons = new TaskDialogButtonCollection();
+                if (Answers != null && Answers.Count > 0)
                 {
-                    if (Answers.Count > 1)
+                    int buttonId = 1000;
+                    foreach (string answer in Answers)
                     {
-                        page.AllowCancel = false;
-                        foreach (string answer in Answers)
-                        {
-                            buttonCollection.Add(new TaskDialogCommandLinkButton(answer, string.Empty));
-                        }
-                    }
-                    else if (Answers.Count == 1)
-                    {
-                        page.AllowCancel = true;
-                        buttonCollection.Add(new TaskDialogButton(Answers.FirstOrDefault()));
-                    }
-                    else
-                    {
-                        page.AllowCancel = true;
-                        buttonCollection.Add(new TaskDialogButton("Close"));
+                        TaskDialogCommandLinkButton taskButton = new TaskDialogCommandLinkButton(answer);
+                        taskButton.Tag = buttonId;
+                        taskDialogButtons.Add(taskButton);
+                        buttonId++;
                     }
                 }
                 else
                 {
-                    page.AllowCancel = true;
-                    buttonCollection.Add(new TaskDialogButton("Close"));
+                    TaskDialogButton taskButton = new TaskDialogButton(" Close ");
+                    taskButton.Tag = 999;
+                    taskDialogButtons.Add(taskButton);
                 }
-                page.Buttons = buttonCollection;
-
-                //Set bar background
-                page.Icon = TaskDialogIcon.ShieldBlueBar;
-
-                //Set target icon
-                page.Created += (sender, args) => TaskDialogPage_Created(sender, DialogIcon.None);
+                taskDialogConfig.Buttons = taskDialogButtons;     
 
                 //Show task dialog
                 Application.EnableVisualStyles();
-                TaskDialogButton result = TaskDialog.ShowDialog(page);
+                TaskDialogButton result = TaskDialog.ShowDialog(parentWindow32, taskDialogConfig, TaskDialogStartupLocation.CenterOwner);
+                int pnButton = (int)result.Tag - 1000;
 
-                //Enable source framework element
-                if (disableElement != null)
+                //Return result
+                Debug.WriteLine("Selected task dialog index: " + pnButton);
+                return pnButton;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Task dialog failed: " + ex.Message);
+                return -1;
+            }
+        }
+
+        public static string PopupStr(IntPtr parentWindow, string Title, string Question, string Description, List<string> Answers)
+        {
+            try
+            {
+                //Get selected index
+                int selectedIndex = Popup(parentWindow, Title, Question, Description, Answers);
+
+                //Check selected button
+                string selectedButton = string.Empty;
+                if (selectedIndex >= 0)
                 {
-                    disableElement.IsEnabled = true;
+                    selectedButton = Answers[selectedIndex];
                 }
 
                 //Return result
-                Debug.WriteLine("Selected task dialog answer: " + result.Text);
-                return result.Text;
+                Debug.WriteLine("Selected task dialog answer: " + selectedButton);
+                return selectedButton;
             }
             catch (Exception ex)
             {
@@ -84,7 +96,7 @@ namespace ArnoldVinkCode
         }
 
         //Events
-        private static void TaskDialogPage_Created(object sender, DialogIcon targetIcon)
+        private static void TaskDialogPage_Created(object sender, TaskDialogIcon targetIcon)
         {
             try
             {
@@ -98,13 +110,14 @@ namespace ArnoldVinkCode
 
                 //Reset window icon
                 SendMessage(windowHandle, WindowMessages.WM_SETICON, (int)GetSetIconFlags.ICON_SMALL, IntPtr.Zero);
+                SendMessage(windowHandle, WindowMessages.WM_SETICON, (int)GetSetIconFlags.ICON_SMALL2, IntPtr.Zero);
                 SendMessage(windowHandle, WindowMessages.WM_SETICON, (int)GetSetIconFlags.ICON_BIG, IntPtr.Zero);
             }
             catch { }
         }
 
         //Enumerators
-        public enum DialogIcon : int
+        public enum TaskDialogIcon : int
         {
             None = 0,
             File = 2,
