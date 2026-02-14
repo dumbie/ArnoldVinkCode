@@ -70,7 +70,7 @@ namespace ArnoldVinkCode
 	}
 
 	//Functions
-	inline int AVTaskDialog(HWND parentWindow, std::wstring Title, std::wstring Question, std::wstring Description, std::vector<std::wstring> Answers)
+	inline int AVTaskDialog(HWND parentWindow, std::wstring Title, std::wstring Question, std::wstring Description, std::vector<std::wstring> Answers, bool cancelButton)
 	{
 		try
 		{
@@ -106,11 +106,15 @@ namespace ArnoldVinkCode
 					taskDialogButtons.push_back({ buttonId, _wcsdup(answer.c_str()) });
 					buttonId++;
 				}
+				if (cancelButton)
+				{
+					taskDialogButtons.push_back({ 999, L"Cancel" });
+				}
 				taskDialogConfig.dwFlags |= TDF_USE_COMMAND_LINKS;
 			}
 			else
 			{
-				taskDialogButtons.push_back({ 999, L" Close " });
+				taskDialogButtons.push_back({ 999, L"Close" });
 			}
 			taskDialogConfig.cButtons = taskDialogButtons.size();
 			taskDialogConfig.pButtons = taskDialogButtons.data();
@@ -132,12 +136,12 @@ namespace ArnoldVinkCode
 		}
 	}
 
-	inline std::wstring AVTaskDialogStr(HWND parentWindow, std::wstring Title, std::wstring Question, std::wstring Description, std::vector<std::wstring> Answers)
+	inline std::wstring AVTaskDialogStr(HWND parentWindow, std::wstring Title, std::wstring Question, std::wstring Description, std::vector<std::wstring> Answers, bool cancelButton)
 	{
 		try
 		{
 			//Get selected index
-			int selectedIndex = AVTaskDialog(parentWindow, Title, Question, Description, Answers);
+			int selectedIndex = AVTaskDialog(parentWindow, Title, Question, Description, Answers, cancelButton);
 
 			//Check selected button
 			std::wstring selectedButton = L"";

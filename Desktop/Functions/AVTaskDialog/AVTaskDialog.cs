@@ -9,7 +9,7 @@ namespace ArnoldVinkCode
     public partial class AVTaskDialog
     {
         //Functions
-        public static int Popup(IntPtr parentWindow, string Title, string Question, string Description, List<string> Answers)
+        public static int Popup(IntPtr parentWindow, string Title, string Question, string Description, List<string> Answers, bool cancelButton)
         {
             try
             {
@@ -45,10 +45,16 @@ namespace ArnoldVinkCode
                         taskDialogButtons.Add(taskButton);
                         buttonId++;
                     }
+                    if (cancelButton)
+                    {
+                        TaskDialogCommandLinkButton taskButton = new TaskDialogCommandLinkButton("Cancel");
+                        taskButton.Tag = 999;
+                        taskDialogButtons.Add(taskButton);
+                    }
                 }
                 else
                 {
-                    TaskDialogButton taskButton = new TaskDialogButton(" Close ");
+                    TaskDialogButton taskButton = new TaskDialogButton("Close");
                     taskButton.Tag = 999;
                     taskDialogButtons.Add(taskButton);
                 }
@@ -70,12 +76,12 @@ namespace ArnoldVinkCode
             }
         }
 
-        public static string PopupStr(IntPtr parentWindow, string Title, string Question, string Description, List<string> Answers)
+        public static string PopupStr(IntPtr parentWindow, string Title, string Question, string Description, List<string> Answers, bool cancelButton)
         {
             try
             {
                 //Get selected index
-                int selectedIndex = Popup(parentWindow, Title, Question, Description, Answers);
+                int selectedIndex = Popup(parentWindow, Title, Question, Description, Answers, cancelButton);
 
                 //Check selected button
                 string selectedButton = string.Empty;
