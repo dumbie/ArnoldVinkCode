@@ -1,13 +1,11 @@
 #pragma once
 #include <unknwn.h>
-#include "AVDebug.h"
 #define AVFinally(callback) AVFinallyFunction x([&]{ callback });
 #define AVFinallySafe(callback) AVFinallyFunction x([&]{ try { callback } catch (...) {} });
 
 //Description: Runs code after going out of scope or loop
-//Usage example: AVFinally(void(););
 //Usage example: AVFinally({ void1(); void2(); });
-//Note: Add in top of function before any other code is executed
+//Usage example: releaseObject = new int[1024]; AVFinally({ delete[] releaseObject; });
 template <typename T>
 class AVFinallyFunction
 {
@@ -17,7 +15,6 @@ private:
 
 public:
 	AVFinallyFunction(T f) : runFunction{ f } {}
-
 	~AVFinallyFunction()
 	{
 		if (!runTriggered)
@@ -28,66 +25,74 @@ public:
 	}
 };
 
-//Description: Automatically frees pointer after going out of scope or loop
-//Usage example: AVFinPtr<int*>();
-//Usage example: AVFinPtr(new int[1024]);
-//Usage example: avFinPtr.SetReleaser(0, [](auto, auto releasePointer) { releasePointer->Release(); });
-//Usage example: avFinPtr.SetReleaser(5, [](const int releaseItemCount, auto releasePointer)
+//Description: Automatically releases object after going out of scope or loop
+//Usage example: AVFin(AVFinMethod::Free, releaseObject);
+//Usage example: avFin.SetReleaser([&](auto releaseObject)
 //{
 //	for (int i = 0; i < releaseItemCount; i++)
 //	{
-//		delete[](releasePointer[i].WCHAR);
+//		delete[](releaseObject[i].WCHAR);
 //	}
-//	delete[](releasePointer);
+//	delete[](releaseObject);
 //});
-//Note: Error C0000374 usually means you are using the wrong release method (new() = delete / new[] = delete[] / malloc = free / interface = Release)
-enum class AVFinPtrMethod
+//Note: Error C0000374 usually means you are using the wrong release method (new() = DeleteSingle / new[] = DeleteArray / malloc = Free / Interface = Release / HANDLE = CloseHandle / CoTaskMemAlloc = ComFree)
+enum class AVFinMethod
 {
 	DeleteSingle,
 	DeleteArray,
 	Release,
+	CloseHandle,
+	Custom,
+	ComFree,
 	Free
 };
 
 template<typename T>
-class AVFinPtr
+class AVFin
 {
 private:
-	T Pointer = nullptr;
-	int ReleaseItemCount = 0;
-	std::function<void(const int releaseItemCount, T& releasePointer)> ReleaseFunction = nullptr;
-	AVFinPtrMethod ReleaseMethod = AVFinPtrMethod::Free;
+	T ReleaseObject = nullptr;
+	std::function<void(T& releaseObject)> ReleaseFunction = nullptr;
+	AVFinMethod ReleaseMethod = AVFinMethod::Free;
 
 	bool Release()
 	{
 		try
 		{
-			if (Pointer != nullptr)
+			if (ReleaseObject != nullptr)
 			{
-				if (ReleaseFunction != nullptr)
+				if (ReleaseMethod == AVFinMethod::DeleteSingle)
 				{
-					ReleaseFunction(ReleaseItemCount, Pointer);
+					delete((void*)ReleaseObject);
+				}
+				else if (ReleaseMethod == AVFinMethod::DeleteArray)
+				{
+					delete[]((void*)ReleaseObject);
+				}
+				else if (ReleaseMethod == AVFinMethod::Release)
+				{
+					((IUnknown*)ReleaseObject)->Release();
+				}
+				else if (ReleaseMethod == AVFinMethod::CloseHandle)
+				{
+					CloseHandle(ReleaseObject);
+				}
+				else if (ReleaseMethod == AVFinMethod::Custom)
+				{
+					if (ReleaseFunction != nullptr)
+					{
+						ReleaseFunction(ReleaseObject);
+					}
+				}
+				else if (ReleaseMethod == AVFinMethod::ComFree)
+				{
+					CoTaskMemFree(ReleaseObject);
 				}
 				else
 				{
-					if (ReleaseMethod == AVFinPtrMethod::DeleteSingle)
-					{
-						delete((void*)Pointer);
-					}
-					else if (ReleaseMethod == AVFinPtrMethod::DeleteArray)
-					{
-						delete[]((void*)Pointer);
-					}
-					else if (ReleaseMethod == AVFinPtrMethod::Release)
-					{
-						((IUnknown*)Pointer)->Release();
-					}
-					else
-					{
-						free((void*)Pointer);
-					}
+					free((void*)ReleaseObject);
 				}
-				Pointer = nullptr;
+				ReleaseObject = nullptr;
 				return true;
 			}
 		}
@@ -96,36 +101,36 @@ private:
 	}
 
 public:
-	AVFinPtr() {};
-	AVFinPtr(T& setPointer)
+	AVFin(AVFinMethod setMethod)
 	{
-		Release();
-		Pointer = setPointer;
+		ReleaseMethod = setMethod;
 	}
 
-	void SetPointer(T& setPointer)
+	AVFin(AVFinMethod setMethod, T setObject)
 	{
-		Release();
-		Pointer = setPointer;
+		ReleaseMethod = setMethod;
+		ReleaseObject = setObject;
+		setObject = nullptr;
 	}
 
-	void SetReleaseMethod(AVFinPtrMethod setReleaseMethod)
+	AVFin(AVFinMethod setMethod, T& setObject)
 	{
-		ReleaseMethod = setReleaseMethod;
+		ReleaseMethod = setMethod;
+		ReleaseObject = setObject;
+		setObject = nullptr;
 	}
 
-	void SetReleaser(int setItemCount, std::function<void(const int releaseItemCount, T& releasePointer)> setFunction)
+	void SetReleaser(std::function<void(T& releaseObject)> setFunction)
 	{
-		ReleaseItemCount = setItemCount;
 		ReleaseFunction = setFunction;
 	}
 
 	T& Get()
 	{
-		return Pointer;
+		return ReleaseObject;
 	}
 
-	~AVFinPtr()
+	~AVFin()
 	{
 		Release();
 	}
