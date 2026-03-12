@@ -1,4 +1,6 @@
 #pragma once
+#include "AVString.h"
+#include "AVDebug.h"
 #include <string>
 #include <vector>
 
@@ -28,6 +30,20 @@ struct adl_serializer<std::optional<T>>
 		{
 			opt = jsonData.get<T>();
 		}
+	}
+};
+
+template <>
+struct adl_serializer<std::wstring>
+{
+	static void to_json(json& jsonData, const std::wstring& str)
+	{
+		jsonData = std::string(str.begin(), str.end());
+	}
+	static void from_json(const json& jsonData, std::wstring& str)
+	{
+		std::string stra = jsonData.get<std::string>();
+		str = std::wstring(stra.begin(), stra.end());
 	}
 };
 NLOHMANN_JSON_NAMESPACE_END
@@ -67,6 +83,39 @@ namespace ArnoldVinkCode
 		catch (...) {}
 	}
 
+	inline void json_remove_empty_values(nlohmann::json& jsonData)
+	{
+		try
+		{
+			if (!jsonData.is_object() && !jsonData.is_array())
+			{
+				return;
+			}
+
+			std::vector<std::string> erasa_keys;
+			for (auto& item : jsonData.items())
+			{
+				if (item.value().is_string())
+				{
+					if (std::string(item.value()).empty())
+					{
+						erasa_keys.push_back(item.key());
+					}
+				}
+				else
+				{
+					json_remove_empty_values(item.value());
+				}
+			}
+
+			for (auto& key : erasa_keys)
+			{
+				jsonData.erase(key);
+			}
+		}
+		catch (...) {}
+	}
+
 	inline std::string json_to_jsonstring(nlohmann::json jsonData, bool removeNull)
 	{
 		std::string jsonString = "";
@@ -76,6 +125,7 @@ namespace ArnoldVinkCode
 			if (removeNull)
 			{
 				json_remove_null_values(jsonData);
+				json_remove_empty_values(jsonData);
 			}
 
 			//Convert json to string
