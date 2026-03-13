@@ -1,9 +1,9 @@
 #pragma once
 #include <unknwn.h>
-#define AVFinally(callback) AVFinallyFunction x([&]{ callback });
-#define AVFinallySafe(callback) AVFinallyFunction x([&]{ try { callback } catch (...) {} });
+#include <wininet.h>
+#define AVFinally(callback) AVFinallyFunction x([&]{ try { callback } catch (...) {} });
 
-//Description: Runs code after going out of scope or loop
+//Description: Runs code after going out of scope or loop.
 //Usage example: AVFinally({ void1(); void2(); });
 //Usage example: releaseObject = new int[1024]; AVFinally({ delete[] releaseObject; });
 template <typename T>
@@ -25,8 +25,10 @@ public:
 	}
 };
 
-//Description: Automatically releases object after going out of scope or loop
-//Usage example: AVFin(AVFinMethod::Free, releaseObject);
+//Description: Automatically releases object after going out of scope or loop.
+//Note: Error C0000374 usually means you are using the wrong release method.
+//Usage example: avFin = AVFinObj<VARIANT>(AVFinObjMethod::VariantClear);
+//Usage example: avFin = AVFin(AVFinMethod::Custom, releaseObject);
 //Usage example: avFin.SetReleaser([&](auto releaseObject)
 //{
 //	for (int i = 0; i < releaseItemCount; i++)
@@ -35,16 +37,26 @@ public:
 //	}
 //	delete[](releaseObject);
 //});
-//Note: Error C0000374 usually means you are using the wrong release method (new() = DeleteSingle / new[] = DeleteArray / malloc = Free / Interface = Release / HANDLE = CloseHandle / CoTaskMemAlloc = ComFree)
 enum class AVFinMethod
 {
 	DeleteSingle,
 	DeleteArray,
-	Release,
+	ReleaseInterface,
 	CloseHandle,
-	Custom,
+	InternetCloseHandle,
+	RegCloseKey,
+	FreeStringBstr,
 	ComFree,
-	Free
+	FreeSid,
+	Free,
+	Custom
+};
+
+enum class AVFinObjMethod
+{
+	VariantClear,
+	PropVariantClear,
+	Custom
 };
 
 template<typename T>
@@ -53,7 +65,7 @@ class AVFin
 private:
 	T ReleaseObject = nullptr;
 	std::function<void(T& releaseObject)> ReleaseFunction = nullptr;
-	AVFinMethod ReleaseMethod = AVFinMethod::Free;
+	AVFinMethod ReleaseMethod = AVFinMethod::Custom;
 
 	bool Release()
 	{
@@ -69,13 +81,37 @@ private:
 				{
 					delete[]((void*)ReleaseObject);
 				}
-				else if (ReleaseMethod == AVFinMethod::Release)
+				else if (ReleaseMethod == AVFinMethod::ReleaseInterface)
 				{
 					((IUnknown*)ReleaseObject)->Release();
 				}
 				else if (ReleaseMethod == AVFinMethod::CloseHandle)
 				{
-					CloseHandle(ReleaseObject);
+					CloseHandle((HANDLE)ReleaseObject);
+				}
+				else if (ReleaseMethod == AVFinMethod::InternetCloseHandle)
+				{
+					InternetCloseHandle((HINTERNET)ReleaseObject);
+				}
+				else if (ReleaseMethod == AVFinMethod::RegCloseKey)
+				{
+					RegCloseKey((HKEY)ReleaseObject);
+				}
+				else if (ReleaseMethod == AVFinMethod::FreeStringBstr)
+				{
+					SysFreeString((BSTR)ReleaseObject);
+				}
+				else if (ReleaseMethod == AVFinMethod::ComFree)
+				{
+					CoTaskMemFree((LPVOID)ReleaseObject);
+				}
+				else if (ReleaseMethod == AVFinMethod::FreeSid)
+				{
+					FreeSid((PSID)ReleaseObject);
+				}
+				else if (ReleaseMethod == AVFinMethod::Free)
+				{
+					free((void*)ReleaseObject);
 				}
 				else if (ReleaseMethod == AVFinMethod::Custom)
 				{
@@ -83,14 +119,6 @@ private:
 					{
 						ReleaseFunction(ReleaseObject);
 					}
-				}
-				else if (ReleaseMethod == AVFinMethod::ComFree)
-				{
-					CoTaskMemFree(ReleaseObject);
-				}
-				else
-				{
-					free((void*)ReleaseObject);
 				}
 				ReleaseObject = nullptr;
 				return true;
@@ -109,15 +137,13 @@ public:
 	AVFin(AVFinMethod setMethod, T setObject)
 	{
 		ReleaseMethod = setMethod;
-		ReleaseObject = setObject;
-		setObject = nullptr;
+		ReleaseObject = std::move(setObject);
 	}
 
 	AVFin(AVFinMethod setMethod, T& setObject)
 	{
 		ReleaseMethod = setMethod;
-		ReleaseObject = setObject;
-		setObject = nullptr;
+		ReleaseObject = std::move(setObject);
 	}
 
 	void SetReleaser(std::function<void(T& releaseObject)> setFunction)
@@ -131,6 +157,79 @@ public:
 	}
 
 	~AVFin()
+	{
+		Release();
+	}
+};
+
+template<typename T>
+class AVFinObj
+{
+private:
+	T* ReleaseObject = nullptr;
+	std::function<void(T& releaseObject)> ReleaseFunction = nullptr;
+	AVFinObjMethod ReleaseMethod = AVFinObjMethod::Custom;
+
+	bool Release()
+	{
+		try
+		{
+			if (ReleaseObject != nullptr)
+			{
+				if (ReleaseMethod == AVFinObjMethod::VariantClear)
+				{
+					VariantClear((LPVARIANT)ReleaseObject);
+				}
+				else if (ReleaseMethod == AVFinObjMethod::PropVariantClear)
+				{
+					PropVariantClear((LPPROPVARIANT)ReleaseObject);
+				}
+				else if (ReleaseMethod == AVFinObjMethod::Custom)
+				{
+					if (ReleaseFunction != nullptr)
+					{
+						ReleaseFunction(*ReleaseObject);
+					}
+				}
+				ReleaseObject = nullptr;
+				return true;
+			}
+		}
+		catch (...) {}
+		return false;
+	}
+
+public:
+	AVFinObj(AVFinObjMethod setMethod)
+	{
+		ReleaseMethod = setMethod;
+		static T defaultObject = T{};
+		ReleaseObject = std::move(&defaultObject);
+	}
+
+	AVFinObj(AVFinObjMethod setMethod, T setObject)
+	{
+		ReleaseMethod = setMethod;
+		ReleaseObject = std::move(&setObject);
+	}
+
+	AVFinObj(AVFinObjMethod setMethod, T* setObject)
+	{
+		ReleaseMethod = setMethod;
+		ReleaseObject = std::move(setObject);
+	}
+
+	void SetReleaser(std::function<void(T& releaseObject)> setFunction)
+	{
+		ReleaseFunction = setFunction;
+	}
+
+	T& Get()
+	{
+		return *ReleaseObject;
+	}
+
+	~AVFinObj()
 	{
 		Release();
 	}
