@@ -12,7 +12,7 @@ namespace ArnoldVinkCode
         /// <summary>
         /// Launch application using ShellExecute
         /// </summary>
-        public static bool Launch_ShellExecute(string exePath, string workPath, string arguments, bool asAdmin)
+        public static bool Launch_ShellExecute(string exePath, string workPath, string arguments, bool asAdmin, bool waitForExit = false)
         {
             try
             {
@@ -26,7 +26,7 @@ namespace ArnoldVinkCode
                 //Check file executable extension
                 if (asAdmin)
                 {
-                    string[] fileExecutables = { "exe", "bat", "cmd", "com", "pif" };
+                    string[] fileExecutables = { "exe", "bat", "cmd", "com", "pif", "bin" };
                     string fileExtension = Path.GetExtension(exePath).ToLower();
                     if (!fileExecutables.Any(fileExtension.Contains))
                     {
@@ -74,6 +74,13 @@ namespace ArnoldVinkCode
                     //Shell execute normal user
                     AVDebug.WriteLine("Shell executing with user access: " + exePath);
                     shellExecuteResult = ShellExecuteUser(shellExecuteInfo);
+                }
+
+                //Wait for process exit
+                if (waitForExit && shellExecuteInfo.hProcess != IntPtr.Zero)
+                {
+                    Debug.WriteLine("Waiting for process to exit.");
+                    WaitForSingleObject(shellExecuteInfo.hProcess, INFINITE);
                 }
 
                 //Check execute result
