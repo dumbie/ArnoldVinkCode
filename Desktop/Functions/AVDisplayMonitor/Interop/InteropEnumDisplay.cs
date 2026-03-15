@@ -55,7 +55,7 @@ namespace ArnoldVinkCode
         private static extern IntPtr CreateDC(string lpszDriver, string lpszDevice, string lpszOutput, IntPtr devMode);
 
         [DllImport("User32.dll")]
-        private static extern int ReleaseDC(IntPtr hWnd, IntPtr hDc);
+        public static extern int ReleaseDC(IntPtr hWnd, IntPtr hDc);
 
         [DllImport("Gdi32.dll")]
         private static extern int GetDeviceCaps(IntPtr hDc, DEVICECAP dcIndex);

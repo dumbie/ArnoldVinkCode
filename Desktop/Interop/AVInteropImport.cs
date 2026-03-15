@@ -47,13 +47,16 @@ namespace ArnoldVinkCode
 
         //Close Handle
         [DllImport("kernel32.dll")]
-        private static extern bool CloseHandle(IntPtr hHandle);
+        public static extern bool CloseHandle(IntPtr hHandle);
 
         [DllImport("gdi32.dll")]
-        private static extern bool DeleteObject(IntPtr hObject);
+        public static extern bool DeleteObject(IntPtr hObject);
 
         [DllImport("user32.dll")]
-        private static extern bool DestroyIcon(IntPtr hIcon);
+        public static extern bool DestroyIcon(IntPtr hIcon);
+
+        [DllImport("ole32.dll")]
+        public static extern void CoTaskMemFree(IntPtr pv);
 
         //Window get
         [DllImport("user32.dll")]
@@ -71,6 +74,8 @@ namespace ArnoldVinkCode
         public static extern void SwitchToThisWindow(IntPtr hWnd, bool fAltTab);
         [DllImport("user32.dll")]
         public static extern IntPtr GetForegroundWindow();
+        [DllImport("user32.dll")]
+        public static extern IntPtr GetActiveWindow();
         [DllImport("user32.dll")]
         public static extern bool BringWindowToTop(IntPtr hWnd);
         [DllImport("user32.dll")]
@@ -149,7 +154,7 @@ namespace ArnoldVinkCode
         public static extern IntPtr GetProcAddress(IntPtr hModule, string lpProcName);
 
         [DllImport("kernel32.dll")]
-        private static extern bool FreeLibrary(IntPtr hModule);
+        public static extern bool FreeLibrary(IntPtr hModule);
 
         //Open and close process
         [DllImport("kernel32.dll")]

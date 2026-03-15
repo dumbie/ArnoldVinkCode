@@ -1,6 +1,7 @@
 #pragma once
 #include <unknwn.h>
 #include <wininet.h>
+#pragma comment(lib, "gdi32.lib")
 #define AVFinally(callback) AVFinallyFunction x([&]{ try { callback } catch (...) {} });
 
 //Description: Runs code after going out of scope or loop.
@@ -27,8 +28,8 @@ public:
 
 //Description: Automatically releases object after going out of scope or loop.
 //Note: Error C0000374 usually means you are using the wrong release method.
-//Usage example: avFin = AVFinObj<VARIANT>(AVFinObjMethod::VariantClear);
-//Usage example: avFin = AVFin(AVFinMethod::Custom, releaseObject);
+//Usage example: auto avFin = AVFinObj<VARIANT>(AVFinObjMethod::VariantClear);
+//Usage example: auto avFin = AVFin(AVFinMethod::Custom, releaseObject);
 //Usage example: avFin.SetReleaser([&](auto releaseObject)
 //{
 //	for (int i = 0; i < releaseItemCount; i++)
@@ -46,9 +47,13 @@ enum class AVFinMethod
 	InternetCloseHandle,
 	RegCloseKey,
 	FreeStringBstr,
+	FreeLibrary,
+	DestroyIcon,
+	DeleteObject,
+	ReleaseDC,
 	ComFree,
 	FreeSid,
-	Free,
+	FreeMarshal,
 	Custom
 };
 
@@ -67,7 +72,60 @@ private:
 	std::function<void(T& releaseObject)> ReleaseFunction = nullptr;
 	AVFinMethod ReleaseMethod = AVFinMethod::Custom;
 
-	bool Release()
+public:
+	AVFin(AVFinMethod setMethod)
+	{
+		ReleaseMethod = setMethod;
+	}
+
+	AVFin(AVFinMethod setMethod, T setObject)
+	{
+		ReleaseMethod = setMethod;
+		ReleaseObject = std::move(setObject);
+	}
+
+	AVFin(AVFinMethod setMethod, T& setObject)
+	{
+		ReleaseMethod = setMethod;
+		ReleaseObject = std::move(setObject);
+	}
+
+	void SetReleaser(std::function<void(T& releaseObject)> setFunction)
+	{
+		ReleaseFunction = setFunction;
+	}
+
+	void Set(T setObject)
+	{
+		if (ReleaseObject == nullptr)
+		{
+			ReleaseObject = std::move(setObject);
+		}
+		else
+		{
+			AVDebugWriteLine("AVFin object is already set.");
+		}
+	}
+
+	void Set(T& setObject)
+	{
+		if (ReleaseObject == nullptr)
+		{
+			ReleaseObject = std::move(setObject);
+		}
+		else
+		{
+			AVDebugWriteLine("AVFin object is already set.");
+		}
+	}
+
+	T& Get()
+	{
+		return ReleaseObject;
+	}
+
+	~AVFin() { Dispose(); }
+	void Dispose()
 	{
 		try
 		{
@@ -101,6 +159,22 @@ private:
 				{
 					SysFreeString((BSTR)ReleaseObject);
 				}
+				else if (ReleaseMethod == AVFinMethod::FreeLibrary)
+				{
+					FreeLibrary((HMODULE)ReleaseObject);
+				}
+				else if (ReleaseMethod == AVFinMethod::DestroyIcon)
+				{
+					DestroyIcon((HICON)ReleaseObject);
+				}
+				else if (ReleaseMethod == AVFinMethod::DeleteObject)
+				{
+					DeleteObject((HGDIOBJ)ReleaseObject);
+				}
+				else if (ReleaseMethod == AVFinMethod::ReleaseDC)
+				{
+					ReleaseDC(nullptr, (HDC)ReleaseObject);
+				}
 				else if (ReleaseMethod == AVFinMethod::ComFree)
 				{
 					CoTaskMemFree((LPVOID)ReleaseObject);
@@ -109,7 +183,7 @@ private:
 				{
 					FreeSid((PSID)ReleaseObject);
 				}
-				else if (ReleaseMethod == AVFinMethod::Free)
+				else if (ReleaseMethod == AVFinMethod::FreeMarshal)
 				{
 					free((void*)ReleaseObject);
 				}
@@ -121,44 +195,12 @@ private:
 					}
 				}
 				ReleaseObject = nullptr;
-				return true;
 			}
 		}
-		catch (...) {}
-		return false;
-	}
-
-public:
-	AVFin(AVFinMethod setMethod)
-	{
-		ReleaseMethod = setMethod;
-	}
-
-	AVFin(AVFinMethod setMethod, T setObject)
-	{
-		ReleaseMethod = setMethod;
-		ReleaseObject = std::move(setObject);
-	}
-
-	AVFin(AVFinMethod setMethod, T& setObject)
-	{
-		ReleaseMethod = setMethod;
-		ReleaseObject = std::move(setObject);
-	}
-
-	void SetReleaser(std::function<void(T& releaseObject)> setFunction)
-	{
-		ReleaseFunction = setFunction;
-	}
-
-	T& Get()
-	{
-		return ReleaseObject;
-	}
-
-	~AVFin()
-	{
-		Release();
+		catch (...)
+		{
+			AVDebugWriteLine("Failed to dispose AVFin object.");
+		}
 	}
 };
 
@@ -169,35 +211,6 @@ private:
 	T* ReleaseObject = nullptr;
 	std::function<void(T& releaseObject)> ReleaseFunction = nullptr;
 	AVFinObjMethod ReleaseMethod = AVFinObjMethod::Custom;
-
-	bool Release()
-	{
-		try
-		{
-			if (ReleaseObject != nullptr)
-			{
-				if (ReleaseMethod == AVFinObjMethod::VariantClear)
-				{
-					VariantClear((LPVARIANT)ReleaseObject);
-				}
-				else if (ReleaseMethod == AVFinObjMethod::PropVariantClear)
-				{
-					PropVariantClear((LPPROPVARIANT)ReleaseObject);
-				}
-				else if (ReleaseMethod == AVFinObjMethod::Custom)
-				{
-					if (ReleaseFunction != nullptr)
-					{
-						ReleaseFunction(*ReleaseObject);
-					}
-				}
-				ReleaseObject = nullptr;
-				return true;
-			}
-		}
-		catch (...) {}
-		return false;
-	}
 
 public:
 	AVFinObj(AVFinObjMethod setMethod)
@@ -224,13 +237,63 @@ public:
 		ReleaseFunction = setFunction;
 	}
 
+	void Set(T setObject)
+	{
+		if (ReleaseObject == nullptr)
+		{
+			ReleaseObject = std::move(&setObject);
+		}
+		else
+		{
+			AVDebugWriteLine("AVFin object is already set.");
+		}
+	}
+
+	void Set(T* setObject)
+	{
+		if (ReleaseObject == nullptr)
+		{
+			ReleaseObject = std::move(setObject);
+		}
+		else
+		{
+			AVDebugWriteLine("AVFin object is already set.");
+		}
+	}
+
 	T& Get()
 	{
 		return *ReleaseObject;
 	}
 
-	~AVFinObj()
+	~AVFinObj() { Dispose(); }
+	void Dispose()
 	{
-		Release();
+		try
+		{
+			if (ReleaseObject != nullptr)
+			{
+				if (ReleaseMethod == AVFinObjMethod::VariantClear)
+				{
+					VariantClear((LPVARIANT)ReleaseObject);
+				}
+				else if (ReleaseMethod == AVFinObjMethod::PropVariantClear)
+				{
+					PropVariantClear((LPPROPVARIANT)ReleaseObject);
+				}
+				else if (ReleaseMethod == AVFinObjMethod::Custom)
+				{
+					if (ReleaseFunction != nullptr)
+					{
+						ReleaseFunction(*ReleaseObject);
+					}
+				}
+				ReleaseObject = nullptr;
+			}
+		}
+		catch (...)
+		{
+			AVDebugWriteLine("Failed to dispose AVFin object.");
+		}
 	}
 };
