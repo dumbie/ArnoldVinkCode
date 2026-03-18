@@ -7,7 +7,7 @@ namespace ArnoldVinkCode
     {
         //Imports
         [DllImport("ntdll.dll", EntryPoint = "NtQueryInformationProcess")]
-        private static extern uint NtQueryInformationProcess64(IntPtr ProcessHandle, PROCESS_INFO_CLASS ProcessInformationClass, ref ulong ProcessInformation, uint ProcessInformationLength, out uint ReturnLength);
+        private static extern uint NtQueryInformationProcess64(IntPtr ProcessHandle, ProcessInfoClass ProcessInformationClass, ref ulong ProcessInformation, uint ProcessInformationLength, out uint ReturnLength);
 
         [DllImport("ntdll.dll", EntryPoint = "NtReadVirtualMemory")]
         private static extern uint NtReadVirtualMemory64(IntPtr ProcessHandle, ulong BaseAddress, ref PEB64 Buffer, ulong NumberOfBytesToRead, out ulong NumberOfBytesRead);
@@ -83,19 +83,18 @@ namespace ArnoldVinkCode
         }
 
         //Methods
-        private static string GetApplicationParameter64(IntPtr processHandle, PROCESS_PARAMETER_OPTIONS pOption)
+        private static string GetApplicationParameter64(IntPtr processHandle, ProcessParameterOptions pOption)
         {
-            string parameterString = string.Empty;
             try
             {
                 //AVDebug.WriteLine("GetApplicationParameter architecture 64");
 
                 ulong pebBaseAddress = 0;
-                uint readResult = NtQueryInformationProcess64(processHandle, PROCESS_INFO_CLASS.ProcessWow64Information, ref pebBaseAddress, (uint)Marshal.SizeOf(pebBaseAddress), out _);
+                uint readResult = NtQueryInformationProcess64(processHandle, ProcessInfoClass.ProcessWow64Information, ref pebBaseAddress, (uint)Marshal.SizeOf(pebBaseAddress), out _);
                 if (readResult != 0)
                 {
                     //AVDebug.WriteLine("Failed to get ProcessBasicInformation for: " + processHandle + "/Query failed.");
-                    return parameterString;
+                    return string.Empty;
                 }
 
                 PEB64 pebCopy = new PEB64();
@@ -103,7 +102,7 @@ namespace ArnoldVinkCode
                 if (readResult != 0)
                 {
                     //AVDebug.WriteLine("Failed to get PebBaseAddress for: " + processHandle);
-                    return parameterString;
+                    return string.Empty;
                 }
 
                 RTL_USER_PROCESS_PARAMETERS64 paramsCopy = new RTL_USER_PROCESS_PARAMETERS64();
@@ -111,27 +110,27 @@ namespace ArnoldVinkCode
                 if (readResult != 0)
                 {
                     //AVDebug.WriteLine("Failed to get ProcessParameters for: " + processHandle);
-                    return parameterString;
+                    return string.Empty;
                 }
 
                 ushort stringLength = 0;
                 uint stringBuffer = 0;
-                if (pOption == PROCESS_PARAMETER_OPTIONS.CurrentDirectoryPath)
+                if (pOption == ProcessParameterOptions.CurrentDirectoryPath)
                 {
                     stringLength = paramsCopy.CurrentDirectory.Length;
                     stringBuffer = paramsCopy.CurrentDirectory.Buffer;
                 }
-                else if (pOption == PROCESS_PARAMETER_OPTIONS.ImagePathName)
+                else if (pOption == ProcessParameterOptions.ImagePathName)
                 {
                     stringLength = paramsCopy.ImagePathName.Length;
                     stringBuffer = paramsCopy.ImagePathName.Buffer;
                 }
-                else if (pOption == PROCESS_PARAMETER_OPTIONS.DesktopInfo)
+                else if (pOption == ProcessParameterOptions.DesktopInfo)
                 {
                     stringLength = paramsCopy.DesktopInfo.Length;
                     stringBuffer = paramsCopy.DesktopInfo.Buffer;
                 }
-                else if (pOption == PROCESS_PARAMETER_OPTIONS.Environment)
+                else if (pOption == ProcessParameterOptions.Environment)
                 {
                     stringLength = (ushort)paramsCopy.EnvironmentSize;
                     stringBuffer = paramsCopy.Environment;
@@ -144,8 +143,8 @@ namespace ArnoldVinkCode
 
                 if (stringLength <= 0)
                 {
-                    AVDebug.WriteLine("Failed to get ParameterString length for: " + processHandle);
-                    return parameterString;
+                    //AVDebug.WriteLine("Failed to get ParameterString length for: " + processHandle);
+                    return string.Empty;
                 }
 
                 string getString = new string(' ', stringLength);
@@ -153,15 +152,18 @@ namespace ArnoldVinkCode
                 if (readResult != 0)
                 {
                     AVDebug.WriteLine("Failed to get ParameterString for: " + processHandle);
-                    return parameterString;
+                    return string.Empty;
                 }
-
-                return getString;
+                else
+                {
+                    //AVDebug.WriteLine("Got ParameterString: " + processHandle + "/" + getString);
+                    return getString;
+                }
             }
             catch (Exception ex)
             {
                 AVDebug.WriteLine("Failed to get GetApplicationParameter: " + ex.Message);
-                return parameterString;
+                return string.Empty;
             }
         }
     }

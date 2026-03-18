@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using static ArnoldVinkCode.AVInteropDll;
 
 namespace ArnoldVinkCode
 {
@@ -9,194 +7,108 @@ namespace ArnoldVinkCode
     {
         //Imports
         [DllImport("ntdll.dll")]
-        public static extern uint NtQuerySystemInformation(SYSTEM_INFO_CLASS SystemInformationClass, IntPtr SystemInformation, uint SystemInformationLength, out uint ReturnLength);
+        public static extern uint NtQuerySystemInformation(SystemInfoClass SystemInformationClass, IntPtr SystemInformation, uint SystemInformationLength, out uint ReturnLength);
 
         //Constants
         public const uint STATUS_INFO_LENGTH_MISMATCH = 0xC0000004;
         public const uint STATUS_SUCCESS = 0x00000000;
 
         //Structures
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        public struct UNICODE_STRING
+        {
+            public ushort Length;
+            public ushort MaximumLength;
+            [MarshalAs(UnmanagedType.LPWStr)]
+            public string Buffer;
+        }
+
         [StructLayout(LayoutKind.Sequential)]
         public struct SYSTEM_THREAD_INFORMATION
         {
             public long KernelTime;
             public long UserTime;
             public long CreateTime;
-            public uint WaitTime;
+            public ulong WaitTime;
             public IntPtr StartAddress;
-            public IntPtr UniqueProcessId;
-            public IntPtr UniqueThreadId;
+            public IntPtr ProcessId;
+            public IntPtr ThreadId;
             public int Priority;
             public int BasePriority;
-            public uint ContextSwitches;
+            public ulong ContextSwitches;
             public ProcessThreadState ThreadState;
-            public ProcessThreadWaitReason ThreadWaitReason;
-        }
-
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-        public struct UNICODE_STRING
-        {
-            public ushort Length;
-            public ushort MaximumLength;
-            [MarshalAs(UnmanagedType.LPWStr)] public string Buffer;
+            public ProcessThreadWaitReason WaitReason;
         }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct SYSTEM_PROCESS_INFORMATION
         {
-            public uint NextEntryOffset;
-            public uint NumberOfThreads;
-            public long SpareLi1;
-            public long SpareLi2;
-            public long SpareLi3;
-            public long CreateTime;
-            public long UserTime;
-            public long KernelTime;
+            public int NextEntryOffset;
+            public int NumberOfThreads;
+            public ulong WorkingSetPrivateSize;
+            public int HardFaultCount;
+            public int NumberOfThreadsHighWatermark;
+            public ulong CycleTime;
+            public ulong CreateTime;
+            public ulong UserTime;
+            public ulong KernelTime;
             public UNICODE_STRING ImageName;
-            public int BasePriority;
+            public ProcessBasePriority BasePriority;
             public IntPtr UniqueProcessId;
             public IntPtr ParentProcessId;
-            public uint HandleCount;
-            public uint SessionId;
-            public UIntPtr PageDirectoryBase;
-            public UIntPtr PeakVirtualSize;
-            public UIntPtr VirtualSize;
-            public uint PageFaultCount;
-            public UIntPtr PeakWorkingSetSize;
-            public UIntPtr WorkingSetSize;
-            public UIntPtr QuotaPeakPagedPoolUsage;
-            public UIntPtr QuotaPagedPoolUsage;
-            public UIntPtr QuotaPeakNonPagedPoolUsage;
-            public UIntPtr QuotaNonPagedPoolUsage;
-            public UIntPtr PagefileUsage;
-            public UIntPtr PeakPagefileUsage;
-            public UIntPtr PrivatePageCount;
-            public long ReadOperationCount;
-            public long WriteOperationCount;
-            public long OtherOperationCount;
-            public long ReadTransferCount;
-            public long WriteTransferCount;
-            public long OtherTransferCount;
+            public int HandleCount;
+            public int SessionId;
+            public IntPtr PageDirectoryBase;
+            public IntPtr PeakVirtualSize;
+            public IntPtr VirtualSize;
+            public int PageFaultCount;
+            public IntPtr PeakWorkingSetSize;
+            public IntPtr WorkingSetSize;
+            public IntPtr QuotaPeakPagedPoolUsage;
+            public IntPtr QuotaPagedPoolUsage;
+            public IntPtr QuotaPeakNonPagedPoolUsage;
+            public IntPtr QuotaNonPagedPoolUsage;
+            public IntPtr PagefileUsage;
+            public IntPtr PeakPagefileUsage;
+            public IntPtr PrivatePageCount;
+            public ulong ReadOperationCount;
+            public ulong WriteOperationCount;
+            public ulong OtherOperationCount;
+            public ulong ReadTransferCount;
+            public ulong WriteTransferCount;
+            public ulong OtherTransferCount;
         }
 
         //Query system process information
         private static IntPtr Query_SystemProcessInformation()
         {
             uint systemOffset = 0;
-            IntPtr systemInfo = IntPtr.Zero;
             try
             {
                 while (true)
                 {
                     try
                     {
-                        systemInfo = Marshal.AllocHGlobal((int)systemOffset);
-                        uint queryResult = NtQuerySystemInformation(SYSTEM_INFO_CLASS.SystemProcessInformation, systemInfo, systemOffset, out uint systemLength);
+                        IntPtr systemInfo = Marshal.AllocHGlobal((int)systemOffset);
+                        uint queryResult = NtQuerySystemInformation(SystemInfoClass.SystemProcessInformation, systemInfo, systemOffset, out uint systemLength);
                         if (queryResult == STATUS_INFO_LENGTH_MISMATCH)
                         {
                             systemOffset = Math.Max(systemOffset, systemLength);
-                            SafeCloseMarshal(ref systemInfo);
+                            if (systemInfo != IntPtr.Zero)
+                            {
+                                Marshal.FreeHGlobal(systemInfo);
+                            }
                         }
                         else if (queryResult == STATUS_SUCCESS)
                         {
-                            break;
+                            return systemInfo;
                         }
                     }
                     catch { }
                 }
             }
             catch { }
-            return systemInfo;
-        }
-
-        //Get process thread information by process id
-        public static List<ProcessThreadInfo> Get_ProcessThreadsByProcessId(int targetProcessId, bool firstThreadOnly)
-        {
-            List<ProcessThreadInfo> listProcessThread = new List<ProcessThreadInfo>();
-            IntPtr systemInfoBufferQuery = IntPtr.Zero;
-            try
-            {
-                //AVDebug.WriteLine("Getting process threads for process id: " + targetProcessId + "/" + firstThreadOnly);
-
-                //Query process information
-                systemInfoBufferQuery = Query_SystemProcessInformation();
-                if (systemInfoBufferQuery == IntPtr.Zero)
-                {
-                    AVDebug.WriteLine("Failed getting all process threads: query failed.");
-                    return listProcessThread;
-                }
-
-                //Loop process information
-                long systemInfoOffsetLoop = systemInfoBufferQuery.ToInt64();
-                while (true)
-                {
-                    try
-                    {
-                        //Read process information
-                        IntPtr systemInfoBufferLoop = new IntPtr(systemInfoOffsetLoop);
-                        SYSTEM_PROCESS_INFORMATION systemProcess = (SYSTEM_PROCESS_INFORMATION)Marshal.PtrToStructure(systemInfoBufferLoop, typeof(SYSTEM_PROCESS_INFORMATION));
-
-                        //Check target process id
-                        if (targetProcessId == systemProcess.UniqueProcessId.ToInt32())
-                        {
-                            //AVDebug.WriteLine("Found thread process: " + systemProcess.UniqueProcessId.ToInt32());
-
-                            //Move to thread information
-                            systemInfoBufferLoop = new IntPtr(systemInfoBufferLoop.ToInt64() + Marshal.SizeOf(typeof(SYSTEM_PROCESS_INFORMATION)));
-
-                            //Read thread info
-                            for (int i = 0; i < systemProcess.NumberOfThreads; i++)
-                            {
-                                try
-                                {
-                                    //Read thread information
-                                    SYSTEM_THREAD_INFORMATION systemThread = (SYSTEM_THREAD_INFORMATION)Marshal.PtrToStructure(systemInfoBufferLoop, typeof(SYSTEM_THREAD_INFORMATION));
-
-                                    //Add process thread to list
-                                    ProcessThreadInfo processThread = new ProcessThreadInfo();
-                                    processThread.Identifier = systemThread.UniqueThreadId.ToInt32();
-                                    processThread.ThreadState = systemThread.ThreadState;
-                                    processThread.ThreadWaitReason = systemThread.ThreadWaitReason;
-                                    listProcessThread.Add(processThread);
-
-                                    //Return process threads
-                                    if (firstThreadOnly)
-                                    {
-                                        return listProcessThread;
-                                    }
-
-                                    //Move to next thread
-                                    systemInfoBufferLoop = new IntPtr(systemInfoBufferLoop.ToInt64() + Marshal.SizeOf(typeof(SYSTEM_THREAD_INFORMATION)));
-                                }
-                                catch { }
-                            }
-                        }
-
-                        //Move to next process
-                        if (systemProcess.NextEntryOffset != 0)
-                        {
-                            systemInfoOffsetLoop += systemProcess.NextEntryOffset;
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                    catch { }
-                }
-
-                //Return process threads
-                return listProcessThread;
-            }
-            catch (Exception ex)
-            {
-                AVDebug.WriteLine("Failed getting all process threads: " + ex.Message);
-                return listProcessThread;
-            }
-            finally
-            {
-                SafeCloseMarshal(ref systemInfoBufferQuery);
-            }
+            return IntPtr.Zero;
         }
     }
 }

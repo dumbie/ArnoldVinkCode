@@ -44,17 +44,20 @@ namespace ArnoldVinkCode
             try
             {
                 PROCESS_BASIC_INFORMATION32 basicInformation = new PROCESS_BASIC_INFORMATION32();
-                uint readResult = NtQueryInformationProcess32(targetProcessHandle, PROCESS_INFO_CLASS.ProcessBasicInformation, ref basicInformation, (uint)Marshal.SizeOf(basicInformation), out _);
+                uint readResult = NtQueryInformationProcess32(targetProcessHandle, ProcessInfoClass.ProcessBasicInformation, ref basicInformation, (uint)Marshal.SizeOf(basicInformation), out _);
                 if (readResult != 0)
                 {
                     AVDebug.WriteLine("Failed to get parent process id: " + targetProcessHandle + "/Query failed.");
                     return 0;
                 }
-                return (int)basicInformation.InheritedFromUniqueProcessId;
+                else
+                {
+                    return (int)basicInformation.InheritedFromUniqueProcessId;
+                }
             }
-            catch
+            catch (Exception ex)
             {
-                //AVDebug.WriteLine("Failed to get parent processid: " + targetProcessHandle + "/" + ex.Message);
+                AVDebug.WriteLine("Failed to get parent processid: " + targetProcessHandle + "/" + ex.Message);
                 return 0;
             }
         }
@@ -63,7 +66,7 @@ namespace ArnoldVinkCode
         /// Get process parameter by process handle
         /// </summary>
         /// <summary>Process handle with VM_READ access is required.</summary>
-        public static string Detail_ParameterByProcessHandle(IntPtr targetProcessHandle, PROCESS_PARAMETER_OPTIONS pOption)
+        public static string Detail_ParameterByProcessHandle(IntPtr targetProcessHandle, ProcessParameterOptions pOption)
         {
             string parameterString = string.Empty;
             try
@@ -92,7 +95,7 @@ namespace ArnoldVinkCode
                 }
 
                 //Remove executable path from commandline
-                if (pOption == PROCESS_PARAMETER_OPTIONS.CommandLine)
+                if (pOption == ProcessParameterOptions.CommandLine)
                 {
                     parameterString = CommandLine_RemoveExePath(parameterString);
                 }

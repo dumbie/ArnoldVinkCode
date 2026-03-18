@@ -112,8 +112,10 @@ namespace ArnoldVinkCode
                 //Show launching message
                 AVDebug.WriteLine("Launching UWP or Win32Store application: " + appUserModelId + "/" + arguments);
 
-                //Start the process
+                //Create activation manager
                 UWPActivationManager UWPActivationManager = new UWPActivationManager();
+
+                //Launch UWP application
                 UWPActivationManager.ActivateApplication(appUserModelId, arguments, UWP_ACTIVATEOPTIONS.AO_NONE, out int processId);
 
                 //Return process id

@@ -6,8 +6,8 @@ namespace ArnoldVinkCode
 {
     public partial class AVProcess
     {
-        //Close open Windows prompts
-        public static void Close_OpenWindowsPrompts()
+        //Close Windows prompts
+        public static void Close_WindowsPrompts()
         {
             try
             {
@@ -28,37 +28,6 @@ namespace ArnoldVinkCode
             catch { }
         }
 
-        //Show window by process id
-        public static async Task<bool> Show_ProcessByProcessId(int processId)
-        {
-            try
-            {
-                AVDebug.WriteLine("Showing process by id: " + processId);
-
-                //Get multi process
-                ProcessMulti processMulti = Get_ProcessMultiByProcessId(processId);
-
-                //Check multi process
-                if (processMulti == null)
-                {
-                    AVDebug.WriteLine("Failed showing process by id: " + processId);
-                    return false;
-                }
-
-                //Check window handle main
-                if (processMulti.WindowHandleMain() == IntPtr.Zero)
-                {
-                    AVDebug.WriteLine("Failed showing process by id: " + processId);
-                    return false;
-                }
-
-                //Show process window
-                return await Show_ProcessByWindowHandle(processMulti.WindowHandleMain());
-            }
-            catch { }
-            return false;
-        }
-
         //Show window by window handle
         public static async Task<bool> Show_ProcessByWindowHandle(IntPtr windowHandle)
         {
@@ -73,8 +42,8 @@ namespace ArnoldVinkCode
 
                 AVDebug.WriteLine("Showing process by window handle: " + windowHandle);
 
-                //Close open Windows prompts
-                Close_OpenWindowsPrompts();
+                //Close Windows prompts
+                Close_WindowsPrompts();
 
                 //Get current window placement
                 GetWindowPlacement(windowHandle, out WindowPlacement windowPlacement);
@@ -130,6 +99,37 @@ namespace ArnoldVinkCode
                 AVDebug.WriteLine("Failed showing process window handle: " + windowHandle + "/" + ex.Message);
                 return false;
             }
+        }
+
+        //Show window by process id
+        public static async Task<bool> Show_ProcessByProcessId(int processId)
+        {
+            try
+            {
+                AVDebug.WriteLine("Showing process by id: " + processId);
+
+                //Get multi process
+                ProcessMulti processMulti = Get_ProcessMultiByProcessId(processId);
+
+                //Check multi process
+                if (processMulti == null)
+                {
+                    AVDebug.WriteLine("Failed showing process by id: " + processId);
+                    return false;
+                }
+
+                //Check window handle main
+                if (processMulti.WindowHandleMain() == IntPtr.Zero)
+                {
+                    AVDebug.WriteLine("Failed showing process by id: " + processId);
+                    return false;
+                }
+
+                //Show process window
+                return await Show_ProcessByWindowHandle(processMulti.WindowHandleMain());
+            }
+            catch { }
+            return false;
         }
     }
 }

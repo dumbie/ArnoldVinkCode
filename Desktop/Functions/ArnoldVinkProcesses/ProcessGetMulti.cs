@@ -9,40 +9,50 @@ namespace ArnoldVinkCode
     public partial class AVProcess
     {
         //Get all running processes multi
-        public static List<ProcessMulti> Get_ProcessesMultiAll()
+        public static List<ProcessMulti> Get_ProcessesMultiAll(int targetProcessId = -1)
         {
-            IntPtr spiQueryBuffer = IntPtr.Zero;
             List<ProcessMulti> listProcessMulti = new List<ProcessMulti>();
             try
             {
                 //AVDebug.WriteLine("Getting all multi processes.");
 
                 //Query process information
-                spiQueryBuffer = Query_SystemProcessInformation();
-                if (spiQueryBuffer == IntPtr.Zero)
+                using AVFin spiQueryBuffer = new AVFin(AVFinMethod.FreeMarshal, Query_SystemProcessInformation());
+                if (spiQueryBuffer.Get() == IntPtr.Zero)
                 {
                     AVDebug.WriteLine("Failed getting all multi processes: query failed.");
                     return listProcessMulti;
                 }
 
                 //Loop process information
-                long spiQueryBufferLoop = spiQueryBuffer.ToInt64();
+                int systemProcessOffset = 0;
                 while (true)
                 {
                     try
                     {
-                        //Read process information
-                        IntPtr systemInfoBufferLoop = new IntPtr(spiQueryBufferLoop);
-                        SYSTEM_PROCESS_INFORMATION systemProcess = (SYSTEM_PROCESS_INFORMATION)Marshal.PtrToStructure(systemInfoBufferLoop, typeof(SYSTEM_PROCESS_INFORMATION));
+                        //Get process information
+                        SYSTEM_PROCESS_INFORMATION systemProcess = Marshal.PtrToStructure<SYSTEM_PROCESS_INFORMATION>(IntPtr.Add(spiQueryBuffer.Get(), systemProcessOffset));
 
                         //Add multi process to list
                         ProcessMulti processMulti = new ProcessMulti(systemProcess.UniqueProcessId.ToInt32(), systemProcess.ParentProcessId.ToInt32(), systemProcess.ImageName.Buffer);
-                        listProcessMulti.Add(processMulti);
+
+                        //Check target identifier
+                        if (targetProcessId >= 0)
+                        {
+                            if (targetProcessId == processMulti.Identifier)
+                            {
+                                return new() { processMulti };
+                            }
+                        }
+                        else
+                        {
+                            listProcessMulti.Add(processMulti);
+                        }
 
                         //Move to next process
                         if (systemProcess.NextEntryOffset != 0)
                         {
-                            spiQueryBufferLoop += systemProcess.NextEntryOffset;
+                            systemProcessOffset += systemProcess.NextEntryOffset;
                         }
                         else
                         {
@@ -51,18 +61,25 @@ namespace ArnoldVinkCode
                     }
                     catch { }
                 }
-
-                //Return processes
-                return listProcessMulti;
             }
             catch (Exception ex)
             {
                 AVDebug.WriteLine("Failed getting all multi processes: " + ex.Message);
-                return listProcessMulti;
             }
-            finally
+            return listProcessMulti;
+        }
+
+        //Get multi process by process id
+        public static ProcessMulti Get_ProcessMultiByProcessId(int targetProcessId)
+        {
+            try
             {
-                SafeCloseMarshal(ref spiQueryBuffer);
+                return new ProcessMulti(targetProcessId, 0, string.Empty);
+            }
+            catch (Exception ex)
+            {
+                AVDebug.WriteLine("Failed get multi process by process id: " + targetProcessId + "/" + ex.Message);
+                return null;
             }
         }
 
@@ -78,6 +95,37 @@ namespace ArnoldVinkCode
                 AVDebug.WriteLine("Failed to get multi process for current process: " + ex.Message);
                 return null;
             }
+        }
+
+        /// <summary>
+        /// Get processes multi by AppUserModelId
+        /// </summary>
+        /// <param name="targetAppUserModelId">UWP or Win32Store AppUserModelId</param>
+        public static List<ProcessMulti> Get_ProcessesMultiByAppUserModelId(string targetAppUserModelId)
+        {
+            //AVDebug.WriteLine("Getting processes by AppUserModelId: " + targetName);
+            List<ProcessMulti> foundProcesses = new List<ProcessMulti>();
+            try
+            {
+                string targetAppUserModelIdLower = targetAppUserModelId.ToLower();
+                foreach (ProcessMulti checkProcess in Get_ProcessesMultiAll())
+                {
+                    try
+                    {
+                        string foundAppUserModelIdLower = checkProcess.AppUserModelId.ToLower();
+                        if (foundAppUserModelIdLower == targetAppUserModelIdLower)
+                        {
+                            foundProcesses.Add(checkProcess);
+                        }
+                    }
+                    catch { }
+                }
+            }
+            catch (Exception ex)
+            {
+                AVDebug.WriteLine("Failed to get multi processes by AppUserModelId: " + ex.Message);
+            }
+            return foundProcesses;
         }
 
         //Get multi process by window handle
@@ -115,23 +163,29 @@ namespace ArnoldVinkCode
             List<ProcessMulti> foundProcesses = new List<ProcessMulti>();
             try
             {
+                //Lowercase executable name
                 string targetNameLower = targetName.ToLower();
+
+                //Look for executable name
                 foreach (ProcessMulti checkProcess in Get_ProcessesMultiAll())
                 {
                     try
                     {
-                        string foundExecutableNameLower = checkProcess.ExeName.ToLower();
-                        string foundExecutableNameNoExtLower = checkProcess.ExeNameNoExt.ToLower();
+                        //Lowercase executable name
+                        string foundNameLower = checkProcess.ExeName.ToLower();
+                        string foundNameNoExtLower = checkProcess.ExeNameNoExt.ToLower();
+
+                        //Add multi process to list
                         if (exactName)
                         {
-                            if (foundExecutableNameLower == targetNameLower || foundExecutableNameNoExtLower == targetNameLower)
+                            if (foundNameLower == targetNameLower || foundNameNoExtLower == targetNameLower)
                             {
                                 foundProcesses.Add(checkProcess);
                             }
                         }
                         else
                         {
-                            if (foundExecutableNameLower.Contains(targetNameLower) || foundExecutableNameNoExtLower.Contains(targetNameLower))
+                            if (foundNameLower.Contains(targetNameLower) || foundNameNoExtLower.Contains(targetNameLower))
                             {
                                 foundProcesses.Add(checkProcess);
                             }
@@ -179,37 +233,6 @@ namespace ArnoldVinkCode
         }
 
         /// <summary>
-        /// Get processes multi by AppUserModelId
-        /// </summary>
-        /// <param name="targetAppUserModelId">UWP or Win32Store AppUserModelId</param>
-        public static List<ProcessMulti> Get_ProcessesMultiByAppUserModelId(string targetAppUserModelId)
-        {
-            //AVDebug.WriteLine("Getting processes by AppUserModelId: " + targetName);
-            List<ProcessMulti> foundProcesses = new List<ProcessMulti>();
-            try
-            {
-                string targetAppUserModelIdLower = targetAppUserModelId.ToLower();
-                foreach (ProcessMulti checkProcess in Get_ProcessesMultiAll())
-                {
-                    try
-                    {
-                        string foundAppUserModelIdLower = checkProcess.AppUserModelId.ToLower();
-                        if (foundAppUserModelIdLower == targetAppUserModelIdLower)
-                        {
-                            foundProcesses.Add(checkProcess);
-                        }
-                    }
-                    catch { }
-                }
-            }
-            catch (Exception ex)
-            {
-                AVDebug.WriteLine("Failed to get multi processes by AppUserModelId: " + ex.Message);
-            }
-            return foundProcesses;
-        }
-
-        /// <summary>
         /// Get processes by window title
         /// </summary>
         /// <param name="targetWindowTitle">Search for window title</param>
@@ -249,20 +272,6 @@ namespace ArnoldVinkCode
                 AVDebug.WriteLine("Failed to get multi processes by window title: " + ex.Message);
             }
             return foundProcesses;
-        }
-
-        //Get multi process by process id
-        public static ProcessMulti Get_ProcessMultiByProcessId(int targetProcessId)
-        {
-            try
-            {
-                return new ProcessMulti(targetProcessId, 0, string.Empty);
-            }
-            catch (Exception ex)
-            {
-                AVDebug.WriteLine("Failed get multi process by process id: " + targetProcessId + "/" + ex.Message);
-                return null;
-            }
         }
     }
 }

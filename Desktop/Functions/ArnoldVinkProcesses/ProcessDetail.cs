@@ -62,7 +62,7 @@ namespace ArnoldVinkCode
                     zHandle = GetWindow(zHandle, GetWindowFlags.GW_HWNDPREV);
                     zOrder++;
                 }
-                //AVDebug.WriteLine("Window " + hWnd + " ZOrder: " + zOrder);
+                //AVDebug.WriteLine("Window: " + windowHandle + " ZOrder: " + zOrder);
             }
             catch { }
             return zOrder;

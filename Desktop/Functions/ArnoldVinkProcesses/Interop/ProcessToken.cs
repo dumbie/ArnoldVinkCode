@@ -198,6 +198,9 @@ namespace ArnoldVinkCode
         public static extern int GetSidLengthRequired(int nSubAuthorityCount);
 
         [DllImport("advapi32.dll", SetLastError = true)]
+        public static extern int FreeSid(IntPtr pSid);
+
+        [DllImport("advapi32.dll", SetLastError = true)]
         public static extern bool OpenProcessToken(IntPtr ProcessHandle, TOKEN_DESIRED_ACCESS DesiredAccess, out IntPtr TokenHandle);
 
         [DllImport("advapi32.dll", SetLastError = true)]

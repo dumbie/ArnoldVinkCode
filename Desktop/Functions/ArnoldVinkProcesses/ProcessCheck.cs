@@ -36,11 +36,11 @@ namespace ArnoldVinkCode
         {
             try
             {
-                return Get_ProcessesMultiAll().Any(x => x.Identifier == targetProcessId);
+                return Get_ProcessesMultiAll(targetProcessId).Any();
             }
             catch (Exception ex)
             {
-                AVDebug.WriteLine("Failed to check process by id: " + ex.Message);
+                AVDebug.WriteLine("Failed to check process by id: " + targetProcessId + "/" + ex.Message);
                 return false;
             }
         }

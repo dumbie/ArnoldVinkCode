@@ -8,24 +8,23 @@ namespace ArnoldVinkCode
         //Close process by process identifier
         public static bool Close_ProcessByProcessId(int targetProcessId)
         {
-            IntPtr closeProcess = IntPtr.Zero;
             try
             {
                 if (GetCurrentProcessId() == targetProcessId)
                 {
-                    AVDebug.WriteLine("Prevented closing process by id: " + targetProcessId + "/Process is application.");
+                    AVDebug.WriteLine("Prevented closing process by id: " + targetProcessId + "/Process is current application.");
                     return false;
                 }
 
-                closeProcess = OpenProcess(PROCESS_DESIRED_ACCESS.PROCESS_TERMINATE, false, targetProcessId);
-                if (closeProcess == IntPtr.Zero)
+                using AVFin closeProcess = new AVFin(AVFinMethod.CloseHandle, OpenProcess(PROCESS_DESIRED_ACCESS.PROCESS_TERMINATE, false, targetProcessId));
+                if (closeProcess.Get() == IntPtr.Zero)
                 {
                     AVDebug.WriteLine("Failed closing process by id: " + targetProcessId + "/Process not found.");
                     return false;
                 }
                 else
                 {
-                    bool processClosed = TerminateProcess(closeProcess, 1);
+                    bool processClosed = TerminateProcess(closeProcess.Get(), 0);
                     AVDebug.WriteLine("Closed process by id: " + targetProcessId + "/" + processClosed);
                     return processClosed;
                 }
@@ -34,10 +33,6 @@ namespace ArnoldVinkCode
             {
                 AVDebug.WriteLine("Failed closing process by id: " + targetProcessId + "/" + ex.Message);
                 return false;
-            }
-            finally
-            {
-                SafeCloseHandle(ref closeProcess);
             }
         }
 

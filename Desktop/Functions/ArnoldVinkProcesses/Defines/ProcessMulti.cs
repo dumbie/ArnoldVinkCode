@@ -132,7 +132,7 @@ namespace ArnoldVinkCode
                         return GetPriorityClass(Handle);
                     }
                     catch { }
-                    return ProcessPriorityClasses.UNKNOWN_CLASS;
+                    return ProcessPriorityClasses.Unknown;
                 }
                 set
                 {
@@ -222,7 +222,7 @@ namespace ArnoldVinkCode
                     {
                         if (string.IsNullOrWhiteSpace(CachedWorkPath))
                         {
-                            CachedWorkPath = Detail_ParameterByProcessHandle(Handle, PROCESS_PARAMETER_OPTIONS.CurrentDirectoryPath);
+                            CachedWorkPath = Detail_ParameterByProcessHandle(Handle, ProcessParameterOptions.CurrentDirectoryPath);
                         }
                     }
                     catch { }
@@ -239,7 +239,7 @@ namespace ArnoldVinkCode
                     {
                         if (string.IsNullOrWhiteSpace(CachedArgument))
                         {
-                            CachedArgument = Detail_ParameterByProcessHandle(Handle, PROCESS_PARAMETER_OPTIONS.CommandLine);
+                            CachedArgument = Detail_ParameterByProcessHandle(Handle, ProcessParameterOptions.CommandLine);
                         }
                     }
                     catch { }
@@ -500,7 +500,10 @@ namespace ArnoldVinkCode
             {
                 try
                 {
-                    SafeCloseHandle(ref CachedHandle);
+                    if (CachedHandle != IntPtr.Zero)
+                    {
+                        CloseHandle(CachedHandle);
+                    }
                 }
                 catch { }
             }

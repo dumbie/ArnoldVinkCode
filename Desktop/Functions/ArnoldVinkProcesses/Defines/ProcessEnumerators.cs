@@ -2,7 +2,7 @@
 {
     public partial class AVProcess
     {
-        public enum PROCESS_PARAMETER_OPTIONS
+        public enum ProcessParameterOptions
         {
             CurrentDirectoryPath,
             ImagePathName,
@@ -11,16 +11,40 @@
             Environment
         }
 
-        public enum PROCESS_INFO_CLASS : int
+        public enum ProcessInfoClass : int
         {
             ProcessBasicInformation = 0,
             ProcessWow64Information = 26
         }
 
-        public enum SYSTEM_INFO_CLASS : int
+        public enum SystemInfoClass : int
         {
             SystemBasicInformation = 0,
             SystemProcessInformation = 5
+        }
+
+        public enum ProcessBasePriority : int
+        {
+            Unknown = 0,
+            Low = 4,
+            BelowNormal = 6,
+            Normal = 8,
+            Normal1 = 9,
+            AboveNormal = 10,
+            Normal2 = 11,
+            High = 13,
+            Realtime = 24
+        }
+
+        public enum ProcessPriorityClasses : uint
+        {
+            Unknown = 0x00,
+            Normal = 0x20,
+            Idle = 0x40,
+            High = 0x80,
+            Realtime = 0x100,
+            BelowNormal = 0x4000,
+            AboveNormal = 0x8000
         }
 
         public enum ProcessThreadState : int
@@ -35,7 +59,8 @@
             DeferredReady = 7,
             GateWait = 8,
             WaitingForProcessInSwap = 9,
-            Unknown = 10
+            MaximumThreadState = 10,
+            Unknown
         }
 
         public enum ProcessThreadWaitReason : int
@@ -47,7 +72,38 @@
             DelayExecution = 4,
             Suspended = 5,
             UserRequest = 6,
-            Unknown = 7
+            WrExecutive = 7,
+            WrFreePage = 8,
+            WrPageIn = 9,
+            WrPoolAllocation = 10,
+            WrDelayExecution = 11,
+            WrSuspended = 12,
+            WrUserRequest = 13,
+            WrEventPair = 14,
+            WrQueue = 15,
+            WrLpcReceive = 16,
+            WrLpcReply = 17,
+            WrVirtualMemory = 18,
+            WrPageOut = 19,
+            WrRendezvous = 20,
+            Spare2 = 21,
+            Spare3 = 22,
+            Spare4 = 23,
+            Spare5 = 24,
+            WrCalloutStack = 25,
+            WrKernel = 26,
+            WrResource = 27,
+            WrPushLock = 28,
+            WrMutex = 29,
+            WrQuantumEnd = 30,
+            WrDispatchInt = 31,
+            WrPreempted = 32,
+            WrYieldExecution = 33,
+            WrFastMutex = 34,
+            WrGuardedMutex = 35,
+            WrRundown = 36,
+            MaximumWaitReason = 37,
+            Unknown
         }
 
         public enum ProcessType : int

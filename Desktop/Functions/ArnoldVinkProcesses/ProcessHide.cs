@@ -6,37 +6,6 @@ namespace ArnoldVinkCode
 {
     public partial class AVProcess
     {
-        //Hide window by process id
-        public static async Task<bool> Hide_ProcessByProcessId(int processId)
-        {
-            try
-            {
-                AVDebug.WriteLine("Hiding process by id: " + processId);
-
-                //Get multi process
-                ProcessMulti processMulti = Get_ProcessMultiByProcessId(processId);
-
-                //Check multi process
-                if (processMulti == null)
-                {
-                    AVDebug.WriteLine("Failed hiding process by id: " + processId);
-                    return false;
-                }
-
-                //Check window handle main
-                if (processMulti.WindowHandleMain() == IntPtr.Zero)
-                {
-                    AVDebug.WriteLine("Failed hiding process by id: " + processId);
-                    return false;
-                }
-
-                //Hide process window
-                return await Hide_ProcessByWindowHandle(processMulti.WindowHandleMain());
-            }
-            catch { }
-            return false;
-        }
-
         //Hide window by window handle
         public static async Task<bool> Hide_ProcessByWindowHandle(IntPtr windowHandle)
         {
@@ -68,6 +37,37 @@ namespace ArnoldVinkCode
                 AVDebug.WriteLine("Failed hiding process window handle: " + windowHandle + "/" + ex.Message);
                 return false;
             }
+        }
+
+        //Hide window by process id
+        public static async Task<bool> Hide_ProcessByProcessId(int processId)
+        {
+            try
+            {
+                AVDebug.WriteLine("Hiding process by id: " + processId);
+
+                //Get multi process
+                ProcessMulti processMulti = Get_ProcessMultiByProcessId(processId);
+
+                //Check multi process
+                if (processMulti == null)
+                {
+                    AVDebug.WriteLine("Failed hiding process by id: " + processId);
+                    return false;
+                }
+
+                //Check window handle main
+                if (processMulti.WindowHandleMain() == IntPtr.Zero)
+                {
+                    AVDebug.WriteLine("Failed hiding process by id: " + processId);
+                    return false;
+                }
+
+                //Hide process window
+                return await Hide_ProcessByWindowHandle(processMulti.WindowHandleMain());
+            }
+            catch { }
+            return false;
         }
     }
 }
