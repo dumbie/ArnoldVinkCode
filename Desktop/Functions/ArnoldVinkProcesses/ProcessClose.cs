@@ -5,7 +5,7 @@ namespace ArnoldVinkCode
 {
     public partial class AVProcess
     {
-        //Close process by process identifier
+        //Close process by identifier
         public static bool Close_ProcessByProcessId(int targetProcessId)
         {
             try
@@ -36,13 +36,13 @@ namespace ArnoldVinkCode
             }
         }
 
-        //Close process tree by process identifier
+        //Close process tree by identifier
         public static bool Close_ProcessTreeByProcessId(int targetProcessId)
         {
             try
             {
                 //Close child processes
-                foreach (ProcessMulti childProcess in Get_ProcessesMultiAll())
+                foreach (AVProcess childProcess in Get_ProcessAll())
                 {
                     try
                     {
@@ -67,13 +67,13 @@ namespace ArnoldVinkCode
             }
         }
 
-        //Close processes by name
-        public static bool Close_ProcessesByName(string targetProcessName, bool exactName)
+        //Close process by name
+        public static bool Close_ProcessByName(string targetProcessName, bool exactName)
         {
             try
             {
                 bool processClosed = false;
-                foreach (ProcessMulti foundProcesses in Get_ProcessesMultiByName(targetProcessName, exactName))
+                foreach (AVProcess foundProcesses in Get_ProcessByName(targetProcessName, exactName))
                 {
                     try
                     {
@@ -85,23 +85,23 @@ namespace ArnoldVinkCode
                     catch { }
                 }
 
-                AVDebug.WriteLine("Closed processes by name: " + targetProcessName + "/" + processClosed);
+                AVDebug.WriteLine("Closed process by name: " + targetProcessName + "/" + processClosed);
                 return processClosed;
             }
             catch (Exception ex)
             {
-                AVDebug.WriteLine("Failed closing processes by name: " + targetProcessName + "/" + ex.Message);
+                AVDebug.WriteLine("Failed closing process by name: " + targetProcessName + "/" + ex.Message);
                 return false;
             }
         }
 
-        //Close processes by executable path
-        public static bool Close_ProcessesByExecutablePath(string targetExecutablePath)
+        //Close process by executable path
+        public static bool Close_ProcessByExecutablePath(string targetExecutablePath)
         {
             try
             {
                 bool processClosed = false;
-                foreach (ProcessMulti foundProcesses in Get_ProcessesMultiByExecutablePath(targetExecutablePath))
+                foreach (AVProcess foundProcesses in Get_ProcessByExecutablePath(targetExecutablePath))
                 {
                     try
                     {
@@ -113,23 +113,23 @@ namespace ArnoldVinkCode
                     catch { }
                 }
 
-                AVDebug.WriteLine("Closed processes by executable path: " + targetExecutablePath + "/" + processClosed);
+                AVDebug.WriteLine("Closed process by executable path: " + targetExecutablePath + "/" + processClosed);
                 return processClosed;
             }
             catch (Exception ex)
             {
-                AVDebug.WriteLine("Failed closing processes by executable path: " + targetExecutablePath + "/" + ex.Message);
+                AVDebug.WriteLine("Failed closing process by executable path: " + targetExecutablePath + "/" + ex.Message);
                 return false;
             }
         }
 
-        //Close processes by AppUserModelId
-        public static bool Close_ProcessesByAppUserModelId(string targetAppUserModelId)
+        //Close process by AppUserModelId
+        public static bool Close_ProcessByAppUserModelId(string targetAppUserModelId)
         {
             try
             {
                 bool processClosed = false;
-                foreach (ProcessMulti foundProcesses in Get_ProcessesMultiByAppUserModelId(targetAppUserModelId))
+                foreach (AVProcess foundProcesses in Get_ProcessByAppUserModelId(targetAppUserModelId))
                 {
                     try
                     {
@@ -141,12 +141,12 @@ namespace ArnoldVinkCode
                     catch { }
                 }
 
-                AVDebug.WriteLine("Closed processes by AppUserModelId: " + targetAppUserModelId + "/" + processClosed);
+                AVDebug.WriteLine("Closed process by AppUserModelId: " + targetAppUserModelId + "/" + processClosed);
                 return processClosed;
             }
             catch (Exception ex)
             {
-                AVDebug.WriteLine("Failed closing processes by AppUserModelId: " + targetAppUserModelId + "/" + ex.Message);
+                AVDebug.WriteLine("Failed closing process by AppUserModelId: " + targetAppUserModelId + "/" + ex.Message);
                 return false;
             }
         }

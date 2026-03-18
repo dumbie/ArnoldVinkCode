@@ -12,7 +12,6 @@ namespace ArnoldVinkCode
             {
                 if (targetWindowHandle == IntPtr.Zero) { return processResponding; }
                 processResponding = !IsHungAppWindow(targetWindowHandle);
-                //processResponding = SendMessageTimeout(targetWindowHandle, 0, IntPtr.Zero, IntPtr.Zero, SendMessageTimeoutFlags.SMTO_ABORTIFHUNG, 2000, out var _) != IntPtr.Zero;
                 //Debug.WriteLine("Process window handle is responding: " + processResponding  + "/" + targetWindowHandle);
             }
             catch { }

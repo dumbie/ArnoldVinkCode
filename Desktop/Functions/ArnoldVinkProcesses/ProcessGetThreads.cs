@@ -7,7 +7,7 @@ namespace ArnoldVinkCode
     public partial class AVProcess
     {
         //Get process thread information by process id
-        public static List<ProcessThreadInfo> Get_ProcessThreadsByProcessId(int targetProcessId, bool firstThreadOnly)
+        public static List<ProcessThreadInfo> Detail_ProcessThreadsByProcessId(int targetProcessId, bool firstThreadOnly)
         {
             List<ProcessThreadInfo> listProcessThread = new List<ProcessThreadInfo>();
             try

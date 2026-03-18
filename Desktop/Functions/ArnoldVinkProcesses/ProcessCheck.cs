@@ -36,7 +36,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                return Get_ProcessesMultiAll(targetProcessId).Any();
+                return Get_ProcessAll(targetProcessId).Any();
             }
             catch (Exception ex)
             {
@@ -68,7 +68,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                return Get_ProcessesMultiByName(targetProcessName, exactName).Any();
+                return Get_ProcessByName(targetProcessName, exactName).Any();
             }
             catch (Exception ex)
             {
@@ -85,7 +85,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                return Get_ProcessesMultiByAppUserModelId(targetAppUserModelId).Any();
+                return Get_ProcessByAppUserModelId(targetAppUserModelId).Any();
             }
             catch (Exception ex)
             {
@@ -99,7 +99,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                foreach (IntPtr windowHandle in Get_WindowHandlesByProcessId(targetProcessId))
+                foreach (IntPtr windowHandle in Detail_WindowHandlesByProcessId(targetProcessId))
                 {
                     string classNameString = Detail_ClassNameByWindowHandle(windowHandle);
                     if (classNameString == "MSCTFIME UI")

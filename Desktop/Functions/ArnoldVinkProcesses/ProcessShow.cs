@@ -15,14 +15,14 @@ namespace ArnoldVinkCode
                 if (Check_RunningProcessByName("consent", true))
                 {
                     AVDebug.WriteLine("Windows administrator consent prompt is open, killing the process.");
-                    Close_ProcessesByName("consent", true);
+                    Close_ProcessByName("consent", true);
                 }
 
                 //Windows feature installation prompt
                 if (Check_RunningProcessByName("fondue", true))
                 {
                     AVDebug.WriteLine("Windows feature installation prompt is open, killing the process.");
-                    Close_ProcessesByName("fondue", true);
+                    Close_ProcessByName("fondue", true);
                 }
             }
             catch { }
@@ -51,7 +51,7 @@ namespace ArnoldVinkCode
                 //Check current window placement
                 SystemCommand windowSystemCommand = SystemCommand.SC_RESTORE;
                 ShowWindowFlags windowShowCommand = ShowWindowFlags.SW_RESTORE;
-                if (windowPlacement.windowFlags == WindowPlacementFlags.WPF_RESTORETOMAXIMIZED)
+                if (windowPlacement.flags == WindowPlacementFlags.WPF_RESTORETOMAXIMIZED)
                 {
                     windowSystemCommand = SystemCommand.SC_MAXIMIZE;
                     windowShowCommand = ShowWindowFlags.SW_SHOWMAXIMIZED;
@@ -108,25 +108,25 @@ namespace ArnoldVinkCode
             {
                 AVDebug.WriteLine("Showing process by id: " + processId);
 
-                //Get multi process
-                ProcessMulti processMulti = Get_ProcessMultiByProcessId(processId);
+                //Get process
+                AVProcess process = Get_ProcessByProcessId(processId);
 
-                //Check multi process
-                if (processMulti == null)
+                //Check process
+                if (process == null)
                 {
                     AVDebug.WriteLine("Failed showing process by id: " + processId);
                     return false;
                 }
 
                 //Check window handle main
-                if (processMulti.WindowHandleMain() == IntPtr.Zero)
+                if (process.WindowHandleMain() == IntPtr.Zero)
                 {
                     AVDebug.WriteLine("Failed showing process by id: " + processId);
                     return false;
                 }
 
                 //Show process window
-                return await Show_ProcessByWindowHandle(processMulti.WindowHandleMain());
+                return await Show_ProcessByWindowHandle(process.WindowHandleMain());
             }
             catch { }
             return false;

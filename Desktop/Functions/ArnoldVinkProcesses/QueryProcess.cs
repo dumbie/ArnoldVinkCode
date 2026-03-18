@@ -7,7 +7,7 @@ namespace ArnoldVinkCode
     public partial class AVProcess
     {
         //Remove executable path from commandline
-        public static string CommandLine_RemoveExePath(string targetCommandLine)
+        public static string Remove_ExePathFromCommandLine(string targetCommandLine)
         {
             try
             {
@@ -44,8 +44,8 @@ namespace ArnoldVinkCode
             try
             {
                 PROCESS_BASIC_INFORMATION32 basicInformation = new PROCESS_BASIC_INFORMATION32();
-                uint readResult = NtQueryInformationProcess32(targetProcessHandle, ProcessInfoClass.ProcessBasicInformation, ref basicInformation, (uint)Marshal.SizeOf(basicInformation), out _);
-                if (readResult != 0)
+                uint queryResult = NtQueryInformationProcess32(targetProcessHandle, ProcessInfoClass.ProcessBasicInformation, ref basicInformation, (uint)Marshal.SizeOf(basicInformation), out _);
+                if (queryResult != 0)
                 {
                     AVDebug.WriteLine("Failed to get parent process id: " + targetProcessHandle + "/Query failed.");
                     return 0;
@@ -55,9 +55,9 @@ namespace ArnoldVinkCode
                     return (int)basicInformation.InheritedFromUniqueProcessId;
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                AVDebug.WriteLine("Failed to get parent processid: " + targetProcessHandle + "/" + ex.Message);
+                //AVDebug.WriteLine("Failed to get parent processid: " + targetProcessHandle + "/" + ex.Message);
                 return 0;
             }
         }
@@ -97,7 +97,7 @@ namespace ArnoldVinkCode
                 //Remove executable path from commandline
                 if (pOption == ProcessParameterOptions.CommandLine)
                 {
-                    parameterString = CommandLine_RemoveExePath(parameterString);
+                    parameterString = Remove_ExePathFromCommandLine(parameterString);
                 }
 
                 //Trim and return string

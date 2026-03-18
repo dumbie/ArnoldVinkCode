@@ -7,9 +7,9 @@ namespace ArnoldVinkCode
     public partial class AVProcess
     {
         //Enumerate all windows by process id (including uwp and fullscreen)
-        public static List<IntPtr> Get_WindowHandlesByProcessId(int targetProcessId)
+        public static List<IntPtr> Detail_WindowHandlesByProcessId(int targetProcessId)
         {
-            //AVDebug.WriteLine("Getting window handles by process id: " + processId);
+            //AVDebug.WriteLine("Getting window handles by process id: " + targetProcessId);
             List<IntPtr> listWindows = new List<IntPtr>();
             try
             {
@@ -32,7 +32,7 @@ namespace ArnoldVinkCode
         }
 
         //Enumerate all windows by thread id (including uwp and fullscreen)
-        public static List<IntPtr> Get_WindowHandlesByThreadId(int targetThreadId)
+        public static List<IntPtr> Detail_WindowHandlesByThreadId(int targetThreadId)
         {
             //AVDebug.WriteLine("Getting window handles by thread id: " + targetThreadId);
             List<IntPtr> listWindows = new List<IntPtr>();
@@ -56,7 +56,7 @@ namespace ArnoldVinkCode
         }
 
         //Enumerate all windows by AppUserModelId (including uwp and fullscreen)
-        public static List<IntPtr> Get_WindowHandlesByAppUserModelId(string targetAppUserModelId)
+        public static List<IntPtr> Detail_WindowHandlesByAppUserModelId(string targetAppUserModelId)
         {
             //AVDebug.WriteLine("Getting window handles by AppUserModelId: " + targetAppUserModelId);
             List<IntPtr> listWindows = new List<IntPtr>();

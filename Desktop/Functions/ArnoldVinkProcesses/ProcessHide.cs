@@ -46,25 +46,25 @@ namespace ArnoldVinkCode
             {
                 AVDebug.WriteLine("Hiding process by id: " + processId);
 
-                //Get multi process
-                ProcessMulti processMulti = Get_ProcessMultiByProcessId(processId);
+                //Get process
+                AVProcess process = Get_ProcessByProcessId(processId);
 
-                //Check multi process
-                if (processMulti == null)
+                //Check process
+                if (process == null)
                 {
                     AVDebug.WriteLine("Failed hiding process by id: " + processId);
                     return false;
                 }
 
                 //Check window handle main
-                if (processMulti.WindowHandleMain() == IntPtr.Zero)
+                if (process.WindowHandleMain() == IntPtr.Zero)
                 {
                     AVDebug.WriteLine("Failed hiding process by id: " + processId);
                     return false;
                 }
 
                 //Hide process window
-                return await Hide_ProcessByWindowHandle(processMulti.WindowHandleMain());
+                return await Hide_ProcessByWindowHandle(process.WindowHandleMain());
             }
             catch { }
             return false;

@@ -12,15 +12,17 @@ namespace ArnoldVinkCode
             {
                 AVDebug.WriteLine("Restarting process by id: " + processId);
 
-                //Get restart process
-                ProcessMulti restartProcess = Get_ProcessMultiByProcessId(processId);
+                //Get process
+                AVProcess restartProcess = Get_ProcessByProcessId(processId);
+
+                //Check process
                 if (restartProcess == null)
                 {
                     AVDebug.WriteLine("Failed to get restart process by id: " + processId);
                     return false;
                 }
 
-                //Cache restart process
+                //Cache process
                 restartProcess.Cache();
 
                 //Check launch argument
@@ -43,12 +45,12 @@ namespace ArnoldVinkCode
                 //Launch process
                 if (restartProcess.Type == ProcessType.UWP || restartProcess.Type == ProcessType.Win32Store)
                 {
-                    return Launch_UwpApplication(restartProcess.AppUserModelId, launchArgument);
+                    return Launch_ApplicationUwp(restartProcess.AppUserModelId, launchArgument);
                 }
                 else
                 {
                     bool adminAccess = restartProcess.AccessStatus.AdminAccess;
-                    return Launch_ShellExecute(restartProcess.ExePath, restartProcess.WorkPath, launchArgument, adminAccess);
+                    return Launch_ApplicationDesktop(restartProcess.ExePath, restartProcess.WorkPath, launchArgument, adminAccess);
                 }
             }
             catch (Exception ex)

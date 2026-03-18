@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using static ArnoldVinkCode.AVInteropDll;
@@ -10,9 +9,9 @@ namespace ArnoldVinkCode
     public partial class AVProcess
     {
         /// <summary>
-        /// Launch application using ShellExecute
+        /// Launch desktop application using ShellExecute
         /// </summary>
-        public static bool Launch_ShellExecute(string exePath, string workPath, string arguments, bool asAdmin, bool waitForExit = false)
+        public static bool Launch_ApplicationDesktop(string exePath, string workPath, string arguments, bool asAdmin, bool waitForExit = false)
         {
             try
             {
@@ -30,7 +29,7 @@ namespace ArnoldVinkCode
                     string fileExtension = Path.GetExtension(exePath).ToLower();
                     if (!fileExecutables.Any(fileExtension.Contains))
                     {
-                        Debug.WriteLine("No executable detected, running as normal user.");
+                        AVDebug.WriteLine("No executable detected, running as normal user.");
                         asAdmin = false;
                     }
                 }
@@ -79,7 +78,7 @@ namespace ArnoldVinkCode
                 //Wait for process exit
                 if (waitForExit && shellExecuteInfo.hProcess != IntPtr.Zero)
                 {
-                    Debug.WriteLine("Waiting for process to exit.");
+                    AVDebug.WriteLine("Waiting for process to exit.");
                     WaitForSingleObject(shellExecuteInfo.hProcess, INFINITE);
                 }
 
@@ -105,7 +104,7 @@ namespace ArnoldVinkCode
         /// <summary>
         /// Launch UWP or Win32Store application
         /// </summary>
-        public static bool Launch_UwpApplication(string appUserModelId, string arguments)
+        public static bool Launch_ApplicationUwp(string appUserModelId, string arguments)
         {
             try
             {

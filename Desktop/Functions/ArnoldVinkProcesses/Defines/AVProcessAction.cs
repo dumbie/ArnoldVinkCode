@@ -2,7 +2,7 @@
 {
     public partial class AVProcess
     {
-        public enum ProcessMultiActions
+        public enum AVProcessActions
         {
             Launch,
             Close,
@@ -14,10 +14,10 @@
             Cancel
         }
 
-        public class ProcessMultiAction
+        public class AVProcessAction
         {
-            public ProcessMultiActions Action { get; set; } = ProcessMultiActions.NoAction;
-            public ProcessMulti ProcessMulti { get; set; } = null;
+            public AVProcessActions Action { get; set; } = AVProcessActions.NoAction;
+            public AVProcess Process { get; set; } = null;
         }
     }
 }
