@@ -3,6 +3,15 @@
 
 namespace ArnoldVinkCode::AVProcesses
 {
+	enum class ProcessParameterOptions
+	{
+		CurrentDirectoryPath,
+		ImagePathName,
+		CommandLine,
+		DesktopInfo,
+		Environment
+	};
+
 	enum class ProcessPriorityClasses
 	{
 		Unknown = 0x00,
@@ -26,7 +35,8 @@ namespace ArnoldVinkCode::AVProcesses
 		DeferredReady = 7,
 		GateWait = 8,
 		WaitingForProcessInSwap = 9,
-		Unknown = 10
+		MaximumThreadState = 10,
+		Unknown
 	};
 
 	enum class ProcessThreadWaitReason
@@ -38,7 +48,38 @@ namespace ArnoldVinkCode::AVProcesses
 		DelayExecution = 4,
 		Suspended = 5,
 		UserRequest = 6,
-		Unknown = 7
+		WrExecutive = 7,
+		WrFreePage = 8,
+		WrPageIn = 9,
+		WrPoolAllocation = 10,
+		WrDelayExecution = 11,
+		WrSuspended = 12,
+		WrUserRequest = 13,
+		WrEventPair = 14,
+		WrQueue = 15,
+		WrLpcReceive = 16,
+		WrLpcReply = 17,
+		WrVirtualMemory = 18,
+		WrPageOut = 19,
+		WrRendezvous = 20,
+		Spare2 = 21,
+		Spare3 = 22,
+		Spare4 = 23,
+		Spare5 = 24,
+		WrCalloutStack = 25,
+		WrKernel = 26,
+		WrResource = 27,
+		WrPushLock = 28,
+		WrMutex = 29,
+		WrQuantumEnd = 30,
+		WrDispatchInt = 31,
+		WrPreempted = 32,
+		WrYieldExecution = 33,
+		WrFastMutex = 34,
+		WrGuardedMutex = 35,
+		WrRundown = 36,
+		MaximumWaitReason = 37,
+		Unknown
 	};
 
 	enum class ProcessType

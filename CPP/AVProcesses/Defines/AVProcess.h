@@ -12,37 +12,48 @@
 
 namespace ArnoldVinkCode::AVProcesses
 {
-	class ProcessMulti
+	class AVProcess
 	{
 	private:
 		int CachedIdentifier = 0;
 		int CachedIdentifierParent = 0;
 		HANDLE CachedHandle = NULL;
 		ProcessType CachedType = ProcessType::Unknown;
+		std::optional<ProcessAccessStatus> CachedAccessStatus = std::nullopt;
 		std::string CachedAppUserModelId = "";
 		std::string CachedExeName = "";
 		std::string CachedExeNameNoExt = "";
 		std::string CachedExePath = "";
+		std::string CachedWorkPath = "";
+		std::string CachedArgument = "";
 		std::string CustomWindowTitleMain = "";
-		SYSTEMTIME CachedStartTime{};
+		std::tm CachedStartTime = tm_empty();
 
 	public:
-		ProcessMulti(int identifier, int identifierParent, std::string exeName)
+		AVProcess(int identifier, int identifierParent, std::string exeName)
 		{
 			CachedIdentifier = identifier;
 			CachedIdentifierParent = identifierParent;
 			CachedExeName = exeName;
-		};
+		}
 
 		int Identifier()
 		{
 			return CachedIdentifier;
-		};
+		}
 
 		int IdentifierParent()
 		{
+			try
+			{
+				if (CachedIdentifierParent <= 0)
+				{
+					CachedIdentifierParent = Detail_ProcessParentIdByProcessHandle(Handle());
+				}
+			}
+			catch (...) {}
 			return CachedIdentifierParent;
-		};
+		}
 
 		HANDLE Handle()
 		{
@@ -50,12 +61,12 @@ namespace ArnoldVinkCode::AVProcesses
 			{
 				if (CachedHandle == NULL)
 				{
-					CachedHandle = Get_ProcessHandleByProcessId(Identifier());
+					CachedHandle = Detail_ProcessHandleByProcessId(Identifier());
 				}
 			}
 			catch (...) {}
 			return CachedHandle;
-		};
+		}
 
 		ProcessType Type()
 		{
@@ -82,7 +93,20 @@ namespace ArnoldVinkCode::AVProcesses
 			}
 			catch (...) {}
 			return CachedType;
-		};
+		}
+
+		ProcessAccessStatus AccessStatus()
+		{
+			try
+			{
+				if (!CachedAccessStatus.has_value())
+				{
+					CachedAccessStatus = Detail_ProcessAccessStatusByProcessId(Identifier(), false);
+				}
+			}
+			catch (...) {}
+			return CachedAccessStatus.value();
+		}
 
 		bool Responding()
 		{
@@ -127,7 +151,7 @@ namespace ArnoldVinkCode::AVProcesses
 			}
 			catch (...) {}
 			return CachedAppUserModelId;
-		};
+		}
 
 		std::string ExeName()
 		{
@@ -141,7 +165,7 @@ namespace ArnoldVinkCode::AVProcesses
 			}
 			catch (...) {}
 			return CachedExeName;
-		};
+		}
 
 		std::string ExeNameNoExt()
 		{
@@ -168,7 +192,35 @@ namespace ArnoldVinkCode::AVProcesses
 			}
 			catch (...) {}
 			return CachedExePath;
-		};
+		}
+
+		std::string WorkPath()
+		{
+			try
+			{
+				if (CachedWorkPath.empty())
+				{
+					std::wstring parameterWString = Detail_ParameterByProcessHandle(Handle(), ProcessParameterOptions::CurrentDirectoryPath);
+					CachedWorkPath = wstring_to_string(parameterWString);
+				}
+			}
+			catch (...) {}
+			return CachedWorkPath;
+		}
+
+		std::string Argument()
+		{
+			try
+			{
+				if (CachedArgument.empty())
+				{
+					std::wstring parameterWString = Detail_ParameterByProcessHandle(Handle(), ProcessParameterOptions::CommandLine);
+					CachedArgument = wstring_to_string(parameterWString);
+				}
+			}
+			catch (...) {}
+			return CachedArgument;
+		}
 
 		HWND WindowHandleMain(bool checkVisibility = true)
 		{
@@ -184,16 +236,16 @@ namespace ArnoldVinkCode::AVProcesses
 				//Get window handle
 				if (!AppUserModelId().empty())
 				{
-					windowHandleMain = Get_WindowHandleMainByAppUserModelId(AppUserModelId(), checkVisibility);
+					windowHandleMain = Detail_WindowHandleMainByAppUserModelId(AppUserModelId(), checkVisibility);
 				}
 				if (windowHandleMain == NULL)
 				{
-					windowHandleMain = Get_WindowHandleMainByProcessId(Identifier(), checkVisibility);
+					windowHandleMain = Detail_WindowHandleMainByProcessId(Identifier(), checkVisibility);
 				}
 			}
 			catch (...) {}
 			return windowHandleMain;
-		};
+		}
 
 		std::vector<HWND> WindowHandles()
 		{
@@ -201,16 +253,16 @@ namespace ArnoldVinkCode::AVProcesses
 			{
 				if (Type() == ProcessType::UWP)
 				{
-					return Get_WindowHandlesByAppUserModelId(AppUserModelId());
+					return Detail_WindowHandlesByAppUserModelId(AppUserModelId());
 				}
 				else
 				{
-					return Get_WindowHandlesByProcessId(Identifier());
+					return Detail_WindowHandlesByProcessId(Identifier());
 				}
 			}
 			catch (...) {}
 			return std::vector<HWND>();
-		};
+		}
 
 		std::string WindowClassNameMain()
 		{
@@ -256,6 +308,54 @@ namespace ArnoldVinkCode::AVProcesses
 			catch (...) {}
 		}
 
+		std::tm StartTime()
+		{
+			try
+			{
+				if (tm_is_empty(CachedStartTime))
+				{
+					CachedStartTime = Detail_ProcessStartTimeByProcessHandle(Handle());
+				}
+			}
+			catch (...) {}
+			return CachedStartTime;
+		}
+
+		ATL::CTimeSpan RunTime()
+		{
+			try
+			{
+				//Get current and start time
+				std::tm current_time = tm_current();
+				std::tm start_time = StartTime();
+
+				//Get time difference
+				return time_difference(current_time, start_time);
+			}
+			catch (...) {}
+			return CTimeSpan(0);
+		}
+
+		bool Suspended()
+		{
+			try
+			{
+				return Detail_ProcessThreadsByProcessId(Identifier(), true)[0].Suspended();
+			}
+			catch (...) {}
+			return false;
+		}
+
+		std::vector<ProcessThreadInfo> Threads()
+		{
+			try
+			{
+				return Detail_ProcessThreadsByProcessId(Identifier(), false);
+			}
+			catch (...) {}
+			return std::vector<ProcessThreadInfo>{};
+		}
+
 		bool Validate()
 		{
 			try
@@ -264,7 +364,7 @@ namespace ArnoldVinkCode::AVProcesses
 			}
 			catch (...) {}
 			return false;
-		};
+		}
 
 		void Debug()
 		{
@@ -274,28 +374,28 @@ namespace ArnoldVinkCode::AVProcesses
 				AVDebugWriteLine("IdentifierParent: " << IdentifierParent());
 				AVDebugWriteLine("Handle: " << Handle());
 				AVDebugWriteLine("Type: " << (int)Type());
-				//AVDebugWriteLine("AdminAccess: " << AccessStatus.AdminAccess);
+				AVDebugWriteLine("AdminAccess: " << AccessStatus().AdminAccess);
 				AVDebugWriteLine("Responding: " << Responding());
 				AVDebugWriteLine("Priority: " << (int)Priority());
 				AVDebugWriteLine("AppUserModelId: " << AppUserModelId().c_str());
 				AVDebugWriteLine("ExeName: " << ExeName().c_str());
 				AVDebugWriteLine("ExeNameNoExt: " << ExeNameNoExt().c_str());
 				AVDebugWriteLine("ExePath: " << ExePath().c_str());
-				//AVDebugWriteLine("WorkPath: " << WorkPath);
-				//AVDebugWriteLine("Argument: " << Argument);
+				AVDebugWriteLine("WorkPath: " << WorkPath().c_str());
+				AVDebugWriteLine("Argument: " << Argument().c_str());
 				AVDebugWriteLine("WindowHandleMain: " << WindowHandleMain());
 				AVDebugWriteLine("WindowHandles: " << WindowHandles().size());
 				AVDebugWriteLine("WindowClassNameMain: " << WindowClassNameMain().c_str());
 				AVDebugWriteLine("WindowTitleMain: " << WindowTitleMain().c_str());
-				AVDebugWriteLine("StartTime: " << StartTime().wMilliseconds);
-				AVDebugWriteLine("RunTime: " << RunTime().wMilliseconds);
-				//AVDebugWriteLine("Suspended: " << Suspended);
-				//AVDebugWriteLine("Threads: " << Threads.Count);
+				AVDebugWriteLine("StartTime: " << tm_to_string(StartTime(), "%d.%m.%Y %H:%M:%S").c_str());
+				AVDebugWriteLine("RunTime: " << RunTime().GetTotalSeconds() << "sec");
+				AVDebugWriteLine("Suspended: " << Suspended());
+				AVDebugWriteLine("Threads: " << Threads().size());
 				//AVDebugWriteLine("AppPackageName: " << AppPackage.DisplayName);
 				//AVDebugWriteLine("AppxDetailsName: " << AppxDetails.DisplayName);
 			}
 			catch (...) {}
-		};
+		}
 
 		void Cache()
 		{
@@ -305,30 +405,30 @@ namespace ArnoldVinkCode::AVProcesses
 				auto c2 = IdentifierParent();
 				auto c3 = Handle();
 				auto c4 = Type();
-				//auto c5 = AccessStatus;
+				auto c5 = AccessStatus();
 				auto c6 = Responding();
 				auto c7 = Priority();
 				auto c8 = AppUserModelId();
 				auto c9 = ExeName();
 				auto c10 = ExeNameNoExt();
 				auto c11 = ExePath();
-				//auto c12 = WorkPath;
-				//auto c13 = Argument;
+				auto c12 = WorkPath();
+				auto c13 = Argument();
 				auto c14 = WindowHandleMain();
 				auto c15 = WindowHandles();
 				auto c16 = WindowClassNameMain();
 				auto c17 = WindowTitleMain();
 				auto c18 = StartTime();
-				//auto c19 = RunTime;
-				//auto c20 = Suspended;
-				//auto c21 = Threads;
+				auto c19 = RunTime();
+				auto c20 = Suspended();
+				auto c21 = Threads();
 				//auto c22 = AppPackage;
 				//auto c23 = AppxDetails;
 			}
 			catch (...) {}
-		};
+		}
 
-		~ProcessMulti() { Dispose(); }
+		~AVProcess() { Dispose(); }
 		void Dispose()
 		{
 			try
@@ -339,6 +439,6 @@ namespace ArnoldVinkCode::AVProcesses
 				}
 			}
 			catch (...) {}
-		};
+		}
 	};
 }

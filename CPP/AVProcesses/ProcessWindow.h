@@ -5,7 +5,7 @@
 namespace ArnoldVinkCode::AVProcesses
 {
 	//Enumerate all windows by process id (including uwp and fullscreen)
-	inline std::vector<HWND> Get_WindowHandlesByProcessId(int targetProcessId)
+	inline std::vector<HWND> Detail_WindowHandlesByProcessId(int targetProcessId)
 	{
 		//AVDebugWriteLine(L"Getting window handles by process id: " << targetProcessId);
 		std::vector<HWND> listWindows{};
@@ -24,14 +24,39 @@ namespace ArnoldVinkCode::AVProcesses
 					}
 				}
 				catch (...) {}
-			};
+			}
+		}
+		catch (...) {}
+		return listWindows;
+	}
+
+	//Enumerate all windows by thread id (including uwp and fullscreen)
+	inline std::vector<HWND> Detail_WindowHandlesByThreadId(int targetThreadId)
+	{
+		//AVDebugWriteLine("Getting window handles by thread id: " << targetThreadId);
+		std::vector<HWND> listWindows{};
+		try
+		{
+			HWND childWindow = NULL;
+			while ((childWindow = FindWindowExW(NULL, childWindow, NULL, NULL)) != NULL)
+			{
+				try
+				{
+					DWORD foundProcessId = 0;
+					if (GetWindowThreadProcessId(childWindow, &foundProcessId) == targetThreadId)
+					{
+						listWindows.push_back(childWindow);
+					}
+				}
+				catch (...) {}
+			}
 		}
 		catch (...) {}
 		return listWindows;
 	}
 
 	//Enumerate all windows by AppUserModelId (including uwp and fullscreen)
-	inline std::vector<HWND> Get_WindowHandlesByAppUserModelId(std::string targetAppUserModelId)
+	inline std::vector<HWND> Detail_WindowHandlesByAppUserModelId(std::string targetAppUserModelId)
 	{
 		//AVDebugWriteLine("Getting window handles by AppUserModelId: " << targetAppUserModelId);
 		std::vector<HWND> listWindows{};

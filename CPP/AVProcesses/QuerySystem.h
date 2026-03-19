@@ -1,11 +1,6 @@
 #pragma once
 #include <windows.h>
 #pragma comment(lib, "ntdll.lib")
-#include <winternl.h>
-#include <ntstatus.h>
-#include <processthreadsapi.h>
-#include <string>
-#include <vector>
 
 namespace ArnoldVinkCode::AVProcesses
 {
@@ -13,7 +8,6 @@ namespace ArnoldVinkCode::AVProcesses
 	inline PSYSTEM_PROCESS_INFORMATION Query_SystemProcessInformation()
 	{
 		ULONG systemOffset = 0;
-		PSYSTEM_PROCESS_INFORMATION systemInfo = NULL;
 		try
 		{
 			while (true)
@@ -21,22 +15,25 @@ namespace ArnoldVinkCode::AVProcesses
 				try
 				{
 					ULONG systemLength = 0;
-					systemInfo = (PSYSTEM_PROCESS_INFORMATION)malloc(systemOffset);
-					NTSTATUS queryResult = NtQuerySystemInformation(SYSTEM_INFORMATION_CLASS::SystemProcessInformation, systemInfo, systemOffset, &systemLength);
+					PSYSTEM_PROCESS_INFORMATION systemInfo = (PSYSTEM_PROCESS_INFORMATION)malloc(systemOffset);
+					NTSTATUS queryResult = NtQuerySystemInformation(SystemProcessInformation, systemInfo, systemOffset, &systemLength);
 					if (queryResult == STATUS_INFO_LENGTH_MISMATCH)
 					{
 						systemOffset = std::max<ULONG>(systemOffset, systemLength);
-						free(systemInfo);
+						if (systemInfo != nullptr)
+						{
+							free(systemInfo);
+						}
 					}
 					else if (queryResult == STATUS_SUCCESS)
 					{
-						break;
+						return systemInfo;
 					}
 				}
 				catch (...) {}
 			}
 		}
 		catch (...) {}
-		return systemInfo;
+		return nullptr;
 	}
 }

@@ -3,7 +3,7 @@
 
 namespace ArnoldVinkCode::AVProcesses
 {
-	enum ProcessMultiActions
+	enum class AVProcessActions
 	{
 		Launch,
 		Close,
@@ -15,10 +15,10 @@ namespace ArnoldVinkCode::AVProcesses
 		Cancel
 	};
 
-	class ProcessMultiAction
+	class AVProcessAction
 	{
 	public:
-		ProcessMultiActions Action = ProcessMultiActions::NoAction;
-		std::optional<ProcessMulti> ProcessMulti;
+		AVProcessActions Action = AVProcessActions::NoAction;
+		std::optional<AVProcess> AVProcess = std::nullopt;
 	};
 }
