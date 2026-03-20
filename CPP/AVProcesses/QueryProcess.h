@@ -74,29 +74,44 @@ namespace ArnoldVinkCode::AVProcesses
 		std::wstring parameterString = L"";
 		try
 		{
-			BOOL target32bit = FALSE;
-			BOOL current32bit = FALSE;
-			IsWow64Process(targetProcessHandle, &target32bit);
-			IsWow64Process(GetCurrentProcess(), &current32bit);
-			if (current32bit && target32bit)
+			//Check target process handle
+			if (targetProcessHandle == NULL)
 			{
+				AVDebugWriteLine("GetApplicationParameter invalid process handle.");
+				return parameterString;
+			}
+
+			//Check application architecture
+			BOOL targetIsWow64 = FALSE;
+			BOOL currentIsWow64 = FALSE;
+			IsWow64Process(targetProcessHandle, &targetIsWow64);
+			IsWow64Process(GetCurrentProcess(), &currentIsWow64);
+
+			//Read application parameter
+			if (currentIsWow64 && targetIsWow64)
+			{
+				//AVDebugWriteLine("GetApplicationParameter (32) target: " << targetIsWow64 << " current: " << currentIsWow64);
 				parameterString = GetApplicationParameter32(targetProcessHandle, pOption);
 			}
-			else if (current32bit && !target32bit)
+			else if (currentIsWow64 && !targetIsWow64)
 			{
+				//AVDebugWriteLine("GetApplicationParameter (WOW64) target: " << targetIsWow64 << " current: " << currentIsWow64);
 				parameterString = GetApplicationParameterWOW64(targetProcessHandle, pOption);
 			}
-			else if (!current32bit && target32bit)
+			else if (!currentIsWow64 && targetIsWow64)
 			{
+				//AVDebugWriteLine("GetApplicationParameter (64) target: " << targetIsWow64 << " current: " << currentIsWow64);
 				parameterString = GetApplicationParameter64(targetProcessHandle, pOption);
 			}
-			else if (!current32bit && !target32bit)
+			else if (!currentIsWow64 && !targetIsWow64)
 			{
+				//AVDebugWriteLine("GetApplicationParameter (32) target: " << targetIsWow64 << " current: " << currentIsWow64);
 				parameterString = GetApplicationParameter32(targetProcessHandle, pOption);
 			}
 			else
 			{
 				AVDebugWriteLine("GetApplicationParameter unknown architecture.");
+				return parameterString;
 			}
 
 			//Remove executable path from commandline

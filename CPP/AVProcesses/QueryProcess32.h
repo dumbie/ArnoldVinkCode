@@ -3,8 +3,13 @@
 #include <winternl.h>
 #include <ntstatus.h>
 
+//Imports
 #pragma comment(lib,"ntdll.lib")
-extern "C" NTSTATUS WINAPI NtReadVirtualMemory(HANDLE ProcessHandle, PVOID BaseAddress, PVOID Buffer, ULONG NumberOfBytesToRead, PULONG NumberOfBytesRead);
+extern "C"
+{
+	NTSTATUS WINAPI NtQueryInformationProcess(IN HANDLE ProcessHandle, IN PROCESSINFOCLASS ProcessInformationClass, OUT PVOID ProcessInformation, IN ULONG ProcessInformationLength, OUT OPTIONAL PULONG ReturnLength);
+	NTSTATUS WINAPI NtReadVirtualMemory(IN HANDLE ProcessHandle, IN PVOID BaseAddress, OUT PVOID Buffer, IN ULONG NumberOfBytesToRead, OUT OPTIONAL PULONG NumberOfBytesRead);
+}
 
 namespace ArnoldVinkCode::AVProcesses
 {

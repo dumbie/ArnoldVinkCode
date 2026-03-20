@@ -7,20 +7,20 @@ namespace ArnoldVinkCode
     {
         //Imports
         [DllImport("ntdll.dll", EntryPoint = "NtQueryInformationProcess")]
-        private static extern uint NtQueryInformationProcess32(IntPtr ProcessHandle, ProcessInfoClass ProcessInformationClass, ref PROCESS_BASIC_INFORMATION32 ProcessInformation, uint ProcessInformationLength, out uint ReturnLength);
+        private static extern uint NtQueryInformationProcess32(IntPtr ProcessHandle, ProcessInfoClass ProcessInformationClass, ref __PROCESS_BASIC_INFORMATION32 ProcessInformation, uint ProcessInformationLength, out uint ReturnLength);
 
         [DllImport("ntdll.dll", EntryPoint = "NtReadVirtualMemory")]
-        private static extern uint NtReadVirtualMemory32(IntPtr ProcessHandle, IntPtr BaseAddress, ref PEB32 Buffer, uint NumberOfBytesToRead, out uint NumberOfBytesRead);
+        private static extern uint NtReadVirtualMemory32(IntPtr ProcessHandle, IntPtr BaseAddress, ref __PEB32 Buffer, uint NumberOfBytesToRead, out uint NumberOfBytesRead);
 
         [DllImport("ntdll.dll", EntryPoint = "NtReadVirtualMemory")]
-        private static extern uint NtReadVirtualMemory32(IntPtr ProcessHandle, IntPtr BaseAddress, ref RTL_USER_PROCESS_PARAMETERS32 Buffer, uint NumberOfBytesToRead, out uint NumberOfBytesRead);
+        private static extern uint NtReadVirtualMemory32(IntPtr ProcessHandle, IntPtr BaseAddress, ref __RTL_USER_PROCESS_PARAMETERS32 Buffer, uint NumberOfBytesToRead, out uint NumberOfBytesRead);
 
         [DllImport("ntdll.dll", EntryPoint = "NtReadVirtualMemory")]
         private static extern uint NtReadVirtualMemory32(IntPtr ProcessHandle, IntPtr BaseAddress, [MarshalAs(UnmanagedType.LPWStr)] string Buffer, uint NumberOfBytesToRead, out uint NumberOfBytesRead);
 
         //Structures
         [StructLayout(LayoutKind.Sequential)]
-        private struct PROCESS_BASIC_INFORMATION32
+        private struct __PROCESS_BASIC_INFORMATION32
         {
             public int ExitStatus;
             public IntPtr PebBaseAddress;
@@ -31,7 +31,7 @@ namespace ArnoldVinkCode
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct PEB32
+        public struct __PEB32
         {
             public IntPtr Reserved0;
             public IntPtr Reserved1;
@@ -41,7 +41,7 @@ namespace ArnoldVinkCode
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct UNICODE_STRING32
+        public struct __UNICODE_STRING32
         {
             public ushort Length;
             public ushort MaximumLength;
@@ -49,16 +49,16 @@ namespace ArnoldVinkCode
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct RTL_DRIVE_LETTER_CURDIR32
+        public struct __RTL_DRIVE_LETTER_CURDIR32
         {
             public ushort Flags;
             public ushort Length;
             public uint TimeStamp;
-            public UNICODE_STRING32 DosPath;
+            public __UNICODE_STRING32 DosPath;
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct RTL_USER_PROCESS_PARAMETERS32
+        public struct __RTL_USER_PROCESS_PARAMETERS32
         {
             public uint MaximumLength;
             public uint Length;
@@ -69,11 +69,11 @@ namespace ArnoldVinkCode
             public IntPtr StandardInput;
             public IntPtr StandardOutput;
             public IntPtr StandardError;
-            public UNICODE_STRING32 CurrentDirectory;
+            public __UNICODE_STRING32 CurrentDirectory;
             public IntPtr CurrentDirectoryHandle;
-            public UNICODE_STRING32 DllPath;
-            public UNICODE_STRING32 ImagePathName;
-            public UNICODE_STRING32 CommandLine;
+            public __UNICODE_STRING32 DllPath;
+            public __UNICODE_STRING32 ImagePathName;
+            public __UNICODE_STRING32 CommandLine;
             public IntPtr Environment;
             public uint StartingX;
             public uint StartingY;
@@ -84,12 +84,12 @@ namespace ArnoldVinkCode
             public uint FillAttribute;
             public uint WindowFlags;
             public uint ShowWindowFlags;
-            public UNICODE_STRING32 WindowTitle;
-            public UNICODE_STRING32 DesktopInfo;
-            public UNICODE_STRING32 ShellInfo;
-            public UNICODE_STRING32 RuntimeData;
+            public __UNICODE_STRING32 WindowTitle;
+            public __UNICODE_STRING32 DesktopInfo;
+            public __UNICODE_STRING32 ShellInfo;
+            public __UNICODE_STRING32 RuntimeData;
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
-            public RTL_DRIVE_LETTER_CURDIR32[] CurrentDirectores;
+            public __RTL_DRIVE_LETTER_CURDIR32[] CurrentDirectores;
             public uint EnvironmentSize;
         }
 
@@ -100,7 +100,7 @@ namespace ArnoldVinkCode
             {
                 //AVDebug.WriteLine("GetApplicationParameter architecture 32");
 
-                PROCESS_BASIC_INFORMATION32 basicInformation = new PROCESS_BASIC_INFORMATION32();
+                __PROCESS_BASIC_INFORMATION32 basicInformation = new __PROCESS_BASIC_INFORMATION32();
                 uint readResult = NtQueryInformationProcess32(processHandle, ProcessInfoClass.ProcessBasicInformation, ref basicInformation, (uint)Marshal.SizeOf(basicInformation), out _);
                 if (readResult != 0)
                 {
@@ -108,7 +108,7 @@ namespace ArnoldVinkCode
                     return string.Empty;
                 }
 
-                PEB32 pebCopy = new PEB32();
+                __PEB32 pebCopy = new __PEB32();
                 readResult = NtReadVirtualMemory32(processHandle, basicInformation.PebBaseAddress, ref pebCopy, (uint)Marshal.SizeOf(pebCopy), out _);
                 if (readResult != 0)
                 {
@@ -116,7 +116,7 @@ namespace ArnoldVinkCode
                     return string.Empty;
                 }
 
-                RTL_USER_PROCESS_PARAMETERS32 paramsCopy = new RTL_USER_PROCESS_PARAMETERS32();
+                __RTL_USER_PROCESS_PARAMETERS32 paramsCopy = new __RTL_USER_PROCESS_PARAMETERS32();
                 readResult = NtReadVirtualMemory32(processHandle, pebCopy.RtlUserProcessParameters, ref paramsCopy, (uint)Marshal.SizeOf(paramsCopy), out _);
                 if (readResult != 0)
                 {

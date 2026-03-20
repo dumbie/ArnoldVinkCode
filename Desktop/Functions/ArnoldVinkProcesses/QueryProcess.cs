@@ -43,7 +43,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                PROCESS_BASIC_INFORMATION32 basicInformation = new PROCESS_BASIC_INFORMATION32();
+                __PROCESS_BASIC_INFORMATION32 basicInformation = new __PROCESS_BASIC_INFORMATION32();
                 uint queryResult = NtQueryInformationProcess32(targetProcessHandle, ProcessInfoClass.ProcessBasicInformation, ref basicInformation, (uint)Marshal.SizeOf(basicInformation), out _);
                 if (queryResult != 0)
                 {
@@ -71,27 +71,42 @@ namespace ArnoldVinkCode
             string parameterString = string.Empty;
             try
             {
-                IsWow64Process(targetProcessHandle, out bool target32bit);
-                IsWow64Process(GetCurrentProcess(), out bool current32bit);
-                if (current32bit && target32bit)
+                //Check target process handle
+                if (targetProcessHandle == IntPtr.Zero)
                 {
+                    AVDebug.WriteLine("GetApplicationParameter invalid process handle.");
+                    return parameterString;
+                }
+
+                //Check application architecture
+                IsWow64Process(targetProcessHandle, out bool targetIsWow64);
+                IsWow64Process(GetCurrentProcess(), out bool currentIsWow64);
+
+                //Read application parameter
+                if (currentIsWow64 && targetIsWow64)
+                {
+                    //AVDebug.WriteLine("GetApplicationParameter (32) target: " + targetIsWow64 + " current: " + currentIsWow64);
                     parameterString = GetApplicationParameter32(targetProcessHandle, pOption);
                 }
-                else if (current32bit && !target32bit)
+                else if (currentIsWow64 && !targetIsWow64)
                 {
+                    //AVDebug.WriteLine("GetApplicationParameter (WOW64) target: " + targetIsWow64 + " current: " + currentIsWow64);
                     parameterString = GetApplicationParameterWOW64(targetProcessHandle, pOption);
                 }
-                else if (!current32bit && target32bit)
+                else if (!currentIsWow64 && targetIsWow64)
                 {
+                    //AVDebug.WriteLine("GetApplicationParameter (64) target: " + targetIsWow64 + " current: " + currentIsWow64);
                     parameterString = GetApplicationParameter64(targetProcessHandle, pOption);
                 }
-                else if (!current32bit && !target32bit)
+                else if (!currentIsWow64 && !targetIsWow64)
                 {
+                    //AVDebug.WriteLine("GetApplicationParameter (32) target: " + targetIsWow64 + " current: " + currentIsWow64);
                     parameterString = GetApplicationParameter32(targetProcessHandle, pOption);
                 }
                 else
                 {
                     AVDebug.WriteLine("GetApplicationParameter unknown architecture.");
+                    return parameterString;
                 }
 
                 //Remove executable path from commandline

@@ -3,26 +3,50 @@
 #include <winternl.h>
 #include <ntstatus.h>
 
-#pragma comment(lib,"ntdll.lib")
-extern "C" NTSTATUS WINAPI NtReadVirtualMemory(HANDLE ProcessHandle, PVOID BaseAddress, PVOID Buffer, ULONG NumberOfBytesToRead, PULONG NumberOfBytesRead);
+//Imports
+const static HMODULE ntdll_hmodule = GetModuleHandleW(L"ntdll.dll");
+extern "C"
+{
+	NTSTATUS WINAPI NtWow64QueryInformationProcess64(IN HANDLE ProcessHandle, IN PROCESSINFOCLASS ProcessInformationClass, OUT PVOID ProcessInformation, IN ULONG ProcessInformationLength, OUT OPTIONAL PULONG ReturnLength)
+	{
+		const static auto decl = decltype(&NtWow64QueryInformationProcess64)(GetProcAddress(ntdll_hmodule, "NtWow64QueryInformationProcess64"));
+		return decl(ProcessHandle, ProcessInformationClass, ProcessInformation, ProcessInformationLength, ReturnLength);
+	}
+
+	NTSTATUS WINAPI NtWow64ReadVirtualMemory64(IN HANDLE ProcessHandle, IN PVOID BaseAddress, OUT PVOID Buffer, IN ULONG NumberOfBytesToRead, OUT OPTIONAL PULONG NumberOfBytesRead)
+	{
+		const static auto decl = decltype(&NtWow64ReadVirtualMemory64)(GetProcAddress(ntdll_hmodule, "NtWow64ReadVirtualMemory64"));
+		return decl(ProcessHandle, BaseAddress, Buffer, NumberOfBytesToRead, NumberOfBytesRead);
+	}
+}
 
 namespace ArnoldVinkCode::AVProcesses
 {
 	//Structures
+	struct __PROCESS_BASIC_INFORMATIONWOW64
+	{
+		NTSTATUS ExitStatus;
+		PVOID64 PebBaseAddress;
+		PVOID64 AffinityMask;
+		LONG BasePriority;
+		PVOID64 UniqueProcessId;
+		PVOID64 InheritedFromUniqueProcessId;
+	};
+
 	struct __PEBWOW64
 	{
-		DWORD Reserved0;
-		DWORD Reserved1;
-		DWORD Reserved2;
-		DWORD Reserved3;
-		DWORD RtlUserProcessParameters;
+		PVOID64 Reserved0;
+		PVOID64 Reserved1;
+		PVOID64 Reserved2;
+		PVOID64 Reserved3;
+		PVOID64 RtlUserProcessParameters;
 	};
 
 	struct __UNICODE_STRINGWOW64
 	{
 		USHORT Length;
 		USHORT MaximumLength;
-		DWORD Buffer;
+		PVOID64 Buffer;
 	};
 
 	struct __RTL_DRIVE_LETTER_CURDIRWOW64
@@ -39,17 +63,17 @@ namespace ArnoldVinkCode::AVProcesses
 		ULONG Length;
 		ULONG Flags;
 		ULONG DebugFlags;
-		DWORD ConsoleHandle;
+		PVOID64 ConsoleHandle;
 		ULONG ConsoleFlags;
-		DWORD StandardInput;
-		DWORD StandardOutput;
-		DWORD StandardError;
+		PVOID64 StandardInput;
+		PVOID64 StandardOutput;
+		PVOID64 StandardError;
 		__UNICODE_STRINGWOW64 CurrentDirectory;
-		DWORD CurrentDirectoryHandle;
+		PVOID64 CurrentDirectoryHandle;
 		__UNICODE_STRINGWOW64 DllPath;
 		__UNICODE_STRINGWOW64 ImagePathName;
 		__UNICODE_STRINGWOW64 CommandLine;
-		DWORD Environment;
+		PVOID64 Environment;
 		ULONG StartingX;
 		ULONG StartingY;
 		ULONG CountX;
@@ -74,8 +98,8 @@ namespace ArnoldVinkCode::AVProcesses
 		{
 			//AVDebugWriteLine("GetApplicationParameter architecture WOW64");
 
-			DWORD64 pebBaseAddress = NULL;
-			NTSTATUS readResult = NtQueryInformationProcess(processHandle, ProcessWow64Information, &pebBaseAddress, sizeof(pebBaseAddress), NULL);
+			__PROCESS_BASIC_INFORMATIONWOW64 basicInformation{};
+			NTSTATUS readResult = NtWow64QueryInformationProcess64(processHandle, ProcessBasicInformation, &basicInformation, sizeof(basicInformation), NULL);
 			if (!NT_SUCCESS(readResult))
 			{
 				//AVDebugWriteLine("Failed to get ProcessBasicInformation for: " << processHandle << "/Query failed.");
@@ -83,7 +107,7 @@ namespace ArnoldVinkCode::AVProcesses
 			}
 
 			__PEBWOW64 pebCopy{};
-			readResult = NtReadVirtualMemory(processHandle, (PVOID64)pebBaseAddress, &pebCopy, sizeof(pebCopy), NULL);
+			readResult = NtReadVirtualMemory(processHandle, basicInformation.PebBaseAddress, &pebCopy, sizeof(pebCopy), NULL);
 			if (!NT_SUCCESS(readResult))
 			{
 				//AVDebugWriteLine("Failed to get PebBaseAddress for: " << processHandle);
@@ -91,7 +115,7 @@ namespace ArnoldVinkCode::AVProcesses
 			}
 
 			__RTL_USER_PROCESS_PARAMETERSWOW64 paramsCopy{};
-			readResult = NtReadVirtualMemory(processHandle, (PVOID64)pebCopy.RtlUserProcessParameters, &paramsCopy, sizeof(paramsCopy), NULL);
+			readResult = NtReadVirtualMemory(processHandle, pebCopy.RtlUserProcessParameters, &paramsCopy, sizeof(paramsCopy), NULL);
 			if (!NT_SUCCESS(readResult))
 			{
 				//AVDebugWriteLine("Failed to get ProcessParameters for: " << processHandle);
@@ -99,7 +123,7 @@ namespace ArnoldVinkCode::AVProcesses
 			}
 
 			ULONG stringLength = NULL;
-			DWORD64 stringBuffer = NULL;
+			PVOID64 stringBuffer = nullptr;
 			if (pOption == ProcessParameterOptions::CurrentDirectoryPath)
 			{
 				stringLength = paramsCopy.CurrentDirectory.Length;
@@ -134,7 +158,7 @@ namespace ArnoldVinkCode::AVProcesses
 
 			std::wstring getString;
 			getString.insert(getString.begin(), stringLength, ' ');
-			readResult = NtReadVirtualMemory(processHandle, (PVOID64)stringBuffer, getString.data(), stringLength, NULL);
+			readResult = NtReadVirtualMemory(processHandle, stringBuffer, getString.data(), stringLength, NULL);
 			if (!NT_SUCCESS(readResult))
 			{
 				AVDebugWriteLine("Failed to get ParameterString for: " << processHandle);
