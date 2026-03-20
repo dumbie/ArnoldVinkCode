@@ -26,7 +26,7 @@ namespace ArnoldVinkCode
         private Package CachedAppPackage = null;
         private AppxDetails CachedAppxDetails = null;
 
-        public AVProcess(int identifier, int identifierParent, string exeName)
+        public AVProcess(int identifier, int identifierParent = 0, string exeName = "")
         {
             CachedIdentifier = identifier;
             CachedIdentifierParent = identifierParent;

@@ -74,7 +74,7 @@ namespace ArnoldVinkCode
         {
             try
             {
-                return new AVProcess(targetProcessId, 0, string.Empty);
+                return new AVProcess(targetProcessId);
             }
             catch (Exception ex)
             {

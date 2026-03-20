@@ -77,7 +77,7 @@ namespace ArnoldVinkCode::AVProcesses
 	{
 		try
 		{
-			return AVProcess(targetProcessId, 0, "");
+			return AVProcess(targetProcessId);
 		}
 		catch (...)
 		{

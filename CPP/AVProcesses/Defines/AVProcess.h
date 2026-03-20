@@ -30,7 +30,7 @@ namespace ArnoldVinkCode::AVProcesses
 		std::tm CachedStartTime = tm_empty();
 
 	public:
-		AVProcess(int identifier, int identifierParent, std::string exeName)
+		AVProcess(int identifier, int identifierParent = 0, std::string exeName = "")
 		{
 			CachedIdentifier = identifier;
 			CachedIdentifierParent = identifierParent;
