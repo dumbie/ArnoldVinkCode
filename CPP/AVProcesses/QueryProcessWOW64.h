@@ -5,19 +5,16 @@
 
 //Imports
 const static HMODULE ntdll_hmodule = GetModuleHandleW(L"ntdll.dll");
-extern "C"
+inline NTSTATUS WINAPI NtWow64QueryInformationProcess64(IN HANDLE ProcessHandle, IN PROCESSINFOCLASS ProcessInformationClass, OUT PVOID ProcessInformation, IN ULONG ProcessInformationLength, OUT OPTIONAL PULONG ReturnLength)
 {
-	NTSTATUS WINAPI NtWow64QueryInformationProcess64(IN HANDLE ProcessHandle, IN PROCESSINFOCLASS ProcessInformationClass, OUT PVOID ProcessInformation, IN ULONG ProcessInformationLength, OUT OPTIONAL PULONG ReturnLength)
-	{
-		const static auto decl = decltype(&NtWow64QueryInformationProcess64)(GetProcAddress(ntdll_hmodule, "NtWow64QueryInformationProcess64"));
-		return decl(ProcessHandle, ProcessInformationClass, ProcessInformation, ProcessInformationLength, ReturnLength);
-	}
+	const static auto decl = decltype(&NtWow64QueryInformationProcess64)(GetProcAddress(ntdll_hmodule, "NtWow64QueryInformationProcess64"));
+	return decl(ProcessHandle, ProcessInformationClass, ProcessInformation, ProcessInformationLength, ReturnLength);
+}
 
-	NTSTATUS WINAPI NtWow64ReadVirtualMemory64(IN HANDLE ProcessHandle, IN PVOID BaseAddress, OUT PVOID Buffer, IN ULONG NumberOfBytesToRead, OUT OPTIONAL PULONG NumberOfBytesRead)
-	{
-		const static auto decl = decltype(&NtWow64ReadVirtualMemory64)(GetProcAddress(ntdll_hmodule, "NtWow64ReadVirtualMemory64"));
-		return decl(ProcessHandle, BaseAddress, Buffer, NumberOfBytesToRead, NumberOfBytesRead);
-	}
+inline NTSTATUS WINAPI NtWow64ReadVirtualMemory64(IN HANDLE ProcessHandle, IN PVOID64 BaseAddress, OUT PVOID Buffer, IN ULONG64 NumberOfBytesToRead, OUT OPTIONAL PULONG64 NumberOfBytesRead)
+{
+	const static auto decl = decltype(&NtWow64ReadVirtualMemory64)(GetProcAddress(ntdll_hmodule, "NtWow64ReadVirtualMemory64"));
+	return decl(ProcessHandle, BaseAddress, Buffer, NumberOfBytesToRead, NumberOfBytesRead);
 }
 
 namespace ArnoldVinkCode::AVProcesses
@@ -107,7 +104,7 @@ namespace ArnoldVinkCode::AVProcesses
 			}
 
 			__PEBWOW64 pebCopy{};
-			readResult = NtReadVirtualMemory(processHandle, basicInformation.PebBaseAddress, &pebCopy, sizeof(pebCopy), NULL);
+			readResult = NtWow64ReadVirtualMemory64(processHandle, basicInformation.PebBaseAddress, &pebCopy, sizeof(pebCopy), NULL);
 			if (!NT_SUCCESS(readResult))
 			{
 				//AVDebugWriteLine("Failed to get PebBaseAddress for: " << processHandle);
@@ -115,7 +112,7 @@ namespace ArnoldVinkCode::AVProcesses
 			}
 
 			__RTL_USER_PROCESS_PARAMETERSWOW64 paramsCopy{};
-			readResult = NtReadVirtualMemory(processHandle, pebCopy.RtlUserProcessParameters, &paramsCopy, sizeof(paramsCopy), NULL);
+			readResult = NtWow64ReadVirtualMemory64(processHandle, pebCopy.RtlUserProcessParameters, &paramsCopy, sizeof(paramsCopy), NULL);
 			if (!NT_SUCCESS(readResult))
 			{
 				//AVDebugWriteLine("Failed to get ProcessParameters for: " << processHandle);
@@ -158,7 +155,7 @@ namespace ArnoldVinkCode::AVProcesses
 
 			std::wstring getString;
 			getString.insert(getString.begin(), stringLength, ' ');
-			readResult = NtReadVirtualMemory(processHandle, stringBuffer, getString.data(), stringLength, NULL);
+			readResult = NtWow64ReadVirtualMemory64(processHandle, stringBuffer, getString.data(), stringLength, NULL);
 			if (!NT_SUCCESS(readResult))
 			{
 				AVDebugWriteLine("Failed to get ParameterString for: " << processHandle);
