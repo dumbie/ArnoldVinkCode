@@ -1,10 +1,21 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <WTypes.h>
 #include <winrt/Windows.System.h>
 
 namespace ArnoldVinkCode
 {
+	inline bool string_empty_whitespace(std::string targetString)
+	{
+		return targetString.empty() || std::all_of(targetString.begin(), targetString.end(), [](char chr) { return std::isspace(chr); });
+	}
+
+	inline bool wstring_empty_whitespace(std::wstring targetString)
+	{
+		return targetString.empty() || std::all_of(targetString.begin(), targetString.end(), [](wchar_t chr) { return std::isspace(chr); });
+	}
+
 	inline std::string char_to_string(const char* str)
 	{
 		return std::string(str);
@@ -39,6 +50,11 @@ namespace ArnoldVinkCode
 		return bString;
 	}
 
+	inline std::wstring hstring_to_wstring(winrt::hstring str)
+	{
+		return std::wstring(str.begin(), str.end());
+	}
+
 	inline std::string hstring_to_string(winrt::hstring str)
 	{
 		return std::string(str.begin(), str.end());
@@ -64,6 +80,11 @@ namespace ArnoldVinkCode
 		return std::stoi(str);
 	}
 
+	inline float wstring_to_float(std::wstring str)
+	{
+		return std::stof(str);
+	}
+
 	inline int hstring_to_int(winrt::hstring str)
 	{
 		std::string s(winrt::to_string(str));
@@ -86,6 +107,38 @@ namespace ArnoldVinkCode
 	inline winrt::hstring number_to_hstring(T value)
 	{
 		return winrt::to_hstring(value);
+	}
+
+	template<typename T>
+	inline std::string number_to_hexstring(T value, int digitCount)
+	{
+		std::stringstream stream;
+		stream << "0x" << std::uppercase << std::setfill('0') << std::setw(digitCount) << std::hex << value;
+		return stream.str();
+	}
+
+	template<typename T>
+	inline std::wstring number_to_hexwstring(T value, int digitCount)
+	{
+		std::wstringstream stream;
+		stream << L"0x" << std::uppercase << std::setfill(L'0') << std::setw(digitCount) << std::hex << value;
+		return stream.str();
+	}
+
+	template<typename T>
+	inline std::string float_to_string(T value, int decimals)
+	{
+		std::ostringstream returnString;
+		returnString << std::fixed << std::setprecision(decimals) << value;
+		return returnString.str();
+	}
+
+	template<typename T>
+	inline std::wstring float_to_wstring(T value, int decimals)
+	{
+		std::wstringstream returnString;
+		returnString << std::fixed << std::setprecision(decimals) << value;
+		return returnString.str();
 	}
 
 	inline std::string vector_to_string(std::vector<std::string> list, std::string split)
@@ -135,21 +188,15 @@ namespace ArnoldVinkCode
 	inline bool string_replace(std::string& string, std::string from, std::string to)
 	{
 		size_t start_pos = string.find(from);
-		if (start_pos == std::string::npos)
-		{
-			return false;
-		}
+		if (start_pos == std::wstring::npos) { return false; }
 		string.replace(start_pos, from.length(), to);
 		return true;
 	}
 
-	inline bool string_replace(std::wstring& string, std::wstring from, std::wstring to)
+	inline bool wstring_replace(std::wstring& string, std::wstring from, std::wstring to)
 	{
 		size_t start_pos = string.find(from);
-		if (start_pos == std::wstring::npos)
-		{
-			return false;
-		}
+		if (start_pos == std::wstring::npos) { return false; }
 		string.replace(start_pos, from.length(), to);
 		return true;
 	}
@@ -162,6 +209,49 @@ namespace ArnoldVinkCode
 			string.replace(start_pos, from.length(), to);
 			start_pos += to.length();
 		}
+		return true;
+	}
+
+	inline bool wstring_replace_all(std::wstring& string, std::wstring from, std::wstring to)
+	{
+		size_t start_pos = 0;
+		while ((start_pos = string.find(from, start_pos)) != std::wstring::npos)
+		{
+			string.replace(start_pos, from.length(), to);
+			start_pos += to.length();
+		}
+		return true;
+	}
+
+	inline bool string_replace_first(std::string& targetString, std::string from, std::string to)
+	{
+		size_t replacePosition = targetString.find_first_of(from);
+		if (replacePosition == std::string::npos) { return false; }
+		targetString.replace(replacePosition, from.length(), to);
+		return true;
+	}
+
+	inline bool wstring_replace_first(std::wstring& targetString, std::wstring from, std::wstring to)
+	{
+		size_t replacePosition = targetString.find_first_of(from);
+		if (replacePosition == std::wstring::npos) { return false; }
+		targetString.replace(replacePosition, from.length(), to);
+		return true;
+	}
+
+	inline bool string_replace_last(std::string& targetString, std::string from, std::string to)
+	{
+		size_t replacePosition = targetString.find_last_of(from);
+		if (replacePosition == std::string::npos) { return false; }
+		targetString.replace(replacePosition, from.length(), to);
+		return true;
+	}
+
+	inline bool wstring_replace_last(std::wstring& targetString, std::wstring from, std::wstring to)
+	{
+		size_t replacePosition = targetString.find_last_of(from);
+		if (replacePosition == std::wstring::npos) { return false; }
+		targetString.replace(replacePosition, from.length(), to);
 		return true;
 	}
 
@@ -195,11 +285,73 @@ namespace ArnoldVinkCode
 
 	inline bool string_contains(std::string str, std::string contains)
 	{
-		return str.find(contains) != std::string::npos;
+		std::string shortest;
+		std::string longest;
+		if (str.length() > contains.length())
+		{
+			longest = str;
+			shortest = contains;
+		}
+		else
+		{
+			longest = contains;
+			shortest = str;
+		}
+		return longest.find(shortest) != std::string::npos;
 	}
 
 	inline bool wstring_contains(std::wstring str, std::wstring contains)
 	{
-		return str.find(contains) != std::wstring::npos;
+		std::wstring shortest;
+		std::wstring longest;
+		if (str.length() > contains.length())
+		{
+			longest = str;
+			shortest = contains;
+		}
+		else
+		{
+			longest = contains;
+			shortest = str;
+		}
+		return longest.find(shortest) != std::wstring::npos;
+	}
+
+	inline std::string string_trim_left(std::string str)
+	{
+		const CHAR* trim = " \t\n\r\f\v\0";
+		str.erase(0, str.find_first_not_of(trim));
+		return str;
+	}
+
+	inline std::string string_trim_right(std::string str)
+	{
+		const CHAR* trim = " \t\n\r\f\v\0";
+		str.erase(str.find_last_not_of(trim) + 1);
+		return str;
+	}
+
+	inline std::string string_trim(std::string str)
+	{
+		return string_trim_left(string_trim_right(str));
+	}
+
+	inline std::wstring wstring_trim_left(std::wstring str)
+	{
+		const WCHAR* trim = L" \t\n\r\f\v\0";
+		str.erase(0, str.find_first_not_of(trim));
+		return str;
+	}
+
+	inline std::wstring wstring_trim_right(std::wstring str)
+	{
+		const WCHAR* trim = L" \t\n\r\f\v\0";
+		str.erase(str.find_last_not_of(trim) + 1);
+		return str;
+	}
+
+	inline std::wstring wstring_trim(std::wstring str)
+	{
+		return wstring_trim_left(wstring_trim_right(str));
 	}
 }
