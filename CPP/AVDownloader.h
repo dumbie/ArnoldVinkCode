@@ -17,20 +17,11 @@ namespace ArnoldVinkCode
 
 	inline std::string DownloadString(AVUri avUri, std::string targetUserAgent, std::vector<std::string> targetHeaders)
 	{
-		HINTERNET handleOpen = NULL;
-		HINTERNET handleConnect = NULL;
-		HINTERNET handleRequest = NULL;
-		AVFinallySafe(
-			{
-				InternetCloseHandle(handleOpen);
-				InternetCloseHandle(handleConnect);
-				InternetCloseHandle(handleRequest);
-			});
 		try
 		{
 			//Internet Open
-			handleOpen = InternetOpenA(targetUserAgent.c_str(), INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, NULL);
-			if (handleOpen == NULL)
+			auto handleOpen = AVFin(AVFinMethod::InternetCloseHandle, InternetOpenA(targetUserAgent.c_str(), INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, NULL));
+			if (handleOpen.Get() == nullptr)
 			{
 				AVDebugWriteLine("DownloadString open handle empty.");
 				return "";
@@ -52,17 +43,17 @@ namespace ArnoldVinkCode
 			}
 
 			//Internet Connect
-			handleConnect = InternetConnectA(handleOpen, avUri.targetHost.c_str(), internetPort, NULL, NULL, INTERNET_SERVICE_HTTP, NULL, NULL);
-			if (handleConnect == NULL)
+			auto handleConnect = AVFin(AVFinMethod::InternetCloseHandle, InternetConnectA(handleOpen.Get(), avUri.targetHost.c_str(), internetPort, NULL, NULL, INTERNET_SERVICE_HTTP, NULL, NULL));
+			if (handleConnect.Get() == nullptr)
 			{
 				AVDebugWriteLine("DownloadString connect handle empty.");
 				return "";
 			}
 
 			//Internet Request Open
-			PCSTR acceptTypes[] = { "*/*", NULL };
-			handleRequest = HttpOpenRequestA(handleConnect, "GET", avUri.targetPath.c_str(), NULL, NULL, acceptTypes, internetFlags, NULL);
-			if (handleRequest == NULL)
+			LPCSTR acceptTypes[] = { "*/*", NULL };
+			auto handleRequest = AVFin(AVFinMethod::InternetCloseHandle, HttpOpenRequestA(handleConnect.Get(), "GET", avUri.targetPath.c_str(), NULL, NULL, acceptTypes, internetFlags, NULL));
+			if (handleRequest.Get() == nullptr)
 			{
 				AVDebugWriteLine("DownloadString request handle empty.");
 				return "";
@@ -71,11 +62,11 @@ namespace ArnoldVinkCode
 			//Internet Request Headers
 			for (std::string targetHeader : targetHeaders)
 			{
-				HttpAddRequestHeadersA(handleRequest, targetHeader.c_str(), targetHeader.size(), NULL);
+				HttpAddRequestHeadersA(handleRequest.Get(), targetHeader.c_str(), (DWORD)targetHeader.size(), NULL);
 			}
 
 			//Internet Request Send
-			if (!HttpSendRequestA(handleRequest, NULL, NULL, NULL, NULL))
+			if (!HttpSendRequestA(handleRequest.Get(), NULL, NULL, NULL, NULL))
 			{
 				AVDebugWriteLine("DownloadString send request failed.");
 				return "";
@@ -83,7 +74,7 @@ namespace ArnoldVinkCode
 
 			//Internet Check Data
 			DWORD dataSize;
-			if (!InternetQueryDataAvailable(handleRequest, &dataSize, NULL, NULL))
+			if (!InternetQueryDataAvailable(handleRequest.Get(), &dataSize, NULL, NULL))
 			{
 				AVDebugWriteLine("DownloadString query data available failed.");
 				return "";
@@ -101,7 +92,7 @@ namespace ArnoldVinkCode
 			while (true)
 			{
 				//Read buffer
-				if (!InternetReadFile(handleRequest, dataBufferRead.data(), dataBufferRead.size(), &dataSize)) { break; }
+				if (!InternetReadFile(handleRequest.Get(), dataBufferRead.data(), (DWORD)dataBufferRead.size(), &dataSize)) { break; }
 				if (dataSize <= 0) { break; }
 				dataBufferRead.resize(dataSize);
 
@@ -123,20 +114,11 @@ namespace ArnoldVinkCode
 
 	inline std::string SendPostRequest(AVUri avUri, std::string targetUserAgent, std::vector<std::string> targetHeaders, std::string targetData)
 	{
-		HINTERNET handleOpen = NULL;
-		HINTERNET handleConnect = NULL;
-		HINTERNET handleRequest = NULL;
-		AVFinallySafe(
-			{
-				InternetCloseHandle(handleOpen);
-				InternetCloseHandle(handleConnect);
-				InternetCloseHandle(handleRequest);
-			});
 		try
 		{
 			//Internet Open
-			handleOpen = InternetOpenA(targetUserAgent.c_str(), INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, NULL);
-			if (handleOpen == NULL)
+			auto handleOpen = AVFin(AVFinMethod::InternetCloseHandle, InternetOpenA(targetUserAgent.c_str(), INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, NULL));
+			if (handleOpen.Get() == nullptr)
 			{
 				AVDebugWriteLine("SendPostRequest open handle empty.");
 				return "";
@@ -144,7 +126,7 @@ namespace ArnoldVinkCode
 
 			//Check target host
 			DWORD internetFlags = 0x00000000;
-			DWORD internetPort = INTERNET_INVALID_PORT_NUMBER;
+			INTERNET_PORT internetPort = INTERNET_INVALID_PORT_NUMBER;
 			if (avUri.targetHost.starts_with("http://"))
 			{
 				string_replace_all(avUri.targetHost, "http://", "");
@@ -158,17 +140,17 @@ namespace ArnoldVinkCode
 			}
 
 			//Internet Connect
-			handleConnect = InternetConnectA(handleOpen, avUri.targetHost.c_str(), internetPort, NULL, NULL, INTERNET_SERVICE_HTTP, NULL, NULL);
-			if (handleConnect == NULL)
+			auto handleConnect = AVFin(AVFinMethod::InternetCloseHandle, InternetConnectA(handleOpen.Get(), avUri.targetHost.c_str(), internetPort, NULL, NULL, INTERNET_SERVICE_HTTP, NULL, NULL));
+			if (handleConnect.Get() == nullptr)
 			{
 				AVDebugWriteLine("SendPostRequest connect handle empty.");
 				return "";
 			}
 
 			//Internet Request Open
-			PCSTR acceptTypes[] = { "*/*" };
-			handleRequest = HttpOpenRequestA(handleConnect, "POST", avUri.targetPath.c_str(), NULL, NULL, acceptTypes, internetFlags, NULL);
-			if (handleRequest == NULL)
+			LPCSTR acceptTypes[] = { "*/*", NULL };
+			auto handleRequest = AVFin(AVFinMethod::InternetCloseHandle, HttpOpenRequestA(handleConnect.Get(), "POST", avUri.targetPath.c_str(), NULL, NULL, acceptTypes, internetFlags, NULL));
+			if (handleRequest.Get() == nullptr)
 			{
 				AVDebugWriteLine("SendPostRequest request handle empty.");
 				return "";
@@ -177,11 +159,11 @@ namespace ArnoldVinkCode
 			//Internet Request Headers
 			for (std::string targetHeader : targetHeaders)
 			{
-				HttpAddRequestHeadersA(handleRequest, targetHeader.c_str(), targetHeader.size(), NULL);
+				HttpAddRequestHeadersA(handleRequest.Get(), targetHeader.c_str(), (DWORD)targetHeader.size(), NULL);
 			}
 
 			//Internet Request Send
-			if (!HttpSendRequestA(handleRequest, NULL, NULL, (LPVOID)targetData.c_str(), targetData.size()))
+			if (!HttpSendRequestA(handleRequest.Get(), NULL, NULL, (LPVOID)targetData.c_str(), (DWORD)targetData.size()))
 			{
 				AVDebugWriteLine("SendPostRequest send request failed.");
 				return "";
@@ -189,7 +171,7 @@ namespace ArnoldVinkCode
 
 			//Internet Check Data
 			DWORD dataSize;
-			if (!InternetQueryDataAvailable(handleRequest, &dataSize, NULL, NULL))
+			if (!InternetQueryDataAvailable(handleRequest.Get(), &dataSize, NULL, NULL))
 			{
 				AVDebugWriteLine("SendPostRequest query data available failed.");
 				return "";
@@ -207,7 +189,7 @@ namespace ArnoldVinkCode
 			while (true)
 			{
 				//Read buffer
-				if (!InternetReadFile(handleRequest, dataBufferRead.data(), dataBufferRead.size(), &dataSize)) { break; }
+				if (!InternetReadFile(handleRequest.Get(), dataBufferRead.data(), (DWORD)dataBufferRead.size(), &dataSize)) { break; }
 				if (dataSize <= 0) { break; }
 				dataBufferRead.resize(dataSize);
 

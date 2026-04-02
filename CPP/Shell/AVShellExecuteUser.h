@@ -7,31 +7,10 @@ namespace ArnoldVinkCode
 	//Functions
 	inline bool ShellExecuteUser(SHELLEXECUTEINFOW shellExecuteInfo)
 	{
-		IShellWindows* shellWindows;
-		IDispatch* dispFindWindowSW;
-		IServiceProvider* serviceProvider;
-		IShellBrowser* shellBrowser;
-		IShellView* desktopView;
-		IDispatch* dispBackground;
-		IShellFolderViewDual* shellFolderViewDual;
-		IDispatch* dispApplication{};
-		IShellDispatch2* shellDispatch2;
-		AVFinallySafe(
-			{
-				shellWindows->Release();
-				dispFindWindowSW->Release();
-				serviceProvider->Release();
-				shellBrowser->Release();
-				desktopView->Release();
-				dispBackground->Release();
-				shellFolderViewDual->Release();
-				dispApplication->Release();
-				shellDispatch2->Release();
-			});
 		try
 		{
 			//Initialize COM library
-			HRESULT hResult = CoInitialize(NULL);
+			HRESULT hResult = CoInitialize(nullptr);
 			if (!SUCCEEDED(hResult))
 			{
 				AVDebugWriteLine(L"Failed to initialize COM library.");
@@ -40,7 +19,9 @@ namespace ArnoldVinkCode
 
 			//Create shell windows instance
 			const CLSID CLSID_ShellWindows = { 0x9BA05972, 0xF6A8, 0x11CF, {0xA4, 0x42, 0x00, 0xA0, 0xC9, 0x0A, 0x8F, 0x39} };
-			hResult = CoCreateInstance(CLSID_ShellWindows, NULL, CLSCTX_ALL, IID_PPV_ARGS(&shellWindows));
+
+			auto shellWindows = AVFin<IShellWindows*>(AVFinMethod::ReleaseInterface);
+			hResult = CoCreateInstance(CLSID_ShellWindows, nullptr, CLSCTX_ALL, IID_PPV_ARGS(&shellWindows.Get()));
 			if (!SUCCEEDED(hResult))
 			{
 				AVDebugWriteLine(L"Failed to create shell windows instance.");
@@ -49,15 +30,19 @@ namespace ArnoldVinkCode
 
 			//Find shell desktop window
 			long pHwnd;
-			VARIANT varLoc{};
-			VARIANT varLocRoot{};
-			hResult = shellWindows->FindWindowSW(&varLoc, &varLocRoot, SWC_DESKTOP, &pHwnd, SWFO_NEEDDISPATCH, &dispFindWindowSW);
+			auto varLoc = AVFinObj<VARIANT>(AVFinObjMethod::VariantClear);
+			auto varLocRoot = AVFinObj<VARIANT>(AVFinObjMethod::VariantClear);
+			auto dispFindWindowSW = AVFin<IDispatch*>(AVFinMethod::ReleaseInterface);
+			hResult = shellWindows.Get()->FindWindowSW(&varLoc.Get(), &varLocRoot.Get(), SWC_DESKTOP, &pHwnd, SWFO_NEEDDISPATCH, &dispFindWindowSW.Get());
 			if (!SUCCEEDED(hResult))
 			{
 				AVDebugWriteLine(L"Failed to find shell desktop window.");
 				return false;
 			}
-			hResult = dispFindWindowSW->QueryInterface(IID_PPV_ARGS(&serviceProvider));
+
+			//Query service provider
+			auto serviceProvider = AVFin<IServiceProvider*>(AVFinMethod::ReleaseInterface);
+			hResult = dispFindWindowSW.Get()->QueryInterface(IID_PPV_ARGS(&serviceProvider.Get()));
 			if (!SUCCEEDED(hResult))
 			{
 				AVDebugWriteLine(L"Failed to find shell desktop window.");
@@ -65,7 +50,8 @@ namespace ArnoldVinkCode
 			}
 
 			//Query top level shell browser
-			hResult = serviceProvider->QueryService(SID_STopLevelBrowser, IID_PPV_ARGS(&shellBrowser));
+			auto shellBrowser = AVFin<IShellBrowser*>(AVFinMethod::ReleaseInterface);
+			hResult = serviceProvider.Get()->QueryService(SID_STopLevelBrowser, IID_PPV_ARGS(&shellBrowser.Get()));
 			if (!SUCCEEDED(hResult))
 			{
 				AVDebugWriteLine(L"Failed to query top level shell browser.");
@@ -73,21 +59,26 @@ namespace ArnoldVinkCode
 			}
 
 			//Query active shell view
-			hResult = shellBrowser->QueryActiveShellView(&desktopView);
+			auto desktopView = AVFin<IShellView*>(AVFinMethod::ReleaseInterface);
+			hResult = shellBrowser.Get()->QueryActiveShellView(&desktopView.Get());
 			if (!SUCCEEDED(hResult))
 			{
 				AVDebugWriteLine(L"Failed to query active shell view.");
 				return false;
 			}
 
-			//Get shell folder view dual
-			hResult = desktopView->GetItemObject(SVGIO_BACKGROUND, IID_PPV_ARGS(&dispBackground));
+			//Get background of shell view
+			auto dispBackground = AVFin<IDispatch*>(AVFinMethod::ReleaseInterface);
+			hResult = desktopView.Get()->GetItemObject(SVGIO_BACKGROUND, IID_PPV_ARGS(&dispBackground.Get()));
 			if (!SUCCEEDED(hResult))
 			{
 				AVDebugWriteLine(L"Failed to get shell folder view dual.");
 				return false;
 			}
-			hResult = dispBackground->QueryInterface(IID_PPV_ARGS(&shellFolderViewDual));
+
+			//Get shell folder view dual
+			auto shellFolderViewDual = AVFin<IShellFolderViewDual*>(AVFinMethod::ReleaseInterface);
+			hResult = dispBackground.Get()->QueryInterface(IID_PPV_ARGS(&shellFolderViewDual.Get()));
 			if (!SUCCEEDED(hResult))
 			{
 				AVDebugWriteLine(L"Failed to get shell folder view dual.");
@@ -95,13 +86,17 @@ namespace ArnoldVinkCode
 			}
 
 			//Get application dispatch
-			hResult = shellFolderViewDual->get_Application((IDispatch**)&dispApplication);
+			auto appDispatch = AVFin<IDispatch*>(AVFinMethod::ReleaseInterface);
+			hResult = shellFolderViewDual.Get()->get_Application(&appDispatch.Get());
 			if (!SUCCEEDED(hResult))
 			{
 				AVDebugWriteLine(L"Failed to get application dispatch.");
 				return false;
 			}
-			hResult = dispApplication->QueryInterface(IID_PPV_ARGS(&shellDispatch2));
+
+			//Get shell dispatch 2
+			auto shellDispatch = AVFin<IShellDispatch2*>(AVFinMethod::ReleaseInterface);
+			hResult = appDispatch.Get()->QueryInterface(IID_PPV_ARGS(&shellDispatch.Get()));
 			if (!SUCCEEDED(hResult))
 			{
 				AVDebugWriteLine(L"Failed to get application dispatch.");
@@ -109,12 +104,12 @@ namespace ArnoldVinkCode
 			}
 
 			//Shell execute
-			BSTR lpFile = wchar_to_bstring(shellExecuteInfo.lpFile);
-			VARIANT lpParameters = wchar_to_variant(shellExecuteInfo.lpParameters);
-			VARIANT lpDirectory = wchar_to_variant(shellExecuteInfo.lpDirectory);
-			VARIANT lpVerb = wchar_to_variant(shellExecuteInfo.lpVerb);
-			VARIANT nShow = number_to_variant(shellExecuteInfo.nShow);
-			hResult = shellDispatch2->ShellExecute(lpFile, lpParameters, lpDirectory, lpVerb, nShow);
+			auto lpFile = AVFin(AVFinMethod::FreeStringBstr, wchar_to_bstring(shellExecuteInfo.lpFile));
+			auto lpParameters = AVFinObj(AVFinObjMethod::VariantClear, wchar_to_variant(shellExecuteInfo.lpParameters));
+			auto lpDirectory = AVFinObj(AVFinObjMethod::VariantClear, wchar_to_variant(shellExecuteInfo.lpDirectory));
+			auto lpVerb = AVFinObj(AVFinObjMethod::VariantClear, wchar_to_variant(shellExecuteInfo.lpVerb));
+			auto nShow = AVFinObj(AVFinObjMethod::VariantClear, number_to_variant(shellExecuteInfo.nShow));
+			hResult = shellDispatch.Get()->ShellExecute(lpFile.Get(), lpParameters.Get(), lpDirectory.Get(), lpVerb.Get(), nShow.Get());
 
 			//Return result
 			return SUCCEEDED(hResult);
