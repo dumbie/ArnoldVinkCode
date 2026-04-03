@@ -1,7 +1,9 @@
 #pragma once
 #include <unknwn.h>
 #include <wininet.h>
+#include <setupapi.h>
 #pragma comment(lib, "gdi32.lib")
+#pragma comment(lib, "setupapi.lib")
 #define AVFinally(callback) AVFinallyFunction x([&]{ try { callback } catch (...) {} });
 
 //Description: Runs code after going out of scope or loop.
@@ -54,6 +56,7 @@ enum class AVFinMethod
 	ComFree,
 	FreeSid,
 	FreeMarshal,
+	SetupDiDestroyDeviceInfoList,
 	Custom
 };
 
@@ -182,6 +185,10 @@ public:
 				else if (ReleaseMethod == AVFinMethod::FreeSid)
 				{
 					FreeSid((PSID)ReleaseObject);
+				}
+				else if (ReleaseMethod == AVFinMethod::SetupDiDestroyDeviceInfoList)
+				{
+					SetupDiDestroyDeviceInfoList((HDEVINFO)ReleaseObject);
 				}
 				else if (ReleaseMethod == AVFinMethod::FreeMarshal)
 				{

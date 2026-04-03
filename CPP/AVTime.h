@@ -39,21 +39,21 @@ namespace ArnoldVinkCode
 		return false;
 	}
 
-	inline bool tm_is_invalid(std::tm tm)
-	{
-		try
-		{
-			if (tm.tm_year <= 0 && tm.tm_mon <= 0 && tm.tm_mday <= 0) { return true; }
-		}
-		catch (...) {}
-		return false;
-	}
-
 	inline bool timet_is_empty(std::time_t timet)
 	{
 		try
 		{
 			if (timet <= 0) { return true; }
+		}
+		catch (...) {}
+		return false;
+	}
+
+	inline bool tm_is_invalid(std::tm tm)
+	{
+		try
+		{
+			if (tm.tm_year <= 0 && tm.tm_mon <= 0 && tm.tm_mday <= 0) { return true; }
 		}
 		catch (...) {}
 		return false;

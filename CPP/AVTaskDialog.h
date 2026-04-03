@@ -64,9 +64,15 @@ namespace ArnoldVinkCode
 			SendMessageW(hWnd, WM_SETICON, ICON_SMALL, NULL);
 			SendMessageW(hWnd, WM_SETICON, ICON_SMALL2, NULL);
 			SendMessageW(hWnd, WM_SETICON, ICON_BIG, NULL);
+
+			//Return result
+			return S_OK;
 		}
-		catch (...) {}
-		return S_OK;
+		catch (...)
+		{
+			//Return result
+			return S_FALSE;
+		}
 	}
 
 	//Functions
@@ -93,7 +99,7 @@ namespace ArnoldVinkCode
 			taskDialogConfig.pszWindowTitle = Title.c_str();
 			taskDialogConfig.pszMainInstruction = Question.c_str();
 			taskDialogConfig.pszContent = Description.c_str();
-			taskDialogConfig.pszMainIcon = MAKEINTRESOURCE(TaskDialogIconBar::ShieldBlueBar);
+			taskDialogConfig.pszMainIcon = MAKEINTRESOURCEW(TaskDialogIconBar::ShieldBlueBar);
 			taskDialogConfig.dwFlags = TDF_POSITION_RELATIVE_TO_WINDOW;
 
 			//Add answer buttons

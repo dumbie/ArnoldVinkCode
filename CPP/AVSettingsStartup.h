@@ -76,7 +76,7 @@ namespace ArnoldVinkCode
 
 				if (!executableLauncher.empty())
 				{
-					targetFilePath = string_replace(targetFilePath, targetExecutableFile, executableLauncher);
+					targetFilePath = wstring_replace(targetFilePath, targetExecutableFile, executableLauncher);
 				}
 			}
 
