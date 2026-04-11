@@ -8,6 +8,7 @@
 #include "AVDownloader.h"
 #include "AVException.h"
 #include "AVFiles.h"
+#include "AVFilePicker.h"
 #include "AVFinally.h"
 #include "AVHighResDelay.h"
 #include "AVHighResTimer.h"
