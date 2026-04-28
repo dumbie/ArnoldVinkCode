@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace ArnoldVinkCode
@@ -14,6 +15,12 @@ namespace ArnoldVinkCode
 
         [DllImport("ntdll.dll", EntryPoint = "NtReadVirtualMemory")]
         private static extern uint NtReadVirtualMemory32(IntPtr ProcessHandle, IntPtr BaseAddress, ref __RTL_USER_PROCESS_PARAMETERS32 Buffer, uint NumberOfBytesToRead, out uint NumberOfBytesRead);
+
+        [DllImport("ntdll.dll", EntryPoint = "NtReadVirtualMemory")]
+        private static extern uint NtReadVirtualMemory32(IntPtr ProcessHandle, IntPtr BaseAddress, ref __PEB_LDR_DATA32 Buffer, uint NumberOfBytesToRead, out uint NumberOfBytesRead);
+
+        [DllImport("ntdll.dll", EntryPoint = "NtReadVirtualMemory")]
+        private static extern uint NtReadVirtualMemory32(IntPtr ProcessHandle, IntPtr BaseAddress, ref __LDR_DATA_TABLE_ENTRY32 Buffer, uint NumberOfBytesToRead, out uint NumberOfBytesRead);
 
         [DllImport("ntdll.dll", EntryPoint = "NtReadVirtualMemory")]
         private static extern uint NtReadVirtualMemory32(IntPtr ProcessHandle, IntPtr BaseAddress, [MarshalAs(UnmanagedType.LPWStr)] string Buffer, uint NumberOfBytesToRead, out uint NumberOfBytesRead);
@@ -36,7 +43,7 @@ namespace ArnoldVinkCode
             public IntPtr Reserved0;
             public IntPtr Reserved1;
             public IntPtr Reserved2;
-            public IntPtr Reserved3;
+            public IntPtr LdrData;
             public IntPtr RtlUserProcessParameters;
         }
 
@@ -91,6 +98,37 @@ namespace ArnoldVinkCode
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
             public __RTL_DRIVE_LETTER_CURDIR32[] CurrentDirectores;
             public uint EnvironmentSize;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct __LIST_ENTRY32
+        {
+            public IntPtr Flink;
+            public IntPtr Blink;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct __PEB_LDR_DATA32
+        {
+            public uint Length;
+            public byte Initialized;
+            public IntPtr SsHandle;
+            public __LIST_ENTRY32 InLoadOrderModuleList;
+            public __LIST_ENTRY32 InMemoryOrderModuleList;
+            public __LIST_ENTRY32 InInitializationOrderModuleList;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct __LDR_DATA_TABLE_ENTRY32
+        {
+            public __LIST_ENTRY32 InLoadOrderLinks;
+            public __LIST_ENTRY32 InMemoryOrderLinks;
+            public __LIST_ENTRY32 InInitializationOrderLinks;
+            public IntPtr DllBase;
+            public IntPtr EntryPoint;
+            public uint SizeOfImage;
+            public __UNICODE_STRING32 FullDllName;
+            public __UNICODE_STRING32 BaseDllName;
         }
 
         //Methods
@@ -175,6 +213,74 @@ namespace ArnoldVinkCode
             {
                 AVDebug.WriteLine("Failed to get GetApplicationParameter: " + ex.Message);
                 return string.Empty;
+            }
+        }
+
+        private static List<string> GetApplicationModules32(IntPtr processHandle)
+        {
+            List<string> processModules = new List<string>();
+            try
+            {
+                //AVDebug.WriteLine("GetApplicationModules architecture 32");
+
+                __PROCESS_BASIC_INFORMATION32 basicInformation = new __PROCESS_BASIC_INFORMATION32();
+                uint readResult = NtQueryInformationProcess32(processHandle, ProcessInfoClass.ProcessBasicInformation, ref basicInformation, (uint)Marshal.SizeOf(basicInformation), out _);
+                if (readResult != 0)
+                {
+                    //AVDebug.WriteLine("Failed to get ProcessBasicInformation for: " + processHandle + "/Query failed.");
+                    return processModules;
+                }
+
+                __PEB32 pebCopy = new __PEB32();
+                readResult = NtReadVirtualMemory32(processHandle, basicInformation.PebBaseAddress, ref pebCopy, (uint)Marshal.SizeOf(pebCopy), out _);
+                if (readResult != 0)
+                {
+                    //AVDebug.WriteLine("Failed to get PebBaseAddress for: " + processHandle);
+                    return processModules;
+                }
+
+                __PEB_LDR_DATA32 ldrData = new __PEB_LDR_DATA32();
+                readResult = NtReadVirtualMemory32(processHandle, pebCopy.LdrData, ref ldrData, (uint)Marshal.SizeOf(ldrData), out _);
+                if (readResult != 0)
+                {
+                    //AVDebug.WriteLine("Failed to get LdrData for: " + processHandle);
+                    return processModules;
+                }
+
+                //Loop to get the module names
+                IntPtr moduleFlink = ldrData.InLoadOrderModuleList.Flink;
+                for (int i = 0; i < ldrData.Length; i++)
+                {
+                    try
+                    {
+                        //Get module info
+                        __LDR_DATA_TABLE_ENTRY32 moduleInfo = new __LDR_DATA_TABLE_ENTRY32();
+                        readResult = NtReadVirtualMemory32(processHandle, moduleFlink, ref moduleInfo, (uint)Marshal.SizeOf(moduleInfo), out _);
+                        if (readResult != 0)
+                        {
+                            continue;
+                        }
+
+                        //Get module name
+                        string getString = new string(' ', moduleInfo.FullDllName.Length);
+                        readResult = NtReadVirtualMemory32(processHandle, moduleInfo.FullDllName.Buffer, getString, moduleInfo.FullDllName.Length, out _);
+                        if (readResult == 0)
+                        {
+                            //AVDebug.WriteLine("Got module name: " + i + " / " + getString);
+                            processModules.Add(getString);
+                        }
+
+                        //Move to next module
+                        moduleFlink = moduleInfo.InLoadOrderLinks.Flink;
+                    }
+                    catch { }
+                }
+                return processModules;
+            }
+            catch (Exception ex)
+            {
+                AVDebug.WriteLine("Failed to get GetApplicationModules: " + ex.Message);
+                return processModules;
             }
         }
     }

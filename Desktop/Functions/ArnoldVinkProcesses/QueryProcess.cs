@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using static ArnoldVinkCode.AVInteropDll;
 
@@ -123,6 +124,60 @@ namespace ArnoldVinkCode
                 AVDebug.WriteLine("Failed to get GetApplicationParameter: " + ex.Message);
                 return parameterString;
             }
+        }
+
+        /// <summary>
+        /// Get process modules by process handle
+        /// </summary>
+        /// <summary>Process handle with VM_READ access is required.</summary>
+        public static List<string> Detail_ProcessModulesByProcessHandle(IntPtr targetProcessHandle)
+        {
+            List<string> processModules = new List<string>();
+            try
+            {
+                //Check target process handle
+                if (targetProcessHandle == IntPtr.Zero)
+                {
+                    AVDebug.WriteLine("GetApplicationModules invalid process handle.");
+                    return processModules;
+                }
+
+                //Check application architecture
+                IsWow64Process(targetProcessHandle, out bool targetIsWow64);
+                IsWow64Process(GetCurrentProcess(), out bool currentIsWow64);
+
+                //Read application parameter
+                if (currentIsWow64 && targetIsWow64)
+                {
+                    //AVDebug.WriteLine("GetApplicationModules (32) target: " + targetIsWow64 + " current: " + currentIsWow64);
+                    processModules = GetApplicationModules32(targetProcessHandle);
+                }
+                else if (currentIsWow64 && !targetIsWow64)
+                {
+                    //AVDebug.WriteLine("GetApplicationModules (WOW64) target: " + targetIsWow64 + " current: " + currentIsWow64);
+                    processModules = GetApplicationModulesWOW64(targetProcessHandle);
+                }
+                else if (!currentIsWow64 && targetIsWow64)
+                {
+                    //AVDebug.WriteLine("GetApplicationModules (64) target: " + targetIsWow64 + " current: " + currentIsWow64);
+                    processModules = GetApplicationModules64(targetProcessHandle);
+                }
+                else if (!currentIsWow64 && !targetIsWow64)
+                {
+                    //AVDebug.WriteLine("GetApplicationModules (32) target: " + targetIsWow64 + " current: " + currentIsWow64);
+                    processModules = GetApplicationModules32(targetProcessHandle);
+                }
+                else
+                {
+                    //AVDebug.WriteLine("GetApplicationModules unknown architecture.");
+                    return processModules;
+                }
+            }
+            catch (Exception ex)
+            {
+                AVDebug.WriteLine("Failed getting all process modules: " + ex.Message);
+            }
+            return processModules;
         }
     }
 }

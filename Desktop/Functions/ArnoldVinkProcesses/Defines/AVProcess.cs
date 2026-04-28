@@ -395,6 +395,19 @@ namespace ArnoldVinkCode
             }
         }
 
+        public List<string> Modules 
+        {
+            get
+            {
+                try
+                {
+                    return Detail_ProcessModulesByProcessHandle(Handle);
+                }
+                catch { }
+                return null;
+            }
+        }
+
         public Package AppPackage
         {
             get

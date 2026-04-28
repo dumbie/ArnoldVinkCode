@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace ArnoldVinkCode
@@ -14,6 +15,12 @@ namespace ArnoldVinkCode
 
         [DllImport("ntdll.dll", EntryPoint = "NtWow64ReadVirtualMemory64")]
         private static extern uint NtReadVirtualMemoryWOW64(IntPtr ProcessHandle, long BaseAddress, ref __RTL_USER_PROCESS_PARAMETERSWOW64 Buffer, ulong NumberOfBytesToRead, out ulong NumberOfBytesRead);
+
+        [DllImport("ntdll.dll", EntryPoint = "NtWow64ReadVirtualMemory64")]
+        private static extern uint NtReadVirtualMemoryWOW64(IntPtr ProcessHandle, long BaseAddress, ref __PEB_LDR_DATAWOW64 Buffer, ulong NumberOfBytesToRead, out ulong NumberOfBytesRead);
+
+        [DllImport("ntdll.dll", EntryPoint = "NtWow64ReadVirtualMemory64")]
+        private static extern uint NtReadVirtualMemoryWOW64(IntPtr ProcessHandle, long BaseAddress, ref __LDR_DATA_TABLE_ENTRYWOW64 Buffer, ulong NumberOfBytesToRead, out ulong NumberOfBytesRead);
 
         [DllImport("ntdll.dll", EntryPoint = "NtWow64ReadVirtualMemory64")]
         private static extern uint NtReadVirtualMemoryWOW64(IntPtr ProcessHandle, long BaseAddress, [MarshalAs(UnmanagedType.LPWStr)] string Buffer, ulong NumberOfBytesToRead, out ulong NumberOfBytesRead);
@@ -36,7 +43,7 @@ namespace ArnoldVinkCode
             public long Reserved0;
             public long Reserved1;
             public long Reserved2;
-            public long Reserved3;
+            public long LdrData;
             public long RtlUserProcessParameters;
         }
 
@@ -91,6 +98,37 @@ namespace ArnoldVinkCode
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
             public __RTL_DRIVE_LETTER_CURDIRWOW64[] CurrentDirectores;
             public uint EnvironmentSize;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct __LIST_ENTRYWOW64
+        {
+            public long Flink;
+            public long Blink;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct __PEB_LDR_DATAWOW64
+        {
+            public uint Length;
+            public byte Initialized;
+            public long SsHandle;
+            public __LIST_ENTRYWOW64 InLoadOrderModuleList;
+            public __LIST_ENTRYWOW64 InMemoryOrderModuleList;
+            public __LIST_ENTRYWOW64 InInitializationOrderModuleList;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct __LDR_DATA_TABLE_ENTRYWOW64
+        {
+            public __LIST_ENTRYWOW64 InLoadOrderLinks;
+            public __LIST_ENTRYWOW64 InMemoryOrderLinks;
+            public __LIST_ENTRYWOW64 InInitializationOrderLinks;
+            public long DllBase;
+            public long EntryPoint;
+            public uint SizeOfImage;
+            public __UNICODE_STRINGWOW64 FullDllName;
+            public __UNICODE_STRINGWOW64 BaseDllName;
         }
 
         //Methods
@@ -175,6 +213,74 @@ namespace ArnoldVinkCode
             {
                 AVDebug.WriteLine("Failed to get GetApplicationParameter: " + ex.Message);
                 return string.Empty;
+            }
+        }
+
+        private static List<string> GetApplicationModulesWOW64(IntPtr processHandle)
+        {
+            List<string> processModules = new List<string>();
+            try
+            {
+                //AVDebug.WriteLine("GetApplicationModules architecture WOW64");
+
+                __PROCESS_BASIC_INFORMATIONWOW64 basicInformation = new __PROCESS_BASIC_INFORMATIONWOW64();
+                uint readResult = NtQueryInformationProcessWOW64(processHandle, ProcessInfoClass.ProcessBasicInformation, ref basicInformation, (uint)Marshal.SizeOf(basicInformation), out _);
+                if (readResult != 0)
+                {
+                    //AVDebug.WriteLine("Failed to get ProcessBasicInformation for: " + processHandle + "/Query failed.");
+                    return processModules;
+                }
+
+                __PEBWOW64 pebCopy = new __PEBWOW64();
+                readResult = NtReadVirtualMemoryWOW64(processHandle, basicInformation.PebBaseAddress, ref pebCopy, (uint)Marshal.SizeOf(pebCopy), out _);
+                if (readResult != 0)
+                {
+                    //AVDebug.WriteLine("Failed to get PebBaseAddress for: " + processHandle);
+                    return processModules;
+                }
+
+                __PEB_LDR_DATAWOW64 ldrData = new __PEB_LDR_DATAWOW64();
+                readResult = NtReadVirtualMemoryWOW64(processHandle, pebCopy.LdrData, ref ldrData, (uint)Marshal.SizeOf(ldrData), out _);
+                if (readResult != 0)
+                {
+                    //AVDebug.WriteLine("Failed to get LdrData for: " + processHandle);
+                    return processModules;
+                }
+
+                //Loop to get the module names
+                long moduleFlink = ldrData.InLoadOrderModuleList.Flink;
+                for (int i = 0; i < ldrData.Length; i++)
+                {
+                    try
+                    {
+                        //Get module info
+                        __LDR_DATA_TABLE_ENTRYWOW64 moduleInfo = new __LDR_DATA_TABLE_ENTRYWOW64();
+                        readResult = NtReadVirtualMemoryWOW64(processHandle, moduleFlink, ref moduleInfo, (uint)Marshal.SizeOf(moduleInfo), out _);
+                        if (readResult != 0)
+                        {
+                            continue;
+                        }
+
+                        //Get module name
+                        string getString = new string(' ', moduleInfo.FullDllName.Length);
+                        readResult = NtReadVirtualMemoryWOW64(processHandle, moduleInfo.FullDllName.Buffer, getString, moduleInfo.FullDllName.Length, out _);
+                        if (readResult == 0)
+                        {
+                            //AVDebug.WriteLine("Got module name: " + i + " / " + getString);
+                            processModules.Add(getString);
+                        }
+
+                        //Move to next module
+                        moduleFlink = moduleInfo.InLoadOrderLinks.Flink;
+                    }
+                    catch { }
+                }
+                return processModules;
+            }
+            catch (Exception ex)
+            {
+                AVDebug.WriteLine("Failed to get GetApplicationModules: " + ex.Message);
+                return processModules;
             }
         }
     }
