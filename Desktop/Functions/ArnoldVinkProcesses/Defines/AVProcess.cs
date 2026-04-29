@@ -395,7 +395,7 @@ namespace ArnoldVinkCode
             }
         }
 
-        public List<string> Modules 
+        public List<string> Modules
         {
             get
             {

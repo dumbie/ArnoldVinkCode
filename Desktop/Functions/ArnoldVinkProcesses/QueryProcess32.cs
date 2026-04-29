@@ -248,30 +248,38 @@ namespace ArnoldVinkCode
                 }
 
                 //Loop to get the module names
-                IntPtr moduleFlink = ldrData.InLoadOrderModuleList.Flink;
-                for (int i = 0; i < ldrData.Length; i++)
+                IntPtr moduleFlinkStart = ldrData.InLoadOrderModuleList.Flink;
+                IntPtr moduleFlinkNext = moduleFlinkStart;
+                while (true)
                 {
                     try
                     {
                         //Get module info
                         __LDR_DATA_TABLE_ENTRY32 moduleInfo = new __LDR_DATA_TABLE_ENTRY32();
-                        readResult = NtReadVirtualMemory32(processHandle, moduleFlink, ref moduleInfo, (uint)Marshal.SizeOf(moduleInfo), out _);
+                        readResult = NtReadVirtualMemory32(processHandle, moduleFlinkNext, ref moduleInfo, (uint)Marshal.SizeOf(moduleInfo), out _);
                         if (readResult != 0)
                         {
                             continue;
                         }
 
                         //Get module name
-                        string getString = new string(' ', moduleInfo.FullDllName.Length);
-                        readResult = NtReadVirtualMemory32(processHandle, moduleInfo.FullDllName.Buffer, getString, moduleInfo.FullDllName.Length, out _);
+                        string getString = new string(' ', moduleInfo.BaseDllName.Length);
+                        readResult = NtReadVirtualMemory32(processHandle, moduleInfo.BaseDllName.Buffer, getString, moduleInfo.BaseDllName.Length, out _);
                         if (readResult == 0)
                         {
-                            //AVDebug.WriteLine("Got module name: " + i + " / " + getString);
-                            processModules.Add(getString);
+                            if (!string.IsNullOrWhiteSpace(getString))
+                            {
+                                //AVDebug.WriteLine("Got module name: " + i + " / " + getString);
+                                processModules.Add(getString.Trim());
+                            }
                         }
 
                         //Move to next module
-                        moduleFlink = moduleInfo.InLoadOrderLinks.Flink;
+                        moduleFlinkNext = moduleInfo.InLoadOrderLinks.Flink;
+                        if (moduleFlinkNext == moduleFlinkStart)
+                        {
+                            break;
+                        }
                     }
                     catch { }
                 }
