@@ -44,6 +44,7 @@
 #include "AVString.h"
 #include "AVTime.h"
 #include "AVVariant.h"
+#include "AVUpdate.h"
 #include "AVVersion.h"
 #include "Api\ApiTokens.h"
 #include "Api\GitHub\GitHub_Paths.h"

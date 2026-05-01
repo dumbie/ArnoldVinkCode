@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using static ArnoldVinkCode.ApiGitHub;
@@ -10,6 +9,13 @@ namespace ArnoldVinkCode
 {
     public partial class AVUpdate
     {
+        //Update result class
+        public class UpdateCheckResult
+        {
+            public bool UpdateFound { get; set; }
+            public string UpdateVersion { get; set; }
+        }
+
         //Clean application update files
         public static async Task UpdateCleanup()
         {
@@ -18,14 +24,13 @@ namespace ArnoldVinkCode
                 Debug.WriteLine("Cleaning application update.");
 
                 //Close running application updater
-                if (Close_ProcessesByName("Updater.exe", true))
+                if (Close_ProcessByName("Updater.exe", true))
                 {
-                    await Task.Delay(1000);
+                    await Task.Delay(500);
                 }
 
-                //Check if the updater has been updated
-                File_Move("Resources/UpdaterReplace.exe", "Updater.exe", true);
-                File_Move("Updater/UpdaterReplace.exe", "Updater.exe", true);
+                //Move new updater executable file
+                File_Move("Settings\\UpdaterReplace.exe", "Updater.exe", true);
             }
             catch { }
         }
@@ -35,53 +40,47 @@ namespace ArnoldVinkCode
         {
             try
             {
-                Launch_ShellExecute("Updater.exe", "", "-ProcessLaunch", true);
+                //Launch updater
+                Launch_ApplicationDesktop("Updater.exe", "", "-ProcessLaunch", true);
+
+                //Exit application
                 Environment.Exit(0);
             }
             catch { }
         }
 
         //Check for available application update
-        public static async Task<bool> UpdateCheck(string gitUsername, string gitRepoName, bool silentUpdate)
+        public static async Task<UpdateCheckResult> UpdateCheck(string gitUsername, string gitRepoName)
         {
+            UpdateCheckResult updateCheckResult = new UpdateCheckResult();
             try
             {
-                Debug.WriteLine("Checking for application update.");
+                Debug.WriteLine("Checking for application update: " + gitUsername + " / " + gitRepoName);
 
+                //Get online version
                 string onlineVersion = (await ApiGitHub_GetLatestVersion(gitUsername, gitRepoName)).ToLower();
+
+                //Get current version
                 string currentVersion = "v" + AVFunctions.ApplicationVersion();
-                if (!string.IsNullOrWhiteSpace(onlineVersion) && onlineVersion != currentVersion)
+
+                //Check if version matches
+                if (!string.IsNullOrWhiteSpace(onlineVersion) && currentVersion != onlineVersion)
                 {
-                    List<string> messageBoxAnswers = new List<string>();
-                    messageBoxAnswers.Add("Update");
-                    messageBoxAnswers.Add("Cancel");
-
-                    string MsgBoxResult = AVMessageBox.Popup(null, "Newer version has been found: " + onlineVersion, "Would you like to update the application to the newest version available?", messageBoxAnswers);
-                    if (MsgBoxResult == "Update")
-                    {
-                        UpdateRestart();
-                    }
-
-                    return true;
+                    Debug.WriteLine("Application update found: " + onlineVersion + " / " + currentVersion);
+                    updateCheckResult.UpdateFound = true;
+                    updateCheckResult.UpdateVersion = onlineVersion;
                 }
                 else
                 {
-                    if (!silentUpdate)
-                    {
-                        List<string> messageBoxAnswers = new List<string>();
-                        messageBoxAnswers.Add("Ok");
-
-                        AVMessageBox.Popup(null, "No new application update has been found.", "", messageBoxAnswers);
-                    }
-
-                    return false;
+                    Debug.WriteLine("No application update found.");
                 }
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Failed checking for application update: " + ex.Message);
-                return false;
+                Debug.WriteLine("Failed checking application update: " + ex.Message);
             }
+            //Return result
+            return updateCheckResult;
         }
     }
 }
