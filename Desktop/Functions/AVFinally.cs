@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using static ArnoldVinkCode.AVDisplayMonitor;
 using static ArnoldVinkCode.AVInteropDll;
 using static ArnoldVinkCode.AVProcess;
 
@@ -13,7 +12,6 @@ namespace ArnoldVinkCode
         FreeLibrary,
         DestroyIcon,
         DeleteObject,
-        ReleaseDC,
         ComFree,
         FreeSid,
         FreeMarshal,
@@ -56,31 +54,26 @@ namespace ArnoldVinkCode
 
         public void SetReleaser(Action<IntPtr> setFunction)
         {
+            ReleaseMethod = AVFinMethod.Custom;
             ReleaseFunction = setFunction;
         }
 
         public void Set(IntPtr setObject)
         {
-            if (ReleaseObject == IntPtr.Zero)
+            if (ReleaseObject != IntPtr.Zero)
             {
-                ReleaseObject = setObject;
+                Dispose();
             }
-            else
-            {
-                AVDebug.WriteLine("AVFin object is already set.");
-            }
+            ReleaseObject = setObject;
         }
 
         public void Set(ref IntPtr setObject)
         {
-            if (ReleaseObject == IntPtr.Zero)
+            if (ReleaseObject != IntPtr.Zero)
             {
-                ReleaseObject = setObject;
+                Dispose();
             }
-            else
-            {
-                AVDebug.WriteLine("AVFin object is already set.");
-            }
+            ReleaseObject = setObject;
         }
 
         public ref IntPtr Get()
@@ -111,17 +104,13 @@ namespace ArnoldVinkCode
                     {
                         DeleteObject(ReleaseObject);
                     }
-                    else if (ReleaseMethod == AVFinMethod.ReleaseDC)
-                    {
-                        ReleaseDC(IntPtr.Zero, ReleaseObject);
-                    }
                     else if (ReleaseMethod == AVFinMethod.FreeSid)
                     {
-                        CoTaskMemFree(ReleaseObject);
+                        FreeSid(ReleaseObject);
                     }
                     else if (ReleaseMethod == AVFinMethod.ComFree)
                     {
-                        FreeSid(ReleaseObject);
+                        CoTaskMemFree(ReleaseObject);
                     }
                     else if (ReleaseMethod == AVFinMethod.FreeMarshal)
                     {

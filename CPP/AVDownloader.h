@@ -20,7 +20,8 @@ namespace ArnoldVinkCode
 		try
 		{
 			//Internet Open
-			auto handleOpen = AVFin(AVFinMethod::InternetCloseHandle, InternetOpenA(targetUserAgent.c_str(), INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, NULL));
+			auto handleOpen = AVFin(AVFinMethod::Custom, InternetOpenA(targetUserAgent.c_str(), INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, NULL));
+			handleOpen.SetReleaser([&](auto releaseObject) { InternetCloseHandle((HINTERNET)releaseObject); });
 			if (handleOpen.Get() == nullptr)
 			{
 				AVDebugWriteLine("DownloadString open handle empty.");
@@ -43,7 +44,8 @@ namespace ArnoldVinkCode
 			}
 
 			//Internet Connect
-			auto handleConnect = AVFin(AVFinMethod::InternetCloseHandle, InternetConnectA(handleOpen.Get(), avUri.targetHost.c_str(), internetPort, NULL, NULL, INTERNET_SERVICE_HTTP, NULL, NULL));
+			auto handleConnect = AVFin(AVFinMethod::Custom, InternetConnectA(handleOpen.Get(), avUri.targetHost.c_str(), internetPort, NULL, NULL, INTERNET_SERVICE_HTTP, NULL, NULL));
+			handleConnect.SetReleaser([&](auto releaseObject) { InternetCloseHandle((HINTERNET)releaseObject); });
 			if (handleConnect.Get() == nullptr)
 			{
 				AVDebugWriteLine("DownloadString connect handle empty.");
@@ -52,7 +54,8 @@ namespace ArnoldVinkCode
 
 			//Internet Request Open
 			LPCSTR acceptTypes[] = { "*/*", NULL };
-			auto handleRequest = AVFin(AVFinMethod::InternetCloseHandle, HttpOpenRequestA(handleConnect.Get(), "GET", avUri.targetPath.c_str(), NULL, NULL, acceptTypes, internetFlags, NULL));
+			auto handleRequest = AVFin(AVFinMethod::Custom, HttpOpenRequestA(handleConnect.Get(), "GET", avUri.targetPath.c_str(), NULL, NULL, acceptTypes, internetFlags, NULL));
+			handleRequest.SetReleaser([&](auto releaseObject) { InternetCloseHandle((HINTERNET)releaseObject); });
 			if (handleRequest.Get() == nullptr)
 			{
 				AVDebugWriteLine("DownloadString request handle empty.");
@@ -117,7 +120,8 @@ namespace ArnoldVinkCode
 		try
 		{
 			//Internet Open
-			auto handleOpen = AVFin(AVFinMethod::InternetCloseHandle, InternetOpenA(targetUserAgent.c_str(), INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, NULL));
+			auto handleOpen = AVFin(AVFinMethod::Custom, InternetOpenA(targetUserAgent.c_str(), INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, NULL));
+			handleOpen.SetReleaser([&](auto releaseObject) { InternetCloseHandle((HINTERNET)releaseObject); });
 			if (handleOpen.Get() == nullptr)
 			{
 				AVDebugWriteLine("SendPostRequest open handle empty.");
@@ -140,7 +144,8 @@ namespace ArnoldVinkCode
 			}
 
 			//Internet Connect
-			auto handleConnect = AVFin(AVFinMethod::InternetCloseHandle, InternetConnectA(handleOpen.Get(), avUri.targetHost.c_str(), internetPort, NULL, NULL, INTERNET_SERVICE_HTTP, NULL, NULL));
+			auto handleConnect = AVFin(AVFinMethod::Custom, InternetConnectA(handleOpen.Get(), avUri.targetHost.c_str(), internetPort, NULL, NULL, INTERNET_SERVICE_HTTP, NULL, NULL));
+			handleConnect.SetReleaser([&](auto releaseObject) { InternetCloseHandle((HINTERNET)releaseObject); });
 			if (handleConnect.Get() == nullptr)
 			{
 				AVDebugWriteLine("SendPostRequest connect handle empty.");
@@ -149,7 +154,8 @@ namespace ArnoldVinkCode
 
 			//Internet Request Open
 			LPCSTR acceptTypes[] = { "*/*", NULL };
-			auto handleRequest = AVFin(AVFinMethod::InternetCloseHandle, HttpOpenRequestA(handleConnect.Get(), "POST", avUri.targetPath.c_str(), NULL, NULL, acceptTypes, internetFlags, NULL));
+			auto handleRequest = AVFin(AVFinMethod::Custom, HttpOpenRequestA(handleConnect.Get(), "POST", avUri.targetPath.c_str(), NULL, NULL, acceptTypes, internetFlags, NULL));
+			handleRequest.SetReleaser([&](auto releaseObject) { InternetCloseHandle((HINTERNET)releaseObject); });
 			if (handleRequest.Get() == nullptr)
 			{
 				AVDebugWriteLine("SendPostRequest request handle empty.");

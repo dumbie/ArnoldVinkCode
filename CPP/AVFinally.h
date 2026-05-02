@@ -1,9 +1,5 @@
 #pragma once
 #include <unknwn.h>
-#include <wininet.h>
-#include <setupapi.h>
-#pragma comment(lib, "gdi32.lib")
-#pragma comment(lib, "setupapi.lib")
 #define AVFinally(callback) AVFinallyFunction x([&]{ try { callback } catch (...) {} });
 
 //Description: Runs code after going out of scope or loop.
@@ -46,17 +42,13 @@ enum class AVFinMethod
 	DeleteArray,
 	ReleaseInterface,
 	CloseHandle,
-	InternetCloseHandle,
 	RegCloseKey,
 	FreeStringBstr,
 	FreeLibrary,
 	DestroyIcon,
-	DeleteObject,
-	ReleaseDC,
 	ComFree,
 	FreeSid,
 	FreeMarshal,
-	SetupDiDestroyDeviceInfoList,
 	Custom
 };
 
@@ -95,31 +87,26 @@ public:
 
 	void SetReleaser(std::function<void(T& releaseObject)> setFunction)
 	{
+		ReleaseMethod = AVFinMethod::Custom;
 		ReleaseFunction = setFunction;
 	}
 
 	void Set(T setObject)
 	{
-		if (ReleaseObject == nullptr)
+		if (ReleaseObject != nullptr)
 		{
-			ReleaseObject = std::move(setObject);
+			Dispose();
 		}
-		else
-		{
-			AVDebugWriteLine("AVFin object is already set.");
-		}
+		ReleaseObject = setObject;
 	}
 
 	void Set(T& setObject)
 	{
-		if (ReleaseObject == nullptr)
+		if (ReleaseObject != nullptr)
 		{
-			ReleaseObject = std::move(setObject);
+			Dispose();
 		}
-		else
-		{
-			AVDebugWriteLine("AVFin object is already set.");
-		}
+		ReleaseObject = setObject;
 	}
 
 	T& Get()
@@ -150,10 +137,6 @@ public:
 				{
 					CloseHandle((HANDLE)ReleaseObject);
 				}
-				else if (ReleaseMethod == AVFinMethod::InternetCloseHandle)
-				{
-					InternetCloseHandle((HINTERNET)ReleaseObject);
-				}
 				else if (ReleaseMethod == AVFinMethod::RegCloseKey)
 				{
 					RegCloseKey((HKEY)ReleaseObject);
@@ -170,14 +153,6 @@ public:
 				{
 					DestroyIcon((HICON)ReleaseObject);
 				}
-				else if (ReleaseMethod == AVFinMethod::DeleteObject)
-				{
-					DeleteObject((HGDIOBJ)ReleaseObject);
-				}
-				else if (ReleaseMethod == AVFinMethod::ReleaseDC)
-				{
-					ReleaseDC(nullptr, (HDC)ReleaseObject);
-				}
 				else if (ReleaseMethod == AVFinMethod::ComFree)
 				{
 					CoTaskMemFree((LPVOID)ReleaseObject);
@@ -185,10 +160,6 @@ public:
 				else if (ReleaseMethod == AVFinMethod::FreeSid)
 				{
 					FreeSid((PSID)ReleaseObject);
-				}
-				else if (ReleaseMethod == AVFinMethod::SetupDiDestroyDeviceInfoList)
-				{
-					SetupDiDestroyDeviceInfoList((HDEVINFO)ReleaseObject);
 				}
 				else if (ReleaseMethod == AVFinMethod::FreeMarshal)
 				{
