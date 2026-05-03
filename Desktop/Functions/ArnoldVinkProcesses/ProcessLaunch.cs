@@ -15,11 +15,17 @@ namespace ArnoldVinkCode
         {
             try
             {
-                //Check execute path
+                //Check executable path
                 if (string.IsNullOrWhiteSpace(exePath))
                 {
                     AVDebug.WriteLine("Shell execute failed: execute path is empty.");
                     return false;
+                }
+
+                //Set executable path to absolute
+                if (!exePath.Contains(":"))
+                {
+                    exePath = Path.GetFullPath(exePath);
                 }
 
                 //Check file executable extension

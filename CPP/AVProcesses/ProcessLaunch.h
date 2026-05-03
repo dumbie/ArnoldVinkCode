@@ -12,11 +12,18 @@ namespace ArnoldVinkCode::AVProcesses
 	{
 		try
 		{
-			//Check execute path
+			//Check executable path
 			if (exePath.empty())
 			{
 				AVDebugWriteLine("Shell execute failed: execute path is empty.");
 				return false;
+			}
+
+			//Set executable path to absolute
+			if (!wstring_contains(exePath, L":"))
+			{
+				auto absolutePath = std::filesystem::absolute(exePath);
+				exePath = absolutePath.wstring();
 			}
 
 			//Check file executable extension
