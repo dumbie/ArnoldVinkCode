@@ -97,6 +97,20 @@ namespace ArnoldVinkCode
             }
         }
 
+        //Get foreground window process
+        public static AVProcess Get_ProcessForeground()
+        {
+            try
+            {
+                return Get_ProcessByWindowHandle(GetForegroundWindow());
+            }
+            catch (Exception ex)
+            {
+                AVDebug.WriteLine("Failed to get foreground process: " + ex.Message);
+                return null;
+            }
+        }
+
         /// <summary>
         /// Get processes by AppUserModelId
         /// </summary>

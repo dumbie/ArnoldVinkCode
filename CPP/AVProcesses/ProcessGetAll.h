@@ -100,6 +100,20 @@ namespace ArnoldVinkCode::AVProcesses
 		}
 	}
 
+	//Get foreground window process
+	inline std::optional<AVProcess> Get_ProcessForeground()
+	{
+		try
+		{
+			return Get_ProcessByWindowHandle(GetForegroundWindow());
+		}
+		catch (...)
+		{
+			AVDebugWriteLine("Failed to get foreground process.");
+			return std::nullopt;
+		}
+	}
+
 	/// <summary>
 	/// Get processes by AppUserModelId
 	/// </summary>
