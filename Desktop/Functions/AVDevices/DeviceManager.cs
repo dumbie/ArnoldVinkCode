@@ -35,28 +35,29 @@ namespace ArnoldVinkCode.AVDevices
 
         public static bool DeviceCreateNode(string className, Guid classGuid, string propertyNode)
         {
-            IntPtr deviceInfoList = IntPtr.Zero;
             try
             {
                 SP_DEVICE_INFO_DATA deviceInfoData = new SP_DEVICE_INFO_DATA();
                 deviceInfoData.cbSize = Marshal.SizeOf(deviceInfoData);
-                deviceInfoList = SetupDiCreateDeviceInfoList(ref classGuid, IntPtr.Zero);
-                if (deviceInfoList == IntPtr.Zero)
+                using AVFin deviceInfoList = new AVFin(AVFinMethod.Custom, SetupDiCreateDeviceInfoList(ref classGuid, IntPtr.Zero));
+                deviceInfoList.SetReleaser(delegate (IntPtr releaseObject) { SetupDiDestroyDeviceInfoList(releaseObject); });
+
+                if (deviceInfoList.Get() == IntPtr.Zero)
                 {
                     return false;
                 }
 
-                if (!SetupDiCreateDeviceInfo(deviceInfoList, className, ref classGuid, null, IntPtr.Zero, DiCreateDevice.DICD_GENERATE_ID, ref deviceInfoData))
+                if (!SetupDiCreateDeviceInfo(deviceInfoList.Get(), className, ref classGuid, null, IntPtr.Zero, DiCreateDevice.DICD_GENERATE_ID, ref deviceInfoData))
                 {
                     return false;
                 }
 
-                if (!SetupDiSetDeviceRegistryProperty(deviceInfoList, ref deviceInfoData, DiDeviceRegistryProperty.SPDRP_HARDWAREID, propertyNode, propertyNode.Length * 2))
+                if (!SetupDiSetDeviceRegistryProperty(deviceInfoList.Get(), ref deviceInfoData, DiDeviceRegistryProperty.SPDRP_HARDWAREID, propertyNode, propertyNode.Length * 2))
                 {
                     return false;
                 }
 
-                if (!SetupDiCallClassInstaller(DiFunction.DIF_REGISTERDEVICE, deviceInfoList, ref deviceInfoData))
+                if (!SetupDiCallClassInstaller(DiFunction.DIF_REGISTERDEVICE, deviceInfoList.Get(), ref deviceInfoData))
                 {
                     return false;
                 }
@@ -68,26 +69,20 @@ namespace ArnoldVinkCode.AVDevices
                 Debug.WriteLine("Failed to create device node: " + ex.Message);
                 return false;
             }
-            finally
-            {
-                if (deviceInfoList != IntPtr.Zero)
-                {
-                    SetupDiDestroyDeviceInfoList(deviceInfoList);
-                }
-            }
         }
 
         public static bool DeviceRemove(Guid classGuid, string instanceId)
         {
-            IntPtr deviceInfoList = IntPtr.Zero;
             try
             {
                 SP_DEVICE_INFO_DATA deviceInfoData = new SP_DEVICE_INFO_DATA();
                 deviceInfoData.cbSize = Marshal.SizeOf(deviceInfoData);
 
                 //Get device information
-                deviceInfoList = SetupDiGetClassDevs(classGuid, null, IntPtr.Zero, DiGetClassFlag.DIGCF_DEVICEINTERFACE);
-                if (!SetupDiOpenDeviceInfo(deviceInfoList, instanceId, IntPtr.Zero, 0, ref deviceInfoData))
+                using AVFin deviceInfoList = new AVFin(AVFinMethod.Custom, SetupDiGetClassDevs(classGuid, null, IntPtr.Zero, DiGetClassFlag.DIGCF_DEVICEINTERFACE));
+                deviceInfoList.SetReleaser(delegate (IntPtr releaseObject) { SetupDiDestroyDeviceInfoList(releaseObject); });
+
+                if (!SetupDiOpenDeviceInfo(deviceInfoList.Get(), instanceId, IntPtr.Zero, 0, ref deviceInfoData))
                 {
                     Debug.WriteLine("SetupDi: Failed getting device info.");
                     return false;
@@ -99,9 +94,9 @@ namespace ArnoldVinkCode.AVDevices
                 removeParams.classInstallHeader.installFunction = DiFunction.DIF_REMOVE;
                 removeParams.removeDevice = DiRemoveDevice.DI_REMOVEDEVICE_GLOBAL;
 
-                if (SetupDiSetClassInstallParams(deviceInfoList, ref deviceInfoData, ref removeParams, Marshal.SizeOf(removeParams)))
+                if (SetupDiSetClassInstallParams(deviceInfoList.Get(), ref deviceInfoData, ref removeParams, Marshal.SizeOf(removeParams)))
                 {
-                    return SetupDiCallClassInstaller(DiFunction.DIF_REMOVE, deviceInfoList, ref deviceInfoData);
+                    return SetupDiCallClassInstaller(DiFunction.DIF_REMOVE, deviceInfoList.Get(), ref deviceInfoData);
                 }
 
                 return false;
@@ -111,26 +106,20 @@ namespace ArnoldVinkCode.AVDevices
                 Debug.WriteLine("Failed to remove device: " + ex.Message);
                 return false;
             }
-            finally
-            {
-                if (deviceInfoList != IntPtr.Zero)
-                {
-                    SetupDiDestroyDeviceInfoList(deviceInfoList);
-                }
-            }
         }
 
         public static bool ChangePropertyDevice(Guid guidClass, string deviceInstanceId, DiChangeState changeState)
         {
-            IntPtr deviceInfoList = IntPtr.Zero;
             try
             {
                 SP_DEVICE_INFO_DATA deviceInfoData = new SP_DEVICE_INFO_DATA();
                 deviceInfoData.cbSize = Marshal.SizeOf(deviceInfoData);
 
                 //Get device information
-                deviceInfoList = SetupDiGetClassDevs(guidClass, deviceInstanceId, IntPtr.Zero, DiGetClassFlag.DIGCF_DEVICEINTERFACE);
-                if (!SetupDiEnumDeviceInfo(deviceInfoList, 0, ref deviceInfoData))
+                using AVFin deviceInfoList = new AVFin(AVFinMethod.Custom, SetupDiGetClassDevs(guidClass, deviceInstanceId, IntPtr.Zero, DiGetClassFlag.DIGCF_DEVICEINTERFACE));
+                deviceInfoList.SetReleaser(delegate (IntPtr releaseObject) { SetupDiDestroyDeviceInfoList(releaseObject); });
+
+                if (!SetupDiEnumDeviceInfo(deviceInfoList.Get(), 0, ref deviceInfoData))
                 {
                     Debug.WriteLine("SetupDi: Failed getting device info.");
                     return false;
@@ -144,14 +133,14 @@ namespace ArnoldVinkCode.AVDevices
                 propertyParams.stateChange = changeState;
 
                 //Prepare the device
-                if (!SetupDiSetClassInstallParams(deviceInfoList, ref deviceInfoData, ref propertyParams, Marshal.SizeOf(propertyParams)))
+                if (!SetupDiSetClassInstallParams(deviceInfoList.Get(), ref deviceInfoData, ref propertyParams, Marshal.SizeOf(propertyParams)))
                 {
                     Debug.WriteLine("SetupDi: Failed to set install params.");
                     return false;
                 }
 
                 //Change the property
-                if (!SetupDiCallClassInstaller(DiFunction.DIF_PROPERTYCHANGE, deviceInfoList, ref deviceInfoData))
+                if (!SetupDiCallClassInstaller(DiFunction.DIF_PROPERTYCHANGE, deviceInfoList.Get(), ref deviceInfoData))
                 {
                     Debug.WriteLine("SetupDi: Failed to change property.");
                     return false;
@@ -163,13 +152,6 @@ namespace ArnoldVinkCode.AVDevices
             {
                 Debug.WriteLine("Failed to change property: " + ex.Message);
                 return false;
-            }
-            finally
-            {
-                if (deviceInfoList != IntPtr.Zero)
-                {
-                    SetupDiDestroyDeviceInfoList(deviceInfoList);
-                }
             }
         }
     }

@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 
 namespace ArnoldVinkCode.AVDevices
 {
@@ -10,10 +11,22 @@ namespace ArnoldVinkCode.AVDevices
             return value.Remove(value.IndexOf((char)0));
         }
 
+        public static string[] ToUTF8Strings(this byte[] buffer)
+        {
+            string value = Encoding.UTF8.GetString(buffer);
+            return value.Split((char)0, StringSplitOptions.RemoveEmptyEntries);
+        }
+
         public static string ToUTF16String(this byte[] buffer)
         {
             string value = Encoding.Unicode.GetString(buffer);
             return value.Remove(value.IndexOf((char)0));
+        }
+
+        public static string[] ToUTF16Strings(this byte[] buffer)
+        {
+            string value = Encoding.Unicode.GetString(buffer);
+            return value.Split((char)0, StringSplitOptions.RemoveEmptyEntries);
         }
     }
 }

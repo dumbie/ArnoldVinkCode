@@ -64,61 +64,86 @@ namespace ArnoldVinkCode.AVDevices
             return enumeratedInfoList;
         }
 
-        public static List<EnumerateInfo> EnumerateDevicesSetupApi(Guid enumerateGuid, bool isPresent)
+        public static List<EnumerateInfo> EnumerateDevicesSetupApi(Guid enumerateGuid, bool IsDevInterface, bool isPresent)
         {
-            IntPtr deviceInfoList = IntPtr.Zero;
             List<EnumerateInfo> enumerateInfoList = new List<EnumerateInfo>();
             try
             {
+                //Set device flag
+                DiGetClassFlag diGetClassFlag = DiGetClassFlag.DIGCF_NONE;
+                if (IsDevInterface)
+                {
+                    diGetClassFlag |= DiGetClassFlag.DIGCF_DEVICEINTERFACE;
+                }
+                if (isPresent)
+                {
+                    diGetClassFlag |= DiGetClassFlag.DIGCF_PRESENT;
+                }
+
+                //Get device information
+                using AVFin deviceInfoList = new AVFin(AVFinMethod.Custom);
+                deviceInfoList.SetReleaser(delegate (IntPtr releaseObject) { SetupDiDestroyDeviceInfoList(releaseObject); });
+                deviceInfoList.Set(SetupDiGetClassDevs(enumerateGuid, null, IntPtr.Zero, diGetClassFlag));
+
+                //Loop device information
                 int deviceIndexInfo = 0;
                 SP_DEVICE_INFO_DATA deviceInfoData = new SP_DEVICE_INFO_DATA();
                 deviceInfoData.cbSize = Marshal.SizeOf(deviceInfoData);
-
-                //Get device information
-                if (isPresent)
-                {
-                    deviceInfoList = SetupDiGetClassDevs(enumerateGuid, null, IntPtr.Zero, DiGetClassFlag.DIGCF_PRESENT | DiGetClassFlag.DIGCF_DEVICEINTERFACE);
-                }
-                else
-                {
-                    deviceInfoList = SetupDiGetClassDevs(enumerateGuid, null, IntPtr.Zero, DiGetClassFlag.DIGCF_DEVICEINTERFACE);
-                }
-
-                while (SetupDiEnumDeviceInfo(deviceInfoList, deviceIndexInfo, ref deviceInfoData))
+                while (SetupDiEnumDeviceInfo(deviceInfoList.Get(), deviceIndexInfo, ref deviceInfoData))
                 {
                     try
                     {
                         deviceIndexInfo++;
-                        int deviceIndexInterfaces = 0;
-                        SP_DEVICE_INTERFACE_DATA deviceInterfaceData = new SP_DEVICE_INTERFACE_DATA();
-                        deviceInterfaceData.cbSize = Marshal.SizeOf(deviceInterfaceData);
-
-                        while (SetupDiEnumDeviceInterfaces(deviceInfoList, deviceInfoData, enumerateGuid, deviceIndexInterfaces, ref deviceInterfaceData))
+                        int deviceIndexCurrent = 0;
+                        if (IsDevInterface)
                         {
-                            try
+                            SP_DEVICE_INTERFACE_DATA deviceInterfaceData = new SP_DEVICE_INTERFACE_DATA();
+                            deviceInterfaceData.cbSize = Marshal.SizeOf(deviceInterfaceData);
+                            while (SetupDiEnumDeviceInterfaces(deviceInfoList.Get(), deviceInfoData, enumerateGuid, deviceIndexCurrent, ref deviceInterfaceData))
                             {
-                                deviceIndexInterfaces++;
-                                string devicePath = GetDevicePath(deviceInfoList, deviceInterfaceData);
-                                string deviceInstanceId = GetDeviceInstanceId(deviceInfoList, ref deviceInfoData);
-                                string deviceHardwareId = GetDeviceHardwareId(deviceInfoList, ref deviceInfoData);
-                                string deviceDescription = GetBusReportedDeviceDescription(deviceInfoList, ref deviceInfoData);
-                                bool deviceIsWireless = devicePath.ToLower().Contains("00805f9b34fb");
-                                if (string.IsNullOrWhiteSpace(deviceDescription))
+                                try
                                 {
-                                    deviceDescription = GetDeviceDescription(deviceInfoList, ref deviceInfoData);
-                                }
-                                CM_POWER_DATA? devicePowerData = GetDevicePowerData(deviceInfoList, ref deviceInfoData);
+                                    deviceIndexCurrent++;
+                                    string devicePath = GetDevicePath(deviceInfoList.Get(), deviceInterfaceData);
+                                    string deviceInstanceId = GetDeviceInstanceId(deviceInfoList.Get(), ref deviceInfoData);
+                                    string[] deviceHardwareIds = GetDeviceHardwareIds(deviceInfoList.Get(), ref deviceInfoData);
+                                    string deviceDescription = GetBusReportedDeviceDescription(deviceInfoList.Get(), ref deviceInfoData);
+                                    bool deviceIsBluetooth = devicePath.ToLower().Contains("00805f9b34fb");
+                                    if (string.IsNullOrWhiteSpace(deviceDescription))
+                                    {
+                                        deviceDescription = GetDeviceDescription(deviceInfoList.Get(), ref deviceInfoData);
+                                    }
+                                    CM_POWER_DATA? devicePowerData = GetDevicePowerData(deviceInfoList.Get(), ref deviceInfoData);
 
-                                EnumerateInfo foundDevice = new EnumerateInfo();
-                                foundDevice.DevicePath = devicePath;
-                                foundDevice.DeviceInstanceId = deviceInstanceId;
-                                foundDevice.Description = deviceDescription;
-                                foundDevice.HardwareId = deviceHardwareId;
-                                foundDevice.IsWireless = deviceIsWireless;
-                                foundDevice.PowerData = devicePowerData;
-                                enumerateInfoList.Add(foundDevice);
+                                    EnumerateInfo foundDevice = new EnumerateInfo();
+                                    foundDevice.DevicePath = devicePath;
+                                    foundDevice.DeviceInstanceId = deviceInstanceId;
+                                    foundDevice.Description = deviceDescription;
+                                    foundDevice.HardwareIds = deviceHardwareIds;
+                                    foundDevice.IsBluetooth = deviceIsBluetooth;
+                                    foundDevice.PowerData = devicePowerData;
+                                    enumerateInfoList.Add(foundDevice);
+                                }
+                                catch { }
                             }
-                            catch { }
+                        }
+                        else
+                        {
+                            string deviceInstanceId = GetDeviceInstanceId(deviceInfoList.Get(), ref deviceInfoData);
+                            string[] deviceHardwareIds = GetDeviceHardwareIds(deviceInfoList.Get(), ref deviceInfoData);
+                            string deviceDescription = GetBusReportedDeviceDescription(deviceInfoList.Get(), ref deviceInfoData);
+                            if (string.IsNullOrWhiteSpace(deviceDescription))
+                            {
+                                deviceDescription = GetDeviceDescription(deviceInfoList.Get(), ref deviceInfoData);
+                            }
+                            CM_POWER_DATA? devicePowerData = GetDevicePowerData(deviceInfoList.Get(), ref deviceInfoData);
+
+                            EnumerateInfo foundDevice = new EnumerateInfo();
+                            foundDevice.DeviceInstanceId = deviceInstanceId;
+                            foundDevice.Description = deviceDescription;
+                            foundDevice.HardwareIds = deviceHardwareIds;
+                            foundDevice.PowerData = devicePowerData;
+                            enumerateInfoList.Add(foundDevice);
                         }
                     }
                     catch { }
@@ -127,13 +152,6 @@ namespace ArnoldVinkCode.AVDevices
             catch (Exception ex)
             {
                 Debug.WriteLine("Failed enumerating devices setup api: " + ex.Message);
-            }
-            finally
-            {
-                if (deviceInfoList != IntPtr.Zero)
-                {
-                    SetupDiDestroyDeviceInfoList(deviceInfoList);
-                }
             }
             return enumerateInfoList;
         }
@@ -248,7 +266,7 @@ namespace ArnoldVinkCode.AVDevices
             }
         }
 
-        private static string GetDeviceHardwareId(IntPtr deviceInfoList, ref SP_DEVICE_INFO_DATA devInfoData)
+        private static string[] GetDeviceHardwareIds(IntPtr deviceInfoList, ref SP_DEVICE_INFO_DATA devInfoData)
         {
             try
             {
@@ -258,18 +276,18 @@ namespace ArnoldVinkCode.AVDevices
 
                 if (SetupDiGetDeviceRegistryProperty(deviceInfoList, ref devInfoData, DiDeviceRegistryProperty.SPDRP_HARDWAREID, ref propertyType, hardwareBuffer, hardwareBuffer.Length, ref requiredSize))
                 {
-                    return hardwareBuffer.ToUTF8String();
+                    return hardwareBuffer.ToUTF8Strings();
                 }
                 else
                 {
                     //Debug.WriteLine("Failed to get hardware id, detail missing.");
-                    return string.Empty;
+                    return new string[0];
                 }
             }
             catch (Exception ex)
             {
                 Debug.WriteLine("Failed to get hardware id: " + ex.Message);
-                return string.Empty;
+                return new string[0];
             }
         }
 

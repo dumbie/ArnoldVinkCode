@@ -55,6 +55,7 @@
 
         public enum DiGetClassFlag : int
         {
+            DIGCF_NONE = 0x0000,
             DIGCF_DEFAULT = 0x0001,
             DIGCF_PRESENT = 0x0002,
             DIGCF_ALLCLASSES = 0x0004,

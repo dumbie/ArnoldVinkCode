@@ -7,8 +7,8 @@
             public string DevicePath { get; set; }
             public string DeviceInstanceId { get; set; }
             public string Description { get; set; }
-            public string HardwareId { get; set; }
-            public bool IsWireless { get; set; }
+            public string[] HardwareIds { get; set; }
+            public bool IsBluetooth { get; set; }
             public CM_POWER_DATA? PowerData { get; set; }
         }
     }
