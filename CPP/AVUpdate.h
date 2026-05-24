@@ -33,6 +33,7 @@ namespace ArnoldVinkCode
 
 			//Move new updater executable file
 			FileMove(L"Settings\\UpdaterReplace.exe", L"Updater.exe", true);
+			FileMove(L"Updater\\UpdaterReplace.exe", L"Updater.exe", true);
 		}
 		catch (...) {}
 	}
