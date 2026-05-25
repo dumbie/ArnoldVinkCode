@@ -1027,17 +1027,6 @@ namespace ArnoldVinkCode
             ES_AWAYMODE_REQUIRED = 0x00000040
         }
 
-        public enum ProcessPriorityClasses : uint
-        {
-            UNKNOWN_CLASS = 0x00,
-            NORMAL_PRIORITY_CLASS = 0x20,
-            IDLE_PRIORITY_CLASS = 0x40,
-            HIGH_PRIORITY_CLASS = 0x80,
-            REALTIME_PRIORITY_CLASS = 0x100,
-            BELOW_NORMAL_PRIORITY_CLASS = 0x4000,
-            ABOVE_NORMAL_PRIORITY_CLASS = 0x8000
-        }
-
         public enum MessageFilterStatus : uint
         {
             MSGFLTINFO_NONE = 0,

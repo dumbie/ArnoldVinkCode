@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
 using static ArnoldVinkCode.AVInputOutputClass;
+using static ArnoldVinkCode.AVProcess;
 
 namespace ArnoldVinkCode
 {

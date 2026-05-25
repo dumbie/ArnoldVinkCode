@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows;
 using static ArnoldVinkCode.AVAssembly;
-using static ArnoldVinkCode.AVInteropDll;
 using static ArnoldVinkCode.AVProcess;
 
 namespace ArnoldVinkCode
@@ -11,7 +10,7 @@ namespace ArnoldVinkCode
     public partial class AVStartup
     {
         //Setup application defaults
-        public static bool SetupDefaults(ProcessPriorityClasses priorityLevel, bool checkDoubleProcess)
+        public static bool SetupDefaults(ProcessPriorityClasses priorityLevel, bool checkDoubleProcess, bool setDebugPrivileges)
         {
             try
             {
@@ -21,12 +20,12 @@ namespace ArnoldVinkCode
                 AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolveFile;
 
                 //Get current process information
-                ProcessMulti currentProcess = Get_ProcessMultiCurrent();
+                AVProcess currentProcess = Get_ProcessCurrent();
 
                 //Check if application is already running
                 if (checkDoubleProcess)
                 {
-                    List<ProcessMulti> activeProcesses = Get_ProcessesMultiByName(currentProcess.ExeNameNoExt, true);
+                    List<AVProcess> activeProcesses = Get_ProcessByName(currentProcess.ExeNameNoExt, true);
                     if (activeProcesses.Count > 1)
                     {
                         Debug.WriteLine("Application " + currentProcess.ExeNameNoExt + " is already running, closing the process.");
@@ -47,6 +46,12 @@ namespace ArnoldVinkCode
 
                 //Set application priority level
                 currentProcess.Priority = priorityLevel;
+
+                //Set application debug privileges
+                if (setDebugPrivileges)
+                {
+                    currentProcess.SetPrivilege(PrivilegeConstants.SeDebugPrivilege, true);
+                }
 
                 Debug.WriteLine("Application defaults setup complete.");
                 return true;

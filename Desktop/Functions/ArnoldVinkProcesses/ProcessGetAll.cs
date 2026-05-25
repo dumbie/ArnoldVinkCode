@@ -287,5 +287,31 @@ namespace ArnoldVinkCode
             }
             return foundProcesses;
         }
+
+        //Get process children by process identifier
+        public static List<AVProcess> Get_ProcessChildrenByProcessId(int targetProcessId)
+        {
+            List<AVProcess> listChildrenProcess = new List<AVProcess>();
+            try
+            {
+                //AVDebug.WriteLine("Getting process children from process: " + targetProcessId);
+                foreach (AVProcess checkProcess in Get_ProcessAll())
+                {
+                    try
+                    {
+                        if (checkProcess.IdentifierParent == targetProcessId)
+                        {
+                            listChildrenProcess.Add(checkProcess);
+                        }
+                    }
+                    catch { }
+                }
+            }
+            catch (Exception ex)
+            {
+                AVDebug.WriteLine("Failed getting all process children: " + ex.Message);
+            }
+            return listChildrenProcess;
+        }
     }
 }

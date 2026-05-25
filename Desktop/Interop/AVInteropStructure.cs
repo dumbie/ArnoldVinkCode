@@ -73,8 +73,8 @@ namespace ArnoldVinkCode
         public struct WindowPlacement
         {
             public int length;
-            public WindowPlacementFlags windowFlags;
-            public ShowWindowFlags windowShowCommand;
+            public WindowPlacementFlags flags;
+            public ShowWindowFlags showCmd;
             public WindowPoint ptMinPosition;
             public WindowPoint ptMaxPosition;
             public WindowRectangle rcNormalPosition;

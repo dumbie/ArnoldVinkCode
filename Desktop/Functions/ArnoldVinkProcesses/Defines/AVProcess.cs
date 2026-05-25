@@ -12,7 +12,8 @@ namespace ArnoldVinkCode
     {
         private int CachedIdentifier = 0;
         private int CachedIdentifierParent = 0;
-        private IntPtr CachedHandle = IntPtr.Zero;
+        private IntPtr CachedHandleProcess = IntPtr.Zero;
+        private IntPtr CachedHandleToken = IntPtr.Zero;
         private ProcessType CachedType = ProcessType.Unknown;
         private ProcessAccessStatus CachedAccessStatus = null;
         private string CachedAppUserModelId = string.Empty;
@@ -49,7 +50,7 @@ namespace ArnoldVinkCode
                 {
                     if (CachedIdentifierParent <= 0)
                     {
-                        CachedIdentifierParent = Detail_ProcessParentIdByProcessHandle(Handle);
+                        CachedIdentifierParent = Detail_ProcessParentIdByProcessHandle(HandleProcess);
                     }
                 }
                 catch { }
@@ -57,19 +58,52 @@ namespace ArnoldVinkCode
             }
         }
 
-        public IntPtr Handle
+        public List<AVProcess> ProcessChildren
         {
             get
             {
                 try
                 {
-                    if (CachedHandle == IntPtr.Zero)
+                    return Get_ProcessChildrenByProcessId(Identifier);
+                }
+                catch { }
+                return new List<AVProcess>();
+            }
+        }
+
+        public IntPtr HandleProcess
+        {
+            get
+            {
+                try
+                {
+                    if (CachedHandleProcess == IntPtr.Zero)
                     {
-                        CachedHandle = Detail_ProcessHandleByProcessId(Identifier);
+                        CachedHandleProcess = Detail_ProcessHandleByProcessId(Identifier);
                     }
                 }
                 catch { }
-                return CachedHandle;
+                return CachedHandleProcess;
+            }
+        }
+
+        public IntPtr HandleToken
+        {
+            get
+            {
+                try
+                {
+                    if (CachedHandleToken == IntPtr.Zero)
+                    {
+                        CachedHandleToken = Token_Open_Process(HandleProcess, TOKEN_DESIRED_ACCESS.TOKEN_ALL_ACCESS);
+                    }
+                    if (CachedHandleToken == IntPtr.Zero)
+                    {
+                        CachedHandleToken = Token_Open_Process(HandleProcess, TOKEN_DESIRED_ACCESS.TOKEN_QUERY);
+                    }
+                }
+                catch { }
+                return CachedHandleToken;
             }
         }
 
@@ -111,7 +145,7 @@ namespace ArnoldVinkCode
                 {
                     if (CachedAccessStatus == null)
                     {
-                        CachedAccessStatus = Detail_ProcessAccessStatusByProcessId(Identifier, false);
+                        CachedAccessStatus = Detail_ProcessAccessStatusByProcessId(HandleToken, false);
                     }
                 }
                 catch { }
@@ -138,7 +172,7 @@ namespace ArnoldVinkCode
             {
                 try
                 {
-                    return GetPriorityClass(Handle);
+                    return GetPriorityClass(HandleProcess);
                 }
                 catch { }
                 return ProcessPriorityClasses.Unknown;
@@ -147,7 +181,7 @@ namespace ArnoldVinkCode
             {
                 try
                 {
-                    bool prioritySet = SetPriorityClass(Handle, value);
+                    bool prioritySet = SetPriorityClass(HandleProcess, value);
                     AVDebug.WriteLine("Set process priority class: " + value + "/" + prioritySet);
                 }
                 catch { }
@@ -162,7 +196,7 @@ namespace ArnoldVinkCode
                 {
                     if (string.IsNullOrWhiteSpace(CachedAppUserModelId))
                     {
-                        CachedAppUserModelId = Detail_AppUserModelIdByProcessHandle(Handle);
+                        CachedAppUserModelId = Detail_AppUserModelIdByProcessHandle(HandleProcess);
                     }
                 }
                 catch { }
@@ -210,7 +244,7 @@ namespace ArnoldVinkCode
                 {
                     if (string.IsNullOrWhiteSpace(CachedExePath))
                     {
-                        CachedExePath = Detail_ExecutablePathByProcessHandle(Handle);
+                        CachedExePath = Detail_ExecutablePathByProcessHandle(HandleProcess);
                     }
                 }
                 catch { }
@@ -226,7 +260,7 @@ namespace ArnoldVinkCode
                 {
                     if (string.IsNullOrWhiteSpace(CachedWorkPath))
                     {
-                        CachedWorkPath = Detail_ParameterByProcessHandle(Handle, ProcessParameterOptions.CurrentDirectoryPath);
+                        CachedWorkPath = Detail_ParameterByProcessHandle(HandleProcess, ProcessParameterOptions.CurrentDirectoryPath);
                     }
                 }
                 catch { }
@@ -242,7 +276,7 @@ namespace ArnoldVinkCode
                 {
                     if (string.IsNullOrWhiteSpace(CachedArgument))
                     {
-                        CachedArgument = Detail_ParameterByProcessHandle(Handle, ProcessParameterOptions.CommandLine);
+                        CachedArgument = Detail_ParameterByProcessHandle(HandleProcess, ProcessParameterOptions.CommandLine);
                     }
                 }
                 catch { }
@@ -343,7 +377,7 @@ namespace ArnoldVinkCode
                 {
                     if (CachedStartTime == DateTime.MinValue)
                     {
-                        CachedStartTime = Detail_ProcessStartTimeByProcessHandle(Handle);
+                        CachedStartTime = Detail_ProcessStartTimeByProcessHandle(HandleProcess);
                     }
                 }
                 catch { }
@@ -401,7 +435,7 @@ namespace ArnoldVinkCode
             {
                 try
                 {
-                    return Detail_ProcessModulesByProcessHandle(Handle);
+                    return Detail_ProcessModulesByProcessHandle(HandleProcess);
                 }
                 catch { }
                 return null;
@@ -440,6 +474,16 @@ namespace ArnoldVinkCode
             }
         }
 
+        public bool SetPrivilege(PrivilegeConstants privilegeName, bool enablePrivilege)
+        {
+            try
+            {
+                return Token_Adjust_Privilege(HandleToken, privilegeName, enablePrivilege);
+            }
+            catch { }
+            return false;
+        }
+
         public bool Validate()
         {
             try
@@ -456,7 +500,9 @@ namespace ArnoldVinkCode
             {
                 AVDebug.WriteLine("Identifier: " + Identifier);
                 AVDebug.WriteLine("IdentifierParent: " + IdentifierParent);
-                AVDebug.WriteLine("Handle: " + Handle);
+                AVDebug.WriteLine("ProcessChildren: " + ProcessChildren.Count);
+                AVDebug.WriteLine("HandleProcess: " + HandleProcess);
+                AVDebug.WriteLine("HandleToken: " + HandleToken);
                 AVDebug.WriteLine("Type: " + Type);
                 AVDebug.WriteLine("AdminAccess: " + AccessStatus.AdminAccess);
                 AVDebug.WriteLine("Responding: " + Responding);
@@ -487,7 +533,8 @@ namespace ArnoldVinkCode
             {
                 _ = Identifier;
                 _ = IdentifierParent;
-                _ = Handle;
+                _ = HandleProcess;
+                _ = HandleToken;
                 _ = Type;
                 _ = AccessStatus;
                 _ = Responding;
@@ -517,9 +564,13 @@ namespace ArnoldVinkCode
         {
             try
             {
-                if (CachedHandle != IntPtr.Zero)
+                if (CachedHandleProcess != IntPtr.Zero)
                 {
-                    CloseHandle(CachedHandle);
+                    CloseHandle(CachedHandleProcess);
+                }
+                if (CachedHandleToken != IntPtr.Zero)
+                {
+                    CloseHandle(CachedHandleToken);
                 }
             }
             catch { }

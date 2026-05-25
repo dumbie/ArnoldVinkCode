@@ -252,11 +252,14 @@ namespace ArnoldVinkCode
             {
                 Guid propertyStoreGuid = typeof(IPropertyStore).GUID;
                 SHGetPropertyStoreForWindow(targetWindowHandle, ref propertyStoreGuid, out IPropertyStore propertyStore);
-                propertyStore.GetValue(PKEY_AppUserModel_ID, out PropertyVariant propertyVariant);
-                string appUserModelId = Marshal.PtrToStringUni(propertyVariant.pwszVal);
-                if (Check_PathUwpApplication(appUserModelId))
+                if (propertyStore != null)
                 {
-                    return appUserModelId;
+                    propertyStore.GetValue(PKEY_AppUserModel_ID, out PropertyVariant propertyVariant);
+                    string appUserModelId = Marshal.PtrToStringUni(propertyVariant.pwszVal);
+                    if (Check_PathUwpApplication(appUserModelId))
+                    {
+                        return appUserModelId;
+                    }
                 }
             }
             catch { }
