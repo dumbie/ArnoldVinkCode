@@ -1,16 +1,31 @@
 ﻿using System;
-using System.Diagnostics;
+using static ArnoldVinkCode.AVInteropDll;
 
 namespace ArnoldVinkCode
 {
     public partial class AVActions
     {
-        ///<example>AVActions.GetSystemTicksMs();</example>
-        public static long GetSystemTicksMs()
+        ///<example>AVActions.GetSystemTicksMicro();</example>
+        public static long GetSystemTicksMicro()
         {
             try
             {
-                return Stopwatch.GetTimestamp() / 10000;
+                long timeStamp;
+                QueryPerformanceCounter(out timeStamp);
+                return timeStamp;
+            }
+            catch { }
+            return Environment.TickCount64 * 10000;
+        }
+
+        ///<example>AVActions.GetSystemTicksMilli();</example>
+        public static long GetSystemTicksMilli()
+        {
+            try
+            {
+                long timeStamp;
+                QueryPerformanceCounter(out timeStamp);
+                return timeStamp / 10000;
             }
             catch { }
             return Environment.TickCount;

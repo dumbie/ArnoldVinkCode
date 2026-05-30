@@ -409,6 +409,12 @@ namespace ArnoldVinkCode
         [DllImport("ntdll.dll")]
         public static extern unsafe void NtSetTimerResolution(uint desiredResolution, bool adjustResolution, out uint currentResolution);
 
+        [DllImport("kernel32.dll")]
+        public static extern bool QueryPerformanceCounter(out long lpPerformanceCount);
+
+        [DllImport("kernel32.dll")]
+        public static extern bool QueryPerformanceFrequency(out long lpFrequency);
+
         //Prevent sleep or monitor timeout
         [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
         public static extern EXECUTION_STATE SetThreadExecutionState(EXECUTION_STATE esFlags);
