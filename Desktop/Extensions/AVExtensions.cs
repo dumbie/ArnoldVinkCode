@@ -1,11 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 
 namespace ArnoldVinkCode
 {
     public static class AVExtensions
     {
+        //Convert to byte with clamped minimum and maximum
+        public static byte ToByteClamp<T>(this T targetValue) where T : INumber<T>
+        {
+            return Convert.ToByte(Math.Clamp((dynamic)targetValue, 0, 255));
+        }
+
         //List remove all
         public static void ListRemoveAll<TSource>(this IList<TSource> sourceList, Func<TSource, bool> removeCondition)
         {
