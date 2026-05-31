@@ -157,7 +157,8 @@ namespace ArnoldVinkCode
         {
             try
             {
-                return keysHotkey.Where(x => x != KeysVirtual.None).All(x => keysPressed[(int)x]);
+                var keysHotkeySet = keysHotkey.Where(x => x != KeysVirtual.None);
+                return keysHotkeySet.Any() && keysHotkeySet.All(x => keysPressed[(int)x]);
             }
             catch { }
             return false;
@@ -167,7 +168,8 @@ namespace ArnoldVinkCode
         {
             try
             {
-                return keysHotkey.Where(x => x != KeysVirtual.None).All(x => keysPressed[(int)x]);
+                var keysHotkeySet = keysHotkey.Where(x => x != KeysVirtual.None);
+                return keysHotkeySet.Any() && keysHotkeySet.All(x => keysPressed[(int)x]);
             }
             catch { }
             return false;
