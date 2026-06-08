@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ArnoldVinkCode
@@ -19,6 +20,29 @@ namespace ArnoldVinkCode
             catch (Exception ex)
             {
                 Debug.WriteLine("Failed to start return task: " + ex.Message);
+                return false;
+            }
+        }
+
+        ///<param name="actionRun">void TaskAction() { void(); }</param>
+        ///<example>AVActions.TaskStartStaReturn(TaskAction);</example>
+        ///<summary>Don't forget to use try and catch to improve stability</summary>
+        public static bool TaskStartStaReturn(Action actionRun)
+        {
+            try
+            {
+                Thread staThread = new Thread(() =>
+                {
+                    actionRun();
+                });
+                staThread.SetApartmentState(ApartmentState.STA);
+                staThread.Start();
+                staThread.Join();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to start sta return task: " + ex.Message);
                 return false;
             }
         }
@@ -69,6 +93,30 @@ namespace ArnoldVinkCode
             {
                 Debug.WriteLine("Failed to start return task: " + ex.Message);
                 return null;
+            }
+        }
+
+        ///<param name="actionRun">string TaskAction() { return ""; }</param>
+        ///<example>AVActions.TaskStartStaReturn(TaskAction);</example>
+        ///<summary>Don't forget to use try and catch to improve stability</summary>
+        public static T TaskStartStaReturn<T>(Func<T> actionRun) where T : class
+        {
+            T result = null;
+            try
+            {
+                Thread staThread = new Thread(() =>
+                {
+                    result = actionRun();
+                });
+                staThread.SetApartmentState(ApartmentState.STA);
+                staThread.Start();
+                staThread.Join();
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to start sta return task: " + ex.Message);
+                return result;
             }
         }
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ArnoldVinkCode
@@ -18,6 +19,26 @@ namespace ArnoldVinkCode
             catch (Exception ex)
             {
                 Debug.WriteLine("Failed to start background task: " + ex.Message);
+            }
+        }
+
+        ///<param name="actionRun">void TaskAction() { void(); }</param>
+        ///<example>await AVActions.TaskStartStaBackground(TaskAction);</example>
+        ///<summary>Don't forget to use try and catch to improve stability</summary>
+        public static void TaskStartStaBackground(Action actionRun)
+        {
+            try
+            {
+                Thread staThread = new Thread(() =>
+                {
+                    actionRun();
+                });
+                staThread.SetApartmentState(ApartmentState.STA);
+                staThread.Start();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("Failed to start sta background task: " + ex.Message);
             }
         }
 
