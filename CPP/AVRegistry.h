@@ -2,18 +2,49 @@
 #include <windows.h>
 #include "AVDebug.h"
 #include "AVFinally.h"
-//HKEY_CLASSES_ROOT, HKEY_CURRENT_USER, HKEY_LOCAL_MACHINE, HKEY_USERS, HKEY_CURRENT_CONFIG
 
 namespace ArnoldVinkCode
 {
+	enum class HKEY_ENUM : ULONG_PTR
+	{
+		CLASSES_ROOT = reinterpret_cast<ULONG_PTR>(HKEY_CLASSES_ROOT),
+		CURRENT_USER = reinterpret_cast<ULONG_PTR>(HKEY_CURRENT_USER),
+		LOCAL_MACHINE = reinterpret_cast<ULONG_PTR>(HKEY_LOCAL_MACHINE),
+		USERS = reinterpret_cast<ULONG_PTR>(HKEY_USERS),
+		PERFORMANCE_DATA = reinterpret_cast<ULONG_PTR>(HKEY_PERFORMANCE_DATA),
+		PERFORMANCE_TEXT = reinterpret_cast<ULONG_PTR>(HKEY_PERFORMANCE_TEXT),
+		PERFORMANCE_NLSTEXT = reinterpret_cast<ULONG_PTR>(HKEY_PERFORMANCE_NLSTEXT),
+		CURRENT_CONFIG = reinterpret_cast<ULONG_PTR>(HKEY_CURRENT_CONFIG),
+		DYN_DATA = reinterpret_cast<ULONG_PTR>(HKEY_DYN_DATA),
+		CURRENT_USER_LOCAL_SETTINGS = reinterpret_cast<ULONG_PTR>(HKEY_CURRENT_USER_LOCAL_SETTINGS),
+	};
+
+	enum class REGTYPE_ENUM : ULONG
+	{
+		NONE = REG_NONE,
+		SZ = REG_SZ,
+		EXPAND_SZ = REG_EXPAND_SZ,
+		BINARY = REG_BINARY,
+		DWORD = REG_DWORD,
+		DWORD_LITTLE_ENDIAN = REG_DWORD_LITTLE_ENDIAN,
+		DWORD_BIG_ENDIAN = REG_DWORD_BIG_ENDIAN,
+		LINK = REG_LINK,
+		MULTI_SZ = REG_MULTI_SZ,
+		RESOURCE_LIST = REG_RESOURCE_LIST,
+		FULL_RESOURCE_DESCRIPTOR = REG_FULL_RESOURCE_DESCRIPTOR,
+		RESOURCE_REQUIREMENTS_LIST = REG_RESOURCE_REQUIREMENTS_LIST,
+		QWORD = REG_QWORD,
+		QWORD_LITTLE_ENDIAN = REG_QWORD_LITTLE_ENDIAN
+	};
+
 	//Check registry key exists
-	inline bool RegistryCheck(HKEY hKey, std::wstring subKey)
+	inline bool RegistryCheck(HKEY_ENUM hKey, std::wstring subKey)
 	{
 		try
 		{
 			//Open registry
 			auto hOpenKey = AVFin<HKEY>(AVFinMethod::RegCloseKey);
-			LSTATUS lRes = RegOpenKeyExW(hKey, subKey.c_str(), NULL, KEY_READ, &hOpenKey.Get());
+			LSTATUS lRes = RegOpenKeyExW((HKEY)hKey, subKey.c_str(), NULL, KEY_READ, &hOpenKey.Get());
 			if (lRes != ERROR_SUCCESS)
 			{
 				//Return result
@@ -32,13 +63,13 @@ namespace ArnoldVinkCode
 	}
 
 	//Check registry value exists
-	inline bool RegistryCheck(HKEY hKey, std::wstring subKey, std::wstring valueName)
+	inline bool RegistryCheck(HKEY_ENUM hKey, std::wstring subKey, std::wstring valueName)
 	{
 		try
 		{
 			//Open registry
 			auto hOpenKey = AVFin<HKEY>(AVFinMethod::RegCloseKey);
-			LSTATUS lRes = RegOpenKeyExW(hKey, subKey.c_str(), NULL, KEY_READ, &hOpenKey.Get());
+			LSTATUS lRes = RegOpenKeyExW((HKEY)hKey, subKey.c_str(), NULL, KEY_READ, &hOpenKey.Get());
 			if (lRes != ERROR_SUCCESS)
 			{
 				//Return result
@@ -65,14 +96,49 @@ namespace ArnoldVinkCode
 		return false;
 	}
 
+	//Get registry value type
+	inline REGTYPE_ENUM RegistryType(HKEY_ENUM hKey, std::wstring subKey, std::wstring valueName)
+	{
+		try
+		{
+			//Open registry
+			auto hOpenKey = AVFin<HKEY>(AVFinMethod::RegCloseKey);
+			LSTATUS lRes = RegOpenKeyExW((HKEY)hKey, subKey.c_str(), NULL, KEY_READ, &hOpenKey.Get());
+			if (lRes != ERROR_SUCCESS)
+			{
+				//Return result
+				AVDebugWriteLine("Failed to open registry sub key: " << lRes << " / " << subKey);
+				return REGTYPE_ENUM::NONE;
+			}
+
+			//Query registry
+			ULONG keyType = REG_NONE;
+			lRes = RegQueryValueExW(hOpenKey.Get(), valueName.c_str(), NULL, &keyType, NULL, NULL);
+			if (lRes != ERROR_SUCCESS)
+			{
+				//Return result
+				AVDebugWriteLine("Failed to get registry value type: " << lRes << " / " << valueName);
+				return REGTYPE_ENUM::NONE;
+			}
+			else
+			{
+				//Return result
+				AVDebugWriteLine("Registry value type: " << keyType << " / " << valueName);
+				return (REGTYPE_ENUM)keyType;
+			}
+		}
+		catch (...) {}
+		return REGTYPE_ENUM::NONE;
+	}
+
 	//Create registry sub key
-	inline bool RegistryCreate(HKEY hKey, std::wstring subKey)
+	inline bool RegistryCreate(HKEY_ENUM hKey, std::wstring subKey)
 	{
 		try
 		{
 			//Create registry sub key
 			auto hOpenKey = AVFin<HKEY>(AVFinMethod::RegCloseKey);
-			LSTATUS lRes = RegCreateKeyW(hKey, subKey.c_str(), &hOpenKey.Get());
+			LSTATUS lRes = RegCreateKeyW((HKEY)hKey, subKey.c_str(), &hOpenKey.Get());
 			if (lRes != ERROR_SUCCESS)
 			{
 				AVDebugWriteLine("Failed to create registry sub key: " << lRes << " / " << subKey);
@@ -88,12 +154,12 @@ namespace ArnoldVinkCode
 	}
 
 	//Delete registry sub key
-	inline bool RegistryDelete(HKEY hKey, std::wstring subKey)
+	inline bool RegistryDelete(HKEY_ENUM hKey, std::wstring subKey)
 	{
 		try
 		{
 			//Delete registry sub key
-			LSTATUS lRes = RegDeleteTreeW(hKey, subKey.c_str());
+			LSTATUS lRes = RegDeleteTreeW((HKEY)hKey, subKey.c_str());
 			if (lRes != ERROR_SUCCESS)
 			{
 				AVDebugWriteLine("Failed to delete registry sub key: " << lRes << " / " << subKey);
@@ -109,13 +175,13 @@ namespace ArnoldVinkCode
 	}
 
 	//Delete registry value
-	inline bool RegistryDelete(HKEY hKey, std::wstring subKey, std::wstring valueName)
+	inline bool RegistryDelete(HKEY_ENUM hKey, std::wstring subKey, std::wstring valueName)
 	{
 		try
 		{
 			//Open registry
 			auto hOpenKey = AVFin<HKEY>(AVFinMethod::RegCloseKey);
-			LSTATUS lRes = RegOpenKeyExW(hKey, subKey.c_str(), NULL, KEY_WRITE, &hOpenKey.Get());
+			LSTATUS lRes = RegOpenKeyExW((HKEY)hKey, subKey.c_str(), NULL, KEY_WRITE, &hOpenKey.Get());
 			if (lRes != ERROR_SUCCESS)
 			{
 				AVDebugWriteLine("Failed to open registry sub key: " << lRes << " / " << subKey);
@@ -139,7 +205,7 @@ namespace ArnoldVinkCode
 	}
 
 	//Set string registry value
-	inline bool RegistrySet(HKEY hKey, std::wstring subKey, std::wstring valueName, std::wstring valueSet)
+	inline bool RegistrySet(HKEY_ENUM hKey, std::wstring subKey, std::wstring valueName, std::wstring valueSet)
 	{
 		try
 		{
@@ -148,7 +214,7 @@ namespace ArnoldVinkCode
 
 			//Open registry
 			auto hOpenKey = AVFin<HKEY>(AVFinMethod::RegCloseKey);
-			LSTATUS lRes = RegOpenKeyExW(hKey, subKey.c_str(), NULL, KEY_WRITE, &hOpenKey.Get());
+			LSTATUS lRes = RegOpenKeyExW((HKEY)hKey, subKey.c_str(), NULL, KEY_WRITE, &hOpenKey.Get());
 			if (lRes != ERROR_SUCCESS)
 			{
 				AVDebugWriteLine("Failed to open registry sub key: " << lRes << " / " << subKey);
@@ -173,7 +239,7 @@ namespace ArnoldVinkCode
 	}
 
 	//Set dword registry value
-	inline bool RegistrySet(HKEY hKey, std::wstring subKey, std::wstring valueName, DWORD valueSet)
+	inline bool RegistrySet(HKEY_ENUM hKey, std::wstring subKey, std::wstring valueName, DWORD valueSet)
 	{
 		try
 		{
@@ -182,7 +248,7 @@ namespace ArnoldVinkCode
 
 			//Open registry
 			auto hOpenKey = AVFin<HKEY>(AVFinMethod::RegCloseKey);
-			LSTATUS lRes = RegOpenKeyExW(hKey, subKey.c_str(), NULL, KEY_WRITE, &hOpenKey.Get());
+			LSTATUS lRes = RegOpenKeyExW((HKEY)hKey, subKey.c_str(), NULL, KEY_WRITE, &hOpenKey.Get());
 			if (lRes != ERROR_SUCCESS)
 			{
 				AVDebugWriteLine("Failed to open registry sub key: " << lRes << " / " << subKey);
@@ -207,7 +273,7 @@ namespace ArnoldVinkCode
 	}
 
 	//Set binary registry value
-	inline bool RegistrySet(HKEY hKey, std::wstring subKey, std::wstring valueName, std::vector<BYTE> valueSet)
+	inline bool RegistrySet(HKEY_ENUM hKey, std::wstring subKey, std::wstring valueName, std::vector<BYTE> valueSet)
 	{
 		try
 		{
@@ -216,7 +282,7 @@ namespace ArnoldVinkCode
 
 			//Open registry
 			auto hOpenKey = AVFin<HKEY>(AVFinMethod::RegCloseKey);
-			LSTATUS lRes = RegOpenKeyExW(hKey, subKey.c_str(), NULL, KEY_WRITE, &hOpenKey.Get());
+			LSTATUS lRes = RegOpenKeyExW((HKEY)hKey, subKey.c_str(), NULL, KEY_WRITE, &hOpenKey.Get());
 			if (lRes != ERROR_SUCCESS)
 			{
 				AVDebugWriteLine("Failed to open registry sub key: " << lRes << " / " << subKey);
@@ -241,13 +307,13 @@ namespace ArnoldVinkCode
 	}
 
 	//Get string registry value
-	inline std::wstring RegistryGetString(HKEY hKey, std::wstring subKey, std::wstring valueName)
+	inline std::wstring RegistryGetString(HKEY_ENUM hKey, std::wstring subKey, std::wstring valueName)
 	{
 		try
 		{
 			//Open registry
 			auto hOpenKey = AVFin<HKEY>(AVFinMethod::RegCloseKey);
-			LSTATUS lRes = RegOpenKeyExW(hKey, subKey.c_str(), NULL, KEY_READ, &hOpenKey.Get());
+			LSTATUS lRes = RegOpenKeyExW((HKEY)hKey, subKey.c_str(), NULL, KEY_READ, &hOpenKey.Get());
 			if (lRes != ERROR_SUCCESS)
 			{
 				AVDebugWriteLine("Failed to open registry sub key: " << lRes << " / " << subKey);
@@ -255,30 +321,33 @@ namespace ArnoldVinkCode
 			}
 
 			//Get value from registry
-			WCHAR buffer[1024];
-			DWORD bufferSize = sizeof(buffer);
-			lRes = RegQueryValueExW(hOpenKey.Get(), valueName.c_str(), NULL, NULL, (BYTE*)buffer, &bufferSize);
+			std::vector<BYTE> buffer(1024);
+			DWORD bufferSize = buffer.size();
+			lRes = RegQueryValueExW(hOpenKey.Get(), valueName.c_str(), NULL, NULL, buffer.data(), &bufferSize);
 			if (lRes != ERROR_SUCCESS)
 			{
 				AVDebugWriteLine("Failed to get value from registry: " << valueName);
 				return L"";
 			}
 
+			//Resize buffer vector
+			buffer.resize(bufferSize);
+
 			//Return result
-			return std::wstring(buffer);
+			return std::wstring((WCHAR*)buffer.data(), bufferSize / sizeof(WCHAR));
 		}
 		catch (...) {}
 		return L"";
 	}
 
 	//Get dword registry value
-	inline std::optional<DWORD> RegistryGetDword(HKEY hKey, std::wstring subKey, std::wstring valueName)
+	inline std::optional<DWORD> RegistryGetDword(HKEY_ENUM hKey, std::wstring subKey, std::wstring valueName)
 	{
 		try
 		{
 			//Open registry
 			auto hOpenKey = AVFin<HKEY>(AVFinMethod::RegCloseKey);
-			LSTATUS lRes = RegOpenKeyExW(hKey, subKey.c_str(), NULL, KEY_READ, &hOpenKey.Get());
+			LSTATUS lRes = RegOpenKeyExW((HKEY)hKey, subKey.c_str(), NULL, KEY_READ, &hOpenKey.Get());
 			if (lRes != ERROR_SUCCESS)
 			{
 				AVDebugWriteLine("Failed to open registry sub key: " << lRes << " / " << subKey);
@@ -303,13 +372,13 @@ namespace ArnoldVinkCode
 	}
 
 	//Get binary registry value
-	inline std::vector<BYTE> RegistryGetBinary(HKEY hKey, std::wstring subKey, std::wstring valueName)
+	inline std::vector<BYTE> RegistryGetBinary(HKEY_ENUM hKey, std::wstring subKey, std::wstring valueName)
 	{
 		try
 		{
 			//Open registry
 			auto hOpenKey = AVFin<HKEY>(AVFinMethod::RegCloseKey);
-			LSTATUS lRes = RegOpenKeyExW(hKey, subKey.c_str(), NULL, KEY_READ, &hOpenKey.Get());
+			LSTATUS lRes = RegOpenKeyExW((HKEY)hKey, subKey.c_str(), NULL, KEY_READ, &hOpenKey.Get());
 			if (lRes != ERROR_SUCCESS)
 			{
 				AVDebugWriteLine("Failed to open registry sub key: " << lRes << " / " << subKey);
@@ -317,7 +386,7 @@ namespace ArnoldVinkCode
 			}
 
 			//Get value from registry
-			std::vector<BYTE> buffer = std::vector<BYTE>(1024);
+			std::vector<BYTE> buffer(1024);
 			DWORD bufferSize = buffer.size();
 			lRes = RegQueryValueExW(hOpenKey.Get(), valueName.c_str(), NULL, NULL, buffer.data(), &bufferSize);
 			if (lRes != ERROR_SUCCESS)
