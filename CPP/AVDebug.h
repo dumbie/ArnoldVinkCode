@@ -2,7 +2,9 @@
 #include <windows.h>
 #include <iostream>
 #include <sstream>
+#include <fstream>
 #define AVDebugWriteLine(message) AVDebugWriteLineInternal() << message
+inline bool AVDebugWriteLineLogFile = false;
 
 //Usage example: AVDebugWriteLine("Hello " << "World " << 1);
 //Usage example: AVDebugWriteLineInternal() << "Hello " << "World " << 1;
@@ -23,5 +25,10 @@ struct AVDebugWriteLineInternal
 		stringstream << "\n";
 		OutputDebugStringW(stringstream.str().c_str());
 		std::wcout << stringstream.str().c_str() << std::flush;
+		if (AVDebugWriteLineLogFile)
+		{
+			std::wofstream logstream("Debug.log", std::ios::app);
+			logstream << stringstream.str().c_str();
+		}
 	}
 };
