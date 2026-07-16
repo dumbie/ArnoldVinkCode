@@ -9,12 +9,19 @@ namespace ArnoldVinkCode
 	/// <summary>
 	/// Title: Select executable file...
 	/// Filter: { { L"Executable files", L"*.exe" } }
+	/// Note: If window handle is not provided app may crash when clicking on window.
 	/// </summary>
-	inline std::wstring filepicker_open(std::wstring title, std::vector<std::pair<std::wstring, std::wstring>> filefilters)
+	inline std::wstring filepicker_open(HWND parentWindow, std::wstring title, std::vector<std::pair<std::wstring, std::wstring>> filefilters)
 	{
 		std::wstring importPath;
 		try
 		{
+			//Check parent window
+			if (parentWindow == NULL)
+			{
+				parentWindow = GetActiveWindow();
+			}
+
 			auto pFileDialog = AVFin<IFileOpenDialog*>(AVFinMethod::ReleaseInterface);
 			HRESULT hResult = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_ALL, IID_IFileOpenDialog, (void**)&pFileDialog.Get());
 			if (SUCCEEDED(hResult))
@@ -34,7 +41,7 @@ namespace ArnoldVinkCode
 				pFileDialog.Get()->SetOptions(FOS_PATHMUSTEXIST | FOS_FILEMUSTEXIST);
 
 				//Show file dialog
-				hResult = pFileDialog.Get()->Show(NULL);
+				hResult = pFileDialog.Get()->Show(parentWindow);
 
 				//Get file dialog result
 				if (SUCCEEDED(hResult))
@@ -66,12 +73,19 @@ namespace ArnoldVinkCode
 	/// <summary>
 	/// Title: Select executable files...
 	/// Filter: { { L"Executable files", L"*.exe" } }
+	/// Note: If window handle is not provided app may crash when clicking on window.
 	/// </summary>
-	inline std::vector<std::wstring> filepicker_open_multi(std::wstring title, std::vector<std::pair<std::wstring, std::wstring>> filefilters)
+	inline std::vector<std::wstring> filepicker_open_multi(HWND parentWindow, std::wstring title, std::vector<std::pair<std::wstring, std::wstring>> filefilters)
 	{
 		std::vector<std::wstring> importPaths;
 		try
 		{
+			//Check parent window
+			if (parentWindow == NULL)
+			{
+				parentWindow = GetActiveWindow();
+			}
+
 			auto pFileDialog = AVFin<IFileOpenDialog*>(AVFinMethod::ReleaseInterface);
 			HRESULT hResult = CoCreateInstance(CLSID_FileOpenDialog, NULL, CLSCTX_ALL, IID_IFileOpenDialog, (void**)&pFileDialog.Get());
 			if (SUCCEEDED(hResult))
@@ -91,7 +105,7 @@ namespace ArnoldVinkCode
 				pFileDialog.Get()->SetOptions(FOS_PATHMUSTEXIST | FOS_FILEMUSTEXIST | FOS_ALLOWMULTISELECT);
 
 				//Show file dialog
-				hResult = pFileDialog.Get()->Show(NULL);
+				hResult = pFileDialog.Get()->Show(parentWindow);
 
 				//Get file dialog result
 				if (SUCCEEDED(hResult))
@@ -133,12 +147,19 @@ namespace ArnoldVinkCode
 	/// <summary>
 	/// Title: Export file...
 	/// Filter: { { L"Text file", L"*.txt" }, { L"Document file", L"*.doc" } }
+	/// Note: If window handle is not provided app may crash when clicking on window.
 	/// </summary>
-	inline std::wstring filepicker_save(std::wstring title, std::vector<std::pair<std::wstring, std::wstring>> filefilters)
+	inline std::wstring filepicker_save(HWND parentWindow, std::wstring title, std::vector<std::pair<std::wstring, std::wstring>> filefilters)
 	{
 		std::wstring exportPath;
 		try
 		{
+			//Check parent window
+			if (parentWindow == NULL)
+			{
+				parentWindow = GetActiveWindow();
+			}
+
 			auto pFileDialog = AVFin<IFileOpenDialog*>(AVFinMethod::ReleaseInterface);
 			HRESULT hResult = CoCreateInstance(CLSID_FileSaveDialog, NULL, CLSCTX_ALL, IID_IFileSaveDialog, (void**)&pFileDialog.Get());
 			if (SUCCEEDED(hResult))
@@ -159,7 +180,7 @@ namespace ArnoldVinkCode
 				pFileDialog.Get()->SetOptions(FOS_OVERWRITEPROMPT);
 
 				//Show file dialog
-				hResult = pFileDialog.Get()->Show(NULL);
+				hResult = pFileDialog.Get()->Show(parentWindow);
 
 				//Get file dialog result
 				if (SUCCEEDED(hResult))
