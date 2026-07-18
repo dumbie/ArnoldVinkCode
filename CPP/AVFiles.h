@@ -41,11 +41,11 @@ namespace ArnoldVinkCode
 		}
 	}
 
-	inline bool FileDelete(std::wstring filePath)
+	inline bool FileExists(std::wstring filePath)
 	{
 		try
 		{
-			return std::filesystem::remove(filePath);
+			return std::filesystem::exists(filePath);
 		}
 		catch (...)
 		{
@@ -53,11 +53,11 @@ namespace ArnoldVinkCode
 		}
 	}
 
-	inline bool FileExists(std::wstring filePath)
+	inline bool FileDelete(std::wstring filePath)
 	{
 		try
 		{
-			return std::filesystem::exists(filePath);
+			return std::filesystem::remove(filePath);
 		}
 		catch (...)
 		{
@@ -137,6 +137,30 @@ namespace ArnoldVinkCode
 		try
 		{
 			return std::filesystem::exists(folderPath);
+		}
+		catch (...)
+		{
+			return false;
+		}
+	}
+
+	inline bool FolderDelete(std::wstring folderPath, bool recursive)
+	{
+		try
+		{
+			if (!recursive)
+			{
+				return std::filesystem::remove_all(folderPath);
+			}
+			else
+			{
+				int removeCount = 0;
+				for (auto& path : std::filesystem::directory_iterator(folderPath))
+				{
+					if (std::filesystem::remove_all(path)) { removeCount++; }
+				}
+				return removeCount > 0;
+			}
 		}
 		catch (...)
 		{
