@@ -7,32 +7,29 @@
 
 namespace ArnoldVinkCode
 {
-	inline std::string file_to_string(std::string filePath)
+	inline std::wstring file_to_string(std::wstring filePath)
 	{
 		try
 		{
-			std::ifstream file;
-			file.open(filePath);
-			auto fileSize = std::filesystem::file_size(filePath);
-			std::string string(fileSize, '\0');
-			file.read(string.data(), fileSize);
-			file.close();
-			return string;
+			std::wifstream inputStream(filePath, std::ios::binary);
+			std::wstringstream stringBuffer;
+			stringBuffer << inputStream.rdbuf();
+			inputStream.close();
+			return stringBuffer.str();
 		}
 		catch (...)
 		{
-			return std::string("");
+			return L"";
 		}
 	}
 
-	inline bool string_to_file(std::string filePath, std::string string)
+	inline bool string_to_file(std::wstring filePath, std::wstring string)
 	{
 		try
 		{
-			std::ofstream file;
-			file.open(filePath);
-			file.write(string.c_str(), string.size());
-			file.close();
+			std::wofstream outputStream(filePath, std::ios::binary);
+			outputStream << string;
+			outputStream.close();
 			return true;
 		}
 		catch (...)
@@ -161,6 +158,35 @@ namespace ArnoldVinkCode
 				}
 				return removeCount > 0;
 			}
+		}
+		catch (...)
+		{
+			return false;
+		}
+	}
+
+	inline bool FolderWritePermission(std::wstring folderPath)
+	{
+		try
+		{
+			//Set write path
+			std::wstring writePath = PathMerge(folderPath, L"writepermission");
+
+			//Open stream
+			std::wofstream writeStream(writePath, std::ios::binary);
+
+			//Check if stream is good
+			if (!writeStream.good())
+			{
+				return false;
+			}
+
+			//Close stream
+			writeStream.close();
+
+			//Remove file
+			std::filesystem::remove(writePath);
+			return true;
 		}
 		catch (...)
 		{
