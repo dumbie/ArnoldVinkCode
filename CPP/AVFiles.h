@@ -117,6 +117,36 @@ namespace ArnoldVinkCode
 		return fileList;
 	}
 
+	inline bool FileAdjustAttributes(std::wstring filePath, bool flagRemove, DWORD flagMask)
+	{
+		try
+		{
+			//Get file attributes
+			DWORD fileAttributes = GetFileAttributesW(filePath.c_str());
+			if (fileAttributes == INVALID_FILE_ATTRIBUTES)
+			{
+				return false;
+			}
+
+			//Adjust file attributes
+			if (flagRemove)
+			{
+				fileAttributes &= ~flagMask;
+			}
+			else
+			{
+				fileAttributes |= flagMask;
+			}
+
+			//Set file attributes
+			return SetFileAttributesW(filePath.c_str(), fileAttributes);
+		}
+		catch (...)
+		{
+			return false;
+		}
+	}
+
 	inline bool FolderCreate(std::wstring folderPath)
 	{
 		try
