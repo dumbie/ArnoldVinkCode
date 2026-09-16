@@ -1,8 +1,17 @@
-#pragma once
+﻿#pragma once
 #include <string>
 #include <vector>
 #include <WTypes.h>
 #include <winrt/Windows.System.h>
+#include <winrt/Windows.UI.Xaml.h>
+#include <winrt/Windows.UI.Xaml.Controls.h>
+
+//Namespaces
+namespace winrt
+{
+	using namespace Windows::UI::Xaml;
+	using namespace Windows::UI::Xaml::Controls;
+}
 
 namespace ArnoldVinkCode
 {
@@ -55,6 +64,11 @@ namespace ArnoldVinkCode
 		return std::wstring(str.begin(), str.end());
 	}
 
+	inline winrt::hstring wstring_to_hstring(std::wstring str)
+	{
+		return winrt::hstring(str.c_str());
+	}
+
 	inline std::string hstring_to_string(winrt::hstring str)
 	{
 		return std::string(str.begin(), str.end());
@@ -67,7 +81,7 @@ namespace ArnoldVinkCode
 
 	inline std::wstring string_to_wstring(std::string str)
 	{
-		return std::wstring(str.begin(), str.end());
+		return winrt::to_hstring(str).c_str();
 	}
 
 	inline int string_to_int(std::string str)
@@ -78,6 +92,16 @@ namespace ArnoldVinkCode
 	inline int wstring_to_int(std::wstring str)
 	{
 		return std::stoi(str);
+	}
+
+	inline int hexstring_to_int(std::string str)
+	{
+		return std::stoi(str, nullptr, 16);
+	}
+
+	inline int whexstring_to_int(std::wstring str)
+	{
+		return std::stoi(str, nullptr, 16);
 	}
 
 	inline float wstring_to_float(std::wstring str)
@@ -110,19 +134,65 @@ namespace ArnoldVinkCode
 	}
 
 	template<typename T>
-	inline std::string number_to_hexstring(T value, int digitCount)
+	inline std::string number_to_hexstring(T value, int digitCount, bool includeHeader)
 	{
 		std::stringstream stream;
-		stream << "0x" << std::uppercase << std::setfill('0') << std::setw(digitCount) << std::hex << value;
-		return stream.str();
+		stream << std::uppercase << std::setfill('0') << std::hex << std::setw(digitCount) << value;
+		if (includeHeader)
+		{
+			return "0x" + stream.str();
+		}
+		else
+		{
+			return stream.str();
+		}
 	}
 
 	template<typename T>
-	inline std::wstring number_to_hexwstring(T value, int digitCount)
+	inline std::string number_to_hexstring_littleendian(T value, int digitCount, bool includeHeader)
+	{
+		digitCount /= 2;
+		std::stringstream stream;
+		stream << std::uppercase << std::setfill('0') << std::hex << std::setw(digitCount) << (value & 0xFF) << std::setw(digitCount) << ((value >> 8) & 0xFF);
+		if (includeHeader)
+		{
+			return "0x" + stream.str();
+		}
+		else
+		{
+			return stream.str();
+		}
+	}
+
+	template<typename T>
+	inline std::wstring number_to_hexwstring(T value, int digitCount, bool includeHeader)
 	{
 		std::wstringstream stream;
-		stream << L"0x" << std::uppercase << std::setfill(L'0') << std::setw(digitCount) << std::hex << value;
-		return stream.str();
+		stream << std::uppercase << std::setfill(L'0') << std::hex << std::setw(digitCount) << value;
+		if (includeHeader)
+		{
+			return L"0x" + stream.str();
+		}
+		else
+		{
+			return stream.str();
+		}
+	}
+
+	template<typename T>
+	inline std::wstring number_to_hexwstring_littleendian(T value, int digitCount, bool includeHeader)
+	{
+		digitCount /= 2;
+		std::wstringstream stream;
+		stream << std::uppercase << std::setfill(L'0') << std::hex << std::setw(digitCount) << (value & 0xFF) << std::setw(digitCount) << ((value >> 8) & 0xFF);
+		if (includeHeader)
+		{
+			return L"0x" + stream.str();
+		}
+		else
+		{
+			return stream.str();
+		}
 	}
 
 	template<typename T>
@@ -175,6 +245,21 @@ namespace ArnoldVinkCode
 		std::string stringLine;
 		std::stringstream stringLines(str);
 		std::vector<std::string> stringVector;
+		while (std::getline(stringLines, stringLine, split))
+		{
+			if (!stringLine.empty())
+			{
+				stringVector.push_back(stringLine);
+			}
+		}
+		return stringVector;
+	}
+
+	inline std::vector<std::wstring> wstring_split(std::wstring str, wchar_t split)
+	{
+		std::wstring stringLine;
+		std::wstringstream stringLines(str);
+		std::vector<std::wstring> stringVector;
 		while (std::getline(stringLines, stringLine, split))
 		{
 			if (!stringLine.empty())
@@ -285,6 +370,10 @@ namespace ArnoldVinkCode
 
 	inline bool string_contains(std::string str, std::string contains)
 	{
+		if (string_empty_whitespace(str))
+		{
+			return false;
+		}
 		std::string shortest;
 		std::string longest;
 		if (str.length() > contains.length())
@@ -302,6 +391,10 @@ namespace ArnoldVinkCode
 
 	inline bool wstring_contains(std::wstring str, std::wstring contains)
 	{
+		if (wstring_empty_whitespace(str))
+		{
+			return false;
+		}
 		std::wstring shortest;
 		std::wstring longest;
 		if (str.length() > contains.length())
@@ -315,6 +408,16 @@ namespace ArnoldVinkCode
 			shortest = str;
 		}
 		return longest.find(shortest) != std::wstring::npos;
+	}
+
+	inline bool string_starts_with(std::string str, std::string start)
+	{
+		return str.starts_with(start);
+	}
+
+	inline bool wstring_starts_with(std::wstring str, std::wstring start)
+	{
+		return str.starts_with(start);
 	}
 
 	inline std::string string_trim_left(std::string str)
@@ -353,5 +456,47 @@ namespace ArnoldVinkCode
 	inline std::wstring wstring_trim(std::wstring str)
 	{
 		return wstring_trim_left(wstring_trim_right(str));
+	}
+
+	inline std::wstring wstring_get_between(std::wstring str, std::wstring start, std::wstring end)
+	{
+		size_t pos1 = str.find(start);
+		size_t pos2 = str.find(end, pos1 + 1);
+		if (pos1 != std::wstring::npos && pos2 != std::wstring::npos)
+		{
+			return str.substr(pos1 + 1, pos2 - pos1 - 1);
+		}
+		else
+		{
+			return str;
+		}
+	}
+
+	inline void wstring_to_tooltip(const winrt::DependencyObject& depObject, std::wstring str)
+	{
+		//Get current tooltip text
+		auto tooltipStringCurrentBox = winrt::ToolTipService::GetToolTip(depObject);
+		winrt::hstring tooltipStringCurrentHString = winrt::unbox_value<winrt::hstring>(tooltipStringCurrentBox);
+		std::wstring tooltipStringCurrentString = hstring_to_wstring(tooltipStringCurrentHString);
+
+		//Check and set tooltip text
+		if (tooltipStringCurrentString != str)
+		{
+			winrt::ToolTipService::SetToolTip(depObject, winrt::box_value(str));
+		}
+	}
+
+	inline void string_to_tooltip(const winrt::DependencyObject& depObject, std::string str)
+	{
+		//Get current tooltip text
+		auto tooltipStringCurrentBox = winrt::ToolTipService::GetToolTip(depObject);
+		winrt::hstring tooltipStringCurrentHString = winrt::unbox_value<winrt::hstring>(tooltipStringCurrentBox);
+		std::string tooltipStringCurrentString = hstring_to_string(tooltipStringCurrentHString);
+
+		//Check and set tooltip text
+		if (tooltipStringCurrentString != str)
+		{
+			winrt::ToolTipService::SetToolTip(depObject, winrt::box_value(string_to_wstring(str)));
+		}
 	}
 }
