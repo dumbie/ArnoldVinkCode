@@ -10,7 +10,7 @@ namespace ArnoldVinkCode
 	{
 	private:
 		//Variables
-		std::string vSettingFilePath = "";
+		std::wstring vSettingFilePath = L"";
 		nlohmann::json vJToken = NULL;
 
 		//Load settings from file
@@ -19,13 +19,20 @@ namespace ArnoldVinkCode
 			try
 			{
 				//Load json settings file
-				std::string jsonText = file_to_string(vSettingFilePath);
+				std::wstring jsonText = file_to_string(vSettingFilePath);
 
 				//Check json settings text
-				if (jsonText.empty())
+				if (wstring_empty_whitespace(jsonText))
 				{
 					AVDebugWriteLine("Failed reading settings file, falling back to empty.");
-					jsonText = "{}";
+					jsonText = L"{}";
+				}
+
+				//Check corrupted settings file
+				if (std::all_of(jsonText.begin(), jsonText.end(), [](wchar_t c) { return c == L'\0'; }))
+				{
+					AVDebugWriteLine("Settings file is corrupted, falling back to empty.");
+					jsonText = L"{}";
 				}
 
 				//Parse json settings file
@@ -49,19 +56,19 @@ namespace ArnoldVinkCode
 			try
 			{
 				//Convert json to string
-				std::string jsonString = vJToken.dump();
+				std::wstring jsonString = string_to_wstring(vJToken.dump());
 
 				//Save settings file
 				string_to_file(vSettingFilePath, jsonString);
 
 				//Return result
-				AVDebugWriteLine("Saved settings file: " << vSettingFilePath.c_str());
+				AVDebugWriteLine(L"Saved settings file: " << vSettingFilePath);
 				return true;
 			}
 			catch (...)
 			{
 				//Return result
-				AVDebugWriteLine("Failed saving settings file: " << vSettingFilePath.c_str());
+				AVDebugWriteLine(L"Failed saving settings file: " << vSettingFilePath);
 				return false;
 			}
 		}
@@ -69,7 +76,7 @@ namespace ArnoldVinkCode
 	public:
 		//Initialize
 		AVSettingsJson() {};
-		AVSettingsJson(std::string settingFilePath)
+		AVSettingsJson(std::wstring settingFilePath)
 		{
 			try
 			{
